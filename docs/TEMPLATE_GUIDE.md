@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.1
+- **Template version:** 1.2
 - **Owner:** 프로젝트에 맞게 작성
 - **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** 템플릿 구조 또는 도구 연결 방식 변경 시
@@ -66,7 +66,7 @@
 11. OpenSpec, BMAD 같은 외부 방법론 도구를 함께 쓴다면 아래 §4 「외부 방법론·행동 규칙 도구」의 공존 규칙을 먼저 적용합니다.
 12. [문서 운영 안내](./DOCS_GUIDE.md)의 Template Adoption Checklist로 적용 완료 여부를 확인합니다.
 
-기존 프로젝트에 적용할 때는 같은 이름의 파일을 덮어쓰지 말고 기존 지침·문서·ignore 규칙과 비교하여 병합하세요. 기존 코드나 사용자 변경은 보존합니다. 기존 `REVIEW.md`와 병합해 절 번호가 바뀌면 [REVIEW_ROUND.md](./REVIEW_ROUND.md)와 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)의 절 참조도 실제 헤딩에 맞게 고치세요.
+기존 프로젝트에 적용할 때는 같은 이름의 파일을 덮어쓰지 말고 기존 지침·문서·ignore 규칙과 비교하여 병합하세요. 기존 코드나 사용자 변경은 보존합니다. 기존 `REVIEW.md`와 병합해 절 번호가 바뀌거나 [PLAN.md](./PLAN.md)의 조건부 절을 삭제하면, 절 번호로 참조하는 [REVIEW_ROUND.md](./REVIEW_ROUND.md), [DESIGN.md](./DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 참조도 실제 헤딩에 맞게 고치세요. 도입 전부터 큰 설계 문서가 있는 저장소는 [DESIGN.md](./DESIGN.md) §6을 먼저 읽으세요 — 그 문서는 옮기지 않습니다.
 
 ### 리뷰어 조사 힌트
 
@@ -76,8 +76,9 @@
 |---|---|---|
 | Codex (`chatgpt-codex-connector`) | PR review 본문의 `Reviewed commit:`으로 head 식별. 자동 리뷰는 PR이 리뷰 요청 상태로 열릴 때 1회이며 push마다 돌지 않습니다. 지적이 없어도 본문은 남깁니다. 인라인 finding에 `AGENTS.md` 줄 번호를 인용하므로 `AGENTS.md`의 Code Review Rules가 출력 형식에 영향을 줍니다 | PR 댓글 본문을 정확히 `@codex review`로. 접수 확인은 댓글에 붙는 👀 반응. **`review` 뒤에 다른 말을 붙이지 마세요** — `@codex`에 다른 문장이 이어지면 리뷰가 아니라 PR을 컨텍스트로 한 클라우드 태스크가 시작되어 branch에 push할 수 있습니다 |
 | Copilot (`copilot-pull-request-reviewer`) | **PR당 1회**, head 표시 없음. 저신뢰 코멘트는 review 본문의 접힌 `<details>` "Suppressed comments"에 숨기므로 그 블록도 읽어야 합니다 | push마다 자동은 repository ruleset의 "Review new pushes"만. 요청은 Reviewers의 재요청 버튼, 또는 REST `POST /repos/{owner}/{repo}/pulls/{n}/requested_reviewers`에 `copilot-pull-request-reviewer[bot]`. REST가 200을 돌려주면서 no-op이 되는 사례가 보고되어 있어(대안으로 GraphQL `requestReviews`의 `botIds` 사용), 호출 뒤 PR의 `reviewRequests`에 리뷰어가 있는지 다시 읽어 접수를 확인하세요 |
+| 자체 호스팅 GitHub App 리뷰어 (예: webhook 기반 봇) | `pull_request`의 opened·reopened·ready_for_review·synchronize를 받아 push마다 돌고, PR 코멘트에 `<!-- <이름>:v1 head:<SHA> -->` 같은 마커 주석으로 head를 남기는 구성이 일반적입니다. head마다 새 코멘트인지 하나를 덮어쓰는지는 봇마다 다르므로 표의 `게시 위치`에 적으세요 | `push 자동` — 트리거 이벤트를 함께 적습니다. 문제가 없을 때도 결과를 남기는지 확인하세요. §4 타임아웃 처리가 달라집니다 |
 
-자체 호스팅 봇이나 GitHub Actions 기반 리뷰어는 저장소·버전마다 다르므로 마커 주석과 트리거 조건을 직접 확인해 적으세요. 위 두 리뷰어는 기본 구성에서 push마다 돌지 않으므로, 이들만 등록된 저장소는 `rereview = request`가 아니면 2라운드부터 상시 리뷰어의 결과를 받을 수 없습니다.
+자체 호스팅 봇이나 GitHub Actions 기반 리뷰어는 저장소·버전마다 다르므로 마커 주석과 트리거 조건을 직접 확인해 적으세요. 앞의 두 공개 리뷰어는 기본 구성에서 push마다 돌지 않으므로, 이들만 등록된 저장소는 `rereview = request`가 아니면 2라운드부터 상시 리뷰어의 결과를 받을 수 없습니다.
 
 ## 3. 교체할 값
 
@@ -184,10 +185,23 @@ Claude Code는 `CLAUDE.md`와 그 import 대상에서 `@`로 시작하는 토큰
 - 이 문서는 템플릿 적용 기록으로 남겨도 됩니다. 적용 후 필요 없어 삭제한다면 [프로젝트 README](../README.md)와 [문서 운영 안내](./DOCS_GUIDE.md)에 있는 이 문서 링크도 함께 제거하세요.
 - Cursor Bugbot을 사용하지 않아 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)를, 또는 OMP를 사용하지 않아 [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)를 제거한다면 이 안내와 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 해당 링크와 구조 설명도 정리하세요.
 - 템플릿이 개정되면 §6에서 적용 저장소의 `Template version` 이후 항목을 읽고, 반영할 변경을 골라 적용한 뒤 이 문서와 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 `Template version`을 올립니다. 프로젝트가 의도적으로 바꾼 부분까지 템플릿으로 되돌리지 마세요.
+- 변경 이력은 요약이라 항목이 빠질 수 있습니다. 반영할 때는 이력을 읽는 것과 함께, 템플릿 저장소의 두 판(적용 저장소의 현재 `Template version` tag와 목표 판 tag)을 `git diff v1.1 v1.2 -- <파일>`로 비교하고, 그 결과를 적용 저장소의 파일과 대조하세요. 적용 저장소 쪽은 `git diff --no-index <템플릿 파일> <적용 파일>`로 봅니다. 이력에 없는 차이가 나오면 템플릿 쪽 누락인지 적용 저장소가 의도적으로 바꾼 것인지 판단해 전자는 이력에 추가합니다.
+- 적용 저장소에 `CHANGELOG.md`가 있으면 판을 올린 사실과 반영한 항목을 한 줄로 남깁니다.
 
 ## 6. 템플릿 변경 이력
 
-적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다.
+적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### 1.2
+
+- `docs/DESIGN.md`: §1 제외 조건을 "확정으로 기록된 설계의 구현"으로 일반화(PLAN.md §8 `Accepted` 또는 기존 설계 문서의 확정 단계). §3.4에 조건부 절을 삭제한 저장소의 대조 대상 안내. §6 「기존 설계 문서가 있는 저장소」 신설 — 옮기지 않음, PLAN.md가 인덱스인 저장소의 산출물 해석, 자체 체크리스트와의 관계. 기존 §6 외부 스펙 도구는 §7로.
+- `.agents/skills/design/`, `.claude/skills/design/`: description에 "이미 확정으로 기록된 설계의 구현에는 쓰지 않음" 추가. 자동 호출 조건이므로 적용 저장소의 두 파일도 갱신할 것.
+- `.agents/skills/review-round/`, `.claude/skills/review-round/`: 3번 기본값에 `rereview = auto` 추가.
+- `docs/REVIEW_ROUND.md`: §1 위임되지 않는 것에 릴리스 게시·tag 생성. §2.1 `게시 위치`에 코멘트 덮어쓰기(sticky) 여부 기록. §3 4단계 검증에 Build와 생성물 재생성 포함. §7에 덮어쓰는 리뷰어의 finding은 판정 기록에 남긴다는 규칙.
+- `docs/DOCS_GUIDE.md`: 절 번호 참조 대조 항목을 `DESIGN.md`·`WATCHDOG.md`와 PLAN.md 조건부 절 삭제까지 확대. 기존 설계 문서 항목 추가. 리뷰어 표 항목에 `재리뷰 요청 방법` 열 언급. Maintenance에 tag 대조와 CHANGELOG 기록.
+- `docs/TEMPLATE_GUIDE.md`: §2 병합 안내에 네 파일 절 참조와 DESIGN.md §6 안내. 리뷰어 힌트 표에 자체 호스팅 GitHub App 행. §5에 tag 간 `git diff` 대조와 CHANGELOG 기록. 이 이력 절에 tag 안내.
+- 템플릿 저장소를 git으로 관리 시작. `v1.1`은 1.1 최종 상태, `v1.2`는 이 판.
+- 적용 저장소에서 확인할 것: `design` 스킬 description이 갱신되었는지, `REVIEW_ROUND.md` §2.1 표의 PR 코멘트형 리뷰어에 덮어쓰기 여부가 적혀 있는지, 절 번호로 참조하는 네 파일의 참조가 실제 헤딩과 맞는지.
 
 ### 1.1
 

@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.1
+- **Template version:** 1.2
 - **Owner:** 프로젝트에 맞게 작성
 - **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** 문서 체계 변경 시
@@ -80,9 +80,10 @@ PROJECT_ANALYSIS의 전체 정합성 평가
 - [ ] [REVIEW.md](./REVIEW.md)의 예시 deferral을 실제 정책으로 오인할 수 없도록 제거하거나 실제 승인 항목으로 교체했다.
 - [ ] Cursor Bugbot을 쓴다면 [REVIEW.md](./REVIEW.md) §6 불변조건과 §9 Accepted Deferrals, [PLAN.md](./PLAN.md)의 확정 결정 중 리뷰 판정에 영향을 주는 항목을 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)에도 복제했다. Bugbot은 링크된 문서를 읽지 않습니다.
 - [ ] OMP advisor를 쓴다면 [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 `@../docs/REVIEW.md` import가 사용 중인 OMP 버전에서 실제로 확장되는지 확인했다. 쓰지 않는다면 파일을 삭제했다.
-- [ ] 기존 저장소의 REVIEW.md와 병합해 절 번호가 바뀌었다면 [REVIEW_ROUND.md](./REVIEW_ROUND.md)와 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)의 절 참조를 실제 헤딩과 대조해 고쳤다.
+- [ ] 기존 저장소의 REVIEW.md와 병합해 절 번호가 바뀌었거나 [PLAN.md](./PLAN.md)의 조건부 절을 삭제했다면, 절 번호로 참조하는 네 파일 — [REVIEW_ROUND.md](./REVIEW_ROUND.md), [DESIGN.md](./DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), [.omp/WATCHDOG.md](../.omp/WATCHDOG.md) — 의 참조를 실제 헤딩과 대조해 고쳤다.
+- [ ] 도입 전부터 있던 큰 설계 문서가 있다면 [DESIGN.md](./DESIGN.md) §6에 따라 옮기지 않고, [PLAN.md](./PLAN.md) §8에서 그 문서를 결정 본문의 위치로 가리키게 했다.
 - [ ] [REVIEW_ROUND.md](./REVIEW_ROUND.md)의 기본 라운드 수와 통과 임계값이 프로젝트 정책과 맞는지 확인했다.
-- [ ] 이 저장소에서 도는 리뷰어를 전부 조사해 [REVIEW_ROUND.md](./REVIEW_ROUND.md) §2.1에 기록했다. 도착 주기(상시·간헐)를 빠뜨리면 정족수 판정이 틀립니다.
+- [ ] 이 저장소에서 도는 리뷰어를 전부 조사해 [REVIEW_ROUND.md](./REVIEW_ROUND.md) §2.1에 기록했다. 도착 주기(상시·간헐)를 빠뜨리면 정족수 판정이 틀리고, `재리뷰 요청 방법` 열이 비어 있으면 `rereview = request`가 동작하지 않습니다.
 - [ ] 각 문서의 `Last reviewed`를 실제로 내용을 검토한 날짜로 UTC 기준으로 기입했다. 템플릿을 복사한 것만으로 날짜를 채우지 않았다.
 - [ ] 저장소에 맞는 owner와 검토 주기를 각 문서에 지정했다.
 - [ ] Codex, Claude Code, Cursor 및 OMP가 의도한 instruction 파일을 로드하는지 확인했다.
@@ -97,4 +98,4 @@ PROJECT_ANALYSIS의 전체 정합성 평가
 - 오래된 완료 작업은 [TODO.md](./TODO.md)에서 마일스톤별 archive로 이동할 수 있습니다.
 - 결정 기록이 커지면 [PLAN.md](./PLAN.md)의 결정 항목을 `adr/` 디렉터리로 분리하고 PLAN에는 상대경로 링크와 요약만 남깁니다.
 - Superseded 문서는 삭제하기보다 대체 문서와 이유를 명시해 과거 맥락을 보존합니다.
-- 이 문서와 [Template Guide](./TEMPLATE_GUIDE.md)의 `Template version`은 복사해 온 템플릿 판을 나타냅니다. 템플릿 개정을 반영했을 때만 올리며, Template Guide §6의 변경 이력에서 반영할 항목을 고릅니다. Template Guide를 삭제한 저장소는 이 문서의 값이 유일한 기록입니다.
+- 이 문서와 [Template Guide](./TEMPLATE_GUIDE.md)의 `Template version`은 복사해 온 템플릿 판을 나타냅니다. 템플릿 개정을 반영했을 때만 올리며, Template Guide §6의 변경 이력에서 반영할 항목을 고르고 템플릿 저장소의 해당 tag와 파일을 직접 대조합니다(Template Guide §5). Template Guide를 삭제한 저장소는 이 문서의 값이 유일한 기록입니다. 저장소에 `CHANGELOG.md`가 있으면 판을 올린 사실과 반영한 항목을 한 줄로 남기세요.

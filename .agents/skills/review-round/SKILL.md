@@ -11,7 +11,7 @@ disable-model-invocation: true
 
 1. `docs/REVIEW_ROUND.md`를 읽고 그 절차를 그대로 적용합니다. → [docs/REVIEW_ROUND.md](../../../docs/REVIEW_ROUND.md)
 2. 판정 기준은 `docs/REVIEW.md`입니다. → [docs/REVIEW.md](../../../docs/REVIEW.md)
-3. 인자가 없으면 기본값을 사용합니다: 5라운드, 임계값 `blocking P0·P1·P2 = 0`, branch 삭제 없음. 리뷰어 표(§2.1)가 비어 있으면 시작하지 않고 등록을 요청합니다.
+3. 인자가 없으면 기본값을 사용합니다: 5라운드, 임계값 `blocking P0·P1·P2 = 0`, `rereview = auto`, branch 삭제 없음. 리뷰어 표(§2.1)가 비어 있으면 시작하지 않고 등록을 요청합니다.
 4. 확정한 파라미터를 사용자에게 되읽어 준 뒤 시작하세요.
 
 이 파일은 어댑터입니다. 절차와 정책은 위 두 문서가 canonical이며, 충돌하면 문서를 우선합니다.
