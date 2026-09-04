@@ -1,6 +1,6 @@
 # Change Design Procedure
 
-> 이 문서는 구현 전에 설계를 정리하는 **절차**입니다. 프로젝트의 목표와 결정은 [PLAN.md](./PLAN.md), 작업 상태는 [TODO.md](./TODO.md)에 기록하며, 이 문서에는 프로젝트 정보를 쓰지 않습니다.
+> 이 문서는 구현 전에 설계를 정리하는 **절차**입니다. 프로젝트의 목표와 결정은 [PLAN.md](./PLAN.md)(§2가 큰 규모로 판정한 변경의 설계 상세는 `docs/changes/` 파일), 작업 상태는 [TODO.md](./TODO.md)에 기록하며, 이 문서에는 프로젝트 정보를 쓰지 않습니다.
 
 ## Metadata
 
@@ -40,6 +40,8 @@
 **큰 규모** — 다음 중 하나 이상: 컴포넌트 세 개 이상, 마이그레이션 또는 공개 계약 변경, PR 세 개 이상으로 나뉨, 병행 운영이나 단계적 rollout이 필요.
 
 - 산출물: `docs/changes/<날짜>-<slug>.md` 파일 하나(§4 형식) + [PLAN.md](./PLAN.md) §8 Decisions 행(파일 링크와 한 줄 요약) + [TODO.md](./TODO.md) 작업들(각각 파일의 작업 ID 참조).
+
+**두 규모 공통** — 결정이 리뷰 판정에 영향을 주면(새 불변조건, 리뷰어가 되돌리라고 요구할 수 있는 선택, 잔여 간극의 수용) 규모와 무관하게 [REVIEW.md](./REVIEW.md) §6 Project-specific Invariants 또는 §9 Accepted Deferrals와 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)의 복제본을 같은 커밋에서 갱신합니다. 빠뜨리면 이후 리뷰가 canonical 정책에 없는 이전 기준을 계속 적용합니다.
 
 두 경우 모두 결정 이유의 canonical 위치는 [PLAN.md](./PLAN.md)이고, 작업 상태의 canonical 위치는 [TODO.md](./TODO.md)입니다. 큰 규모의 설계 파일은 상세를 담되, 결정 상태나 작업 진행 상태를 그 파일에서 따로 관리하지 않습니다.
 
