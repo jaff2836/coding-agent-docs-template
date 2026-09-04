@@ -75,7 +75,7 @@
 | 리뷰어 | 관찰된 특성 | 재리뷰 요청 방법 (공식 문서 기준) |
 |---|---|---|
 | Codex (`chatgpt-codex-connector`) | PR review 본문의 `Reviewed commit:`으로 head 식별. 자동 리뷰는 PR이 리뷰 요청 상태로 열릴 때 1회이며 push마다 돌지 않습니다. 지적이 없어도 본문은 남깁니다. 인라인 finding에 `AGENTS.md` 줄 번호를 인용하므로 `AGENTS.md`의 Code Review Rules가 출력 형식에 영향을 줍니다 | PR 댓글 본문을 정확히 `@codex review`로. 접수 확인은 댓글에 붙는 👀 반응. **`review` 뒤에 다른 말을 붙이지 마세요** — `@codex`에 다른 문장이 이어지면 리뷰가 아니라 PR을 컨텍스트로 한 클라우드 태스크가 시작되어 branch에 push할 수 있습니다 |
-| Copilot (`copilot-pull-request-reviewer`) | **PR당 1회**, head 표시 없음. 저신뢰 코멘트는 review 본문의 접힌 `<details>` "Suppressed comments"에 숨기므로 그 블록도 읽어야 합니다 | push마다 자동은 repository ruleset의 "Review new pushes"만. 요청은 Reviewers의 재요청 버튼, 또는 REST `POST /repos/{owner}/{repo}/pulls/{n}/requested_reviewers`에 `copilot-pull-request-reviewer[bot]`. REST가 200을 돌려주면서 no-op이 되는 사례가 보고되어 있어(대안으로 GraphQL `requestReviews`의 `botIds` 사용), 호출 뒤 PR의 `reviewRequests`에 리뷰어가 있는지 다시 읽어 접수를 확인하세요 |
+| Copilot (`copilot-pull-request-reviewer`) | **PR당 1회**, head 표시 없음. 저신뢰 코멘트는 review 본문의 접힌 `<details>` "Suppressed comments"에 숨기므로 그 블록도 읽어야 합니다 | push마다 자동은 repository ruleset의 "Review new pushes"만. 요청은 GraphQL `requestReviews(input: {pullRequestId, botIds: [<bot node id>], union: true})` — bot node id는 `GET /users/copilot-pull-request-reviewer%5Bbot%5D`의 `node_id`(2026-09 기준 `BOT_kgDOCnlnWA`). 접수 확인은 mutation 응답의 `reviewRequests` 또는 직후의 `gh pr view --json reviewRequests`. 리뷰가 시작되면 요청 목록에서 빠지므로 확인은 즉시 하세요. **REST `POST /repos/{owner}/{repo}/pulls/{n}/requested_reviewers`(본문 `{"reviewers": ["copilot-pull-request-reviewer[bot]"]}`)는 200을 돌려주면서 no-op이 되는 것이 2026-09-04에 실제로 관찰되어 권하지 않습니다.** UI의 Reviewers 재요청 버튼은 사람이 누를 때의 대안입니다 |
 | 자체 호스팅 GitHub App 리뷰어 (예: webhook 기반 봇) | `pull_request`의 opened·reopened·ready_for_review·synchronize를 받아 push마다 돌고, PR 코멘트에 `<!-- <이름>:v1 head:<SHA> -->` 같은 마커 주석으로 head를 남기는 구성이 일반적입니다. head마다 새 코멘트인지 하나를 덮어쓰는지는 봇마다 다르므로 표의 `게시 위치`에 적으세요 | `push 자동` — 트리거 이벤트를 함께 적습니다. 문제가 없을 때도 결과를 남기는지 확인하세요. §4 타임아웃 처리가 달라집니다 |
 
 자체 호스팅 봇이나 GitHub Actions 기반 리뷰어는 저장소·버전마다 다르므로 마커 주석과 트리거 조건을 직접 확인해 적으세요. 앞의 두 공개 리뷰어는 기본 구성에서 push마다 돌지 않으므로, 이들만 등록된 저장소는 `rereview = request`가 아니면 2라운드부터 상시 리뷰어의 결과를 받을 수 없습니다.
@@ -201,7 +201,14 @@ Claude Code는 `CLAUDE.md`와 그 import 대상에서 `@`로 시작하는 토큰
 - `docs/DOCS_GUIDE.md`: 절 번호 참조 대조 항목을 `DESIGN.md`·`WATCHDOG.md`와 PLAN.md 조건부 절 삭제까지 확대. 기존 설계 문서 항목 추가. 리뷰어 표 항목에 `재리뷰 요청 방법` 열 언급. Maintenance에 tag 대조와 CHANGELOG 기록.
 - `docs/TEMPLATE_GUIDE.md`: §2 병합 안내에 네 파일 절 참조와 DESIGN.md §6 안내. 리뷰어 힌트 표에 자체 호스팅 GitHub App 행. §5에 tag 간 `git diff` 대조와 CHANGELOG 기록. 이 이력 절에 tag 안내.
 - 템플릿 저장소를 git으로 관리 시작. `v1.1`은 1.1 최종 상태, `v1.2`는 이 판.
-- 적용 저장소에서 확인할 것: `design` 스킬 description이 갱신되었는지, `REVIEW_ROUND.md` §2.1 표의 PR 코멘트형 리뷰어에 덮어쓰기 여부가 적혀 있는지, 절 번호로 참조하는 네 파일의 참조가 실제 헤딩과 맞는지.
+- 첫 적용 PR(claude-code-pr-review #33)의 리뷰 라운드 2회에서 나온 수정을 같은 판에 포함:
+  - `docs/REVIEW_ROUND.md`: §1 위임에 "처리한 finding의 인라인 스레드 해소 표시" 추가(§6이 요구하는데 위임 목록에 없었음). §2.1 접수 확인 예시를 REST `requested_reviewers`/GraphQL `reviewRequests`로 구분하고 확인 시점 명시. §3 `request`에서 접수 확인된 리뷰어를 그 라운드 정족수에 포함. push 없는 라운드의 예외로 base 변경 처리. §4 base 변경에서 위임되는 것은 non-force merge만이며 rebase는 제외. §7에 PR이 있을 때 판정 기록의 위치(세션 + §10 보고).
+  - `AGENTS.md`: DESIGN 예외를 canonical §1과 같은 조건("원인이 구조 문제가 아닌 버그", "외부 계약이 바뀌지 않는 단일 모듈")으로 한정. 위임 조항에 스레드 해소 표시 추가.
+  - `.agents/skills/design/`, `.claude/skills/design/`: description의 예외에도 같은 조건.
+  - `docs/DESIGN.md` §4: `docs/changes/` 파일의 `Status`에 `Superseded by <링크>` 허용. 본문만 동결.
+  - `docs/DOCS_GUIDE.md`: Metadata에 `Template source` 필드 — 템플릿 저장소 위치와 tag 규칙. 없으면 §5의 tag 비교를 재현할 수 없습니다.
+  - `docs/TEMPLATE_GUIDE.md`: Copilot 재요청은 GraphQL `requestReviews`를 1차로. REST no-op이 실제 관찰됨.
+- 적용 저장소에서 확인할 것: `design` 스킬 description이 갱신되었는지, `REVIEW_ROUND.md` §2.1 표의 PR 코멘트형 리뷰어에 덮어쓰기 여부가 적혀 있는지, 절 번호로 참조하는 네 파일의 참조가 실제 헤딩과 맞는지, `DOCS_GUIDE.md`에 `Template source`가 채워져 있는지.
 
 ### 1.1
 

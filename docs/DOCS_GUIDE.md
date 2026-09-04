@@ -4,6 +4,7 @@
 
 - **Status:** Active
 - **Template version:** 1.2
+- **Template source:** 템플릿 저장소의 위치(URL 또는 보관자)와 tag 규칙 `v<Template version>`을 프로젝트에 맞게 작성
 - **Owner:** 프로젝트에 맞게 작성
 - **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** 문서 체계 변경 시
