@@ -1,6 +1,6 @@
 ---
 name: review-round
-description: 리뷰 라운드를 실행합니다. 리뷰 대기 → 리뷰 확인 → 수정 → commit을 반복하고, 통과 임계값을 충족하면 사용자 확인 후 merge합니다. 사용자가 명시적으로 호출한 경우에만 실행합니다.
+description: 리뷰 라운드를 실행합니다. 리뷰 대기 → 리뷰 확인 → 수정 → commit을 반복하고, 통과 시 on_pass 기본값(PR은 사용자 확인 후 merge, PR이 없으면 merge 안 함)에 따라 종료합니다. 사용자가 명시적으로 호출한 경우에만 실행합니다.
 argument-hint: "[라운드 수]"
 disable-model-invocation: true
 ---

@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.3
+- **Template version:** 1.31
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -227,6 +227,12 @@ git status --short --untracked-files=all
 ## 6. 템플릿 변경 이력
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v1.31
+
+- `docs/DESIGN.md`: §5의 프로젝트 고유 정보 금지에 §6의 기존 설계 문서 경로 한 줄 예외를 명시해 문언상 충돌을 해소했습니다.
+- `.agents/skills/review-round/`, `.claude/skills/review-round/`: 스킬 description이 기본 `on_pass`를 반영하도록 갱신했습니다. PR은 사용자 확인 후 merge하고, PR이 없으면 `merge 안 함`으로 종료합니다. 두 `SKILL.md`는 동일하게 유지합니다.
+- 적용 저장소에서 확인할 것: 기존 설계 문서 경로 외의 프로젝트 고유 정보가 `DESIGN.md`에 남아 있지 않은지, 두 review-round 스킬 description이 `on_pass` 기본값과 일치하는지 확인하세요.
 
 ### v1.3
 
