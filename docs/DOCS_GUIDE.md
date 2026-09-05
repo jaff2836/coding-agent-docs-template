@@ -4,7 +4,8 @@
 
 - **Status:** Active
 - **Template version:** 1.2
-- **Template source:** 템플릿 저장소의 위치(URL 또는 보관자)와 tag 규칙 `v<Template version>`을 프로젝트에 맞게 작성
+- **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
+- **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (미커밋 변경 포함 시 미확정)
 - **Owner:** 프로젝트에 맞게 작성
 - **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** 문서 체계 변경 시
@@ -47,6 +48,7 @@ PROJECT_ANALYSIS의 전체 정합성 평가
 - 목표, 제약, 아키텍처와 결정 이유는 [PLAN.md](./PLAN.md)에 기록합니다.
 - 변경 설계 절차는 [DESIGN.md](./DESIGN.md)에 기록합니다. 큰 변경의 설계 상세는 `docs/changes/` 파일에 두되, 결정 이유는 [PLAN.md](./PLAN.md), 작업 상태는 [TODO.md](./TODO.md)가 canonical이며 설계 파일에서 따로 관리하지 않습니다.
 - 현재 작업, 차단 상태와 검증 결과는 [TODO.md](./TODO.md)에 기록합니다.
+- 리뷰 라운드의 판정 기록과 통과 후 인계 목록은 [REVIEW_ROUND.md](./REVIEW_ROUND.md) §7에 따라 세션에 유지합니다. 통과한 head를 바꾸지 않도록 완료·이관 내용의 저장소 문서 반영은 §9에 따라 다음 관련 구현·문서 수정 작업에서 수행합니다. 이때는 §9만 적용하며 라운드를 다시 시작하지 않습니다.
 - 리뷰 중요도, `confidence`·`blocking` 기준, 프로젝트 불변조건과 승인된 deferral은 [REVIEW.md](./REVIEW.md)에 기록합니다.
 - 라운드 절차, 통과 임계값과 위임되는 권한 범위는 [REVIEW_ROUND.md](./REVIEW_ROUND.md)에 기록합니다.
 - 전체 분석 방법은 [PROJECT_ANALYSIS.md](./PROJECT_ANALYSIS.md)에 기록합니다.
@@ -63,7 +65,13 @@ PROJECT_ANALYSIS의 전체 정합성 평가
 - **Last reviewed:** 내용을 실제 근거와 비교한 마지막 날짜
 - **Review cadence:** 정기 또는 이벤트 기반 재검토 조건
 
-일부 문서는 추가 필드를 가집니다. [REVIEW.md](./REVIEW.md)의 `Policy version`은 리뷰 정책 자체의 개정 번호이고, 이 문서와 [Template Guide](./TEMPLATE_GUIDE.md)의 `Template version`은 복사해 온 템플릿 판입니다. 둘은 독립적으로 움직입니다.
+일부 문서는 추가 필드를 가집니다. [REVIEW.md](./REVIEW.md)의 `Policy version`은 리뷰 정책 자체의 개정 번호이고, 이 문서와 [Template Guide](./TEMPLATE_GUIDE.md)의 Template metadata는 복사 기준입니다. 둘은 독립적으로 움직입니다.
+
+- `Template source`: 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치.
+- `Template version`: 정확히 복사한 릴리스 판 번호(예: tag `v1.2`의 `1.2`). tag 이후 commit이면 `미릴리스 (최근 tag: v1.2)`처럼 구분합니다.
+- `Template revision`: 원본 commit의 전체 SHA. 적용 프로젝트의 HEAD를 넣지 않습니다. 미커밋 변경을 포함했거나 원본을 확인할 수 없으면 `미확정`으로 표시하고, 확인된 기준 commit과 추가 변경·누락 정보를 함께 남깁니다.
+
+원본 템플릿의 source·revision 안내 문구는 적용 시 채웁니다. 이미 적용한 저장소는 일반적인 프로젝트 문서 수정만으로 이 값을 바꾸지 않습니다. 두 안내 문서가 있으면 세 값을 같게 유지하며, 일부 개정만 반영한 경우에는 이 문서에 적용·제외 내역을 함께 기록합니다. 구체적인 Git 확인 방법은 [Template Guide](./TEMPLATE_GUIDE.md) §5에 있습니다.
 
 날짜만 갱신하지 말고 문서와 실제 상태를 비교한 경우에만 `Last reviewed`를 변경합니다.
 
@@ -71,7 +79,8 @@ PROJECT_ANALYSIS의 전체 정합성 평가
 
 ## Template Adoption Checklist
 
-- [ ] [Template Guide](./TEMPLATE_GUIDE.md)의 placeholder 검색 명령으로 `{{...}}`와 안내 문구형 placeholder를 모두 찾아 교체했다.
+- [ ] [Template Guide](./TEMPLATE_GUIDE.md)의 placeholder 검색으로 숨김 폴더까지 확인하고, 검색에서 제외한 안내 문서의 Metadata와 패턴에 잡히지 않는 README·담당자·마일스톤·태스크 예시도 직접 확인해 교체했다. 원본 템플릿에는 이 완료 조건을 적용하지 않는다.
+- [ ] Template source·version·revision에 원본 위치·판·전체 SHA를 기록했다. 미커밋 변경이나 확인 불가 상태는 `미확정`, 일부 반영은 적용·제외 내역으로 구분했다. 두 안내 문서가 있으면 값이 일치한다.
 - [ ] `Run`, `Build`, `Test`, `Lint`, `Typecheck` 명령을 실제로 검증했거나 `N/A`인 이유를 기록했다.
 - [ ] [PLAN.md](./PLAN.md)에 현재 구조, 목표 구조 및 전환 전략을 작성했거나, 해당 없음으로 판단해 조건부 절(§5~§7, §9, §10, §12)을 삭제했다.
 - [ ] [PLAN.md](./PLAN.md)의 예시 결정 행(`D-001`)과 예시 표 행을 제거하거나 실제 항목으로 교체했다.
@@ -83,12 +92,14 @@ PROJECT_ANALYSIS의 전체 정합성 평가
 - [ ] OMP advisor를 쓴다면 [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 `@../docs/REVIEW.md` import가 사용 중인 OMP 버전에서 실제로 확장되는지 확인했다. 쓰지 않는다면 파일을 삭제했다.
 - [ ] 기존 저장소의 REVIEW.md와 병합해 절 번호가 바뀌었거나 [PLAN.md](./PLAN.md)의 조건부 절을 삭제했다면, 절 번호로 참조하는 네 파일 — [REVIEW_ROUND.md](./REVIEW_ROUND.md), [DESIGN.md](./DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), [.omp/WATCHDOG.md](../.omp/WATCHDOG.md) — 의 참조를 실제 헤딩과 대조해 고쳤다.
 - [ ] 도입 전부터 있던 큰 설계 문서가 있다면 [DESIGN.md](./DESIGN.md) §6에 따라 옮기지 않고, [PLAN.md](./PLAN.md) §8에서 그 문서를 결정 본문의 위치로 가리키게 했다.
-- [ ] [REVIEW_ROUND.md](./REVIEW_ROUND.md)의 기본 라운드 수와 통과 임계값이 프로젝트 정책과 맞는지 확인했다.
+- [ ] [REVIEW_ROUND.md](./REVIEW_ROUND.md)의 기본 라운드 수와 통과 임계값이 프로젝트 정책과 맞는지 확인했다. 사용자가 임계값을 바꿀 수 있고 실제 라운드는 확정값을 따른다는 규칙을 유지했다.
+- [ ] 통과 후 인계는 세션에 남기고 저장소 문서 반영은 다음 관련 작업으로 넘기도록 했다. 같은 head의 통과를 유지하기 위한 규칙이며, 새 finding은 확정한 임계값으로 판단한다.
 - [ ] 이 저장소에서 도는 리뷰어를 전부 조사해 [REVIEW_ROUND.md](./REVIEW_ROUND.md) §2.1에 기록했다. 도착 주기(상시·간헐)를 빠뜨리면 정족수 판정이 틀리고, `재리뷰 요청 방법` 열이 비어 있으면 `rereview = request`가 동작하지 않습니다.
 - [ ] 각 문서의 `Last reviewed`를 실제로 내용을 검토한 날짜로 UTC 기준으로 기입했다. 템플릿을 복사한 것만으로 날짜를 채우지 않았다.
 - [ ] 저장소에 맞는 owner와 검토 주기를 각 문서에 지정했다.
 - [ ] Codex, Claude Code, Cursor 및 OMP가 의도한 instruction 파일을 로드하는지 확인했다.
 - [ ] 사용하는 도구가 `review-round`·`design` 스킬을 인식하는지 확인했다. `.agents/skills/`는 Codex·Cursor·OMP, `.claude/skills/`는 Claude Code가 읽습니다.
+- [ ] Codex를 쓴다면 [.agents/skills/review-round/agents/openai.yaml](../.agents/skills/review-round/agents/openai.yaml)의 `policy.allow_implicit_invocation: false`를 함께 복사했다. 명시적 `$review-round` 호출은 가능하고 일반 리뷰 요청에서는 라운드가 자동 시작되지 않는지 확인했다.
 - [ ] [Template Guide](./TEMPLATE_GUIDE.md)의 링크 검사 명령으로 문서의 상대경로 링크가 저장소 내에서 정상적으로 열리는지 확인했다.
 - [ ] CODEOWNERS를 쓰는 저장소라면 `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/`, `.cursor/`, `.omp/`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/DESIGN.md`를 owner 규칙에 추가했다.
 - [ ] OpenSpec, BMAD 같은 외부 방법론 도구를 함께 쓴다면 [Template Guide](./TEMPLATE_GUIDE.md) §4 「외부 방법론·행동 규칙 도구」의 공존 규칙에 따라 문서 소유권을 나누고, 도구가 `AGENTS.md`나 금지된 지침 파일을 생성·수정하지 않는지 확인했다.
@@ -99,4 +110,4 @@ PROJECT_ANALYSIS의 전체 정합성 평가
 - 오래된 완료 작업은 [TODO.md](./TODO.md)에서 마일스톤별 archive로 이동할 수 있습니다.
 - 결정 기록이 커지면 [PLAN.md](./PLAN.md)의 결정 항목을 `adr/` 디렉터리로 분리하고 PLAN에는 상대경로 링크와 요약만 남깁니다.
 - Superseded 문서는 삭제하기보다 대체 문서와 이유를 명시해 과거 맥락을 보존합니다.
-- 이 문서와 [Template Guide](./TEMPLATE_GUIDE.md)의 `Template version`은 복사해 온 템플릿 판을 나타냅니다. 템플릿 개정을 반영했을 때만 올리며, Template Guide §6의 변경 이력에서 반영할 항목을 고르고 템플릿 저장소의 해당 tag와 파일을 직접 대조합니다(Template Guide §5). Template Guide를 삭제한 저장소는 이 문서의 값이 유일한 기록입니다. 저장소에 `CHANGELOG.md`가 있으면 판을 올린 사실과 반영한 항목을 한 줄로 남기세요.
+- 템플릿 개정은 원본 저장소의 이전·새 revision을 비교하고 프로젝트의 의도적 변경을 보존해 반영합니다(Template Guide §5). 반영한 기준의 version·revision과 적용·제외 내역을 갱신합니다. Template Guide를 삭제한 저장소도 이 문서의 source·version·revision을 유지합니다. 저장소에 `CHANGELOG.md`가 있으면 새 기준과 반영한 항목을 요약하세요.

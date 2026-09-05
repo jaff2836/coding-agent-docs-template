@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Policy version:** 1.1
+- **Policy version:** 1.2
 - **Owner:** 프로젝트에 맞게 작성
 - **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** 리뷰 정책·위험 모델 변경 시 또는 정기 보안 검토 시
@@ -61,7 +61,7 @@ P0와 P1은 end-to-end로 추적한 경우에만 부여합니다.
 - `true`: 이번 변경이 결함을 새로 만들었거나, 기존 결함을 직접 건드려 악화시켰습니다.
 - `false`: 기존 결함을 건드리지 않았거나, 표면적인 문제이거나, 저장소 지침에 known·deferred·planned follow-up으로 명시적으로 기록된 항목입니다.
 
-`blocking=false`인 finding도 보고합니다. 유용한 맥락입니다. 다만 병합 게이트는 blocking finding에만 작동합니다.
+`blocking=false`인 finding도 보고합니다. 유용한 맥락입니다. `blocking` 값만으로 라운드 통과 여부를 판단하지 않습니다. [REVIEW_ROUND.md](./REVIEW_ROUND.md)의 기본 통과 조건은 모든 P0·P1과 Blocking P2가 0개인 것이므로, 기본값에서는 P0·P1이 `blocking=false`여도 통과를 막습니다. 사용자는 임계값을 변경할 수 있으며, 실제 통과·수정·이관은 라운드에서 확정한 값으로 판단합니다.
 
 작성자가 이미 이월 작업으로 추적 중인 결함은 반드시 `blocking=false`여야 합니다. finding을 §9 Accepted Deferrals와 [PLAN.md](./PLAN.md)의 Transition Plan·Decisions에 기록된 후속 작업 단위 및 승인된 부채와 대조해 표시하세요. 지침이 여러 PR에 걸쳐 의도적으로 단계화했다고 밝힌 설계는 다시 논쟁하지 않습니다.
 
@@ -144,7 +144,7 @@ P0와 P1은 end-to-end로 추적한 경우에만 부여합니다.
 - formatter나 lint가 결정적으로 검출하는 문제
 - 구체적 발생 조건이 없는 추측 (`confidence` 0.6 미만)
 - 개인적인 스타일 또는 아키텍처 취향
-- 이번 PR과 관련 없는 기존 문제
+- 이번 PR과 관련 없는 기존 문제 (단, §3 Review Scope의 검증된 P0·P1은 보고합니다)
 - 동작 영향이 없는 명명·주석 선호
 - 단순히 테스트 수가 적다는 이유만으로 만든 finding
 - 같은 원인의 중복 finding
@@ -153,7 +153,7 @@ P0와 P1은 end-to-end로 추적한 경우에만 부여합니다.
 
 예외는 위에서 정한 신뢰할 수 있는 기준 revision의 이 표에 구체적으로 기록된 경우에만 non-blocking으로 고려합니다. 만료일이나 재검토 조건이 없는 광범위한 예외는 사용하지 않습니다.
 
-여기에 기록된 항목과 일치하는 finding은 §4.3에 따라 `blocking=false`로 표시합니다.
+여기에 기록된 항목과 일치하는 finding은 §4.3에 따라 `blocking=false`로 표시합니다. 이 표는 `blocking` 분류를 위한 예외이며, 기본 리뷰 라운드에서 P0·P1을 통과시키는 예외는 아닙니다.
 
 | ID      | Scope       | Reason | Owner  | Expires/Revisit | Tracking       |
 | ------- | ----------- | ------ | ------ | --------------- | -------------- |
