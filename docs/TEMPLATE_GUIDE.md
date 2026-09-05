@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.2
+- **Template version:** 1.3
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -228,7 +228,7 @@ git status --short --untracked-files=all
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
 
-### 미릴리스
+### v1.3
 
 - `docs/REVIEW_ROUND.md`: 기본 통과 조건을 `모든 P0 = 0, 모든 P1 = 0, blocking P2 = 0`으로 변경. 기본값에서는 유효하고 미해소인 P0·P1이 `blocking=false`이거나 승인된 deferral이어도 통과를 막습니다. 사용자가 지정한 임계값은 기본값보다 우선하며 수정·이관·조기 중단·소진 보고도 확정값을 따릅니다. 진행 중 명시적 변경의 기록·재평가 규칙과 기본 판정표를 추가했습니다.
 - `.agents/skills/review-round/`, `.claude/skills/review-round/`: 기본 임계값을 갱신했습니다. 두 `SKILL.md`는 동일하게 유지합니다.
