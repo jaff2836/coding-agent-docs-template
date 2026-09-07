@@ -34,7 +34,7 @@ non-blocking finding도 보고합니다. 유용한 맥락입니다. 기본 리�
 
 ## 이 저장소의 불변조건
 
-Bugbot은 `docs/REVIEW.md` §6을 읽지 못하므로 같은 목록을 여기에 둡니다. 각 항목은 잘못된 동작, 영향 및 안전한 경로를 포함해야 하며, 두 파일의 목록은 항상 같아야 합니다.
+Bugbot은 `docs/REVIEW.md` §6을 읽지 못하므로 같은 목록을 여기에 둡니다. 각 항목은 잘못된 동작, 영향 및 안전한 경로를 포함해야 하며, 두 파일의 목록은 항상 같아야 합니다. `scripts/check-docs.py`가 두 목록을 대조합니다.
 
 - **{{PROJECT_INVARIANT_1}}**
 - **{{PROJECT_INVARIANT_2}}**

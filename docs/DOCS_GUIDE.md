@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.5.1
+- **Template version:** 1.6
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (미커밋 변경 포함 시 미확정)
 - **Owner:** 프로젝트에 맞게 작성
@@ -20,6 +20,7 @@
 | [01-DESIGN.md](./01-DESIGN.md) | 의도 확인·명세·실행 계획·사용자 합의 절차 | 설계 대상 변경 또는 명시 호출 |
 | [02-TODO.md](./02-TODO.md) | 프로젝트 전체의 변경·우선순위·의존성·통합 결과 | 관련 작업의 선택·시작·인계 시 |
 | [10-EXTENSION.md](./10-EXTENSION.md) 또는 기존 확장 문서 (선택) | 여러 변경이 공유하는 확장 계약·단계 의존성·완료 조건 | 장기 확장이 있는 프로젝트의 해당 작업 |
+| 변경별 `01-CHANGE.md` (합본형) | 한 파일에 담은 Intent·Spec | 일반적인 설계 변경의 검토·구현 |
 | 변경별 `01-INTENT.md` | 요청 출처·문제·기대 결과·범위·제약 | 의도 확인·명세 검토 |
 | 변경별 `02-SPEC.md` | 요구사항·시나리오·설계·대안·호환성 | 구현·변경 리뷰 |
 | 변경별 `03-PLAN.md` (선택) | 구현 순서·상세 작업·검증 상태 | 해당 변경의 실행·인계 |
@@ -27,7 +28,7 @@
 | [REVIEW_ROUND.md](./REVIEW_ROUND.md) | 요청된 리뷰 라운드의 수정·통합 절차 | 사용자가 라운드를 시작할 때. 이전 인계 반영은 §9만 |
 | [PROJECT_ANALYSIS.md](./PROJECT_ANALYSIS.md) | 전체 프로젝트 분석 기준 | 명시적인 전체 분석 요청 |
 
-`changes/_template/`의 [INTENT](./changes/_template/01-INTENT.md)·[SPEC](./changes/_template/02-SPEC.md)·[PLAN](./changes/_template/03-PLAN.md)은 복사용 양식입니다. 실제 변경은 별도 변경-ID 폴더에서 관리합니다. 양식 자체를 승인된 설계나 미완료 작업으로 집계하지 않습니다.
+`changes/_template/`의 [CHANGE](./changes/_template/01-CHANGE.md)·[INTENT](./changes/_template/01-INTENT.md)·[SPEC](./changes/_template/02-SPEC.md)·[PLAN](./changes/_template/03-PLAN.md)은 복사용 양식입니다. 실제 변경은 별도 변경-ID 폴더에서 관리합니다. 양식 자체를 승인된 설계나 미완료 작업으로 집계하지 않습니다.
 
 ## 번호와 파일 수
 
@@ -120,19 +121,20 @@
 - [ ] TEMPLATE_GUIDE의 이관 절차로 이전 파일명·절·코드·테스트·도구 참조를 확인했다.
 - [ ] 프로젝트 정보·명령·담당자·예시를 실제 값으로 교체했다. 원본 양식은 실제 작업으로 집계하지 않는다.
 - [ ] Template source·version·revision과 일부 반영 내역을 확인했다. 미확정은 미확정으로 표시했다.
+- [ ] `LICENSE`를 프로젝트 라이선스로 교체했거나, 아직 정하지 않았다면 삭제하고 README License 절에 미정으로 남겼다. 템플릿 자체의 MIT 고지를 프로젝트 라이선스로 두지 않았다.
 - [ ] Run·Build·Test·Lint·Typecheck를 검증하거나 N/A·미검증 이유를 기록했다.
 - [ ] PROJECT에 현재 제품 기준과 승인된 목표를 구분하고, 기존 제품·확장 설계의 정본을 연결하거나 합의된 통합을 수행했다.
 - [ ] 불필요한 선택형 문서·절과 링크를 제거했다. 결정·작업 예시를 실제 완료·승인으로 남기지 않았다.
 - [ ] 변경 단위 상태와 상세 실행 상태의 소유권을 나눴고, 전역 TODO·PLAN에 체크리스트를 복제하지 않는다.
 - [ ] 통합 대상과 로컬/병렬 작업의 검증·완료 근거를 정했다.
 - [ ] REVIEW에 프로젝트 불변조건과 실제 승인된 deferral만 기록했다. Bugbot 사용 시 §6·§9와 관련 확정 결정을 복제했다.
-- [ ] REVIEW·PROJECT의 절 번호가 바뀌었다면 DESIGN·REVIEW_ROUND·BUGBOT·WATCHDOG의 절 참조도 대조했다.
+- [ ] REVIEW·PROJECT의 절 번호가 바뀌었다면 DESIGN·REVIEW_ROUND·BUGBOT·WATCHDOG의 절 참조도 대조했다. `scripts/check-docs.py`가 문서를 지목한 참조를 대조하지만, 대상이 모호한 같은 파일 안의 참조는 사람이 확인한다.
 - [ ] REVIEW_ROUND의 사용자 지정 임계값, 동일 head 통과, 세션 인계와 다음 작업의 문서 반영 규칙을 유지했다.
 - [ ] 외부 리뷰어 사용 시 등록 표에 게시 위치·head 식별·도착 주기·무finding 동작·재요청 방법을 실제 확인해 기록했다. 로컬 self 리뷰에는 등록이 필요 없다.
 - [ ] 사용하는 도구에서 지침과 스킬이 로드되는지 확인했다. Markdown 링크를 자동 로딩으로 간주하지 않는다.
 - [ ] 두 경로의 스킬 본문이 동일하고, Codex의 [명시 호출 설정](../.agents/skills/review-round/agents/openai.yaml)을 함께 복사했다.
 - [ ] OMP 사용 시 [WATCHDOG](../.omp/WATCHDOG.md)의 import를 사용 버전에서 확인했다.
-- [ ] 상대 파일 링크·필요한 앵커·import 경로를 확인했다. `scripts/check-docs.py`가 실패 없이 통과했다. 깨진 링크·다른 스킬 사본·잘못된 import·버전 불일치는 실패로 끝난다.
+- [ ] 상대 파일 링크·필요한 앵커·import 경로를 확인했다. `scripts/check-docs.py`가 실패 없이 통과했다. 깨진 링크·다른 스킬 사본·누락된 Codex 명시 호출 설정·잘못된 import·불변조건 목록 불일치·절 번호 참조 불일치·버전 불일치는 실패로 끝난다.
 - [ ] 전역 `D-`/`T-`와 변경 내부 ID를 구분했다. 완료·취소 변경 폴더를 삭제하지 않으며 현재 기준은 PROJECT에 둔다.
 - [ ] CODEOWNERS가 있으면 공통 지침·정책·스킬과 설계 기준 문서를 보호 대상으로 검토했다.
 - [ ] 외부 방법론 도구 사용 시 TEMPLATE_GUIDE §4에 따라 정본과 지침 파일 소유권을 정했다.
@@ -140,6 +142,6 @@
 
 ## Maintenance
 
-문서 이동·이름 변경 시 들어오는 링크와 코드·테스트·도구 참조를 함께 갱신합니다. 파일 번호 변경도 rename입니다. 결정이 많아지면 기존 ADR 체계나 상세 설계로 분리하고 PROJECT에 정본을 연결합니다. 링크·스킬 사본·import·Template version은 `scripts/check-docs.py`로 확인합니다.
+문서 이동·이름 변경 시 들어오는 링크와 코드·테스트·도구 참조를 함께 갱신합니다. 파일 번호 변경도 rename입니다. 결정이 많아지면 기존 ADR 체계나 상세 설계로 분리하고 PROJECT에 정본을 연결합니다. 링크·스킬 사본·Codex 명시 호출 설정·import·불변조건 복제본·절 번호 참조·Template version은 `scripts/check-docs.py`로 확인합니다.
 
 템플릿 개정은 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §5에 따라 원본 revision끼리 비교하고, 적용 프로젝트의 의도적인 변경을 보존합니다. 기존 파일을 일괄 덮어쓰지 않습니다.

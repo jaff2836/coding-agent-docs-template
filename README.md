@@ -44,7 +44,7 @@
 - [01-DESIGN.md](./docs/01-DESIGN.md): 구조·계약을 바꾸는 변경의 구현 전 설계 절차
 - [02-TODO.md](./docs/02-TODO.md): 프로젝트 전체의 변경·우선순위·의존성과 통합 결과
 - [10-EXTENSION.md](./docs/10-EXTENSION.md): 선택형 장기 확장 설계와 단계별 완료 조건
-- 변경별 양식: [01-INTENT.md](./docs/changes/_template/01-INTENT.md), [02-SPEC.md](./docs/changes/_template/02-SPEC.md), [03-PLAN.md](./docs/changes/_template/03-PLAN.md). 필요한 파일만 복사하며 실제 작업은 별도 변경-ID 폴더에서 관리합니다.
+- 변경별 양식: 합본형 [01-CHANGE.md](./docs/changes/_template/01-CHANGE.md), 분리형 [01-INTENT.md](./docs/changes/_template/01-INTENT.md)·[02-SPEC.md](./docs/changes/_template/02-SPEC.md), 선택형 [03-PLAN.md](./docs/changes/_template/03-PLAN.md). 필요한 파일만 복사하며 실제 작업은 별도 변경-ID 폴더에서 관리합니다.
 - [REVIEW.md](./docs/REVIEW.md): PR 리뷰 정책
 - [REVIEW_ROUND.md](./docs/REVIEW_ROUND.md): 리뷰 라운드 절차와 권한 위임 범위
 - [PROJECT_ANALYSIS.md](./docs/PROJECT_ANALYSIS.md): 명시적으로 요청된 전체 프로젝트 분석 절차

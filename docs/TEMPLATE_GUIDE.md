@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.5.1
+- **Template version:** 1.6
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -53,6 +53,7 @@
     ├── 10-EXTENSION.md        # 선택형 확장 설계·단계별 완료 조건
     ├── changes/
     │   └── _template/        # 복사용 양식. 실제 작업은 별도 변경-ID 폴더
+    │       ├── 01-CHANGE.md   # 합본형: Intent·Spec을 한 파일에
     │       ├── 01-INTENT.md   # 요청·문제·기대 결과
     │       ├── 02-SPEC.md     # 요구사항·시나리오·설계
     │       └── 03-PLAN.md     # 선택형 상세 작업·검증 기록
@@ -140,13 +141,13 @@ grep -rnE "\{\{|프로젝트에 맞게 작성|간단히 작성|YYYY-MM-DD|\| 예
 
 이 두 안내 문서는 placeholder를 설명하기 위해 그 문구를 포함하므로 검색에서 제외합니다. 대신 두 문서의 Metadata는 직접 확인하세요. `changes/_template/`의 placeholder는 복사용으로 유지할 수 있지만 실제 변경 폴더에 남은 값은 교체해야 합니다. 결과가 0건이어도 이 패턴에 없는 README 안내 문구, 담당자·마일스톤·태스크 예시, 명령의 실행 가능성과 완료 주장의 근거까지 검증된 것은 아닙니다. [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 Template Adoption Checklist와 함께 확인합니다.
 
-적용을 마쳤거나 문서를 옮긴 뒤에는 `scripts/check-docs.py`를 실행하세요. 상대 `.md` 링크, `.agents`/`.claude` 스킬 사본, `CLAUDE.md`와 `.omp/WATCHDOG.md`의 `@` import, 두 안내 문서의 `Template version`을 한 번에 확인하고, 실패하면 종료 코드가 0이 아닙니다. 표준 라이브러리만 사용합니다.
+적용을 마쳤거나 문서를 옮긴 뒤에는 `scripts/check-docs.py`를 실행하세요. 상대 링크, `.agents`/`.claude` 스킬 사본과 Codex 명시 호출 설정, `CLAUDE.md`와 `.omp/WATCHDOG.md`의 `@` import, [REVIEW.md](./REVIEW.md) §6과 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)의 불변조건 목록, 문서를 지목한 절 번호 참조, 안내 문서의 `Template version`을 한 번에 확인하고, 실패하면 종료 코드가 0이 아닙니다. 표준 라이브러리만 사용합니다.
 
 ```bash
 python scripts/check-docs.py
 ```
 
-`python`이 없으면 `python3`을 사용하세요. 파일 이동은 내용이 바뀌지 않아도 링크를 깨뜨립니다. 이 검사는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니다. placeholder 검색은 위의 `rg`/`grep` 명령을 사용하세요.
+`python`이 없으면 `python3`을 사용하세요. 파일 이동은 내용이 바뀌지 않아도 링크를 깨뜨립니다. 이 문서를 §5에 따라 삭제한 저장소에서도 검사는 그대로 동작하며, 판 기록은 [DOCS_GUIDE.md](./DOCS_GUIDE.md)에서만 확인합니다. 절 번호 검사는 문서를 지목한 참조(`REVIEW.md §6`, `PROJECT §8` 등)만 대상으로 하며, 대상이 모호한 같은 파일 안의 `§4` 같은 참조와 §6 릴리스 이력의 옛 절 번호는 제외합니다. 생성물 디렉터리(`dist`, `build`, `target`, `vendor` 등)는 검사에서 건너뜁니다. 이 검사는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니다. placeholder 검색은 위의 `rg`/`grep` 명령을 사용하세요.
 
 | Placeholder | 작성할 내용 |
 |---|---|
@@ -252,6 +253,16 @@ git status --short --untracked-files=all
 ## 6. 템플릿 변경 이력
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v1.6 — 문서 검사 확대와 합본형 변경 양식
+
+- `scripts/check-docs.py`: 저장소 루트 판별을 `AGENTS.md`로 바꾸고, 이 문서를 §5에 따라 삭제한 저장소에서도 동작하도록 판 대조를 선택 검사로 만들었습니다. 이전에는 이 문서가 없으면 검사가 종료 코드 2로 끝났습니다.
+- `scripts/check-docs.py`: 링크 검사를 `.md` 외의 상대 링크까지 확대하고, `review-round` 스킬이 있는데 Codex 명시 호출 설정(`agents/openai.yaml`)이 없으면 실패합니다. 이 설정이 빠지면 Codex에서 암묵 호출이 열립니다.
+- `scripts/check-docs.py`: [REVIEW.md](./REVIEW.md) §6과 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)의 불변조건 목록을 대조합니다. 절 번호가 아니라 헤딩 문구로 절을 찾으므로 병합으로 번호가 바뀐 저장소에서도 동작합니다.
+- `scripts/check-docs.py`: 문서를 지목한 절 번호 참조(`REVIEW.md §6`, `PROJECT §8` 등)를 실제 헤딩과 대조합니다. 대상이 모호한 같은 파일 안의 참조와 §6 릴리스 이력의 옛 번호는 검사하지 않습니다. 생성물 디렉터리(`dist`, `build`, `target`, `vendor` 등)는 건너뜁니다.
+- [`docs/changes/_template/01-CHANGE.md`](./changes/_template/01-CHANGE.md) 신설: [01-DESIGN.md](./01-DESIGN.md) §4가 규정한 합본형 절 구성을 양식으로 제공합니다. 분리형 INTENT·SPEC의 변경 기록 절은 하나로 합쳤습니다.
+- [DOCS_GUIDE.md](./DOCS_GUIDE.md): 적용 체크리스트에 `LICENSE` 교체 항목을 추가했습니다. 템플릿 자체의 MIT 고지를 프로젝트 라이선스로 두지 않도록 확인합니다.
+- 적용 저장소에서 확인할 것: `scripts/check-docs.py`를 새 판으로 교체했는지, 새 검사가 보고하는 불변조건·절 번호 불일치가 실제 문서 불일치인지(오탐이 아니라 그동안 잡히지 않던 차이일 수 있습니다), 합본형을 쓰지 않는다면 `01-CHANGE.md`와 들어오는 링크를 제거했는지, `LICENSE`를 교체했는지 확인하세요.
 
 ### v1.5.1 — 공존 안내 일반화, Copilot 힌트 정리
 
