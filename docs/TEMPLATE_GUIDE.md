@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.4
+- **Template version:** 1.5
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -25,6 +25,8 @@
 ├── CLAUDE.md                  # @AGENTS.md 참조
 ├── LICENSE                    # 템플릿 자체의 MIT 라이선스. 프로젝트 라이선스로 교체
 ├── .gitignore
+├── scripts/
+│   └── check-docs.py          # 의존성 없는 문서 검사: 링크·스킬 사본·import·버전
 ├── .agents/
 │   └── skills/
 │       ├── design/
@@ -138,22 +140,13 @@ grep -rnE "\{\{|프로젝트에 맞게 작성|간단히 작성|YYYY-MM-DD|\| 예
 
 이 두 안내 문서는 placeholder를 설명하기 위해 그 문구를 포함하므로 검색에서 제외합니다. 대신 두 문서의 Metadata는 직접 확인하세요. `changes/_template/`의 placeholder는 복사용으로 유지할 수 있지만 실제 변경 폴더에 남은 값은 교체해야 합니다. 결과가 0건이어도 이 패턴에 없는 README 안내 문구, 담당자·마일스톤·태스크 예시, 명령의 실행 가능성과 완료 주장의 근거까지 검증된 것은 아닙니다. [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 Template Adoption Checklist와 함께 확인합니다.
 
-적용을 마쳤거나 문서를 옮긴 뒤에는 상대 링크도 확인하세요. 파일 이동은 내용이 바뀌지 않아도 링크를 깨뜨립니다.
+적용을 마쳤거나 문서를 옮긴 뒤에는 `scripts/check-docs.py`를 실행하세요. 상대 `.md` 링크, `.agents`/`.claude` 스킬 사본, `CLAUDE.md`와 `.omp/WATCHDOG.md`의 `@` import, 두 안내 문서의 `Template version`을 한 번에 확인하고, 실패하면 종료 코드가 0이 아닙니다. 표준 라이브러리만 사용합니다.
 
 ```bash
-python3 - <<'EOF'
-import pathlib, re
-pattern = re.compile(r"\]\(((?!https?://)[^)\s#]+?\.md)(?:#[^)]*)?\)")
-broken = []
-for md in pathlib.Path(".").rglob("*.md"):
-    if ".git" in md.parts or "node_modules" in md.parts:
-        continue
-    for m in pattern.finditer(md.read_text(encoding="utf-8")):
-        if not (md.parent / m.group(1)).exists():
-            broken.append(f"{md}: {m.group(1)}")
-print("\n".join(broken) or "no broken relative links")
-EOF
+python scripts/check-docs.py
 ```
+
+`python`이 없으면 `python3`을 사용하세요. 파일 이동은 내용이 바뀌지 않아도 링크를 깨뜨립니다. 이 검사는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니다. placeholder 검색은 위의 `rg`/`grep` 명령을 사용하세요.
 
 | Placeholder | 작성할 내용 |
 |---|---|
@@ -187,7 +180,8 @@ Claude Code는 `CLAUDE.md`와 그 import 대상에서 `@`로 시작하는 토큰
 
 - [CLAUDE.md](../CLAUDE.md)에는 `@AGENTS.md`만 둡니다. 이 템플릿은 심볼릭 링크 생성을 요구하지 않습니다. Windows에서는 심볼릭 링크에 관리자 권한이나 개발자 모드가 필요하므로 import 방식이 더 안전합니다.
 - Codex와 Cursor는 루트 `AGENTS.md`를 직접 읽습니다. Claude Code는 `CLAUDE.md`만 읽으므로 위 import가 필요합니다.
-- **`.claude/CLAUDE.md`, `.agents/AGENTS.md`, `.github/copilot-instructions.md`를 만들지 마세요.** OMP는 같은 디렉터리 depth에서 우선순위가 높은 provider가 낮은 provider를 가리는데, 루트 `AGENTS.md`는 가장 낮은 우선순위입니다. 이 중 하나라도 있으면 OMP에서 루트 `AGENTS.md`가 로드되지 않을 수 있습니다. (근거: OMP `docs/context-files.md`의 provider 우선순위표. 사용 중인 버전에서 직접 확인하세요.)
+- **OMP를 쓰는 저장소**에서는 `.claude/CLAUDE.md`, `.agents/AGENTS.md`, `.github/copilot-instructions.md`를 만들지 마세요. OMP는 같은 디렉터리 depth에서 우선순위가 높은 provider가 낮은 provider를 가리는데, 루트 `AGENTS.md`는 가장 낮은 우선순위입니다. 이 중 하나라도 있으면 OMP에서 루트 `AGENTS.md`가 로드되지 않을 수 있습니다. (근거: OMP `docs/context-files.md`의 provider 우선순위표. 사용 중인 버전에서 직접 확인하세요.)
+- **OMP를 쓰지 않는 저장소**에서는 해당 도구가 요구하는 전용 지침 파일을 둘 수 있습니다. 공통 규칙은 루트 `AGENTS.md`에 두고, 전용 파일에는 도구가 루트 파일을 읽지 못할 때만 필요한 연결(import 또는 한 줄 참조)을 남기며 본문을 복제하지 마세요. 나중에 OMP를 도입하면 이 파일들이 루트 `AGENTS.md`를 가리는지 먼저 확인하세요.
 - `.cursorrules`와 `.omp/AGENTS.md`는 이 템플릿에 포함하지 않습니다. 기존 프로젝트에 도구 전용 지침이 있다면 공통 규칙과 중복·충돌하는지 확인하세요.
 - CODEOWNERS를 쓰는 저장소라면 `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/`, `.cursor/`, `.omp/`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/01-DESIGN.md`를 owner 규칙에 추가하세요. 이 파일들은 에이전트의 commit·merge 권한과 리뷰 판정 기준을 정하므로 소스 코드와 같은 수준으로 보호해야 합니다. 이 템플릿은 CODEOWNERS 파일 자체를 포함하지 않습니다.
 
@@ -204,10 +198,10 @@ Claude Code는 `CLAUDE.md`와 그 import 대상에서 `@`로 시작하는 토큰
 
 이 템플릿은 "항상 적용되는 짧은 규칙은 `AGENTS.md`에, 절차는 `docs/`에, 진입점은 얇은 스킬 어댑터에" 두는 구조입니다. 설계 방법론이나 행동 규칙을 제공하는 외부 도구를 함께 쓸 때도 같은 원칙으로 판단하세요. 아래는 2026-09 기준으로 확인한 대표 사례이며, 도구 버전에 따라 다를 수 있습니다.
 
-- **행동 규칙형 (예: ponytail)** — 작은 always-on 규칙 세트입니다. 이 템플릿의 `AGENTS.md` Change Rules에 있는 재사용 순서·최소 코드·원인 수정·최소화 제외 규칙은 [ponytail](https://github.com/DietrichGebert/ponytail)(MIT)의 규칙을 이 템플릿의 문맥에 맞게 옮긴 것입니다. 플러그인(hook, 강도 모드)까지 설치할 필요는 없습니다. ponytail의 instruction-only 어댑터가 안내하는 `.github/copilot-instructions.md` 복사는 위 지침 파일 절의 금지 항목과 충돌하므로 따르지 마세요. 참고: ponytail 자체 벤치마크에 따르면 terse reasoning 모델에서는 비용이 오히려 늘 수 있습니다.
+- **행동 규칙형 (예: ponytail)** — 작은 always-on 규칙 세트입니다. 이 템플릿의 `AGENTS.md` Change Rules에 있는 재사용 순서·최소 코드·원인 수정·최소화 제외 규칙은 [ponytail](https://github.com/DietrichGebert/ponytail)(MIT)의 규칙을 이 템플릿의 문맥에 맞게 옮긴 것입니다. 플러그인(hook, 강도 모드)까지 설치할 필요는 없습니다. ponytail의 instruction-only 어댑터가 안내하는 `.github/copilot-instructions.md` 복사는 **OMP를 쓰는 저장소**에서는 위 지침 파일 절과 충돌하므로 따르지 마세요. OMP를 쓰지 않으면 Copilot 전용 파일을 둘 수 있으나, 공통 규칙을 복제하지 말고 루트 `AGENTS.md`와의 충돌을 확인하세요. 참고: ponytail 자체 벤치마크에 따르면 terse reasoning 모델에서는 비용이 오히려 늘 수 있습니다.
 - **스펙 워크플로우형 (예: OpenSpec, BMAD)** — 변경 단위 산출물(proposal·specs·design·tasks)을 자기 디렉터리에 생성하고 CLI로 갱신하는 시스템입니다. 도입하려면 다음을 먼저 정하세요.
   - **문서 소유권.** PROJECT는 결정 상태와 정본 위치, 전역 TODO는 변경 단위 계획을 관리합니다. 도구 산출물은 INTENT·SPEC·PLAN의 해당 역할을 대체하고 결정 ID로 연결합니다. 상세 작업 상태를 도구가 관리하면 TODO에는 링크만 남깁니다. 결정 이유·계약·실행 체크리스트를 두 곳에 복제하지 않습니다.
-  - **관리 블록.** OpenSpec은 `<!-- OPENSPEC:START -->`/`<!-- OPENSPEC:END -->` 마커로 관리 블록을 쓰는 구조이고, 과거 버전은 이 블록을 루트 `AGENTS.md`에도 썼습니다. 도입 전에 `openspec init`·`openspec update`가 어느 파일을 생성·수정하는지 확인하고, `AGENTS.md`·`CLAUDE.md`·`.claude/CLAUDE.md`·`.agents/AGENTS.md`·`.github/copilot-instructions.md`를 건드리면 그 기능을 끄거나 도입을 재고하세요. 이 파일들은 이 템플릿이 소유합니다.
+  - **관리 블록.** OpenSpec은 `<!-- OPENSPEC:START -->`/`<!-- OPENSPEC:END -->` 마커로 관리 블록을 쓰는 구조이고, 과거 버전은 이 블록을 루트 `AGENTS.md`에도 썼습니다. 도입 전에 `openspec init`·`openspec update`가 어느 파일을 생성·수정하는지 확인하고, `AGENTS.md`·`CLAUDE.md`를 건드리면 그 기능을 끄거나 도입을 재고하세요. 이 두 파일은 이 템플릿이 소유합니다. OMP를 쓰면 `.claude/CLAUDE.md`·`.agents/AGENTS.md`·`.github/copilot-instructions.md`를 생성하게 두지 마세요.
   - **의존성과 갱신 주기.** 이들은 Node(BMAD는 Python·uv도) 런타임과 자체 갱신 명령을 가지며, 이 템플릿의 `Template version`이 추적하지 않습니다. 도구 갱신이 지침 파일을 다시 생성한다면 그 diff를 PR에서 검토하세요.
   - BMAD는 페르소나 기반 다중 에이전트와 전용 installer를 가진 무게 있는 방법론이라 이 템플릿의 기본 태도(작은 변경, 요청 범위 유지)와 결이 다릅니다. 큰 greenfield에서 팀이 합의한 경우에만 도입을 권합니다.
 - **제품 내장형 (예: Kiro)** — 스펙 워크플로우가 IDE·CLI 제품에 내장되어 있고 산출물은 `.kiro/specs/`, 지침은 `.kiro/steering/`에 둡니다. 이 템플릿은 도구 비종속이므로 제품 전용 디렉터리를 포함하지 않습니다. Kiro는 루트 `AGENTS.md`를 항상 읽으므로 공통 지침은 그대로 동작합니다. `.kiro/steering/`에 별도 지침을 두면 `AGENTS.md`와 중복·충돌하는지 확인하세요. OMP가 `.kiro/` 디렉터리를 context로 읽는지는 확인되지 않았습니다.
@@ -242,6 +236,17 @@ git status --short --untracked-files=all
 - 두 안내 문서가 있으면 source·version·revision을 같게 유지합니다. 이 문서를 삭제할 경우에는 [DOCS_GUIDE.md](./DOCS_GUIDE.md)에 기록과 일부 반영 내역을 남깁니다. 이 값은 원본 문서의 식별자이며 도구 호환성 검증을 뜻하지 않습니다. 도구 로딩을 확인했다면 해당 도구 버전·확인 날짜·결과를 별도로 기록하세요.
 - 템플릿 관리자는 릴리스 시 판 번호와 변경 이력을 갱신한 commit에 `v<판 번호>` tag를 붙입니다. 게시한 tag는 옮기지 않고 후속 변경은 새 commit과 다음 판으로 남깁니다. 이 절차를 읽거나 템플릿을 복사하는 것만으로 commit·tag 생성·push가 위임되지는 않습니다.
 
+### 템플릿 행동 검증 사례
+
+지침·스킬·검사 스크립트를 바꿀 때 아래가 여전히 성립하는지 확인합니다. `scripts/check-docs.py`가 대체하지 않으며, 실패하면 해당 문장이나 스킬 description을 고칩니다.
+
+| 사례 | 기대 행동 | 실패로 보는 것 | 근거 |
+|---|---|---|---|
+| 작은 버그 수정 | 설계 파일 없이 수정 | INTENT·SPEC을 강제 | [01-DESIGN.md](./01-DESIGN.md) §1 |
+| 승인된 설계의 구현 | 상위 절을 연결하고 필요한 PLAN만 작성. 재승인 없음 | 전체 설계 절차나 재승인을 요구 | [01-DESIGN.md](./01-DESIGN.md) §1·§3.6 |
+| PLAN 체크 완료 | 해당 브랜치의 구현·검증 완료로만 보고 | 통합·릴리스·지원 검증 완료로 표시 | [DOCS_GUIDE.md](./DOCS_GUIDE.md), [01-DESIGN.md](./01-DESIGN.md) §4 |
+| OMP를 쓰지 않는 저장소의 도구 전용 지침 | 공통 규칙을 복제하지 않는 전용 파일은 허용 | 모든 프로젝트에 생성 금지 | 이 문서 §4 |
+
 ### 템플릿 개정 반영하기
 
 - §6의 변경 이력을 읽고 반영할 변경을 고릅니다. 이력은 요약이므로 **원본 저장소에서** 기록된 이전 SHA와 새 SHA를 `git diff <이전 원본 SHA> <새 원본 SHA> -- <파일>`로 비교합니다. 두 기준이 정확히 tag와 일치하면 `git diff v1.1 v1.2 -- <파일>`처럼 비교해도 됩니다. 기존 기록이 판 번호뿐이라면 해당 tag의 SHA를 확인해 보완하되, 당시 미릴리스 변경을 포함했는지 알 수 없으면 확정된 복사 기준으로 단정하지 않습니다.
@@ -251,6 +256,14 @@ git status --short --untracked-files=all
 ## 6. 템플릿 변경 이력
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v1.5 — 도구 조건, 문서 검사, 식별자·수명
+
+- `docs/TEMPLATE_GUIDE.md` §4: `.claude/CLAUDE.md` 등 추가 지침 파일 금지를 OMP 사용 시의 조건부 안내로 바꿨습니다. OMP를 쓰지 않으면 도구 전용 파일을 허용하되 공통 규칙은 복제하지 않습니다.
+- `scripts/check-docs.py`: 상대 링크, 스킬 사본, `CLAUDE.md`/WATCHDOG import, 두 안내 문서의 Template version을 표준 라이브러리만으로 검사하고 실패 시 0이 아닌 종료 코드로 끝냅니다. 인라인 링크 검사 예시를 대체합니다.
+- 변경-ID·`D-nnn`·`T-nnn`·변경 내부 ID의 발급 범위와 병렬 브랜치 충돌 처리를 정했습니다. 완료·취소·보류 변경 폴더는 유지하고, 구현된 계약은 통합 후 PROJECT 현재 기준에만 반영합니다.
+- 지침·스킬 변경 때 확인할 행동 검증 사례를 추가했습니다.
+- 적용 저장소에서 확인할 것: OMP를 쓰지 않는데도 전용 지침 파일을 일괄 금지하는 문장이 남아 있지 않은지, `scripts/check-docs.py`를 복사했는지, `D-`/`T-` ID를 변경 내부 ID와 섞지 않는지, 완료된 SPEC을 현재 제품 기준으로 읽지 않는지 확인하세요.
 
 ### v1.4 — 번호 문서와 변경별 산출물
 
