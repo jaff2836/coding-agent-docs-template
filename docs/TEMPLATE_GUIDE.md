@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.5
+- **Template version:** 1.5.1
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -73,7 +73,7 @@
 8. Cursor Bugbot을 쓴다면 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)의 불변조건·확정 결정 절을 [REVIEW.md](./REVIEW.md), [00-PROJECT.md](./00-PROJECT.md)와 같은 내용으로 채웁니다. OMP advisor를 쓴다면 [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 import가 동작하는지 확인하고, 두 도구를 쓰지 않으면 해당 파일을 삭제합니다.
 9. [01-DESIGN.md](./01-DESIGN.md)는 공통 절차입니다. Metadata는 적용 프로젝트에 맞추되 제품 설계 내용을 적지 않습니다. §1·§2에 따라 필요한 산출물만 만들고 `_template/`을 실제 작업으로 취급하지 않습니다. 승인된 단계 구현에 INTENT·SPEC을 재작성하지 않습니다.
 10. 사용하는 개발 도구에서 공통 지침과 관련 문서를 의도대로 읽는지 확인합니다.
-11. OpenSpec, BMAD 같은 외부 방법론 도구를 함께 쓴다면 아래 §4 「외부 방법론·행동 규칙 도구」의 공존 규칙을 먼저 적용합니다.
+11. 외부 방법론·행동 규칙 도구를 함께 쓴다면 아래 §4 「외부 방법론·행동 규칙 도구」의 공존 규칙을 먼저 적용합니다.
 12. [문서 운영 안내](./DOCS_GUIDE.md)의 Template Adoption Checklist로 적용 완료 여부를 확인합니다.
 
 기존 프로젝트에 적용할 때는 같은 이름의 파일을 덮어쓰지 말고 기존 지침·문서·ignore 규칙과 비교하여 병합하세요. 기존 코드나 사용자 변경은 보존합니다. 기존 `REVIEW.md`와 병합해 절 번호가 바뀌거나 [00-PROJECT.md](./00-PROJECT.md)의 조건부 절을 삭제하면, 절 번호로 참조하는 [REVIEW_ROUND.md](./REVIEW_ROUND.md), [01-DESIGN.md](./01-DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 참조도 실제 헤딩에 맞게 고치세요. 도입 전부터 큰 설계 문서가 있는 저장소는 [01-DESIGN.md](./01-DESIGN.md) §6을 먼저 읽으세요. 기존 문서는 기본적으로 유지하고 사용자가 통합을 요청한 경우에만 근거와 참조를 보존해 병합합니다.
@@ -103,10 +103,10 @@
 | 리뷰어 | 관찰된 특성 | 재리뷰 요청 방법 (공식 문서 기준) |
 |---|---|---|
 | Codex (`chatgpt-codex-connector`) | PR review 본문의 `Reviewed commit:`으로 head 식별. 자동 리뷰는 PR이 리뷰 요청 상태로 열릴 때 1회이며 push마다 돌지 않습니다. 지적이 없어도 본문은 남깁니다. 인라인 finding에 `AGENTS.md` 줄 번호를 인용하므로 `AGENTS.md`의 Code Review Rules가 출력 형식에 영향을 줍니다 | PR 댓글 본문을 정확히 `@codex review`로. 접수 확인은 댓글에 붙는 👀 반응. **`review` 뒤에 다른 말을 붙이지 마세요** — `@codex`에 다른 문장이 이어지면 리뷰가 아니라 PR을 컨텍스트로 한 클라우드 태스크가 시작되어 branch에 push할 수 있습니다 |
-| Copilot (`copilot-pull-request-reviewer`) | **PR당 1회**, head 표시 없음. 저신뢰 코멘트는 review 본문의 접힌 `<details>` "Suppressed comments"에 숨기므로 그 블록도 읽어야 합니다 | push마다 자동은 repository ruleset의 "Review new pushes"만. 요청은 아래 「Copilot 재요청 명령」을 §2.1 표에 그대로 옮겨 적고 실행합니다. 접수 확인은 mutation 응답의 `reviewRequests`에서 GraphQL `Bot.login`이 `copilot-pull-request-reviewer`인지 봅니다(`[bot]` 없음). REST username `copilot-pull-request-reviewer[bot]`은 같은 봇의 다른 API 표기입니다. 리뷰가 시작되면 요청 목록에서 빠지므로 뒤늦게 `gh pr view --json reviewRequests`로 보면 비어 있을 수 있습니다. **REST `POST /repos/{owner}/{repo}/pulls/{n}/requested_reviewers`(본문 `{"reviewers": ["copilot-pull-request-reviewer[bot]"]}`)는 200을 돌려주면서 no-op이 되는 것이 2026-09-04에 실제로 관찰되어 권하지 않습니다.** UI의 Reviewers 재요청 버튼은 사람이 누를 때의 대안입니다 |
+| Copilot (`copilot-pull-request-reviewer`) | **PR당 1회**, head 표시 없음. 저신뢰 코멘트는 review 본문의 접힌 `<details>` "Suppressed comments"에도 있습니다 | 아래 「Copilot 재요청 명령」을 §2.1에 옮겨 실행. push마다 자동은 repository ruleset의 "Review new pushes"만 |
 | 자체 호스팅 GitHub App 리뷰어 (예: webhook 기반 봇) | `pull_request`의 opened·reopened·ready_for_review·synchronize를 받아 push마다 돌고, PR 코멘트에 `<!-- <이름>:v1 head:<SHA> -->` 같은 마커 주석으로 head를 남기는 구성이 일반적입니다. head마다 새 코멘트인지 하나를 덮어쓰는지는 봇마다 다르므로 표의 `게시 위치`에 적으세요 | `push 자동` — 트리거 이벤트를 함께 적습니다. 문제가 없을 때도 결과를 남기는지 확인하세요. §4 타임아웃 처리가 달라집니다 |
 
-**Copilot 재요청 명령** (`<n>`은 PR 번호. bot node id `BOT_kgDOCnlnWA`는 2026-09 기준이며 REST `gh api users/copilot-pull-request-reviewer%5Bbot%5D --jq .node_id`로 다시 얻을 수 있습니다 — 이 URL만 `[bot]` 접미사를 씁니다. GraphQL `Bot.login`은 `copilot-pull-request-reviewer`입니다. §3의 "표에 적힌 방법을 그대로 실행"이 성립하려면 표에는 이 명령 자체 또는 이 블록으로의 참조가 있어야 합니다):
+**Copilot 재요청 명령** (`<n>`은 PR 번호. `rereview = request`가 되려면 §2.1 표에 이 명령 또는 이 블록 참조가 있어야 합니다. bot id `BOT_kgDOCnlnWA`는 2026-09 기준이며 `gh api users/copilot-pull-request-reviewer%5Bbot%5D --jq .node_id`로 다시 확인하세요. 이 REST URL만 `[bot]`을 씁니다):
 
 ```bash
 gh api graphql \
@@ -115,7 +115,7 @@ gh api graphql \
   -f bot="BOT_kgDOCnlnWA"
 ```
 
-응답의 `nodes`에 GraphQL `Bot.login` `"copilot-pull-request-reviewer"`가 있으면 접수된 것입니다. REST username `copilot-pull-request-reviewer[bot]`과 같은 봇이지만, 이 확인은 GraphQL login만 사용합니다.
+접수 확인은 응답 `reviewRequests`의 GraphQL `Bot.login`이 `copilot-pull-request-reviewer`인지 봅니다(`[bot]` 없음). REST `requested_reviewers`는 200이어도 no-op일 수 있어 쓰지 마세요. 리뷰가 시작되면 요청 목록에서 빠지므로 뒤늦은 `gh pr view`는 비어 있을 수 있습니다.
 
 자체 호스팅 봇이나 GitHub Actions 기반 리뷰어는 저장소·버전마다 다르므로 마커 주석과 트리거 조건을 직접 확인해 적으세요. 앞의 두 공개 리뷰어는 기본 구성에서 push마다 돌지 않으므로, 이들만 등록된 저장소는 `rereview = request`가 아니면 2라운드부터 상시 리뷰어의 결과를 받을 수 없습니다.
 
@@ -196,15 +196,11 @@ Claude Code는 `CLAUDE.md`와 그 import 대상에서 `@`로 시작하는 토큰
 
 ### 외부 방법론·행동 규칙 도구
 
-이 템플릿은 "항상 적용되는 짧은 규칙은 `AGENTS.md`에, 절차는 `docs/`에, 진입점은 얇은 스킬 어댑터에" 두는 구조입니다. 설계 방법론이나 행동 규칙을 제공하는 외부 도구를 함께 쓸 때도 같은 원칙으로 판단하세요. 아래는 2026-09 기준으로 확인한 대표 사례이며, 도구 버전에 따라 다를 수 있습니다.
+공통으로 항상 적용할 짧은 규칙은 루트 `AGENTS.md`에, 조건부로 읽는 절차는 `docs/`에 둡니다. 스킬은 그 절차를 가리키는 어댑터이며 본문을 담지 않습니다. 외부 방법론이나 행동 규칙 도구를 함께 쓸 때도 이 소유권을 유지하세요.
 
-- **행동 규칙형 (예: ponytail)** — 작은 always-on 규칙 세트입니다. 이 템플릿의 `AGENTS.md` Change Rules에 있는 재사용 순서·최소 코드·원인 수정·최소화 제외 규칙은 [ponytail](https://github.com/DietrichGebert/ponytail)(MIT)의 규칙을 이 템플릿의 문맥에 맞게 옮긴 것입니다. 플러그인(hook, 강도 모드)까지 설치할 필요는 없습니다. ponytail의 instruction-only 어댑터가 안내하는 `.github/copilot-instructions.md` 복사는 **OMP를 쓰는 저장소**에서는 위 지침 파일 절과 충돌하므로 따르지 마세요. OMP를 쓰지 않으면 Copilot 전용 파일을 둘 수 있으나, 공통 규칙을 복제하지 말고 루트 `AGENTS.md`와의 충돌을 확인하세요. 참고: ponytail 자체 벤치마크에 따르면 terse reasoning 모델에서는 비용이 오히려 늘 수 있습니다.
-- **스펙 워크플로우형 (예: OpenSpec, BMAD)** — 변경 단위 산출물(proposal·specs·design·tasks)을 자기 디렉터리에 생성하고 CLI로 갱신하는 시스템입니다. 도입하려면 다음을 먼저 정하세요.
-  - **문서 소유권.** PROJECT는 결정 상태와 정본 위치, 전역 TODO는 변경 단위 계획을 관리합니다. 도구 산출물은 INTENT·SPEC·PLAN의 해당 역할을 대체하고 결정 ID로 연결합니다. 상세 작업 상태를 도구가 관리하면 TODO에는 링크만 남깁니다. 결정 이유·계약·실행 체크리스트를 두 곳에 복제하지 않습니다.
-  - **관리 블록.** OpenSpec은 `<!-- OPENSPEC:START -->`/`<!-- OPENSPEC:END -->` 마커로 관리 블록을 쓰는 구조이고, 과거 버전은 이 블록을 루트 `AGENTS.md`에도 썼습니다. 도입 전에 `openspec init`·`openspec update`가 어느 파일을 생성·수정하는지 확인하고, `AGENTS.md`·`CLAUDE.md`를 건드리면 그 기능을 끄거나 도입을 재고하세요. 이 두 파일은 이 템플릿이 소유합니다. OMP를 쓰면 `.claude/CLAUDE.md`·`.agents/AGENTS.md`·`.github/copilot-instructions.md`를 생성하게 두지 마세요.
-  - **의존성과 갱신 주기.** 이들은 Node(BMAD는 Python·uv도) 런타임과 자체 갱신 명령을 가지며, 이 템플릿의 `Template version`이 추적하지 않습니다. 도구 갱신이 지침 파일을 다시 생성한다면 그 diff를 PR에서 검토하세요.
-  - BMAD는 페르소나 기반 다중 에이전트와 전용 installer를 가진 무게 있는 방법론이라 이 템플릿의 기본 태도(작은 변경, 요청 범위 유지)와 결이 다릅니다. 큰 greenfield에서 팀이 합의한 경우에만 도입을 권합니다.
-- **제품 내장형 (예: Kiro)** — 스펙 워크플로우가 IDE·CLI 제품에 내장되어 있고 산출물은 `.kiro/specs/`, 지침은 `.kiro/steering/`에 둡니다. 이 템플릿은 도구 비종속이므로 제품 전용 디렉터리를 포함하지 않습니다. Kiro는 루트 `AGENTS.md`를 항상 읽으므로 공통 지침은 그대로 동작합니다. `.kiro/steering/`에 별도 지침을 두면 `AGENTS.md`와 중복·충돌하는지 확인하세요. OMP가 `.kiro/` 디렉터리를 context로 읽는지는 확인되지 않았습니다.
+- `AGENTS.md`와 `CLAUDE.md`는 이 템플릿이 소유합니다. 외부 초기화·갱신이 이 파일을 바꾸면 그 기능을 끄거나 도입을 재고하세요. 추가 지침 파일은 위 「지침 파일」 절을 따릅니다.
+- 도구 산출물은 INTENT·SPEC·PLAN의 같은 역할을 대체할 수 있습니다. 결정 인덱스(PROJECT)와 변경 단위 계획(TODO)은 유지하고, 계약·상세 상태는 한곳에만 둡니다.
+- 도구가 자체 지침 디렉터리나 관리 블록을 만들면 `AGENTS.md`와 충돌하는지 확인하세요. 그 런타임·갱신은 `Template version`이 추적하지 않으므로, 지침 파일을 다시 쓰는 diff는 검토하세요.
 
 ### 공통
 
@@ -256,6 +252,12 @@ git status --short --untracked-files=all
 ## 6. 템플릿 변경 이력
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v1.5.1 — 공존 안내 일반화, Copilot 힌트 정리
+
+- `docs/TEMPLATE_GUIDE.md` §4: 외부 방법론·행동 규칙 절에서 특정 도구 사례를 빼고, 상시 규칙은 `AGENTS.md`·조건부 절차는 `docs/`·스킬은 어댑터라는 소유권만 남겼습니다.
+- Copilot 재요청 힌트를 표와 명령 블록으로 나눴습니다. GraphQL 요청·접수 확인과 REST no-op 주의는 유지합니다.
+- 적용 저장소에서 확인할 것: 공존 절이 특정 제품명에 묶여 있지 않은지, §2.1에 Copilot을 쓸 때 명령 블록(또는 그 참조)이 있는지 확인하세요.
 
 ### v1.5 — 도구 조건, 문서 검사, 식별자·수명
 
