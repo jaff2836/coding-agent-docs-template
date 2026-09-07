@@ -40,9 +40,11 @@
 - [Template Guide](./docs/TEMPLATE_GUIDE.md): 이 템플릿을 프로젝트에 처음 적용하는 방법
 - [AGENTS.md](./AGENTS.md): AI 개발 도구의 공통 프로젝트 지침
 - [Documentation Guide](./docs/DOCS_GUIDE.md): 문서 체계, source of truth 및 템플릿 완료 체크리스트
-- [PLAN.md](./docs/PLAN.md): 프로젝트 목표, 현재·목표 아키텍처 및 의사결정
-- [DESIGN.md](./docs/DESIGN.md): 구조·계약을 바꾸는 변경의 구현 전 설계 절차
-- [TODO.md](./docs/TODO.md): 현재 실행 작업과 완료 상태
+- [00-PROJECT.md](./docs/00-PROJECT.md): 제품 개요·기본 설계·현재/목표 구조·결정·설계 인덱스
+- [01-DESIGN.md](./docs/01-DESIGN.md): 구조·계약을 바꾸는 변경의 구현 전 설계 절차
+- [02-TODO.md](./docs/02-TODO.md): 프로젝트 전체의 변경·우선순위·의존성과 통합 결과
+- [10-EXTENSION.md](./docs/10-EXTENSION.md): 선택형 장기 확장 설계와 단계별 완료 조건
+- 변경별 양식: [01-INTENT.md](./docs/changes/_template/01-INTENT.md), [02-SPEC.md](./docs/changes/_template/02-SPEC.md), [03-PLAN.md](./docs/changes/_template/03-PLAN.md). 필요한 파일만 복사하며 실제 작업은 별도 변경-ID 폴더에서 관리합니다.
 - [REVIEW.md](./docs/REVIEW.md): PR 리뷰 정책
 - [REVIEW_ROUND.md](./docs/REVIEW_ROUND.md): 리뷰 라운드 절차와 권한 위임 범위
 - [PROJECT_ANALYSIS.md](./docs/PROJECT_ANALYSIS.md): 명시적으로 요청된 전체 프로젝트 분석 절차

@@ -1,113 +1,122 @@
-# Documentation Guide
+# 문서 운영 안내
 
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.31
+- **Template version:** 1.4
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (미커밋 변경 포함 시 미확정)
 - **Owner:** 프로젝트에 맞게 작성
 - **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** 문서 체계 변경 시
 
-이 디렉터리는 프로젝트의 계획, 변경 설계 절차, 실행 상태, 리뷰 정책, 리뷰 라운드 절차 및 전체 분석 절차를 관리합니다. 각 문서는 서로 다른 질문에 답하며, 같은 정보를 여러 문서에 중복 기록하지 않습니다.
+프로젝트 사용법은 [README](../README.md), 최초 적용·기존 구조 이관은 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md)를 따릅니다. 이 문서는 공통 템플릿의 문서 소유권과 사용 규칙을 정의합니다.
 
-프로젝트 소개와 실행 방법은 [프로젝트 README](../README.md), 최초 복사·설정 방법은 [Template Guide](./TEMPLATE_GUIDE.md)를 참고하세요. 이 문서는 적용 후의 문서 운영 기준을 설명합니다.
+## 문서 지도
 
-## Document Map
+| 문서 | 책임 | 읽는 시점 |
+|---|---|---|
+| [00-PROJECT.md](./00-PROJECT.md) | 제품 개요·현재 구조·기본 설계·결정과 설계 인덱스 | 제품 맥락·구조·계약 판단 시 관련 절 |
+| [01-DESIGN.md](./01-DESIGN.md) | 의도 확인·명세·실행 계획·사용자 합의 절차 | 설계 대상 변경 또는 명시 호출 |
+| [02-TODO.md](./02-TODO.md) | 프로젝트 전체의 변경·우선순위·의존성·통합 결과 | 관련 작업의 선택·시작·인계 시 |
+| [10-EXTENSION.md](./10-EXTENSION.md) 또는 기존 확장 문서 (선택) | 여러 변경이 공유하는 확장 계약·단계 의존성·완료 조건 | 장기 확장이 있는 프로젝트의 해당 작업 |
+| 변경별 `01-INTENT.md` | 요청 출처·문제·기대 결과·범위·제약 | 의도 확인·명세 검토 |
+| 변경별 `02-SPEC.md` | 요구사항·시나리오·설계·대안·호환성 | 구현·변경 리뷰 |
+| 변경별 `03-PLAN.md` (선택) | 구현 순서·상세 작업·검증 상태 | 해당 변경의 실행·인계 |
+| [REVIEW.md](./REVIEW.md) | 리뷰 판단 기준과 신뢰 경계 | PR·diff·commit 리뷰 |
+| [REVIEW_ROUND.md](./REVIEW_ROUND.md) | 요청된 리뷰 라운드의 수정·통합 절차 | 사용자가 라운드를 시작할 때. 이전 인계 반영은 §9만 |
+| [PROJECT_ANALYSIS.md](./PROJECT_ANALYSIS.md) | 전체 프로젝트 분석 기준 | 명시적인 전체 분석 요청 |
 
-| Document | Answers | Read When | Update When | Authority |
-|---|---|---|---|---|
-| [PLAN.md](./PLAN.md) | 왜 이렇게 설계했는가? 현재와 목표 구조는 무엇인가? | 구조·기술·범위 결정 전 | 결정이 합의되거나 실제 결정이 변경될 때 | 프로젝트 담당자 |
-| [DESIGN.md](./DESIGN.md) | 구조·계약을 바꾸는 변경을 구현 전에 어떤 순서로 설계하고 합의하는가? | 구조·기술 스택·공개 계약 변경, 또는 대안 간 트레이드오프가 있을 때 | 설계 절차 자체가 변경될 때 | Maintainer |
-| [TODO.md](./TODO.md) | 지금 무엇을 구현하고 있으며 완료 조건은 무엇인가? | 추적 중인 작업을 수행할 때 | 작업 상태 또는 검증 결과가 바뀔 때 | 작업 담당자 |
-| [REVIEW.md](./REVIEW.md) | 무엇을 결함으로 판단하고 병합을 차단하는가? | PR·diff·commit 리뷰 시 | 리뷰 정책 변경이 합의될 때 | Maintainer |
-| [REVIEW_ROUND.md](./REVIEW_ROUND.md) | 리뷰 결과를 받아 누가 언제 수정·commit·merge하는가? | 사용자가 리뷰 라운드를 시작할 때 | 라운드 절차나 권한 위임 범위가 변경될 때 | Maintainer |
-| [PROJECT_ANALYSIS.md](./PROJECT_ANALYSIS.md) | 프로젝트 전체를 어떤 기준으로 평가하는가? | 전체 분석·기술 실사·도입 판단 요청 시 | 분석 절차 자체가 변경될 때 | Maintainer |
+`changes/_template/`의 [INTENT](./changes/_template/01-INTENT.md)·[SPEC](./changes/_template/02-SPEC.md)·[PLAN](./changes/_template/03-PLAN.md)은 복사용 양식입니다. 실제 변경은 별도 변경-ID 폴더에서 관리합니다. 양식 자체를 승인된 설계나 미완료 작업으로 집계하지 않습니다.
 
-## Document Flow
+## 번호와 파일 수
 
-```text
-PLAN의 목표와 결정
-        ↓
-DESIGN의 변경 설계와 합의 (구조·계약 변경 시)
-        ↓
-TODO의 실행 작업과 완료 조건
-        ↓
-코드·테스트·배포 결과
-        ↓
-REVIEW의 변경 품질 판정
-        ↓
-REVIEW_ROUND의 수정·병합 진행
-        ↓
-PROJECT_ANALYSIS의 전체 정합성 평가
-```
+- `00-PROJECT.md` → `01-DESIGN.md` → `02-TODO.md`는 공통 탐색 순서입니다. 모든 작업에서 세 문서 전체를 읽으라는 뜻이 아닙니다.
+- 변경 폴더 안에서는 `01-INTENT.md` → `02-SPEC.md` → 선택형 `03-PLAN.md`로 정렬합니다. 선택 파일을 생략해도 번호를 당기지 않습니다.
+- 새 공통 산출물은 대문자 이름과 하이픈을 사용합니다. 번호는 정렬용이며 결정 ID·승인·우선순위·버전이 아닙니다.
+- 언어를 하나로 운영하면 언어 접미사를 생략합니다. 기존 번역본이 있으면 언어 관계와 링크를 보존합니다.
+- 지침 진입점·고정 정책 경로(`AGENTS.md`, `CLAUDE.md`, `SKILL.md`, `docs/REVIEW.md` 등)는 번호를 붙이지 않습니다. 코드·도구·테스트가 경로를 사용하는지 먼저 확인합니다.
+- 작은 작업에는 TODO 항목만 사용합니다. 일반 설계 변경은 `01-CHANGE.md`에 Intent·Spec 절을 합칠 수 있습니다. 분리 기준과 형식은 [01-DESIGN.md](./01-DESIGN.md) §2·§4를 따릅니다.
+- 승인된 상위 설계의 단계 구현은 그 절을 연결하고 필요한 PLAN만 작성할 수 있습니다. 파일 형식을 맞추기 위해 의도·명세를 재작성하지 않습니다.
+- 장기 확장이 없으면 `10-EXTENSION.md`와 들어오는 링크를 제거합니다. 기존 확장 문서를 유지한다면 그 문서를 연결하고 같은 내용의 새 파일을 만들지 않습니다.
 
-## Source-of-truth Rules
+## 정보의 정본
 
-- 목표, 제약, 아키텍처와 결정 이유는 [PLAN.md](./PLAN.md)에 기록합니다.
-- 변경 설계 절차는 [DESIGN.md](./DESIGN.md)에 기록합니다. 큰 변경의 설계 상세는 `docs/changes/` 파일에 두되, 결정 이유는 [PLAN.md](./PLAN.md), 작업 상태는 [TODO.md](./TODO.md)가 canonical이며 설계 파일에서 따로 관리하지 않습니다.
-- 현재 작업, 차단 상태와 검증 결과는 [TODO.md](./TODO.md)에 기록합니다.
-- 리뷰 라운드의 판정 기록과 통과 후 인계 목록은 [REVIEW_ROUND.md](./REVIEW_ROUND.md) §7에 따라 세션에 유지합니다. 통과한 head를 바꾸지 않도록 완료·이관 내용의 저장소 문서 반영은 §9에 따라 다음 관련 구현·문서 수정 작업에서 수행합니다. 이때는 §9만 적용하며 라운드를 다시 시작하지 않습니다.
-- 리뷰 중요도, `confidence`·`blocking` 기준, 프로젝트 불변조건과 승인된 deferral은 [REVIEW.md](./REVIEW.md)에 기록합니다.
-- 라운드 절차, 통과 임계값과 위임되는 권한 범위는 [REVIEW_ROUND.md](./REVIEW_ROUND.md)에 기록합니다.
-- 전체 분석 방법은 [PROJECT_ANALYSIS.md](./PROJECT_ANALYSIS.md)에 기록합니다.
-- 저장소에 `CHANGELOG.md`가 있으면 릴리스 단위 완료 이력의 source of truth로 연결하고, [TODO.md](./TODO.md) `Completed`에는 검증 근거만 남깁니다. 저장소 구조나 공개 계약을 바꾸는 변경은 CHANGELOG에도 기록합니다.
-- 문서가 코드·테스트·자동화와 다르면 불일치를 숨기지 말고 어느 쪽이 오래되었는지 확인합니다.
-- 동일한 정책을 도구별 adapter에 요약할 수 있지만, 충돌할 경우 [REVIEW.md](./REVIEW.md)가 리뷰 정책의 canonical source입니다.
+| 정보 | 정본 | 다른 문서의 표현 |
+|---|---|---|
+| 제품 목표·현재 구조·검증된 지원 범위 | PROJECT 또는 PROJECT가 지정한 기존 제품 설계 | 링크·요약 |
+| 결정 상태·정본 위치 | PROJECT §8 | 결정 ID·링크 |
+| 상세 결정 이유·계약·완료 조건 | 결정이 가리키는 제품/확장 설계 또는 변경 SPEC | 본문 복제 없이 참조 |
+| 최초 요청·요구 변화 | 변경 INTENT 또는 합본형 문서의 Intent 절 | 출처·링크 |
+| 변경 단위 우선순위·선행조건·통합 결과 | 전역 TODO | 관련 변경-ID |
+| 상세 작업·검증 상태 | 변경별 PLAN이 있으면 PLAN, 없으면 전역 TODO 항목 | 같은 체크박스·로그 복제 금지 |
+| 릴리스 완료 이력 | 기존 CHANGELOG가 있으면 CHANGELOG | TODO Completed는 근거 연결 |
+| 리뷰 판단·예외 | REVIEW | 도구별 필요한 복제본만 유지 |
+| 라운드 판정·통과 후 인계 | REVIEW_ROUND §7의 세션 기록과 원 리뷰 결과 | §9에 따라 다음 관련 작업에서 반영 |
+
+프로젝트의 설계·계약·완료 조건을 절차 문서에 쓰지 않습니다. 절차 문서는 정보의 위치와 처리 방법만 정합니다.
+
+제품 설계는 현재 기준을 유지하는 문서이고, 변경 INTENT·SPEC은 특정 변경의 요구와 합의를 보존합니다. 확장 설계가 대체하는 범위는 상위 결정 ID·절로 특정합니다. 문서 전체를 무조건 우선하지 않습니다. 기존 설계를 PROJECT에 통합하는 경우에도 결정 근거와 승인된 계약을 보존합니다.
+
+## 실행과 인계
+
+일반 흐름은 제품·상위 설계 확인 → 필요한 의도·명세 합의 → 실행 계획 → 구현·검증입니다. 리뷰·리뷰 라운드·전체 분석은 각 요청의 적용 조건에 따라 실행하며 하나의 필수 순차 파이프라인으로 취급하지 않습니다.
+
+- 승인 상태(`Draft / Accepted / Superseded / Rejected`)와 구현·통합 상태는 별개입니다.
+- 변경별 PLAN의 체크 완료는 해당 브랜치에서의 구현·검증 완료입니다. 통합·릴리스·지원 검증이 필요한 작업은 각 완료 조건과 근거를 따로 확인합니다.
+- 코드와 설명이 달라졌으면 승인된 계약을 바꾼 것인지 구현 오류인지 먼저 판단합니다. 명세를 결과에 맞춰 고쳐 검증을 통과시키지 않습니다.
+- 문서 작성·합의·체크 완료는 commit·push·merge·배포 권한이 아닙니다.
+- 리뷰 라운드 통과 후에는 PLAN을 포함한 tracked 파일을 동결합니다. 추가 기록으로 head를 바꾸지 않고, 판정·인계는 [REVIEW_ROUND.md](./REVIEW_ROUND.md) §7·§9에 따라 다음 관련 작업으로 전달합니다.
+
+## 로컬 Git과 병렬 브랜치
+
+원격 저장소·PR·CI는 필수가 아닙니다. 적용 프로젝트가 정한 통합 브랜치 또는 로컬 완료 대상을 전역 TODO에 적습니다.
+
+- 통합 대상의 전역 TODO는 그 revision에 통합된 계획과 결과입니다. 작업 브랜치의 사본이나 아직 병합되지 않은 PR 전체를 실시간으로 반영하지 않습니다.
+- 각 브랜치는 자기 변경 폴더를 중심으로 갱신합니다. 새 작업은 중복되지 않는 변경-ID를 사용하며, 다른 브랜치의 상세 상태를 공통 TODO에 다시 쓰지 않습니다.
+- 전역 TODO는 범위·우선순위·선행조건·통합 결과 변경 때만 갱신합니다. 열린 PR·실제 branch·commit 상태는 사용하는 Git 도구에서 확인합니다.
+- 작업 시작·통합 전에는 최신으로 확인한 기준과 자신의 baseline을 비교합니다. 접근할 수 없는 다른 작업의 상태는 미확인으로 남깁니다.
+- 다른 변경이 먼저 통합됐으면 파일 충돌뿐 아니라 공유 계약·완료 조건·검증 전제의 변화를 확인합니다. 영향이 있는 검사만 다시 실행합니다. 자동 rebase·merge 권한을 부여하는 규칙은 아닙니다.
+- 기준 문서나 공통 TODO 충돌은 양쪽 변경-ID·결정·근거를 보존해 해결합니다. 파일 전체를 한쪽 사본으로 덮어쓰지 않습니다.
+- 로컬 검증은 기준 revision과 작업 트리 변경 범위를 기록할 수 있습니다. PR·merge SHA·승인자를 만들어내지 않으며, 미커밋 결과를 SHA 하나로 재현된다고 표현하지 않습니다.
+- 통과 후 문서 반영이 다음 작업으로 지연되면 `문서 반영 대기`로 인계합니다. 그동안 최신 상태를 판단할 때 실제 통합 결과와 인계 보고를 함께 확인합니다.
 
 ## Metadata Convention
 
-각 관리 문서는 가능한 한 다음 metadata를 유지합니다.
+관리 문서의 `Status`, `Owner`, `Last reviewed`, `Review cadence`는 문서 자체의 상태·책임을 나타냅니다. 변경 문서는 요청 출처, 상위 설계, 승인 근거, 검증 대상 revision을 역할에 맞게 추가합니다. 원본 템플릿의 안내 문구와 placeholder는 적용 시 채웁니다.
 
-- **Status:** Draft, Active, Superseded 또는 Archived
-- **Owner:** 내용 정확성과 정기 검토 책임자
-- **Last reviewed:** 내용을 실제 근거와 비교한 마지막 날짜
-- **Review cadence:** 정기 또는 이벤트 기반 재검토 조건
-
-일부 문서는 추가 필드를 가집니다. [REVIEW.md](./REVIEW.md)의 `Policy version`은 리뷰 정책 자체의 개정 번호이고, 이 문서와 [Template Guide](./TEMPLATE_GUIDE.md)의 Template metadata는 복사 기준입니다. 둘은 독립적으로 움직입니다.
-
-- `Template source`: 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치.
-- `Template version`: 정확히 복사한 릴리스 판 번호(예: tag `v1.2`의 `1.2`). tag 이후 commit이면 `미릴리스 (최근 tag: v1.2)`처럼 구분합니다.
-- `Template revision`: 원본 commit의 전체 SHA. 적용 프로젝트의 HEAD를 넣지 않습니다. 미커밋 변경을 포함했거나 원본을 확인할 수 없으면 `미확정`으로 표시하고, 확인된 기준 commit과 추가 변경·누락 정보를 함께 남깁니다.
-
-원본 템플릿의 source·revision 안내 문구는 적용 시 채웁니다. 이미 적용한 저장소는 일반적인 프로젝트 문서 수정만으로 이 값을 바꾸지 않습니다. 두 안내 문서가 있으면 세 값을 같게 유지하며, 일부 개정만 반영한 경우에는 이 문서에 적용·제외 내역을 함께 기록합니다. 구체적인 Git 확인 방법은 [Template Guide](./TEMPLATE_GUIDE.md) §5에 있습니다.
-
-날짜만 갱신하지 말고 문서와 실제 상태를 비교한 경우에만 `Last reviewed`를 변경합니다.
-
-날짜는 `YYYY-MM-DD` 형식의 **UTC 기준**으로 적습니다. 저장소가 다른 시간대를 관례로 쓴다면 이 문서에 그 시간대를 명시하고 모든 문서가 같은 기준을 따르게 하세요. GitHub은 커밋과 PR 시각을 UTC로 표시하므로, 로컬 시간대로 적은 날짜가 PR 생성 시각보다 미래가 되어 리뷰어가 메타데이터 오류로 지적하는 경우가 실제로 있습니다.
+- `Template source`: 원본 저장소 URL 또는 다시 접근할 수 있는 보관 위치.
+- `Template version`: 정확한 원본 릴리스 판. tag 이후 변경은 `미릴리스 (최근 tag: ...)`로 구분.
+- `Template revision`: 복사한 원본 commit의 전체 SHA. 적용 프로젝트의 HEAD가 아님. 미커밋 변경을 포함하거나 확인 불가이면 `미확정`과 기준·추가 변경을 기록.
+- 두 안내 문서가 있으면 위 세 값을 같게 유지합니다. 일부만 반영했다면 이 문서에 적용·제외 내역을 남깁니다. 프로젝트의 일반 문서 수정만으로 원본 기준을 바꾸지 않습니다.
+- REVIEW의 `Policy version`은 템플릿 판과 독립적입니다.
+- 날짜는 기본 UTC의 `YYYY-MM-DD`입니다. 다른 관례를 쓰면 이 문서에 명시합니다. `Last reviewed`는 실제 내용 검토 시에만 갱신합니다.
+- 승인한 사람·범위·근거를 기록합니다. 파일 작성자나 Git commit 자체를 승인으로 간주하지 않습니다.
 
 ## Template Adoption Checklist
 
-- [ ] [Template Guide](./TEMPLATE_GUIDE.md)의 placeholder 검색으로 숨김 폴더까지 확인하고, 검색에서 제외한 안내 문서의 Metadata와 패턴에 잡히지 않는 README·담당자·마일스톤·태스크 예시도 직접 확인해 교체했다. 원본 템플릿에는 이 완료 조건을 적용하지 않는다.
-- [ ] Template source·version·revision에 원본 위치·판·전체 SHA를 기록했다. 미커밋 변경이나 확인 불가 상태는 `미확정`, 일부 반영은 적용·제외 내역으로 구분했다. 두 안내 문서가 있으면 값이 일치한다.
-- [ ] `Run`, `Build`, `Test`, `Lint`, `Typecheck` 명령을 실제로 검증했거나 `N/A`인 이유를 기록했다.
-- [ ] [PLAN.md](./PLAN.md)에 현재 구조, 목표 구조 및 전환 전략을 작성했거나, 해당 없음으로 판단해 조건부 절(§5~§7, §9, §10, §12)을 삭제했다.
-- [ ] [PLAN.md](./PLAN.md)의 예시 결정 행(`D-001`)과 예시 표 행을 제거하거나 실제 항목으로 교체했다.
-- [ ] [TODO.md](./TODO.md)에 첫 마일스톤과 검증 가능한 완료 조건을 작성했다.
-- [ ] [TODO.md](./TODO.md)의 예시 완료 항목(`- [x] 완료된 작업`)을 제거하거나 실제 완료 이력과 검증 근거로 교체했다.
-- [ ] [REVIEW.md](./REVIEW.md)에 프로젝트 고유 불변조건을 작성했다.
-- [ ] [REVIEW.md](./REVIEW.md)의 예시 deferral을 실제 정책으로 오인할 수 없도록 제거하거나 실제 승인 항목으로 교체했다.
-- [ ] Cursor Bugbot을 쓴다면 [REVIEW.md](./REVIEW.md) §6 불변조건과 §9 Accepted Deferrals, [PLAN.md](./PLAN.md)의 확정 결정 중 리뷰 판정에 영향을 주는 항목을 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)에도 복제했다. Bugbot은 링크된 문서를 읽지 않습니다.
-- [ ] OMP advisor를 쓴다면 [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 `@../docs/REVIEW.md` import가 사용 중인 OMP 버전에서 실제로 확장되는지 확인했다. 쓰지 않는다면 파일을 삭제했다.
-- [ ] 기존 저장소의 REVIEW.md와 병합해 절 번호가 바뀌었거나 [PLAN.md](./PLAN.md)의 조건부 절을 삭제했다면, 절 번호로 참조하는 네 파일 — [REVIEW_ROUND.md](./REVIEW_ROUND.md), [DESIGN.md](./DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), [.omp/WATCHDOG.md](../.omp/WATCHDOG.md) — 의 참조를 실제 헤딩과 대조해 고쳤다.
-- [ ] 도입 전부터 있던 큰 설계 문서가 있다면 [DESIGN.md](./DESIGN.md) §6에 따라 옮기지 않고, [PLAN.md](./PLAN.md) §8에서 그 문서를 결정 본문의 위치로 가리키게 했다.
-- [ ] [REVIEW_ROUND.md](./REVIEW_ROUND.md)의 기본 라운드 수와 통과 임계값이 프로젝트 정책과 맞는지 확인했다. 사용자가 임계값을 바꿀 수 있고 실제 라운드는 확정값을 따른다는 규칙을 유지했다.
-- [ ] 통과 후 인계는 세션에 남기고 저장소 문서 반영은 다음 관련 작업으로 넘기도록 했다. 같은 head의 통과를 유지하기 위한 규칙이며, 새 finding은 확정한 임계값으로 판단한다.
-- [ ] 이 저장소에서 도는 리뷰어를 전부 조사해 [REVIEW_ROUND.md](./REVIEW_ROUND.md) §2.1에 기록했다. 도착 주기(상시·간헐)를 빠뜨리면 정족수 판정이 틀리고, `재리뷰 요청 방법` 열이 비어 있으면 `rereview = request`가 동작하지 않습니다.
-- [ ] 각 문서의 `Last reviewed`를 실제로 내용을 검토한 날짜로 UTC 기준으로 기입했다. 템플릿을 복사한 것만으로 날짜를 채우지 않았다.
-- [ ] 저장소에 맞는 owner와 검토 주기를 각 문서에 지정했다.
-- [ ] Codex, Claude Code, Cursor 및 OMP가 의도한 instruction 파일을 로드하는지 확인했다.
-- [ ] 사용하는 도구가 `review-round`·`design` 스킬을 인식하는지 확인했다. `.agents/skills/`는 Codex·Cursor·OMP, `.claude/skills/`는 Claude Code가 읽습니다.
-- [ ] Codex를 쓴다면 [.agents/skills/review-round/agents/openai.yaml](../.agents/skills/review-round/agents/openai.yaml)의 `policy.allow_implicit_invocation: false`를 함께 복사했다. 명시적 `$review-round` 호출은 가능하고 일반 리뷰 요청에서는 라운드가 자동 시작되지 않는지 확인했다.
-- [ ] [Template Guide](./TEMPLATE_GUIDE.md)의 링크 검사 명령으로 문서의 상대경로 링크가 저장소 내에서 정상적으로 열리는지 확인했다.
-- [ ] CODEOWNERS를 쓰는 저장소라면 `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/`, `.cursor/`, `.omp/`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/DESIGN.md`를 owner 규칙에 추가했다.
-- [ ] OpenSpec, BMAD 같은 외부 방법론 도구를 함께 쓴다면 [Template Guide](./TEMPLATE_GUIDE.md) §4 「외부 방법론·행동 규칙 도구」의 공존 규칙에 따라 문서 소유권을 나누고, 도구가 `AGENTS.md`나 금지된 지침 파일을 생성·수정하지 않는지 확인했다.
+- [ ] TEMPLATE_GUIDE의 이관 절차로 이전 파일명·절·코드·테스트·도구 참조를 확인했다.
+- [ ] 프로젝트 정보·명령·담당자·예시를 실제 값으로 교체했다. 원본 양식은 실제 작업으로 집계하지 않는다.
+- [ ] Template source·version·revision과 일부 반영 내역을 확인했다. 미확정은 미확정으로 표시했다.
+- [ ] Run·Build·Test·Lint·Typecheck를 검증하거나 N/A·미검증 이유를 기록했다.
+- [ ] PROJECT에 현재 제품 기준과 승인된 목표를 구분하고, 기존 제품·확장 설계의 정본을 연결하거나 합의된 통합을 수행했다.
+- [ ] 불필요한 선택형 문서·절과 링크를 제거했다. 결정·작업 예시를 실제 완료·승인으로 남기지 않았다.
+- [ ] 변경 단위 상태와 상세 실행 상태의 소유권을 나눴고, 전역 TODO·PLAN에 체크리스트를 복제하지 않는다.
+- [ ] 통합 대상과 로컬/병렬 작업의 검증·완료 근거를 정했다.
+- [ ] REVIEW에 프로젝트 불변조건과 실제 승인된 deferral만 기록했다. Bugbot 사용 시 §6·§9와 관련 확정 결정을 복제했다.
+- [ ] REVIEW·PROJECT의 절 번호가 바뀌었다면 DESIGN·REVIEW_ROUND·BUGBOT·WATCHDOG의 절 참조도 대조했다.
+- [ ] REVIEW_ROUND의 사용자 지정 임계값, 동일 head 통과, 세션 인계와 다음 작업의 문서 반영 규칙을 유지했다.
+- [ ] 외부 리뷰어 사용 시 등록 표에 게시 위치·head 식별·도착 주기·무finding 동작·재요청 방법을 실제 확인해 기록했다. 로컬 self 리뷰에는 등록이 필요 없다.
+- [ ] 사용하는 도구에서 지침과 스킬이 로드되는지 확인했다. Markdown 링크를 자동 로딩으로 간주하지 않는다.
+- [ ] 두 경로의 스킬 본문이 동일하고, Codex의 [명시 호출 설정](../.agents/skills/review-round/agents/openai.yaml)을 함께 복사했다.
+- [ ] OMP 사용 시 [WATCHDOG](../.omp/WATCHDOG.md)의 import를 사용 버전에서 확인했다.
+- [ ] 상대 파일 링크·필요한 앵커·import 경로를 확인했다.
+- [ ] CODEOWNERS가 있으면 공통 지침·정책·스킬과 설계 기준 문서를 보호 대상으로 검토했다.
+- [ ] 외부 방법론 도구 사용 시 TEMPLATE_GUIDE §4에 따라 정본과 지침 파일 소유권을 정했다.
+- [ ] 실제 검토한 문서의 Owner·검토 주기·날짜를 기록했다.
 
 ## Maintenance
 
-- 문서를 옮기거나 이름을 바꾸면 그 파일 안의 상대 링크와 그 파일을 가리키는 링크를 함께 고칩니다. 내용 변경이 없는 순수 rename도 링크를 깨뜨립니다. [Template Guide](./TEMPLATE_GUIDE.md)의 링크 검사 명령을 PR 전에 실행하세요.
-- 오래된 완료 작업은 [TODO.md](./TODO.md)에서 마일스톤별 archive로 이동할 수 있습니다.
-- 결정 기록이 커지면 [PLAN.md](./PLAN.md)의 결정 항목을 `adr/` 디렉터리로 분리하고 PLAN에는 상대경로 링크와 요약만 남깁니다.
-- Superseded 문서는 삭제하기보다 대체 문서와 이유를 명시해 과거 맥락을 보존합니다.
-- 템플릿 개정은 원본 저장소의 이전·새 revision을 비교하고 프로젝트의 의도적 변경을 보존해 반영합니다(Template Guide §5). 반영한 기준의 version·revision과 적용·제외 내역을 갱신합니다. Template Guide를 삭제한 저장소도 이 문서의 source·version·revision을 유지합니다. 저장소에 `CHANGELOG.md`가 있으면 새 기준과 반영한 항목을 요약하세요.
+문서 이동·이름 변경 시 들어오는 링크와 코드·테스트·도구 참조를 함께 갱신합니다. 파일 번호 변경도 rename입니다. 결정이 많아지면 기존 ADR 체계나 상세 설계로 분리하고 PROJECT에 정본을 연결합니다.
+
+템플릿 개정은 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §5에 따라 원본 revision끼리 비교하고, 적용 프로젝트의 의도적인 변경을 보존합니다. 기존 파일을 일괄 덮어쓰지 않습니다.

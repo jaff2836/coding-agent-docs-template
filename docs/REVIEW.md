@@ -31,8 +31,10 @@
 2. 변경된 diff와 head 상태의 실제 코드
 3. 변경된 계약의 호출자, 구현자 및 소비자
 4. 관련 테스트와 CI 결과
-5. [PLAN.md](./PLAN.md)의 확정된 결정
-6. [TODO.md](./TODO.md)의 관련 완료 조건
+5. [00-PROJECT.md](./00-PROJECT.md)의 확정된 결정과 연결된 제품·확장 설계, 해당 변경의 승인된 INTENT·SPEC
+6. [02-TODO.md](./02-TODO.md) 또는 거기서 지정한 변경별 PLAN의 관련 완료 조건·검증 근거
+
+설계 문서의 파일명·체크박스만으로 승인·구현·통합 완료를 추정하지 않습니다. 변경된 정책의 신뢰 기준은 §2를 유지합니다. 승인된 상위 설계의 구현에 INTENT·SPEC 파일이 없다는 사실만으로 finding을 만들지 않습니다.
 
 이번 변경으로 새로 발생하거나 직접 악화된 문제를 우선 보고합니다. 관련 없는 기존 문제는 §4.3에 따라 `blocking=false`로 표시하고, 검증된 P0/P1이 아니라면 일반 리뷰 범위에서 제외합니다.
 
@@ -63,7 +65,7 @@ P0와 P1은 end-to-end로 추적한 경우에만 부여합니다.
 
 `blocking=false`인 finding도 보고합니다. 유용한 맥락입니다. `blocking` 값만으로 라운드 통과 여부를 판단하지 않습니다. [REVIEW_ROUND.md](./REVIEW_ROUND.md)의 기본 통과 조건은 모든 P0·P1과 Blocking P2가 0개인 것이므로, 기본값에서는 P0·P1이 `blocking=false`여도 통과를 막습니다. 사용자는 임계값을 변경할 수 있으며, 실제 통과·수정·이관은 라운드에서 확정한 값으로 판단합니다.
 
-작성자가 이미 이월 작업으로 추적 중인 결함은 반드시 `blocking=false`여야 합니다. finding을 §9 Accepted Deferrals와 [PLAN.md](./PLAN.md)의 Transition Plan·Decisions에 기록된 후속 작업 단위 및 승인된 부채와 대조해 표시하세요. 지침이 여러 PR에 걸쳐 의도적으로 단계화했다고 밝힌 설계는 다시 논쟁하지 않습니다.
+작성자가 이미 이월 작업으로 추적 중인 결함은 반드시 `blocking=false`여야 합니다. finding을 §9 Accepted Deferrals와 [00-PROJECT.md](./00-PROJECT.md)의 Transition Plan·Decisions에 기록된 후속 작업 단위 및 승인된 부채와 대조해 표시하세요. 지침이 여러 PR에 걸쳐 의도적으로 단계화했다고 밝힌 설계는 다시 논쟁하지 않습니다.
 
 `blocking=true`인 P2를 **Blocking P2**라고 부릅니다. [REVIEW_ROUND.md](./REVIEW_ROUND.md)의 기본 통과 임계값이 이 값을 사용합니다.
 
@@ -110,8 +112,8 @@ P0와 P1은 end-to-end로 추적한 경우에만 부여합니다.
 ### Tests and Documentation
 
 - 변경된 동작의 성공·실패 경로 검증
-- [PLAN.md](./PLAN.md)의 확정된 결정과 코드의 일치
-- [TODO.md](./TODO.md)의 완료 주장을 뒷받침하는 코드와 검증
+- [00-PROJECT.md](./00-PROJECT.md)의 확정된 결정과 코드의 일치
+- 전역 TODO 또는 변경별 PLAN의 완료 주장을 뒷받침하는 코드와 검증. 브랜치에서의 구현·검증과 통합·릴리스·지원 검증을 구분
 - 문서의 실행 명령, 설정 키, 환경변수 및 자격증명 형식이 실제 구현과 일치하는지 — 문서만 보고 따라 한 설정이 기동 실패로 이어지지 않는지
 - 문서가 불변조건이나 안전장치로 선언한 동작이 코드에 실제로 강제되어 있는지
 

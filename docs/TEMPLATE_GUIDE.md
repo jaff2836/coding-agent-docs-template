@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.31
+- **Template version:** 1.4
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -45,10 +45,15 @@
 └── docs/
     ├── DOCS_GUIDE.md          # 문서 인덱스·운영 규칙·적용 완료 체크리스트
     ├── TEMPLATE_GUIDE.md      # 이 문서: 최초 적용 방법
-    ├── PLAN.md                # 목표·현재/목표 구조·전환 계획·결정
-    ├── DESIGN.md              # 구조·계약을 바꾸는 변경의 구현 전 설계 절차
-    ├── changes/               # 큰 변경의 설계 파일. 템플릿에는 없고 DESIGN.md §2에 따라 필요할 때 생성
-    ├── TODO.md                # 현재 실행 작업과 검증 상태
+    ├── 00-PROJECT.md          # 제품 기준·기본 설계·결정·설계 인덱스
+    ├── 01-DESIGN.md           # 공통 설계 절차
+    ├── 02-TODO.md             # 전역 변경 목록·우선순위·의존성·통합 결과
+    ├── 10-EXTENSION.md        # 선택형 확장 설계·단계별 완료 조건
+    ├── changes/
+    │   └── _template/        # 복사용 양식. 실제 작업은 별도 변경-ID 폴더
+    │       ├── 01-INTENT.md   # 요청·문제·기대 결과
+    │       ├── 02-SPEC.md     # 요구사항·시나리오·설계
+    │       └── 03-PLAN.md     # 선택형 상세 작업·검증 기록
     ├── REVIEW.md              # 공통 PR 리뷰 정책
     ├── REVIEW_ROUND.md        # 리뷰 라운드 절차와 권한 위임 범위
     └── PROJECT_ANALYSIS.md    # 요청 시 사용하는 전체 분석 절차
@@ -60,16 +65,34 @@
 2. [프로젝트 README](../README.md)에 프로젝트 이름, 설명, 요구사항, 설치·실행·검증 방법, 보안 안내 및 라이선스를 작성합니다. 파일명을 바꿀 필요는 없습니다.
 3. [AGENTS.md](../AGENTS.md)의 프로젝트 정보와 명령을 실제 저장소에 맞게 작성합니다. README의 실행 방법과 서로 일치하도록 확인하세요.
 4. 아래 placeholder와 예시 항목을 교체합니다.
-5. [PLAN.md](./PLAN.md)에 현재 구현된 구조와 합의된 목표 구조를 구분해 기록하고, [TODO.md](./TODO.md)에 첫 마일스톤의 실행 작업과 완료 조건을 작성합니다.
+5. [00-PROJECT.md](./00-PROJECT.md)에 현재 제품 기준과 승인된 목표를 구분하고 기존 설계의 정본을 연결합니다. [02-TODO.md](./02-TODO.md)에 통합 대상과 첫 마일스톤의 변경 단위 항목을 작성합니다. 변경별 PLAN이 있으면 상세 작업·검증 상태는 PLAN에만 둡니다. 장기 확장이 없으면 `10-EXTENSION.md`와 들어오는 링크를 제거합니다.
 6. [REVIEW.md](./REVIEW.md)에 프로젝트 고유 불변조건과 실제 승인된 예외만 기록합니다.
 7. [REVIEW_ROUND.md](./REVIEW_ROUND.md)의 기본 라운드 수와 통과 임계값을 확인하고, §2.1에 이 저장소에서 도는 리뷰어를 전부 기록합니다. 임계값은 사용자가 변경할 수 있으며 실제 라운드에서는 확정한 값을 적용합니다. 통과 후 인계와 다음 작업의 문서 반영은 §6·§7·§9를 따릅니다. 아래 「리뷰어 조사 힌트」를 참고하되 실제 동작은 직접 확인하세요.
-8. Cursor Bugbot을 쓴다면 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)의 불변조건·확정 결정 절을 [REVIEW.md](./REVIEW.md), [PLAN.md](./PLAN.md)와 같은 내용으로 채웁니다. OMP advisor를 쓴다면 [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 import가 동작하는지 확인하고, 두 도구를 쓰지 않으면 해당 파일을 삭제합니다.
-9. [DESIGN.md](./DESIGN.md)는 절차 문서라 채울 값이 없습니다. §1 적용 조건이 프로젝트의 변경 규모 감각과 맞는지만 확인하세요.
+8. Cursor Bugbot을 쓴다면 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)의 불변조건·확정 결정 절을 [REVIEW.md](./REVIEW.md), [00-PROJECT.md](./00-PROJECT.md)와 같은 내용으로 채웁니다. OMP advisor를 쓴다면 [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 import가 동작하는지 확인하고, 두 도구를 쓰지 않으면 해당 파일을 삭제합니다.
+9. [01-DESIGN.md](./01-DESIGN.md)는 공통 절차입니다. Metadata는 적용 프로젝트에 맞추되 제품 설계 내용을 적지 않습니다. §1·§2에 따라 필요한 산출물만 만들고 `_template/`을 실제 작업으로 취급하지 않습니다. 승인된 단계 구현에 INTENT·SPEC을 재작성하지 않습니다.
 10. 사용하는 개발 도구에서 공통 지침과 관련 문서를 의도대로 읽는지 확인합니다.
 11. OpenSpec, BMAD 같은 외부 방법론 도구를 함께 쓴다면 아래 §4 「외부 방법론·행동 규칙 도구」의 공존 규칙을 먼저 적용합니다.
 12. [문서 운영 안내](./DOCS_GUIDE.md)의 Template Adoption Checklist로 적용 완료 여부를 확인합니다.
 
-기존 프로젝트에 적용할 때는 같은 이름의 파일을 덮어쓰지 말고 기존 지침·문서·ignore 규칙과 비교하여 병합하세요. 기존 코드나 사용자 변경은 보존합니다. 기존 `REVIEW.md`와 병합해 절 번호가 바뀌거나 [PLAN.md](./PLAN.md)의 조건부 절을 삭제하면, 절 번호로 참조하는 [REVIEW_ROUND.md](./REVIEW_ROUND.md), [DESIGN.md](./DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 참조도 실제 헤딩에 맞게 고치세요. 도입 전부터 큰 설계 문서가 있는 저장소는 [DESIGN.md](./DESIGN.md) §6을 먼저 읽으세요 — 그 문서는 옮기지 않습니다.
+기존 프로젝트에 적용할 때는 같은 이름의 파일을 덮어쓰지 말고 기존 지침·문서·ignore 규칙과 비교하여 병합하세요. 기존 코드나 사용자 변경은 보존합니다. 기존 `REVIEW.md`와 병합해 절 번호가 바뀌거나 [00-PROJECT.md](./00-PROJECT.md)의 조건부 절을 삭제하면, 절 번호로 참조하는 [REVIEW_ROUND.md](./REVIEW_ROUND.md), [01-DESIGN.md](./01-DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 참조도 실제 헤딩에 맞게 고치세요. 도입 전부터 큰 설계 문서가 있는 저장소는 [01-DESIGN.md](./01-DESIGN.md) §6을 먼저 읽으세요. 기존 문서는 기본적으로 유지하고 사용자가 통합을 요청한 경우에만 근거와 참조를 보존해 병합합니다.
+
+### 번호 체계로 이관하기
+
+| 이전 파일 | 새 기본 파일 | 이관 범위 |
+|---|---|---|
+| `docs/PLAN.md` | `docs/00-PROJECT.md` | 제품 맥락·현재 구조·기본 설계·결정과 정본 링크 |
+| `docs/DESIGN.md` | `docs/01-DESIGN.md` | 공통 절차. 실제 설계 산출물과 구분 |
+| `docs/TODO.md` | `docs/02-TODO.md` | 전역 변경 목록. 상세 PLAN이 있으면 링크로 전환 |
+| 기존 제품·확장 설계 | 기본적으로 기존 경로 유지 | PROJECT 인덱스에서 연결. 합의 없이 재작성·이동하지 않음 |
+| 기존 변경 설계 | 기존 승인 기록 보존 | 새 변경부터 Intent·Spec·선택적 Plan 형식 사용 |
+
+- 번호와 대문자·하이픈은 정렬과 역할 식별을 돕습니다. 번호만으로 설계 우선순위나 승인을 정하지 않고 기존 결정 ID를 재번호하지 않습니다.
+- 이전 파일명을 일괄 치환하지 않습니다. 변경별 `03-PLAN.md`, 도구 생성 파일, 과거 이력의 `PLAN.md`는 역할이 다릅니다. 링크·import·스킬·검사 코드·고정 정책 경로를 조사해 실제 이관 대상만 바꿉니다.
+- `AGENTS.md`, `CLAUDE.md`, `SKILL.md`, `docs/REVIEW.md` 등 진입점·계약 경로는 그대로 둡니다. 이름을 바꾸려면 소비자 호환성과 도구 설정을 별도 검토합니다.
+- 기존 제품 설계를 통합한다면 실행 상태는 TODO/PLAN, 완료 이력은 기존 CHANGELOG로 정리합니다. 계약·결정 이유·승인 근거는 보존합니다. 확장 설계에는 상위 문서의 유지·확장·대체 범위를 명시합니다.
+- 과거 변경 파일의 본문 동결 규칙은 그 기록에 유지합니다. 새 형식은 01-DESIGN.md §4의 승인 버전 보존과 갱신 규칙을 적용합니다. 미커밋 상태에서도 기존 승인 내용을 보존합니다.
+- PR 수만으로 규모를 정하지 않습니다. 로컬 Git은 검토 가능한 변경 단위로 나누고, 전역 TODO에 통합 대상 또는 로컬 완료 대상을 적습니다. 원격 서비스나 자동 commit은 필수가 아닙니다.
+- 실제 작업이 양식 폴더를 정본으로 가리키지 않는지 확인합니다. 작은 작업·상위 설계 구현에는 필요한 양식만 사용합니다.
 
 ### 리뷰어 조사 힌트
 
@@ -113,7 +136,7 @@ grep -rnE "\{\{|프로젝트에 맞게 작성|간단히 작성|YYYY-MM-DD|\| 예
 
 이 검사는 **복사 후 프로젝트 값을 채운 저장소**를 대상으로 합니다. 원본 템플릿에는 placeholder와 예시가 의도적으로 남아 있습니다. `--hidden`으로 `.cursor/BUGBOT.md` 같은 숨김 폴더도 검색하되 `.git` 내부는 제외합니다.
 
-이 두 안내 문서는 placeholder를 설명하기 위해 그 문구를 포함하므로 검색에서 제외합니다. 대신 두 문서의 Metadata는 직접 확인하세요. 결과가 0건이어도 이 패턴에 없는 README 안내 문구, 담당자·마일스톤·태스크 예시, 명령의 실행 가능성과 완료 주장의 근거까지 검증된 것은 아닙니다. [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 Template Adoption Checklist와 함께 확인합니다.
+이 두 안내 문서는 placeholder를 설명하기 위해 그 문구를 포함하므로 검색에서 제외합니다. 대신 두 문서의 Metadata는 직접 확인하세요. `changes/_template/`의 placeholder는 복사용으로 유지할 수 있지만 실제 변경 폴더에 남은 값은 교체해야 합니다. 결과가 0건이어도 이 패턴에 없는 README 안내 문구, 담당자·마일스톤·태스크 예시, 명령의 실행 가능성과 완료 주장의 근거까지 검증된 것은 아닙니다. [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 Template Adoption Checklist와 함께 확인합니다.
 
 적용을 마쳤거나 문서를 옮긴 뒤에는 상대 링크도 확인하세요. 파일 이동은 내용이 바뀌지 않아도 링크를 깨뜨립니다.
 
@@ -136,6 +159,7 @@ EOF
 |---|---|
 | `{{PROJECT_NAME}}` | 프로젝트 이름 |
 | `{{PROJECT_DESCRIPTION}}` | 해결하는 문제와 핵심 기능 |
+| `{{CHANGE_ID}}`, `{{CHANGE_TITLE}}` | 실제 변경 폴더의 고유 ID와 변경 제목. `_template/`에서는 복사용으로 유지 |
 | `{{RUN_COMMAND}}` | 개발 또는 실행 명령 |
 | `{{BUILD_COMMAND}}` | 빌드 명령 |
 | `{{TEST_COMMAND}}` | 테스트 명령 |
@@ -145,8 +169,8 @@ EOF
 
 - 사용하지 않는 명령은 `N/A`로 표시하고 [AGENTS.md](../AGENTS.md)에 이유를 남깁니다. 존재하지 않는 명령을 실행 가능한 예시처럼 남기지 마세요.
 - `프로젝트에 맞게 작성`, `YYYY-MM-DD`, 담당자·마일스톤·태스크 예시도 실제 정보로 바꿉니다.
-- [TODO.md](./TODO.md)의 완료 예시는 실제 완료 이력이 아닙니다. 예시를 삭제하거나 실제 작업과 검증 근거로 교체하세요.
-- [PLAN.md](./PLAN.md)의 미정 사항은 미정으로 유지하고, 제안을 이미 합의된 결정으로 바꾸지 마세요. 예시 결정 행(`D-001`)도 삭제하거나 실제 결정으로 교체하세요. 조건부 절(§5~§7, §9, §10, §12)은 해당 사항이 없으면 삭제해도 됩니다. 빈 절을 placeholder 채로 남기지 마세요.
+- 전역 TODO와 변경별 양식의 예시는 실제 완료 이력이 아닙니다. 전역 완료에는 통합 대상과 필요한 검증을, PLAN에는 해당 브랜치의 구현·검증 근거를 구분해 기록하세요.
+- [00-PROJECT.md](./00-PROJECT.md)의 미정 사항은 미정으로 유지하고, 제안을 이미 합의된 결정으로 바꾸지 마세요. 예시 결정 행(`D-001`)도 삭제하거나 실제 결정으로 교체하세요. 필수 절은 §1~§5·§8·§11이며 나머지는 해당 사항이 없으면 삭제할 수 있습니다. 들어오는 절 참조를 함께 정리하세요. 빈 절을 placeholder 채로 남기지 마세요.
 - [REVIEW.md](./REVIEW.md)의 예시 불변조건과 주석 처리된 예외는 프로젝트 정책으로 자동 채택하지 않습니다.
 - `Last reviewed`는 실제 내용을 검토한 날짜를 **UTC 기준**으로 작성합니다. 템플릿을 복사한 것만으로 검증 완료를 표시하지 마세요. 로컬 시간대로 적으면 GitHub이 표시하는 PR 시각보다 미래 날짜가 되어 리뷰어가 지적합니다.
 - 아직 정하지 않은 라이선스, 보안 신고 채널 및 운영 정보를 임의로 만들어 넣지 마세요. 템플릿에 포함된 `LICENSE`는 템플릿 자체의 MIT 라이선스입니다. 프로젝트 라이선스가 정해지면 교체하고, 정해지지 않았다면 삭제하고 README License 절에 미정으로 남기세요.
@@ -165,14 +189,14 @@ Claude Code는 `CLAUDE.md`와 그 import 대상에서 `@`로 시작하는 토큰
 - Codex와 Cursor는 루트 `AGENTS.md`를 직접 읽습니다. Claude Code는 `CLAUDE.md`만 읽으므로 위 import가 필요합니다.
 - **`.claude/CLAUDE.md`, `.agents/AGENTS.md`, `.github/copilot-instructions.md`를 만들지 마세요.** OMP는 같은 디렉터리 depth에서 우선순위가 높은 provider가 낮은 provider를 가리는데, 루트 `AGENTS.md`는 가장 낮은 우선순위입니다. 이 중 하나라도 있으면 OMP에서 루트 `AGENTS.md`가 로드되지 않을 수 있습니다. (근거: OMP `docs/context-files.md`의 provider 우선순위표. 사용 중인 버전에서 직접 확인하세요.)
 - `.cursorrules`와 `.omp/AGENTS.md`는 이 템플릿에 포함하지 않습니다. 기존 프로젝트에 도구 전용 지침이 있다면 공통 규칙과 중복·충돌하는지 확인하세요.
-- CODEOWNERS를 쓰는 저장소라면 `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/`, `.cursor/`, `.omp/`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/DESIGN.md`를 owner 규칙에 추가하세요. 이 파일들은 에이전트의 commit·merge 권한과 리뷰 판정 기준을 정하므로 소스 코드와 같은 수준으로 보호해야 합니다. 이 템플릿은 CODEOWNERS 파일 자체를 포함하지 않습니다.
+- CODEOWNERS를 쓰는 저장소라면 `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/`, `.cursor/`, `.omp/`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/01-DESIGN.md`를 owner 규칙에 추가하세요. 이 파일들은 에이전트의 commit·merge 권한과 리뷰 판정 기준을 정하므로 소스 코드와 같은 수준으로 보호해야 합니다. 이 템플릿은 CODEOWNERS 파일 자체를 포함하지 않습니다.
 
 ### 리뷰 관련 파일
 
 - [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)는 Cursor Bugbot 전용 파일입니다. Bugbot은 `.cursor/rules/`도 링크된 문서도 읽지 않고 이 파일만 프로젝트 규칙으로 사용하므로, [REVIEW.md](./REVIEW.md)의 판정 기준을 의도적으로 복제해 두었습니다. 판정 기준만이 아니라 **§6 불변조건과 §9 Accepted Deferrals, 되돌리지 않을 확정 결정**도 복제해야 Bugbot이 canonical 정책과 같은 blocking 판정을 냅니다. 리뷰 정책을 바꿀 때는 두 파일을 함께 수정하세요.
 - [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)는 OMP advisor(주 에이전트를 감시하는 두 번째 모델) 전용 파일입니다. OMP는 이 파일을 advisor의 system prompt에만 붙이고 주 에이전트 컨텍스트에는 넣지 않으며, `AGENTS.md`와 달리 context file로 취급하지 않습니다. Bugbot과 다르게 `@path` import를 확장하므로 [REVIEW.md](./REVIEW.md)를 복제하지 않고 `@../docs/REVIEW.md`로 import합니다. 발견 위치는 `<dir>/WATCHDOG.md` 또는 `<dir>/.omp/WATCHDOG.md`이며, 루트를 어지르지 않기 위해 후자를 택했습니다. `.omp/` 디렉터리에 `AGENTS.md`를 두지는 마세요(위 지침 파일 절). 함께 두는 `WATCHDOG.yml`(advisor 명단·모델·도구)은 모델과 비용에 관한 프로젝트별 선택이라 템플릿에 포함하지 않습니다. (근거: OMP `docs/advisor-watchdog.md`. import 경로의 `..` 해석을 사용 중인 버전에서 확인하세요.)
 - 스킬(`review-round`, `design`)은 같은 내용을 두 경로에 둡니다. `.agents/skills/`는 Codex, Cursor, OMP가 읽고 `.claude/skills/`는 Claude Code가 읽습니다. 모든 파일은 `docs/`의 절차 문서를 가리키는 어댑터이며 절차 자체를 담지 않습니다. Cursor는 두 경로를 모두 로드하므로 슬래시 명령이 중복 표시될 수 있습니다. 내용이 같아 동작 차이는 없으며, Claude Code를 쓰지 않는 저장소라면 `.claude/skills/` 복제본을 생략해도 됩니다.
-- `review-round`는 명시 호출 전용입니다. Claude Code·Cursor·OMP는 `disable-model-invocation: true`를 사용하고 Codex는 아래 별도 설정을 사용합니다. `design`은 합의 전까지 읽기 전용이라 자동 호출을 차단하지 않습니다. 모델이 설명 문구에 맞는 변경에서 스스로 절차를 시작할 수 있으며, 적용 조건은 [DESIGN.md](./DESIGN.md) §1이 가릅니다.
+- `review-round`는 명시 호출 전용입니다. Claude Code·Cursor·OMP는 `disable-model-invocation: true`를 사용하고 Codex는 아래 별도 설정을 사용합니다. `design`은 합의 전까지 읽기 전용이라 자동 호출을 차단하지 않습니다. 모델이 설명 문구에 맞는 변경에서 스스로 절차를 시작할 수 있으며, 적용 조건은 [01-DESIGN.md](./01-DESIGN.md) §1이 가릅니다.
 - 자동 호출 차단 키는 Cursor·Claude Code 모두 `disable-model-invocation`이고 OMP는 이 표기를 그대로 인식합니다. Codex는 [.agents/skills/review-round/agents/openai.yaml](../.agents/skills/review-round/agents/openai.yaml)의 `policy.allow_implicit_invocation: false`로 자동 호출을 차단하며 명시적 `$review-round` 호출은 허용합니다([공식 문서](https://learn.chatgpt.com/docs/build-skills)). 이 설정은 Codex 전용이므로 `.claude/skills/`에 복제하지 않습니다. 두 `SKILL.md`의 내용은 동일하게 유지하며 본문에도 명시 호출 조건을 남깁니다. `argument-hint`는 Claude Code 전용 필드이며 다른 도구는 무시합니다.
 - Codex의 GitHub 리뷰는 인라인 finding에 `AGENTS.md` 줄 번호를 인용하고 finding 형식(`confidence`, `blocking`)도 그 절을 따릅니다. `AGENTS.md`의 Code Review Rules는 로컬 에이전트만이 아니라 GitHub 리뷰어의 출력 형식에도 영향을 주므로, 링크만 남기고 본문을 줄이지 마세요. Codex가 링크된 `docs/REVIEW.md`까지 읽는지는 확인되지 않았습니다.
 
@@ -182,7 +206,7 @@ Claude Code는 `CLAUDE.md`와 그 import 대상에서 `@`로 시작하는 토큰
 
 - **행동 규칙형 (예: ponytail)** — 작은 always-on 규칙 세트입니다. 이 템플릿의 `AGENTS.md` Change Rules에 있는 재사용 순서·최소 코드·원인 수정·최소화 제외 규칙은 [ponytail](https://github.com/DietrichGebert/ponytail)(MIT)의 규칙을 이 템플릿의 문맥에 맞게 옮긴 것입니다. 플러그인(hook, 강도 모드)까지 설치할 필요는 없습니다. ponytail의 instruction-only 어댑터가 안내하는 `.github/copilot-instructions.md` 복사는 위 지침 파일 절의 금지 항목과 충돌하므로 따르지 마세요. 참고: ponytail 자체 벤치마크에 따르면 terse reasoning 모델에서는 비용이 오히려 늘 수 있습니다.
 - **스펙 워크플로우형 (예: OpenSpec, BMAD)** — 변경 단위 산출물(proposal·specs·design·tasks)을 자기 디렉터리에 생성하고 CLI로 갱신하는 시스템입니다. 도입하려면 다음을 먼저 정하세요.
-  - **문서 소유권.** 결정 이유는 [PLAN.md](./PLAN.md), 작업 상태는 [TODO.md](./TODO.md)가 canonical입니다. 도구 산출물은 [DESIGN.md](./DESIGN.md) §2의 `docs/changes/` 파일을 대체하는 "변경 단위 설계 상세"로만 쓰고, PLAN.md 결정 ID를 산출물에 남깁니다. 같은 정보를 두 곳에서 관리하기 시작하면 어느 쪽이 오래되었는지 알 수 없게 됩니다.
+  - **문서 소유권.** PROJECT는 결정 상태와 정본 위치, 전역 TODO는 변경 단위 계획을 관리합니다. 도구 산출물은 INTENT·SPEC·PLAN의 해당 역할을 대체하고 결정 ID로 연결합니다. 상세 작업 상태를 도구가 관리하면 TODO에는 링크만 남깁니다. 결정 이유·계약·실행 체크리스트를 두 곳에 복제하지 않습니다.
   - **관리 블록.** OpenSpec은 `<!-- OPENSPEC:START -->`/`<!-- OPENSPEC:END -->` 마커로 관리 블록을 쓰는 구조이고, 과거 버전은 이 블록을 루트 `AGENTS.md`에도 썼습니다. 도입 전에 `openspec init`·`openspec update`가 어느 파일을 생성·수정하는지 확인하고, `AGENTS.md`·`CLAUDE.md`·`.claude/CLAUDE.md`·`.agents/AGENTS.md`·`.github/copilot-instructions.md`를 건드리면 그 기능을 끄거나 도입을 재고하세요. 이 파일들은 이 템플릿이 소유합니다.
   - **의존성과 갱신 주기.** 이들은 Node(BMAD는 Python·uv도) 런타임과 자체 갱신 명령을 가지며, 이 템플릿의 `Template version`이 추적하지 않습니다. 도구 갱신이 지침 파일을 다시 생성한다면 그 diff를 PR에서 검토하세요.
   - BMAD는 페르소나 기반 다중 에이전트와 전용 installer를 가진 무게 있는 방법론이라 이 템플릿의 기본 태도(작은 변경, 요청 범위 유지)와 결이 다릅니다. 큰 greenfield에서 팀이 합의한 경우에만 도입을 권합니다.
@@ -192,7 +216,7 @@ Claude Code는 `CLAUDE.md`와 그 import 대상에서 `@`로 시작하는 토큰
 
 - 도구 버전과 로컬 설정에 따라 지침 로딩 결과를 직접 확인하세요. Markdown 링크만으로 모든 연결 문서가 자동 로드된다고 가정하지 마세요.
 - [PROJECT_ANALYSIS.md](./PROJECT_ANALYSIS.md)는 전체 프로젝트 분석을 명시적으로 요청할 때 사용하는 절차입니다. 공통 지침에 전체 내용을 자동 import하지 않습니다.
-- [DESIGN.md](./DESIGN.md)도 절차 문서입니다. `AGENTS.md`에는 적용 조건과 산출물 위치만 두고 단계 자체는 import하지 않습니다. 모든 작업에 설계 절차가 실려 있으면 모델이 작은 요청을 절차로 부풀립니다.
+- [01-DESIGN.md](./01-DESIGN.md)도 절차 문서입니다. `AGENTS.md`에는 적용 조건과 산출물 위치만 두고 단계 자체는 import하지 않습니다. 모든 작업에 설계 절차가 실려 있으면 모델이 작은 요청을 절차로 부풀립니다.
 
 ## 5. 적용 후 관리
 
@@ -227,6 +251,16 @@ git status --short --untracked-files=all
 ## 6. 템플릿 변경 이력
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v1.4 — 번호 문서와 변경별 산출물
+
+- 공통 문서를 `00-PROJECT.md`, `01-DESIGN.md`, `02-TODO.md`로 이관했습니다. PROJECT는 기본 제품 설계와 기존 설계 인덱스를 수용합니다.
+- 선택형 `10-EXTENSION.md`와 `changes/_template/`의 대문자 INTENT·SPEC·PLAN 양식을 추가했습니다. 작은 작업은 최소 문서, 승인된 단계 구현은 상위 설계 참조를 사용합니다.
+- 전역 변경 목록과 상세 실행 상태의 소유권, 로컬 Git·병렬 브랜치·통합 완료·승인 근거를 정의했습니다. 새 형식은 승인 버전을 보존하면서 명세와 실행 계획의 갱신을 구분합니다.
+- 지침·스킬·리뷰·분석의 경로와 인계 대상을 함께 갱신했습니다. 리뷰 라운드 통과 후에는 PLAN도 동결하고 다음 관련 작업에서 기록을 반영합니다.
+- 적용 저장소에서는 §2 이관 표에 따라 고정 정책 경로·검사 코드·스킬 참조와 상태 중복 여부를 확인하세요.
+
+아래 릴리스 이력의 옛 파일명·절 번호는 당시 구조를 설명합니다. 현재 경로로 실행할 지침이 아니며 위 이관 표와 현재 절차를 따릅니다.
 
 ### v1.31
 
