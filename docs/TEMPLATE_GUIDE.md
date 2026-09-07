@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.6
+- **Template version:** 1.6.1
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -26,7 +26,9 @@
 ├── LICENSE                    # 템플릿 자체의 MIT 라이선스. 프로젝트 라이선스로 교체
 ├── .gitignore
 ├── scripts/
-│   └── check-docs.py          # 의존성 없는 문서 검사: 링크·스킬 사본·import·버전
+│   └── check-docs.py          # 의존성 없는 문서 검사: 링크·스킬 정책·import·버전
+├── tests/
+│   └── test_check_docs.py     # 문서 검사의 실패 경로 회귀 테스트
 ├── .agents/
 │   └── skills/
 │       ├── design/
@@ -64,7 +66,7 @@
 
 ## 2. 새 프로젝트에 적용하기
 
-1. §5에 따라 원본 저장소의 tag·SHA·미커밋 변경 여부를 확인하고 이 템플릿의 내용을 새 프로젝트 폴더로 복사합니다. 숨김 항목인 `.agents/`, `.claude/`, `.cursor/`, `.omp/`와 `.gitignore`도 확인하세요. 두 안내 문서의 Template metadata에 복사 기준을 기록합니다.
+1. §5에 따라 원본 저장소의 tag·SHA·미커밋 변경 여부를 확인하고 이 템플릿의 내용을 새 프로젝트 폴더로 복사합니다. 숨김 항목인 `.agents/`, `.claude/`, `.cursor/`, `.omp/`와 `.gitignore`, `docs/changes/_template/`의 네 양식도 빠짐없이 확인하세요. 두 안내 문서의 Template metadata에 복사 기준을 기록합니다.
 2. [프로젝트 README](../README.md)에 프로젝트 이름, 설명, 요구사항, 설치·실행·검증 방법, 보안 안내 및 라이선스를 작성합니다. 파일명을 바꿀 필요는 없습니다.
 3. [AGENTS.md](../AGENTS.md)의 프로젝트 정보와 명령을 실제 저장소에 맞게 작성합니다. README의 실행 방법과 서로 일치하도록 확인하세요.
 4. 아래 placeholder와 예시 항목을 교체합니다.
@@ -141,10 +143,16 @@ grep -rnE "\{\{|프로젝트에 맞게 작성|간단히 작성|YYYY-MM-DD|\| 예
 
 이 두 안내 문서는 placeholder를 설명하기 위해 그 문구를 포함하므로 검색에서 제외합니다. 대신 두 문서의 Metadata는 직접 확인하세요. `changes/_template/`의 placeholder는 복사용으로 유지할 수 있지만 실제 변경 폴더에 남은 값은 교체해야 합니다. 결과가 0건이어도 이 패턴에 없는 README 안내 문구, 담당자·마일스톤·태스크 예시, 명령의 실행 가능성과 완료 주장의 근거까지 검증된 것은 아닙니다. [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 Template Adoption Checklist와 함께 확인합니다.
 
-적용을 마쳤거나 문서를 옮긴 뒤에는 `scripts/check-docs.py`를 실행하세요. 상대 링크, `.agents`/`.claude` 스킬 사본과 Codex 명시 호출 설정, `CLAUDE.md`와 `.omp/WATCHDOG.md`의 `@` import, [REVIEW.md](./REVIEW.md) §6과 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)의 불변조건 목록, 문서를 지목한 절 번호 참조, 안내 문서의 `Template version`을 한 번에 확인하고, 실패하면 종료 코드가 0이 아닙니다. 표준 라이브러리만 사용합니다.
+적용을 마쳤거나 문서를 옮긴 뒤에는 `scripts/check-docs.py`를 실행하세요. 상대 링크, `.agents`/`.claude` 스킬 사본과 Codex 명시 호출 정책값, `CLAUDE.md`와 `.omp/WATCHDOG.md`의 `@` import, [REVIEW.md](./REVIEW.md) §6과 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)의 불변조건 목록, 문서를 지목한 절 번호 참조, 안내 문서의 `Template version`을 한 번에 확인하고, 실패하면 종료 코드가 0이 아닙니다. 표준 라이브러리만 사용합니다.
 
 ```bash
 python scripts/check-docs.py
+```
+
+템플릿 원본의 검사 스크립트를 바꿀 때는 실패 경로 회귀 테스트도 실행합니다.
+
+```bash
+python -m unittest discover -s tests -v
 ```
 
 `python`이 없으면 `python3`을 사용하세요. 파일 이동은 내용이 바뀌지 않아도 링크를 깨뜨립니다. 이 문서를 §5에 따라 삭제한 저장소에서도 검사는 그대로 동작하며, 판 기록은 [DOCS_GUIDE.md](./DOCS_GUIDE.md)에서만 확인합니다. 절 번호 검사는 문서를 지목한 참조(`REVIEW.md §6`, `PROJECT §8` 등)만 대상으로 하며, 대상이 모호한 같은 파일 안의 `§4` 같은 참조와 §6 릴리스 이력의 옛 절 번호는 제외합니다. 생성물 디렉터리(`dist`, `build`, `target`, `vendor` 등)는 검사에서 건너뜁니다. 이 검사는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니다. placeholder 검색은 위의 `rg`/`grep` 명령을 사용하세요.
@@ -254,6 +262,13 @@ git status --short --untracked-files=all
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
 
+### v1.6.1 — v1.6 리뷰 후속 수정
+
+- 잘못 표기한 `v1.31` tag와 이력을 `v1.3.1`로 교정해 숫자 버전 정렬에서 `v1.6`보다 최신으로 선택되지 않게 했습니다.
+- `scripts/check-docs.py`가 Codex의 `policy.allow_implicit_invocation: false` boolean을 확인하고, 저장소 밖 경로의 제외 디렉터리명에 영향받지 않으며, 여러 줄 불변조건·깊은 절 번호·없는 문서 대상을 검사합니다.
+- `tests/test_check_docs.py`에 위 실패 경로와 합본형 양식의 단독 사용을 고정했습니다.
+- `_template/`의 네 양식은 템플릿 적용 시 모두 유지하되, 실제 변경 폴더에서는 필요한 형식만 사용하도록 소유권을 명확히 했습니다.
+
 ### v1.6 — 문서 검사 확대와 합본형 변경 양식
 
 - `scripts/check-docs.py`: 저장소 루트 판별을 `AGENTS.md`로 바꾸고, 이 문서를 §5에 따라 삭제한 저장소에서도 동작하도록 판 대조를 선택 검사로 만들었습니다. 이전에는 이 문서가 없으면 검사가 종료 코드 2로 끝났습니다.
@@ -288,7 +303,7 @@ git status --short --untracked-files=all
 
 아래 릴리스 이력의 옛 파일명·절 번호는 당시 구조를 설명합니다. 현재 경로로 실행할 지침이 아니며 위 이관 표와 현재 절차를 따릅니다.
 
-### v1.31
+### v1.3.1
 
 - `docs/DESIGN.md`: §5의 프로젝트 고유 정보 금지에 §6의 기존 설계 문서 경로 한 줄 예외를 명시해 문언상 충돌을 해소했습니다.
 - `.agents/skills/review-round/`, `.claude/skills/review-round/`: 스킬 description이 기본 `on_pass`를 반영하도록 갱신했습니다. PR은 사용자 확인 후 merge하고, PR이 없으면 `merge 안 함`으로 종료합니다. 두 `SKILL.md`는 동일하게 유지합니다.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """문서 템플릿의 의존성 없는 검사.
 
-상대 링크, 스킬 사본과 Codex 명시 호출 설정, 알려진 @import, REVIEW와 BUGBOT의
+상대 링크, 스킬 사본과 Codex 명시 호출 정책, 알려진 @import, REVIEW와 BUGBOT의
 불변조건 목록, 문서를 지목한 절 번호 참조, 안내 문서의 Template version을
 확인합니다. 하나라도 실패하면 종료 코드 1입니다. 저장소 루트 기준이며 cwd는
 달라도 됩니다.
@@ -45,7 +45,7 @@ HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
 EXAMPLE_BULLET_PREFIX = "- **예시:"
 
 HEADING_NUM_RE = re.compile(r"^#{1,6}\s+(\d+(?:\.\d+)*)[.\s]")
-SECTION_GROUP = r"§\d+(?:\.\d+)?(?:·§\d+(?:\.\d+)?)*"
+SECTION_GROUP = r"§\d+(?:\.\d+)*(?:·§\d+(?:\.\d+))*"
 SECTION_LINK_RE = re.compile(
     r"\]\(((?!https?://)[^)\s#]+?\.md)\)\s*(" + SECTION_GROUP + ")"
 )
@@ -82,7 +82,11 @@ INVARIANT_COPY: Tuple[str, str] = (".cursor/BUGBOT.md", "불변조건")
 
 
 def is_skipped(path: Path) -> bool:
-    return any(part in SKIP_DIR_NAMES for part in path.parts)
+    try:
+        parts = path.relative_to(ROOT).parts
+    except ValueError:
+        parts = path.parts
+    return any(part in SKIP_DIR_NAMES for part in parts)
 
 
 def md_files() -> List[Path]:
@@ -142,17 +146,71 @@ def check_skill_copies(errors: List[str], notes: List[str]) -> None:
             notes.append("스킬 사본 일치: %s" % left)
 
 
+def read_implicit_invocation_policy(path: Path) -> Optional[bool]:
+    """Codex 설정의 policy.allow_implicit_invocation boolean을 읽습니다.
+
+    전체 YAML 파서가 아니라 템플릿이 생성하는 mapping 형식만 좁게 검사합니다.
+    따옴표로 감싼 문자열이나 중복 키는 정책 boolean으로 인정하지 않습니다.
+    """
+    lines = path.read_text(encoding="utf-8").splitlines()
+    policy_indexes = [
+        index
+        for index, line in enumerate(lines)
+        if re.fullmatch(r"policy:\s*(?:#.*)?", line)
+    ]
+    if len(policy_indexes) != 1:
+        return None
+
+    entries = []
+    for line in lines[policy_indexes[0] + 1 :]:
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        indent = len(line) - len(line.lstrip(" "))
+        if indent == 0 or line.startswith("\t"):
+            break
+        entries.append((indent, line.strip()))
+
+    if not entries:
+        return None
+    child_indent = min(indent for indent, _ in entries)
+    values = []
+    for indent, entry in entries:
+        if indent != child_indent:
+            continue
+        match = re.fullmatch(
+            r"allow_implicit_invocation:\s*(true|false)\s*(?:#.*)?",
+            entry,
+            re.IGNORECASE,
+        )
+        if match:
+            values.append(match.group(1).lower() == "true")
+    return values[0] if len(values) == 1 else None
+
+
 def check_skill_configs(errors: List[str], notes: List[str]) -> None:
     for skill, config in SKILL_CONFIGS:
         if not (ROOT / skill).is_file():
             continue
-        if (ROOT / config).is_file():
-            notes.append("Codex 명시 호출 설정 있음: %s" % config)
-        else:
+        config_path = ROOT / config
+        if not config_path.is_file():
             errors.append(
                 "Codex 명시 호출 설정이 없습니다: %s (%s의 암묵 호출이 열립니다)"
                 % (config, skill)
             )
+            continue
+        policy = read_implicit_invocation_policy(config_path)
+        if policy is None:
+            errors.append(
+                "Codex 명시 호출 정책을 boolean으로 찾을 수 없습니다: %s "
+                "(policy.allow_implicit_invocation: false가 필요합니다)" % config
+            )
+        elif policy:
+            errors.append(
+                "Codex 암묵 호출이 열려 있습니다: %s "
+                "(policy.allow_implicit_invocation: false가 필요합니다)" % config
+            )
+        else:
+            notes.append("Codex 명시 호출 정책 확인: %s" % config)
 
 
 def check_imports(errors: List[str], notes: List[str]) -> None:
@@ -188,7 +246,7 @@ def check_imports(errors: List[str], notes: List[str]) -> None:
 
 
 def section_bullets(text: str, heading_needle: str) -> Optional[List[str]]:
-    """헤딩 문구로 절을 찾아 그 절의 목록 항목만 돌려줍니다."""
+    """헤딩 문구로 절을 찾아 최상위 목록 항목의 전체 본문을 돌려줍니다."""
     lines = text.splitlines()
     start = None
     level = 0
@@ -202,15 +260,28 @@ def section_bullets(text: str, heading_needle: str) -> Optional[List[str]]:
         return None
 
     bullets = []
+    current: Optional[List[str]] = None
+    bullet_indent: Optional[int] = None
+    skip_current = False
     for line in lines[start:]:
         match = HEADING_RE.match(line)
         if match and len(match.group(1)) <= level:
             break
         stripped = line.strip()
-        if stripped.startswith(EXAMPLE_BULLET_PREFIX):
+        bullet_match = re.match(r"^(\s*)-\s+", line)
+        if bullet_match and bullet_indent is None:
+            bullet_indent = len(bullet_match.group(1))
+        if bullet_match and len(bullet_match.group(1)) == bullet_indent:
+            if current is not None and not skip_current:
+                bullets.append("\n".join(current))
+            current = [stripped]
+            skip_current = stripped.startswith(EXAMPLE_BULLET_PREFIX)
             continue
-        if stripped.startswith("- "):
-            bullets.append(stripped)
+        indent = len(line) - len(line.lstrip(" "))
+        if current is not None and stripped and indent > (bullet_indent or 0):
+            current.append(stripped)
+    if current is not None and not skip_current:
+        bullets.append("\n".join(current))
     return bullets
 
 
@@ -280,6 +351,11 @@ def check_section_refs(errors: List[str], notes: List[str]) -> None:
                         None,
                     )
                 if target is None:
+                    if kind == "path":
+                        broken.append(
+                            "%s: %s %s (문서 대상이 없습니다)"
+                            % (rel(md), ref, group)
+                        )
                     continue
                 target = target.resolve()
                 if target not in headings:

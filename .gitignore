@@ -6,3 +6,7 @@
 # AI 도구의 로컬 전용 파일 (공유 설정은 커밋합니다)
 CLAUDE.local.md
 .claude/settings.local.json
+
+# Python document-check caches
+__pycache__/
+*.py[cod]
