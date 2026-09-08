@@ -2,7 +2,7 @@
 
 이 문서는 문서 중심 프로젝트 템플릿의 최초 적용 안내입니다. 이 템플릿 저장소의 소개는 루트 [README.md](../README.md)에 있습니다. 적용 프로젝트의 소개·설치·실행 양식은 [README-PROJECT.md](../README-PROJECT.md)이며, 적용 시 루트 `README.md`로 교체합니다.
 
-초기화 스크립트, GitHub Actions용 리뷰 프롬프트 및 자동 리뷰 실행 구성은 포함하지 않습니다. 파일을 복사하고 프로젝트 값을 직접 채우는 방식입니다.
+초기화 스크립트, GitHub Actions용 리뷰 프롬프트 및 자동 리뷰 실행 구성, 특정 CI 제품의 pipeline 파일은 포함하지 않습니다. 파일을 복사하고 프로젝트 값을 직접 채우는 방식입니다. 품질 게이트의 순서와 연결 확인은 [CI.md](./CI.md)를 따릅니다.
 
 ## Metadata
 
@@ -62,7 +62,8 @@
     │       └── 03-PLAN.md     # 선택형 상세 작업·검증 기록
     ├── REVIEW.md              # 공통 PR 리뷰 정책
     ├── REVIEW_ROUND.md        # 리뷰 라운드 절차와 권한 위임 범위
-    └── PROJECT_ANALYSIS.md    # 요청 시 사용하는 전체 분석 절차
+    ├── PROJECT_ANALYSIS.md    # 요청 시 사용하는 전체 분석 절차
+    └── CI.md                  # 러너 불문의 품질 게이트 워크플로·연결 체크리스트
 ```
 
 ## 2. 새 프로젝트에 적용하기
@@ -79,6 +80,7 @@
 10. 사용하는 개발 도구에서 공통 지침과 관련 문서를 의도대로 읽는지 확인합니다.
 11. 외부 방법론·행동 규칙 도구를 함께 쓴다면 아래 §4 「외부 방법론·행동 규칙 도구」의 공존 규칙을 먼저 적용합니다.
 12. [문서 운영 안내](./DOCS_GUIDE.md)의 Template Adoption Checklist로 적용 완료 여부를 확인합니다.
+13. CI를 쓰는 저장소는 [CI.md](./CI.md)의 워크플로와 체크리스트로 기존 러너에 품질 게이트를 연결합니다. GitHub Actions·Buildkite 등 특정 제품의 pipeline 파일은 이 템플릿이 포함하지 않습니다. 사용자가 러너를 지정하기 전에는 YAML을 새로 만들지 마세요. CI가 없으면 같은 게이트를 로컬에서 실행하고 미사용 이유를 기록합니다.
 
 기존 프로젝트에 적용할 때는 같은 이름의 파일을 덮어쓰지 말고 기존 지침·문서·ignore 규칙과 비교하여 병합하세요. 기존 코드나 사용자 변경은 보존합니다. 기존 `REVIEW.md`와 병합해 절 번호가 바뀌거나 [00-PROJECT.md](./00-PROJECT.md)의 조건부 절을 삭제하면, 절 번호로 참조하는 [REVIEW_ROUND.md](./REVIEW_ROUND.md), [01-DESIGN.md](./01-DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 참조도 실제 헤딩에 맞게 고치세요. 도입 전부터 큰 설계 문서가 있는 저장소는 [01-DESIGN.md](./01-DESIGN.md) §6을 먼저 읽으세요. 기존 문서는 기본적으로 유지하고 사용자가 통합을 요청한 경우에만 근거와 참조를 보존해 병합합니다.
 
@@ -193,7 +195,7 @@ Claude Code는 `CLAUDE.md`와 그 import 대상에서 `@`로 시작하는 토큰
 - **OMP를 쓰는 저장소**에서는 `.claude/CLAUDE.md`, `.agents/AGENTS.md`, `.github/copilot-instructions.md`를 만들지 마세요. OMP는 같은 디렉터리 depth에서 우선순위가 높은 provider가 낮은 provider를 가리는데, 루트 `AGENTS.md`는 가장 낮은 우선순위입니다. 이 중 하나라도 있으면 OMP에서 루트 `AGENTS.md`가 로드되지 않을 수 있습니다. (근거: OMP `docs/context-files.md`의 provider 우선순위표. 사용 중인 버전에서 직접 확인하세요.)
 - **OMP를 쓰지 않는 저장소**에서는 해당 도구가 요구하는 전용 지침 파일을 둘 수 있습니다. 공통 규칙은 루트 `AGENTS.md`에 두고, 전용 파일에는 도구가 루트 파일을 읽지 못할 때만 필요한 연결(import 또는 한 줄 참조)을 남기며 본문을 복제하지 마세요. 나중에 OMP를 도입하면 이 파일들이 루트 `AGENTS.md`를 가리는지 먼저 확인하세요.
 - `.cursorrules`와 `.omp/AGENTS.md`는 이 템플릿에 포함하지 않습니다. 기존 프로젝트에 도구 전용 지침이 있다면 공통 규칙과 중복·충돌하는지 확인하세요.
-- CODEOWNERS를 쓰는 저장소라면 `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/`, `.cursor/`, `.omp/`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/01-DESIGN.md`를 owner 규칙에 추가하세요. 이 파일들은 에이전트의 commit·merge 권한과 리뷰 판정 기준을 정하므로 소스 코드와 같은 수준으로 보호해야 합니다. 이 템플릿은 CODEOWNERS 파일 자체를 포함하지 않습니다.
+- CODEOWNERS를 쓰는 저장소라면 `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/`, `.cursor/`, `.omp/`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/01-DESIGN.md`, `docs/CI.md`를 owner 규칙에 추가하세요. 이 파일들은 에이전트의 commit·merge 권한과 리뷰 판정 기준을 정하므로 소스 코드와 같은 수준으로 보호해야 합니다. 이 템플릿은 CODEOWNERS 파일 자체를 포함하지 않습니다.
 
 ### 리뷰 관련 파일
 
@@ -252,6 +254,7 @@ git status --short --untracked-files=all
 | 승인된 설계의 구현 | 상위 절을 연결하고 필요한 PLAN만 작성. 재승인 없음 | 전체 설계 절차나 재승인을 요구 | [01-DESIGN.md](./01-DESIGN.md) §1·§3.6 |
 | PLAN 체크 완료 | 해당 브랜치의 구현·검증 완료로만 보고 | 통합·릴리스·지원 검증 완료로 표시 | [DOCS_GUIDE.md](./DOCS_GUIDE.md), [01-DESIGN.md](./01-DESIGN.md) §4 |
 | OMP를 쓰지 않는 저장소의 도구 전용 지침 | 공통 규칙을 복제하지 않는 전용 파일은 허용 | 모든 프로젝트에 생성 금지 | 이 문서 §4 |
+| 러너를 지정하지 않은 CI 요청 | [CI.md](./CI.md)의 워크플로·체크리스트만 작성·연결 | GitHub Actions·Buildkite 등 제품 YAML을 새로 생성 | [CI.md](./CI.md) §4·§6 |
 
 ### 템플릿 개정 반영하기
 
@@ -263,12 +266,13 @@ git status --short --untracked-files=all
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
 
-### v1.7 — 템플릿 소개 README와 적용 프로젝트 README 분리
+### v1.7 — 템플릿 소개 README 분리와 러너 불문 CI 게이트
 
 - 루트 `README.md`를 이 템플릿 저장소 소개로 두고, 적용 프로젝트 README 양식은 `README-PROJECT.md`로 분리했습니다. Origin 등 호스트에서 원본 저장소를 열면 프로젝트 placeholder가 아니라 템플릿 설명이 보입니다.
 - 적용 절차 §2 2단계: `README-PROJECT.md`를 `README.md`로 바꿔 넣고 상단 적용 안내 주석을 삭제한 뒤 placeholder를 채웁니다. 적용 저장소에 템플릿 소개 README와 `README-PROJECT.md`를 남기지 않습니다.
 - [DOCS_GUIDE.md](./DOCS_GUIDE.md) 적용 체크리스트에 README 교체 항목을 추가했습니다.
-- 적용 저장소에서 확인할 것: 이미 채운 프로젝트 `README.md`를 이 판의 템플릿 소개문으로 바꾸지 마세요. 새 복사본만 `README-PROJECT.md` → `README.md` 교체 절차를 따릅니다. 이미 적용한 저장소는 자기 README를 유지합니다.
+- [CI.md](./CI.md) 신설: GitHub Actions·Buildkite 등 제품 YAML 없이 품질 게이트 워크플로와 연결 체크리스트만 둡니다. 적용 절차 §2 13단계, AGENTS.md, 적용 체크리스트에서 이 문서를 가리킵니다.
+- 적용 저장소에서 확인할 것: 이미 채운 프로젝트 `README.md`를 이 판의 템플릿 소개문으로 바꾸지 마세요. 새 복사본만 `README-PROJECT.md` → `README.md` 교체 절차를 따릅니다. 이미 적용한 저장소는 자기 README를 유지합니다. CI를 쓰면 기존 러너에 [CI.md](./CI.md) 게이트를 연결했는지, 사용자가 제품을 지정하기 전에 워크플로 파일을 새로 만들지 않았는지 확인하세요.
 
 ### v1.6.1 — v1.6 리뷰 후속 수정
 

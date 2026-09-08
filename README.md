@@ -2,7 +2,7 @@
 
 AI 코딩 에이전트와 사람이 **같은 문서 체계, 설계 절차, 리뷰 기준**을 쓰도록 만든 복사형 템플릿입니다. 앱 런타임이나 프레임워크가 아니라, 프로젝트 문서와 에이전트 지침의 출발점입니다.
 
-이 저장소는 템플릿 원본입니다. Origin 같은 Git 호스트에 올려 두고 새 프로젝트로 복사해 사용합니다. 초기화 스크립트나 CI용 자동 리뷰 실행 구성은 포함하지 않습니다.
+이 저장소는 템플릿 원본입니다. Origin 같은 Git 호스트에 올려 두고 새 프로젝트로 복사해 사용합니다. 초기화 스크립트나 특정 CI 제품의 pipeline 파일은 포함하지 않습니다. 품질 게이트 절차는 [CI.md](./docs/CI.md)에 있습니다.
 
 현재 판은 [Template Guide](./docs/TEMPLATE_GUIDE.md) Metadata의 `Template version`을 따릅니다.
 
@@ -33,6 +33,7 @@ AI 코딩 에이전트와 사람이 **같은 문서 체계, 설계 절차, 리�
 | [docs/REVIEW.md](./docs/REVIEW.md) | PR 리뷰 판정 기준 |
 | [docs/REVIEW_ROUND.md](./docs/REVIEW_ROUND.md) | 명시 호출된 리뷰 라운드와 권한 위임 |
 | [docs/PROJECT_ANALYSIS.md](./docs/PROJECT_ANALYSIS.md) | 명시 요청 시의 전체 분석 절차 |
+| [docs/CI.md](./docs/CI.md) | 러너 불문의 품질 게이트 워크플로와 연결 체크리스트 |
 | `scripts/check-docs.py` | 의존성 없는 문서 검사 (상대 링크, 스킬 사본, import, 불변조건, 절 번호, 판 번호) |
 | `.agents/skills/`, `.claude/skills/` | `design`·`review-round` 스킬 어댑터 |
 | `.cursor/BUGBOT.md`, `.omp/WATCHDOG.md` | 선택형 도구 전용 리뷰 연결 |
@@ -43,7 +44,7 @@ AI 코딩 에이전트와 사람이 **같은 문서 체계, 설계 절차, 리�
 
 - 애플리케이션 코드, 패키지 매니저, 컨테이너, IaC
 - 저장소 초기화 스크립트나 대화형 생성기
-- GitHub Actions용 리뷰 프롬프트·자동 리뷰 실행 워크플로
+- GitHub Actions·Buildkite 등 특정 CI 제품의 pipeline 파일, 자동 리뷰 실행 잡, 리뷰 프롬프트. 품질 게이트 절차는 [CI.md](./docs/CI.md)에 있습니다.
 - CODEOWNERS 파일 자체 (안내만 있음)
 - 적용 프로젝트의 라이선스·보안 신고 채널 (템플릿 `LICENSE`는 이 템플릿 자체의 MIT)
 
@@ -66,7 +67,7 @@ python scripts/check-docs.py
 python -m unittest discover -s tests -v
 ```
 
-적용을 마친 저장소에서도 `scripts/check-docs.py`는 동작합니다. 원본 템플릿의 placeholder 잔존은 이 검사가 실패로 보지 않습니다.
+적용을 마친 저장소에서도 `scripts/check-docs.py`는 동작합니다. 원본 템플릿의 placeholder 잔존은 이 검사가 실패로 보지 않습니다. 같은 게이트를 원격 CI에 붙이는 순서와 체크리스트는 [CI.md](./docs/CI.md)를 따릅니다.
 
 ## 문서와 도구
 

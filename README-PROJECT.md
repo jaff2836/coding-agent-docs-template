@@ -37,6 +37,8 @@
 {{TYPECHECK_COMMAND}}
 ```
 
+문서 검사와 CI 연결은 [CI.md](./docs/CI.md)를 따릅니다. 특정 러너의 YAML은 템플릿에 없습니다. 명령 문자열은 [AGENTS.md](./AGENTS.md)와 같게 유지하세요.
+
 ## Project Documentation
 
 - [Template Guide](./docs/TEMPLATE_GUIDE.md): 이 템플릿을 프로젝트에 처음 적용하는 방법
@@ -50,6 +52,7 @@
 - [REVIEW.md](./docs/REVIEW.md): PR 리뷰 정책
 - [REVIEW_ROUND.md](./docs/REVIEW_ROUND.md): 리뷰 라운드 절차와 권한 위임 범위
 - [PROJECT_ANALYSIS.md](./docs/PROJECT_ANALYSIS.md): 명시적으로 요청된 전체 프로젝트 분석 절차
+- [CI.md](./docs/CI.md): 러너 불문의 품질 게이트 워크플로와 연결 체크리스트
 
 ## Security
 
