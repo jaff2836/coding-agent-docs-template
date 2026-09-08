@@ -1,13 +1,13 @@
 # Template Guide
 
-이 문서는 문서 중심 프로젝트 템플릿의 최초 적용 안내입니다. 실제 프로젝트의 소개·설치·실행 방법은 루트 [README.md](../README.md)에 작성하세요.
+이 문서는 문서 중심 프로젝트 템플릿의 최초 적용 안내입니다. 이 템플릿 저장소의 소개는 루트 [README.md](../README.md)에 있습니다. 적용 프로젝트의 소개·설치·실행 양식은 [README-PROJECT.md](../README-PROJECT.md)이며, 적용 시 루트 `README.md`로 교체합니다.
 
 초기화 스크립트, GitHub Actions용 리뷰 프롬프트 및 자동 리뷰 실행 구성은 포함하지 않습니다. 파일을 복사하고 프로젝트 값을 직접 채우는 방식입니다.
 
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.6.1
+- **Template version:** 1.7
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -20,7 +20,8 @@
 
 ```text
 .
-├── README.md                  # 실제 프로젝트 소개와 사용법
+├── README.md                  # 이 템플릿 저장소 소개 (적용 시 README-PROJECT.md로 교체)
+├── README-PROJECT.md          # 적용 프로젝트 README 양식
 ├── AGENTS.md                  # AI 개발 도구의 공통 프로젝트 지침
 ├── CLAUDE.md                  # @AGENTS.md 참조
 ├── LICENSE                    # 템플릿 자체의 MIT 라이선스. 프로젝트 라이선스로 교체
@@ -67,7 +68,7 @@
 ## 2. 새 프로젝트에 적용하기
 
 1. §5에 따라 원본 저장소의 tag·SHA·미커밋 변경 여부를 확인하고 이 템플릿의 내용을 새 프로젝트 폴더로 복사합니다. 숨김 항목인 `.agents/`, `.claude/`, `.cursor/`, `.omp/`와 `.gitignore`, `docs/changes/_template/`의 네 양식도 빠짐없이 확인하세요. 두 안내 문서의 Template metadata에 복사 기준을 기록합니다.
-2. [프로젝트 README](../README.md)에 프로젝트 이름, 설명, 요구사항, 설치·실행·검증 방법, 보안 안내 및 라이선스를 작성합니다. 파일명을 바꿀 필요는 없습니다.
+2. 루트 [README.md](../README.md)는 이 템플릿 저장소 소개입니다. 적용 프로젝트에서는 [README-PROJECT.md](../README-PROJECT.md)를 `README.md`로 바꿔 넣고, 파일 상단의 적용 안내 주석을 삭제한 뒤 프로젝트 이름, 설명, 요구사항, 설치·실행·검증 방법, 보안 안내 및 라이선스를 작성합니다. 적용 저장소에 템플릿 소개 README와 `README-PROJECT.md`를 남기지 마세요.
 3. [AGENTS.md](../AGENTS.md)의 프로젝트 정보와 명령을 실제 저장소에 맞게 작성합니다. README의 실행 방법과 서로 일치하도록 확인하세요.
 4. 아래 placeholder와 예시 항목을 교체합니다.
 5. [00-PROJECT.md](./00-PROJECT.md)에 현재 제품 기준과 승인된 목표를 구분하고 기존 설계의 정본을 연결합니다. [02-TODO.md](./02-TODO.md)에 통합 대상과 첫 마일스톤의 변경 단위 항목을 작성합니다. 변경별 PLAN이 있으면 상세 작업·검증 상태는 PLAN에만 둡니다. 장기 확장이 없으면 `10-EXTENSION.md`와 들어오는 링크를 제거합니다.
@@ -222,7 +223,7 @@ Claude Code는 `CLAUDE.md`와 그 import 대상에서 `@`로 시작하는 토큰
 - 일상적인 문서 관리 방법과 문서별 수정 권한은 [문서 운영 안내](./DOCS_GUIDE.md)를 기준으로 합니다.
 - [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 이름은 의도적으로 `README.md`가 아닙니다. 루트 README의 번역본을 `docs/README.ko.md`처럼 `docs/`에 두는 관행과 파일명이 충돌하기 때문입니다. `docs/README.md`로 되돌리지 마세요.
 - 모든 저장소 내부 Markdown 링크는 해당 파일을 기준으로 한 상대 경로를 사용합니다. 파일을 옮기거나 이름을 바꾸면 참조하는 링크도 함께 수정하세요.
-- 이 문서는 템플릿 적용 기록으로 남겨도 됩니다. 적용 후 필요 없어 삭제한다면 [프로젝트 README](../README.md)와 [문서 운영 안내](./DOCS_GUIDE.md)에 있는 이 문서 링크도 함께 제거하세요.
+- 이 문서는 템플릿 적용 기록으로 남겨도 됩니다. 적용 후 필요 없어 삭제한다면 적용 프로젝트 [README.md](../README.md)와 [문서 운영 안내](./DOCS_GUIDE.md)에 있는 이 문서 링크도 함께 제거하세요.
 - Cursor Bugbot을 사용하지 않아 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)를, 또는 OMP를 사용하지 않아 [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)를 제거한다면 이 안내와 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 해당 링크와 구조 설명도 정리하세요.
 
 ### Git으로 복사 기준 기록하기
@@ -261,6 +262,13 @@ git status --short --untracked-files=all
 ## 6. 템플릿 변경 이력
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v1.7 — 템플릿 소개 README와 적용 프로젝트 README 분리
+
+- 루트 `README.md`를 이 템플릿 저장소 소개로 두고, 적용 프로젝트 README 양식은 `README-PROJECT.md`로 분리했습니다. Origin 등 호스트에서 원본 저장소를 열면 프로젝트 placeholder가 아니라 템플릿 설명이 보입니다.
+- 적용 절차 §2 2단계: `README-PROJECT.md`를 `README.md`로 바꿔 넣고 상단 적용 안내 주석을 삭제한 뒤 placeholder를 채웁니다. 적용 저장소에 템플릿 소개 README와 `README-PROJECT.md`를 남기지 않습니다.
+- [DOCS_GUIDE.md](./DOCS_GUIDE.md) 적용 체크리스트에 README 교체 항목을 추가했습니다.
+- 적용 저장소에서 확인할 것: 이미 채운 프로젝트 `README.md`를 이 판의 템플릿 소개문으로 바꾸지 마세요. 새 복사본만 `README-PROJECT.md` → `README.md` 교체 절차를 따릅니다. 이미 적용한 저장소는 자기 README를 유지합니다.
 
 ### v1.6.1 — v1.6 리뷰 후속 수정
 

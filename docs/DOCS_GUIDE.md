@@ -3,14 +3,14 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.6.1
+- **Template version:** 1.7
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (미커밋 변경 포함 시 미확정)
 - **Owner:** 프로젝트에 맞게 작성
 - **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** 문서 체계 변경 시
 
-프로젝트 사용법은 [README](../README.md), 최초 적용·기존 구조 이관은 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md)를 따릅니다. 이 문서는 공통 템플릿의 문서 소유권과 사용 규칙을 정의합니다.
+적용 저장소의 프로젝트 사용법은 루트 [README.md](../README.md)입니다. 원본 템플릿에서는 그 양식이 [README-PROJECT.md](../README-PROJECT.md)이며, 적용 시 `README.md`로 교체합니다. 최초 적용·기존 구조 이관은 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md)를 따릅니다. 이 문서는 공통 템플릿의 문서 소유권과 사용 규칙을 정의합니다.
 
 ## 문서 지도
 
@@ -119,6 +119,7 @@
 ## Template Adoption Checklist
 
 - [ ] TEMPLATE_GUIDE의 이관 절차로 이전 파일명·절·코드·테스트·도구 참조를 확인했다.
+- [ ] 루트 README.md를 템플릿 소개문이 아니라 프로젝트 사용법으로 바꿨다. `README-PROJECT.md`를 `README.md`로 교체하고 양식 파일과 적용 안내 주석은 삭제했다.
 - [ ] 프로젝트 정보·명령·담당자·예시를 실제 값으로 교체했다. 원본 양식은 실제 작업으로 집계하지 않는다.
 - [ ] `docs/changes/_template/`의 합본형·분리형·PLAN 양식 네 파일을 모두 유지했다. 실제 변경 폴더에는 필요한 형식만 복사한다.
 - [ ] Template source·version·revision과 일부 반영 내역을 확인했다. 미확정은 미확정으로 표시했다.
