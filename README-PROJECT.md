@@ -35,9 +35,11 @@
 ```text
 {{LINT_COMMAND}}
 {{TYPECHECK_COMMAND}}
+python scripts/check-docs.py
+python -m unittest discover -s tests -p 'test_check_docs.py' -v
 ```
 
-문서 검사와 CI 연결은 [CI.md](./docs/CI.md)를 따릅니다. 특정 러너의 YAML은 템플릿에 없습니다. 명령 문자열은 [AGENTS.md](./AGENTS.md)와 같게 유지하세요.
+문서 검사 회귀 테스트는 `scripts/check-docs.py` 또는 `tests/test_check_docs.py`를 바꿀 때 실행합니다. 문서 검사와 CI 연결은 [CI.md](./docs/CI.md)를 따릅니다. 특정 러너의 YAML은 템플릿에 없습니다. 명령 문자열은 [AGENTS.md](./AGENTS.md)와 같게 유지하세요.
 
 ## Project Documentation
 

@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.7
+- **Template version:** 1.7.1
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -155,7 +155,7 @@ python scripts/check-docs.py
 템플릿 원본의 검사 스크립트를 바꿀 때는 실패 경로 회귀 테스트도 실행합니다.
 
 ```bash
-python -m unittest discover -s tests -v
+python -m unittest discover -s tests -p 'test_check_docs.py' -v
 ```
 
 `python`이 없으면 `python3`을 사용하세요. 파일 이동은 내용이 바뀌지 않아도 링크를 깨뜨립니다. 이 문서를 §5에 따라 삭제한 저장소에서도 검사는 그대로 동작하며, 판 기록은 [DOCS_GUIDE.md](./DOCS_GUIDE.md)에서만 확인합니다. 절 번호 검사는 문서를 지목한 참조(`REVIEW.md §6`, `PROJECT §8` 등)만 대상으로 하며, 대상이 모호한 같은 파일 안의 `§4` 같은 참조와 §6 릴리스 이력의 옛 절 번호는 제외합니다. 생성물 디렉터리(`dist`, `build`, `target`, `vendor` 등)는 검사에서 건너뜁니다. 이 검사는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니다. placeholder 검색은 위의 `rg`/`grep` 명령을 사용하세요.
@@ -265,6 +265,12 @@ git status --short --untracked-files=all
 ## 6. 템플릿 변경 이력
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v1.7.1 — 문서 게이트 정본과 회귀 테스트 범위 교정
+
+- G-docs와 G-docs-test 명령을 `AGENTS.md`와 적용 프로젝트 README 양식에 명시해 [CI.md](./CI.md)의 명령 정본 규칙과 일치시켰습니다.
+- G-docs-test가 적용 프로젝트의 다른 `test*.py`를 함께 실행하지 않도록 `test_check_docs.py`로 discovery pattern을 제한했습니다.
+- 적용 저장소에서 확인할 것: 문서 검사 파일을 유지한다면 두 명령을 프로젝트 지침과 README에 같은 문자열로 남기고, 기존 CI의 G-docs-test도 제한된 pattern으로 갱신하세요.
 
 ### v1.7 — 템플릿 소개 README 분리와 러너 불문 CI 게이트
 

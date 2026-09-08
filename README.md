@@ -64,7 +64,7 @@ AI 코딩 에이전트와 사람이 **같은 문서 체계, 설계 절차, 리�
 
 ```text
 python scripts/check-docs.py
-python -m unittest discover -s tests -v
+python -m unittest discover -s tests -p 'test_check_docs.py' -v
 ```
 
 적용을 마친 저장소에서도 `scripts/check-docs.py`는 동작합니다. 원본 템플릿의 placeholder 잔존은 이 검사가 실패로 보지 않습니다. 같은 게이트를 원격 CI에 붙이는 순서와 체크리스트는 [CI.md](./docs/CI.md)를 따릅니다.

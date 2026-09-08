@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.7
+- **Template version:** 1.7.1
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (미커밋 변경 포함 시 미확정)
 - **Owner:** 프로젝트에 맞게 작성
@@ -148,6 +148,6 @@
 
 ## Maintenance
 
-문서 이동·이름 변경 시 들어오는 링크와 코드·테스트·도구 참조를 함께 갱신합니다. 파일 번호 변경도 rename입니다. 결정이 많아지면 기존 ADR 체계나 상세 설계로 분리하고 PROJECT에 정본을 연결합니다. 링크·스킬 사본·Codex 명시 호출 정책값·import·불변조건 복제본·절 번호 참조·Template version은 `scripts/check-docs.py`로 확인합니다. 검사 스크립트 수정 시 `python -m unittest discover -s tests -v`로 회귀 테스트를 실행합니다.
+문서 이동·이름 변경 시 들어오는 링크와 코드·테스트·도구 참조를 함께 갱신합니다. 파일 번호 변경도 rename입니다. 결정이 많아지면 기존 ADR 체계나 상세 설계로 분리하고 PROJECT에 정본을 연결합니다. 링크·스킬 사본·Codex 명시 호출 정책값·import·불변조건 복제본·절 번호 참조·Template version은 `scripts/check-docs.py`로 확인합니다. 검사 스크립트 수정 시 `python -m unittest discover -s tests -p 'test_check_docs.py' -v`로 회귀 테스트를 실행합니다.
 
 템플릿 개정은 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §5에 따라 원본 revision끼리 비교하고, 적용 프로젝트의 의도적인 변경을 보존합니다. 기존 파일을 일괄 덮어쓰지 않습니다.
