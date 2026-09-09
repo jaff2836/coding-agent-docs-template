@@ -82,7 +82,7 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
 |---|---|---|---|
 | Draft 문서 구조 | `fb70176`에서 분기한 미커밋 설계 문서와 T-001 | `python3 scripts/check-docs.py`; `python3 -m unittest discover -s tests -p 'test_check_docs.py' -v`; `git diff --check` | 통과 — 상대 링크 265개, 절 참조 60건, 문서 검사 6개. 구현 artifact 검증은 미실행 |
 | 참조 구현 조사 | `claude-code-pr-review` `origin/main` `a828f26ac0480ae2b6287c475f2c28a9e97cd9ab` | installer, package_release, locale checker와 tests 읽기 | locale bundle 패턴 재사용 가능. 자동 update는 이 템플릿에 부적합 |
-| W-001 source boundary | PR #3의 `5cf896b` 이후 미커밋 작업 트리 | manifest/실제/baseline path 집합 대조, 25개 byte 비교, common+ko 임시 materialize 후 G-docs·G-docs-test, root G-docs·G-docs-test, `git diff --check` | 통과 — output 28개, root 검사 7건·ko artifact 검사 6건. commit 후 exact SHA로 갱신 필요 |
+| W-001 source boundary | 구현 commit `01240fb0dbd5ac1c1fa61c76a1208c4197ba456f` | manifest/실제/baseline path 집합 대조, 25개 byte 비교, common+ko 임시 materialize 후 G-docs·G-docs-test, root G-docs·G-docs-test, `git diff --check` | 통과 — output 28개, root 검사 7건·ko artifact 검사 6건. release artifact와 소비자 E2E는 후속 단계 |
 
 ## 4. 변경·재검증 기록
 
