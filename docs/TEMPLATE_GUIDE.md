@@ -119,16 +119,16 @@ grep -rnE "\{\{|프로젝트에 맞게 작성|간단히 작성|YYYY-MM-DD|\| 예
 적용을 마쳤거나 문서를 옮긴 뒤에는 `scripts/check-docs.py`를 실행하세요. 상대 링크, `.agents`/`.claude` 스킬 사본과 Codex 명시 호출 정책값, `CLAUDE.md`와 `.omp/WATCHDOG.md`의 `@` import, [REVIEW.md](./REVIEW.md) §6과 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)의 불변조건 목록, 문서를 지목한 절 번호 참조, 안내 문서의 `Template version`을 한 번에 확인하고, 실패하면 종료 코드가 0이 아닙니다. 표준 라이브러리만 사용합니다.
 
 ```bash
-python scripts/check-docs.py
+python3 scripts/check-docs.py
 ```
 
 템플릿 원본의 검사 스크립트를 바꿀 때는 실패 경로 회귀 테스트도 실행합니다.
 
 ```bash
-python -m unittest discover -s tests -p 'test_check_docs.py' -v
+python3 -m unittest discover -s tests -p 'test_check_docs.py' -v
 ```
 
-`python`이 없으면 `python3`을 사용하세요. 파일 이동은 내용이 바뀌지 않아도 링크를 깨뜨립니다. 이 문서를 §5에 따라 삭제한 저장소에서도 검사는 그대로 동작하며, 판 기록은 [DOCS_GUIDE.md](./DOCS_GUIDE.md)에서만 확인합니다. 절 번호 검사는 문서를 지목한 참조(`REVIEW.md §6`, `PROJECT §8` 등)만 대상으로 하며, 대상이 모호한 같은 파일 안의 `§4` 같은 참조와 §6 릴리스 이력의 옛 절 번호는 제외합니다. 생성물 디렉터리(`dist`, `build`, `target`, `vendor` 등)는 검사에서 건너뜁니다. 이 검사는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니다. placeholder 검색은 위의 `rg`/`grep` 명령을 사용하세요.
+위 명령은 `python3`을 기준으로 합니다. 파일 이동은 내용이 바뀌지 않아도 링크를 깨뜨립니다. 이 문서를 §5에 따라 삭제한 저장소에서도 검사는 그대로 동작하며, 판 기록은 [DOCS_GUIDE.md](./DOCS_GUIDE.md)에서만 확인합니다. 절 번호 검사는 문서를 지목한 참조(`REVIEW.md §6`, `PROJECT §8` 등)만 대상으로 하며, 대상이 모호한 같은 파일 안의 `§4` 같은 참조와 §6 릴리스 이력의 옛 절 번호는 제외합니다. 생성물 디렉터리(`dist`, `build`, `target`, `vendor` 등)는 검사에서 건너뜁니다. 이 검사는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니다. placeholder 검색은 위의 `rg`/`grep` 명령을 사용하세요.
 
 | Placeholder | 작성할 내용 |
 |---|---|

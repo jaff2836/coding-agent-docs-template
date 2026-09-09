@@ -49,8 +49,8 @@
 
 | ID | 게이트 | 명령의 정본 | 필수인 때 | 건너뛰는 때 |
 | --- | --- | --- | --- | --- |
-| G-docs | 문서 검사 | `python scripts/check-docs.py` | 이 템플릿의 `scripts/check-docs.py`를 유지하는 저장소 | 스크립트를 적용 저장소에서 제거한 경우. 제거했다면 들어오는 안내 링크도 정리 |
-| G-docs-test | 문서 검사 회귀 | `python -m unittest discover -s tests -p 'test_check_docs.py' -v` | `scripts/check-docs.py` 또는 `tests/test_check_docs.py`를 바꾼 변경. 템플릿 원본 저장소는 상시 | 적용 저장소에서 검사 스크립트를 바꾸지 않은 일상 변경. 테스트 파일을 제거했다면 G-docs만 유지 |
+| G-docs | 문서 검사 | `python3 scripts/check-docs.py` | 이 템플릿의 `scripts/check-docs.py`를 유지하는 저장소 | 스크립트를 적용 저장소에서 제거한 경우. 제거했다면 들어오는 안내 링크도 정리 |
+| G-docs-test | 문서 검사 회귀 | `python3 -m unittest discover -s tests -p 'test_check_docs.py' -v` | `scripts/check-docs.py` 또는 `tests/test_check_docs.py`를 바꾼 변경. 템플릿 원본 저장소는 상시 | 적용 저장소에서 검사 스크립트를 바꾸지 않은 일상 변경. 테스트 파일을 제거했다면 G-docs만 유지 |
 | G-lint | 린트 | AGENTS.md / README의 Lint | 해당 명령이 `N/A`가 아니고 검증된 때 | 미설정 placeholder, `N/A`, 또는 미검증으로 기록된 때 |
 | G-type | 타입 검사 | AGENTS.md / README의 Typecheck | 위와 같음 | 위와 같음 |
 | G-test | 프로젝트 테스트 | AGENTS.md / README의 Test | 위와 같음 | 위와 같음 |

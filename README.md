@@ -58,11 +58,11 @@ Origin 같은 Git 호스트에는 source와 변경 이력을 보관합니다. �
 
 ## 이 템플릿 저장소에서 검사하기
 
-문서 검사와 검사 스크립트의 회귀 테스트는 표준 라이브러리만 사용합니다. `python`이 없으면 `python3`을 쓰세요.
+문서 검사와 검사 스크립트의 회귀 테스트는 Python 3 표준 라이브러리만 사용하며, 아래 명령은 `python3`을 기준으로 합니다.
 
 ```text
-python scripts/check-docs.py
-python -m unittest discover -s tests -p 'test_check_docs.py' -v
+python3 scripts/check-docs.py
+python3 -m unittest discover -s tests -p 'test_check_docs.py' -v
 ```
 
 적용을 마친 저장소에서도 `scripts/check-docs.py`는 동작합니다. 원본 템플릿의 placeholder 잔존은 이 검사가 실패로 보지 않습니다. 같은 게이트를 원격 CI에 붙이는 순서와 체크리스트는 [CI.md](./docs/CI.md)를 따릅니다.
