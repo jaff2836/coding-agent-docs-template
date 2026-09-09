@@ -7,6 +7,8 @@ disable-model-invocation: true
 
 # Review Round
 
+<!-- template-skill-contract:review-round:v1 -->
+
 **사용자가 이 스킬을 명시적으로 호출한 경우에만 실행하세요.** 모델 판단으로 자동 실행하지 마세요. 이 절차는 commit과 merge를 수행합니다.
 
 1. `docs/REVIEW_ROUND.md`를 읽고 그 절차를 그대로 적용합니다. → [docs/REVIEW_ROUND.md](../../../docs/REVIEW_ROUND.md)

@@ -1,0 +1,494 @@
+#!/usr/bin/env python3
+"""Dependency-free checks for the documentation template.
+
+Checks relative links, skill copies and the Codex explicit-invocation policy,
+known @imports, invariant lists in REVIEW and BUGBOT, section-number references
+that identify a document, and the Template version in the guide documents. Any
+failure produces exit code 1. Paths are relative to the repository root and the
+current working directory may be elsewhere.
+"""
+
+from __future__ import annotations
+
+import re
+import sys
+from pathlib import Path
+from typing import List, Optional, Tuple
+
+ROOT = Path(__file__).resolve().parent.parent
+
+SKIP_DIR_NAMES = {
+    ".git",
+    "node_modules",
+    ".venv",
+    "venv",
+    "__pycache__",
+    # Generated and vendored directories. Avoid false positives in adopted repos.
+    "dist",
+    "build",
+    "target",
+    "vendor",
+    ".next",
+    ".tox",
+    ".mypy_cache",
+    ".pytest_cache",
+    "site-packages",
+}
+
+LINK_RE = re.compile(r"\]\(((?!https?://)(?!mailto:)[^)\s#]+?)(?:#[^)]*)?\)")
+VERSION_RE = re.compile(
+    r"^\s*-\s*\*\*Template version:\*\*\s*(\S+)", re.MULTILINE
+)
+IMPORT_LINE_RE = re.compile(r"^@([^\s]+)\s*$")
+HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
+
+# Example line used only as guidance in the template. Exclude it from comparison.
+EXAMPLE_BULLET_PREFIX = "- **Example:"
+
+HEADING_NUM_RE = re.compile(r"^#{1,6}\s+(\d+(?:\.\d+)*)[.\s]")
+SECTION_GROUP = r"§\d+(?:\.\d+)*(?:·§\d+(?:\.\d+))*"
+SECTION_LINK_RE = re.compile(
+    r"\]\(((?!https?://)[^)\s#]+?\.md)\)\s*(" + SECTION_GROUP + ")"
+)
+SECTION_PATH_RE = re.compile(r"`([^`\s]+\.md)`\s*(" + SECTION_GROUP + ")")
+SECTION_NAME_RE = re.compile(r"\b([A-Z][A-Z_]*)(?:\.md)?\s+(" + SECTION_GROUP + ")")
+SECTION_SPLIT_RE = re.compile(r"[§·]+")
+
+# Release history intentionally quotes old filenames and section numbers to
+# describe the structure of that version (see TEMPLATE_GUIDE.md).
+HISTORY_SECTION: Tuple[str, str] = (
+    "docs/TEMPLATE_GUIDE.md",
+    "Template Revision History",
+)
+
+SKILL_PAIRS: List[Tuple[str, str]] = [
+    (
+        ".agents/skills/design/SKILL.md",
+        ".claude/skills/design/SKILL.md",
+    ),
+    (
+        ".agents/skills/review-round/SKILL.md",
+        ".claude/skills/review-round/SKILL.md",
+    ),
+]
+
+# Codex configuration that blocks implicit invocation and its paired skill source.
+SKILL_CONFIGS: List[Tuple[str, str]] = [
+    (
+        ".agents/skills/review-round/SKILL.md",
+        ".agents/skills/review-round/agents/openai.yaml",
+    ),
+]
+
+# Source of truth and copy of the invariant list. Find by heading text because
+# section numbers may vary between repositories.
+INVARIANT_SOURCE: Tuple[str, str] = ("docs/REVIEW.md", "Project-specific Invariants")
+INVARIANT_COPY: Tuple[str, str] = (".cursor/BUGBOT.md", "Invariants")
+
+
+def is_skipped(path: Path) -> bool:
+    try:
+        parts = path.relative_to(ROOT).parts
+    except ValueError:
+        parts = path.parts
+    return any(part in SKIP_DIR_NAMES for part in parts)
+
+
+def md_files() -> List[Path]:
+    files = []
+    for path in ROOT.rglob("*.md"):
+        if is_skipped(path):
+            continue
+        files.append(path)
+    return sorted(files)
+
+
+def rel(path: Path) -> str:
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return str(path)
+
+
+def check_relative_links(errors: List[str], notes: List[str]) -> None:
+    broken = []
+    scanned = 0
+    links = 0
+    for md in md_files():
+        scanned += 1
+        text = md.read_text(encoding="utf-8")
+        for match in LINK_RE.finditer(text):
+            target = match.group(1)
+            links += 1
+            dest = (md.parent / target)
+            if not dest.exists():
+                broken.append("%s: %s" % (rel(md), target))
+    if broken:
+        errors.append("Broken relative links:")
+        errors.extend("  %s" % item for item in broken)
+    else:
+        notes.append(
+            "Relative links: checked %d links in %d files; none broken"
+            % (links, scanned)
+        )
+
+
+def check_skill_copies(errors: List[str], notes: List[str]) -> None:
+    for left, right in SKILL_PAIRS:
+        a = ROOT / left
+        b = ROOT / right
+        if not a.is_file() and not b.is_file():
+            errors.append("Skill files are missing: %s, %s" % (left, right))
+            continue
+        if not a.is_file():
+            errors.append("Skill source is missing: %s" % left)
+            continue
+        if not b.is_file():
+            notes.append("Skill copy omitted (allowed): %s" % right)
+            continue
+        if a.read_bytes() != b.read_bytes():
+            errors.append("Skill copies differ: %s ↔ %s" % (left, right))
+        else:
+            notes.append("Skill copies match: %s" % left)
+
+
+def read_implicit_invocation_policy(path: Path) -> Optional[bool]:
+    """Read the policy.allow_implicit_invocation boolean from Codex config.
+
+    This narrowly validates the mapping form generated by the template rather
+    than parsing all YAML. Quoted strings and duplicate keys are not accepted
+    as the policy boolean.
+    """
+    lines = path.read_text(encoding="utf-8").splitlines()
+    policy_indexes = [
+        index
+        for index, line in enumerate(lines)
+        if re.fullmatch(r"policy:\s*(?:#.*)?", line)
+    ]
+    if len(policy_indexes) != 1:
+        return None
+
+    entries = []
+    for line in lines[policy_indexes[0] + 1 :]:
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        indent = len(line) - len(line.lstrip(" "))
+        if indent == 0 or line.startswith("\t"):
+            break
+        entries.append((indent, line.strip()))
+
+    if not entries:
+        return None
+    child_indent = min(indent for indent, _ in entries)
+    values = []
+    for indent, entry in entries:
+        if indent != child_indent:
+            continue
+        match = re.fullmatch(
+            r"allow_implicit_invocation:\s*(true|false)\s*(?:#.*)?",
+            entry,
+            re.IGNORECASE,
+        )
+        if match:
+            values.append(match.group(1).lower() == "true")
+    return values[0] if len(values) == 1 else None
+
+
+def check_skill_configs(errors: List[str], notes: List[str]) -> None:
+    for skill, config in SKILL_CONFIGS:
+        if not (ROOT / skill).is_file():
+            continue
+        config_path = ROOT / config
+        if not config_path.is_file():
+            errors.append(
+                "Codex explicit-invocation config is missing: %s "
+                "(implicit invocation is enabled for %s)"
+                % (config, skill)
+            )
+            continue
+        policy = read_implicit_invocation_policy(config_path)
+        if policy is None:
+            errors.append(
+                "Codex explicit-invocation policy is not a valid boolean: %s "
+                "(policy.allow_implicit_invocation: false is required)" % config
+            )
+        elif policy:
+            errors.append(
+                "Codex implicit invocation is enabled: %s "
+                "(policy.allow_implicit_invocation: false is required)" % config
+            )
+        else:
+            notes.append("Codex explicit-invocation policy verified: %s" % config)
+
+
+def check_imports(errors: List[str], notes: List[str]) -> None:
+    claude = ROOT / "CLAUDE.md"
+    if not claude.is_file():
+        errors.append("CLAUDE.md is missing")
+    else:
+        body = claude.read_text(encoding="utf-8").strip()
+        if body != "@AGENTS.md":
+            errors.append("CLAUDE.md import is not @AGENTS.md: %r" % body)
+        else:
+            notes.append("CLAUDE.md import: @AGENTS.md")
+
+    watchdog = ROOT / ".omp" / "WATCHDOG.md"
+    if not watchdog.is_file():
+        notes.append("WATCHDOG.md omitted (allowed)")
+        return
+
+    imports = []
+    for line in watchdog.read_text(encoding="utf-8").splitlines():
+        match = IMPORT_LINE_RE.match(line)
+        if match:
+            imports.append(match.group(1))
+    if not imports:
+        errors.append(".omp/WATCHDOG.md has no @path import")
+        return
+    for spec in imports:
+        dest = watchdog.parent / spec
+        if not dest.is_file():
+            errors.append(".omp/WATCHDOG.md import target is missing: %s" % spec)
+        else:
+            notes.append("WATCHDOG.md import: @%s" % spec)
+
+
+def section_bullets(text: str, heading_needle: str) -> Optional[List[str]]:
+    """Find a section by heading text and return complete top-level bullets."""
+    lines = text.splitlines()
+    start = None
+    level = 0
+    for index, line in enumerate(lines):
+        match = HEADING_RE.match(line)
+        if match and heading_needle in match.group(2):
+            start = index + 1
+            level = len(match.group(1))
+            break
+    if start is None:
+        return None
+
+    bullets = []
+    current: Optional[List[str]] = None
+    bullet_indent: Optional[int] = None
+    skip_current = False
+    for line in lines[start:]:
+        match = HEADING_RE.match(line)
+        if match and len(match.group(1)) <= level:
+            break
+        stripped = line.strip()
+        bullet_match = re.match(r"^(\s*)-\s+", line)
+        if bullet_match and bullet_indent is None:
+            bullet_indent = len(bullet_match.group(1))
+        if bullet_match and len(bullet_match.group(1)) == bullet_indent:
+            if current is not None and not skip_current:
+                bullets.append("\n".join(current))
+            current = [stripped]
+            skip_current = stripped.startswith(EXAMPLE_BULLET_PREFIX)
+            continue
+        indent = len(line) - len(line.lstrip(" "))
+        if current is not None and stripped and indent > (bullet_indent or 0):
+            current.append(stripped)
+    if current is not None and not skip_current:
+        bullets.append("\n".join(current))
+    return bullets
+
+
+def numbered_headings(path: Path) -> set:
+    numbers = set()
+    for line in path.read_text(encoding="utf-8").splitlines():
+        match = HEADING_NUM_RE.match(line)
+        if match:
+            numbers.add(match.group(1))
+    return numbers
+
+
+def doc_short_names() -> dict:
+    """Collect short docs/ names for references such as `PROJECT §8`."""
+    names = {}
+    for path in sorted((ROOT / "docs").glob("*.md")):
+        names[re.sub(r"^\d+-", "", path.stem)] = path
+    return names
+
+
+def history_cut() -> Optional[Tuple[Path, int]]:
+    """Return where release history starts; section refs after it are skipped."""
+    path_name, needle = HISTORY_SECTION
+    path = ROOT / path_name
+    if not path.is_file():
+        return None
+    offset = 0
+    for line in path.read_text(encoding="utf-8").splitlines(keepends=True):
+        match = HEADING_RE.match(line.rstrip("\n"))
+        if match and needle in match.group(2):
+            return (path, offset)
+        offset += len(line)
+    return None
+
+
+def check_section_refs(errors: List[str], notes: List[str]) -> None:
+    """Validate section refs that name a document, such as `REVIEW.md §6`.
+
+    Same-file references such as `§4` do not identify their target document and
+    are therefore not checked.
+    """
+    names = doc_short_names()
+    cut_at = history_cut()
+    headings: dict = {}
+    broken: List[str] = []
+    checked = 0
+
+    for md in md_files():
+        text = md.read_text(encoding="utf-8")
+        limit = len(text)
+        if cut_at and md == cut_at[0]:
+            limit = cut_at[1]
+        for regex, kind in (
+            (SECTION_LINK_RE, "path"),
+            (SECTION_PATH_RE, "path"),
+            (SECTION_NAME_RE, "name"),
+        ):
+            for match in regex.finditer(text):
+                if match.start() >= limit:
+                    continue
+                ref, group = match.group(1), match.group(2)
+                if kind == "name":
+                    target = names.get(ref)
+                else:
+                    target = next(
+                        (c for c in (md.parent / ref, ROOT / ref) if c.is_file()),
+                        None,
+                    )
+                if target is None:
+                    if kind == "path":
+                        broken.append(
+                            "%s: %s %s (document target does not exist)"
+                            % (rel(md), ref, group)
+                        )
+                    continue
+                target = target.resolve()
+                if target not in headings:
+                    headings[target] = numbered_headings(target)
+                for number in filter(None, SECTION_SPLIT_RE.split(group)):
+                    checked += 1
+                    if number not in headings[target]:
+                        broken.append(
+                            "%s: %s §%s (section does not exist in %s)"
+                            % (rel(md), ref, number, rel(target))
+                        )
+
+    if broken:
+        errors.append("Section-number references do not match actual headings:")
+        errors.extend("  %s" % item for item in sorted(set(broken)))
+    else:
+        notes.append("Section-number references: checked %d; no mismatches" % checked)
+
+
+def check_invariants(errors: List[str], notes: List[str]) -> None:
+    copy_path, copy_needle = INVARIANT_COPY
+    copy_file = ROOT / copy_path
+    if not copy_file.is_file():
+        notes.append("BUGBOT.md omitted (allowed)")
+        return
+
+    source_path, source_needle = INVARIANT_SOURCE
+    source_file = ROOT / source_path
+    if not source_file.is_file():
+        errors.append("Cannot compare invariants because %s is missing" % source_path)
+        return
+
+    source = section_bullets(source_file.read_text(encoding="utf-8"), source_needle)
+    copy = section_bullets(copy_file.read_text(encoding="utf-8"), copy_needle)
+    if source is None:
+        errors.append(
+            "Heading `%s` was not found in %s" % (source_needle, source_path)
+        )
+    if copy is None:
+        errors.append("Heading `%s` was not found in %s" % (copy_needle, copy_path))
+    if source is None or copy is None:
+        return
+
+    if source == copy:
+        notes.append("Invariant lists match: %d items" % len(source))
+        return
+
+    errors.append("Invariant lists differ: %s ↔ %s" % (source_path, copy_path))
+    for item in source:
+        if item not in copy:
+            errors.append("  Only in %s: %s" % (source_path, item))
+    for item in copy:
+        if item not in source:
+            errors.append("  Only in %s: %s" % (copy_path, item))
+
+
+def read_template_version(path: Path) -> Optional[str]:
+    if not path.is_file():
+        return None
+    match = VERSION_RE.search(path.read_text(encoding="utf-8"))
+    return match.group(1) if match else None
+
+
+def check_versions(errors: List[str], notes: List[str]) -> None:
+    guide = ROOT / "docs" / "TEMPLATE_GUIDE.md"
+    docs_guide = ROOT / "docs" / "DOCS_GUIDE.md"
+    v2 = read_template_version(docs_guide)
+    if v2 is None:
+        errors.append("Template version not found in docs/DOCS_GUIDE.md")
+
+    # TEMPLATE_GUIDE.md may be deleted after adoption (TEMPLATE_GUIDE.md §5).
+    if not guide.is_file():
+        notes.append(
+            "TEMPLATE_GUIDE.md omitted (allowed): checking version only in "
+            "DOCS_GUIDE.md"
+        )
+        if v2:
+            notes.append("Template version: %s" % v2)
+        return
+
+    v1 = read_template_version(guide)
+    if v1 is None:
+        errors.append("Template version not found in docs/TEMPLATE_GUIDE.md")
+    if v1 and v2 and v1 != v2:
+        errors.append(
+            "Template versions differ: TEMPLATE_GUIDE=%s, DOCS_GUIDE=%s"
+            % (v1, v2)
+        )
+    elif v1 and v2:
+        notes.append("Template versions match: %s" % v1)
+        history = guide.read_text(encoding="utf-8")
+        if ("### v%s" % v1) not in history and ("### %s" % v1) not in history:
+            errors.append(
+                "Current version is absent from TEMPLATE_GUIDE.md history: %s" % v1
+            )
+        else:
+            notes.append("Current version is present in revision history: %s" % v1)
+
+
+def main() -> int:
+    if not (ROOT / "AGENTS.md").is_file():
+        sys.stderr.write(
+            "AGENTS.md was not found at the repository root: %s\n"
+            "Place check-docs.py under the repository's scripts/ directory.\n" % ROOT
+        )
+        return 2
+    errors: List[str] = []
+    notes: List[str] = []
+    check_relative_links(errors, notes)
+    check_skill_copies(errors, notes)
+    check_skill_configs(errors, notes)
+    check_imports(errors, notes)
+    check_invariants(errors, notes)
+    check_section_refs(errors, notes)
+    check_versions(errors, notes)
+    for line in notes:
+        sys.stdout.write(line + "\n")
+    if errors:
+        sys.stderr.write("FAILED:\n")
+        for line in errors:
+            sys.stderr.write(line + "\n")
+        return 1
+    sys.stdout.write("All checks passed\n")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

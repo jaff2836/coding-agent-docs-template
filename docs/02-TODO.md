@@ -17,7 +17,7 @@
 - **Name:** v2 다국어 템플릿 source·배포 구조
 - **Goal:** `en`·`ko` locale source에서 검증된 단일-locale artifact를 만들고 비파괴 installer로 선택 설치할 수 있는 승인된 설계와 구현
 - **Target:** 미정
-- **Status:** In Progress — 설계 Draft, 구현 미승인
+- **Status:** In Progress — SPEC Accepted, W-002 구현 중
 
 ## 운영 규칙
 
@@ -37,8 +37,8 @@
 - [ ] **T-001 다국어 템플릿 source와 선택형 배포 도입**
   - 변경-ID: `2026-09-09-multilingual-template`
   - 범위·우선순위: BCP 47 `en`·`ko` source, common payload, deterministic artifact·manifest, 비파괴 installer와 locale 회귀 검사. v2 공개 전 우선
-  - 선행조건: [Draft SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md)의 사용자 승인, PR #2의 `v1.7.1` 변경 통합 기준 확정
-  - 관련 결정·SPEC: 결정 ID 미발급 — [SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md)
+  - 선행조건: [Accepted SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md), PR #2의 `v1.7.1` 변경과 PR #3 W-001 통합 완료
+  - 관련 결정·SPEC: [D-002](./00-PROJECT.md#8-decisions) — [SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md)
   - 상세 실행의 정본: [PLAN](./changes/2026-09-09-multilingual-template/03-PLAN.md)
   - 통합 완료 조건: 승인된 구현이 정확한 `main`에 반영되고 `en`·`ko` deterministic artifact 검사와 실제 Claude·Codex·Cursor·OMP 소비자 E2E가 통과. tag·GitHub release는 별도 위임
 
@@ -48,7 +48,7 @@
 
 ## Blocked
 
-없음. T-001 구현은 차단이 아니라 설계 승인 대기 상태입니다.
+없음. release host와 bootstrap URL은 W-005 이전에 확정합니다.
 
 ## Backlog
 
