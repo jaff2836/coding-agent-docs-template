@@ -1,8 +1,8 @@
 # Template Guide
 
-이 문서는 문서 중심 프로젝트 템플릿의 source 관리와 적용 안내입니다. 이 템플릿 저장소의 소개는 루트 [README.md](../README.md)에 있고, 한국어 적용 프로젝트의 소개·설치·실행 양식은 [locales/ko/README.md](../locales/ko/README.md)입니다.
+이 문서는 문서 중심 프로젝트 템플릿의 최초 적용 안내입니다. locale artifact의 루트 [README.md](../README.md)는 적용 프로젝트의 소개·설치·실행 양식이며, 템플릿 source 저장소의 소개문은 artifact에 포함되지 않습니다.
 
-v2 source root는 적용 payload가 아니므로 직접 복사하지 않습니다. locale별 exporter·installer가 완성되기 전에는 `v1.7.1` 기준 commit `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`을 사용합니다. 특정 CI 제품의 pipeline 파일은 포함하지 않으며 품질 게이트의 순서와 연결 확인은 [CI.md](./CI.md)를 따릅니다.
+초기화 스크립트, GitHub Actions용 리뷰 프롬프트 및 자동 리뷰 실행 구성, 특정 CI 제품의 pipeline 파일은 포함하지 않습니다. 파일을 복사하고 프로젝트 값을 직접 채우는 방식입니다. 품질 게이트의 순서와 연결 확인은 [CI.md](./CI.md)를 따릅니다.
 
 ## Metadata
 
@@ -20,27 +20,56 @@ v2 source root는 적용 payload가 아니므로 직접 복사하지 않습니�
 
 ```text
 .
-├── README.md                  # source 저장소 소개, artifact 제외
-├── AGENTS.md                  # source 저장소 유지관리 지침, artifact 제외
-├── docs/                      # source 저장소 설계·TODO, artifact 제외
-├── template/common/           # 언어 비의존 payload source
-├── locales/
-│   ├── manifest.json          # locale 상태와 닫힌 output inventory
-│   └── ko/                    # 한국어 payload source
-│       ├── README.md          # artifact root README
-│       ├── AGENTS.md
-│       ├── docs/
-│       ├── scripts/
-│       └── tests/
-├── scripts/                   # source 저장소 검사·향후 exporter/packager
-└── tests/                     # source 저장소 회귀 테스트
+├── README.md                  # 선택한 locale의 적용 프로젝트 README 양식
+├── AGENTS.md                  # AI 개발 도구의 공통 프로젝트 지침
+├── CLAUDE.md                  # @AGENTS.md 참조
+├── LICENSE                    # 템플릿 자체의 MIT 라이선스. 프로젝트 라이선스로 교체
+├── .gitignore
+├── scripts/
+│   └── check-docs.py          # 의존성 없는 문서 검사: 링크·스킬 정책·import·버전
+├── tests/
+│   └── test_check_docs.py     # 문서 검사의 실패 경로 회귀 테스트
+├── .agents/
+│   └── skills/
+│       ├── design/
+│       │   └── SKILL.md       # 변경 설계 절차 진입점: Codex, Cursor, OMP
+│       └── review-round/
+│           ├── SKILL.md       # 리뷰 라운드 진입점: Codex, Cursor, OMP
+│           └── agents/openai.yaml  # Codex의 명시 호출 전용 설정
+├── .claude/
+│   └── skills/
+│       ├── design/
+│       │   └── SKILL.md       # 변경 설계 절차 진입점: Claude Code
+│       └── review-round/
+│           └── SKILL.md       # 리뷰 라운드 진입점: Claude Code
+├── .cursor/
+│   └── BUGBOT.md              # 선택 사항: 리뷰 판정 기준 복제본
+├── .omp/
+│   └── WATCHDOG.md            # 선택 사항: OMP advisor 전용 리뷰 우선순위. REVIEW.md를 import
+└── docs/
+    ├── DOCS_GUIDE.md          # 문서 인덱스·운영 규칙·적용 완료 체크리스트
+    ├── TEMPLATE_GUIDE.md      # 이 문서: 최초 적용 방법
+    ├── 00-PROJECT.md          # 제품 기준·기본 설계·결정·설계 인덱스
+    ├── 01-DESIGN.md           # 공통 설계 절차
+    ├── 02-TODO.md             # 전역 변경 목록·우선순위·의존성·통합 결과
+    ├── 10-EXTENSION.md        # 선택형 확장 설계·단계별 완료 조건
+    ├── changes/
+    │   └── _template/        # 복사용 양식. 실제 작업은 별도 변경-ID 폴더
+    │       ├── 01-CHANGE.md   # 합본형: Intent·Spec을 한 파일에
+    │       ├── 01-INTENT.md   # 요청·문제·기대 결과
+    │       ├── 02-SPEC.md     # 요구사항·시나리오·설계
+    │       └── 03-PLAN.md     # 선택형 상세 작업·검증 기록
+    ├── REVIEW.md              # 공통 PR 리뷰 정책
+    ├── REVIEW_ROUND.md        # 리뷰 라운드 절차와 권한 위임 범위
+    ├── PROJECT_ANALYSIS.md    # 요청 시 사용하는 전체 분석 절차
+    └── CI.md                  # 러너 불문의 품질 게이트 워크플로·연결 체크리스트
 ```
 
 ## 2. 새 프로젝트에 적용하기
 
-1. v2 exporter·installer가 구현되기 전에는 source root를 복사하지 말고 `v1.7.1` 기준 commit `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`을 사용합니다. 구현 후에는 exact version과 locale을 지정한 검증된 artifact만 적용합니다.
-2. locale artifact의 root `README.md`는 이미 적용 프로젝트용 양식입니다. source 저장소 소개문이나 maintainer 문서는 artifact에 포함하지 않습니다.
-3. artifact의 `AGENTS.md` 프로젝트 정보와 명령을 실제 저장소에 맞게 작성합니다. README의 실행 방법과 서로 일치하도록 확인하세요.
+1. 검증된 locale artifact를 빈 프로젝트 폴더에 설치하고 §5에 따라 version·source commit을 두 안내 문서에 기록합니다. 숨김 항목인 `.agents/`, `.claude/`, `.cursor/`, `.omp/`와 `.gitignore`, `docs/changes/_template/`의 네 양식도 artifact inventory에 포함되었는지 확인하세요. source 저장소 root를 직접 복사하지 마세요.
+2. 루트 [README.md](../README.md)는 이미 선택한 locale의 적용 프로젝트 양식입니다. 프로젝트 이름, 설명, 요구사항, 설치·실행·검증 방법, 보안 안내 및 라이선스를 작성합니다.
+3. [AGENTS.md](../AGENTS.md)의 프로젝트 정보와 명령을 실제 저장소에 맞게 작성합니다. README의 실행 방법과 서로 일치하도록 확인하세요.
 4. 아래 placeholder와 예시 항목을 교체합니다.
 5. [00-PROJECT.md](./00-PROJECT.md)에 현재 제품 기준과 승인된 목표를 구분하고 기존 설계의 정본을 연결합니다. [02-TODO.md](./02-TODO.md)에 통합 대상과 첫 마일스톤의 변경 단위 항목을 작성합니다. 변경별 PLAN이 있으면 상세 작업·검증 상태는 PLAN에만 둡니다. 장기 확장이 없으면 `10-EXTENSION.md`와 들어오는 링크를 제거합니다.
 6. [REVIEW.md](./REVIEW.md)에 프로젝트 고유 불변조건과 실제 승인된 예외만 기록합니다.

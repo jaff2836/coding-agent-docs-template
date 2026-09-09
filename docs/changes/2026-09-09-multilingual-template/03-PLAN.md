@@ -9,7 +9,7 @@
 - **Global task:** [02-TODO.md](../../02-TODO.md)의 T-001
 - **Owner:** Chae Sangwon
 - **Baseline:** `fb7017624ec1ac11cbc6d00df9a8e3916ace5262` (`codex/v1.7.1-ci-doc-fixes`)
-- **Integration target:** Origin PR #2의 `v1.7.1` 변경이 `main`에 반영된 뒤 그 정확한 head
+- **Integration target:** Origin PR #2 merge commit `113a6a58f9b03707fe8050b5673d3437b9895d03` 이후의 정확한 `main`
 - **Scope:** locale/common source 분리, `en`·`ko` payload, export·package·installer, manifest/schema, 문서·locale 검사와 migration 문서. GitHub 생성·release 게시 제외
 
 아래 체크 완료는 구현 branch에서의 구현·검증 완료이며 merge·tag·GitHub release·도구 지원 검증을 뜻하지 않습니다.
@@ -27,12 +27,12 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
 
 ## 2. 작업 체크리스트
 
-- [ ] **W-001 저장소 관리 영역과 payload source 분리**
+- [x] **W-001 저장소 관리 영역과 payload source 분리**
   - 범위·변경 파일: root `AGENTS.md`, `docs/`, `template/common/`, `locales/manifest.json`, `locales/ko/`
   - 대응 요구사항: R-002, R-003, R-004, R-010
-  - 선행조건: SPEC 승인, PR #2의 통합 기준 확정
+  - 선행조건: 이 단계의 사용자 승인 완료, PR #2가 `113a6a58f9b03707fe8050b5673d3437b9895d03`으로 통합됨
   - 검증 방법: `fb70176` tracked payload inventory와 새 common+ko artifact의 path·byte 비교. 이 변경 폴더와 maintainer TODO가 artifact에 없음을 검사
-  - 결과·근거: 미실행
+  - 결과·근거: `locales/manifest.json`의 28개 output path가 common 4개와 ko 24개로 충돌 없이 닫혔습니다. baseline 25개는 byte-identical이고 README 계약 3개만 승인된 변환이며 source landing README만 제외했습니다. root와 materialized ko artifact의 문서 검사·회귀 테스트가 통과했습니다.
 
 - [ ] **W-002 영어 locale과 locale별 도구 계약 작성**
   - 범위·변경 파일: `locales/en/`, `locales/ko/`, locale manifest, stable section marker
@@ -82,11 +82,13 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
 |---|---|---|---|
 | Draft 문서 구조 | `fb70176`에서 분기한 미커밋 설계 문서와 T-001 | `python3 scripts/check-docs.py`; `python3 -m unittest discover -s tests -p 'test_check_docs.py' -v`; `git diff --check` | 통과 — 상대 링크 265개, 절 참조 60건, 문서 검사 6개. 구현 artifact 검증은 미실행 |
 | 참조 구현 조사 | `claude-code-pr-review` `origin/main` `a828f26ac0480ae2b6287c475f2c28a9e97cd9ab` | installer, package_release, locale checker와 tests 읽기 | locale bundle 패턴 재사용 가능. 자동 update는 이 템플릿에 부적합 |
+| W-001 source boundary | PR #3의 `5cf896b` 이후 미커밋 작업 트리 | manifest/실제/baseline path 집합 대조, 25개 byte 비교, common+ko 임시 materialize 후 G-docs·G-docs-test, root G-docs·G-docs-test, `git diff --check` | 통과 — output 28개, root 검사 7건·ko artifact 검사 6건. commit 후 exact SHA로 갱신 필요 |
 
 ## 4. 변경·재검증 기록
 
 - 2026-09-09: root가 배포 payload와 저장소 관리 문서를 겸하는 부트스트랩 문제를 확인했습니다. 한국어 이관 입력을 현재 작업 트리가 아니라 `fb70176` snapshot으로 고정해 이 설계와 maintainer TODO가 locale artifact에 섞이지 않게 했습니다.
 - 2026-09-09: `claude-code-pr-review`의 verified locale bundle 패턴은 채택하되 사용자 수정 문서에 대한 자동 update·강제 overwrite는 제외했습니다.
+- 2026-09-09: PR #2 병합 후 사용자 승인에 따라 W-001을 구현했습니다. 한국어 checker는 W-003 전까지 locale source가 소유하며 root checker는 source 디렉터리를 materialized artifact로 오인하지 않습니다.
 
 ## 5. 인계
 

@@ -1,8 +1,10 @@
 # AI Agent Docs Template
 
-AI 코딩 에이전트와 사람이 **같은 문서 체계, 설계 절차, 리뷰 기준**을 쓰도록 만든 복사형 템플릿입니다. 앱 런타임이나 프레임워크가 아니라, 프로젝트 문서와 에이전트 지침의 출발점입니다.
+AI 코딩 에이전트와 사람이 **같은 문서 체계, 설계 절차, 리뷰 기준**을 쓰도록 만든 템플릿의 source 저장소입니다. 앱 런타임이나 프레임워크가 아니라, 프로젝트 문서와 에이전트 지침의 출발점입니다.
 
-이 저장소는 템플릿 원본입니다. Origin 같은 Git 호스트에 올려 두고 새 프로젝트로 복사해 사용합니다. 초기화 스크립트나 특정 CI 제품의 pipeline 파일은 포함하지 않습니다. 품질 게이트 절차는 [CI.md](./docs/CI.md)에 있습니다.
+> **v2 전환 중:** 현재 root는 저장소 유지관리 영역이므로 새 프로젝트에 직접 복사하지 마세요. 한국어 `v1.7.1` payload는 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`에서 보존되며, 새 locale artifact와 installer는 아직 구현 중입니다.
+
+Origin 같은 Git 호스트에는 source와 변경 이력을 보관합니다. 특정 CI 제품의 pipeline 파일은 포함하지 않습니다. 품질 게이트 절차는 [CI.md](./docs/CI.md)에 있습니다.
 
 현재 판은 [Template Guide](./docs/TEMPLATE_GUIDE.md) Metadata의 `Template version`을 따릅니다.
 
@@ -22,7 +24,7 @@ AI 코딩 에이전트와 사람이 **같은 문서 체계, 설계 절차, 리�
 | 구분 | 역할 |
 | --- | --- |
 | [AGENTS.md](./AGENTS.md) | Cursor·Codex·OMP 등이 읽는 공통 지침. Claude Code는 [CLAUDE.md](./CLAUDE.md)의 `@AGENTS.md` import로 연결 |
-| [README-PROJECT.md](./README-PROJECT.md) | 적용 프로젝트 README 양식. 복사 후 루트 `README.md`로 교체 |
+| [locales/ko/README.md](./locales/ko/README.md) | 한국어 적용 프로젝트 README 양식. locale artifact의 루트 `README.md`로 배치 |
 | [docs/TEMPLATE_GUIDE.md](./docs/TEMPLATE_GUIDE.md) | 최초 적용, 기존 저장소 이관, 도구 연결, 판 이력 |
 | [docs/DOCS_GUIDE.md](./docs/DOCS_GUIDE.md) | 문서 소유권, 식별자 범위, 적용 완료 체크리스트 |
 | [docs/00-PROJECT.md](./docs/00-PROJECT.md) | 제품 기준·현재/목표 구조·결정 인덱스 |
@@ -50,13 +52,9 @@ AI 코딩 에이전트와 사람이 **같은 문서 체계, 설계 절차, 리�
 
 ## 새 프로젝트에 적용하기
 
-1. 원본 checkout에서 `git rev-parse HEAD`, `git describe --tags --always --dirty`, `git status`로 복사 기준을 확인합니다. 기록 방법은 [Template Guide §5](./docs/TEMPLATE_GUIDE.md)를 따릅니다.
-2. `.agents/`, `.claude/`, `.cursor/`, `.omp/`, `.gitignore`, `docs/changes/_template/`의 네 양식을 포함해 이 저장소 내용을 새 프로젝트 폴더로 복사합니다.
-3. 루트의 템플릿 소개 [`README.md`](./README.md)를 [`README-PROJECT.md`](./README-PROJECT.md)로 교체합니다. 즉 `README-PROJECT.md`를 `README.md`로 바꿔 넣고, 적용 저장소에는 이 소개문을 남기지 않습니다.
-4. 프로젝트 이름, 설명, 실행·검증 명령, `AGENTS.md`, `docs/00-PROJECT.md`, `docs/02-TODO.md`의 placeholder와 예시를 실제 값으로 채웁니다. 검색 명령은 [Template Guide §3](./docs/TEMPLATE_GUIDE.md)에 있습니다.
-5. [문서 운영 안내](./docs/DOCS_GUIDE.md)의 Template Adoption Checklist로 적용 완료를 확인합니다.
+현재 v2 source tree는 직접 복사 대상이 아닙니다. `template/common/`과 선택한 `locales/<tag>/`를 합성하는 exporter·installer가 완성되기 전에는 한국어 `v1.7.1` 기준 commit `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`을 사용하세요. 새 구조의 계약과 진행 상태는 [다국어 템플릿 SPEC](./docs/changes/2026-09-09-multilingual-template/02-SPEC.md)과 [PLAN](./docs/changes/2026-09-09-multilingual-template/03-PLAN.md)에 있습니다.
 
-기존 프로젝트에 넣을 때는 같은 이름 파일을 덮어쓰지 말고 기존 지침·문서와 비교해 병합하세요.
+기존 프로젝트에 넣을 때는 같은 이름 파일을 덮어쓰지 말고 기존 지침·문서와 비교해 병합하세요. v2 installer도 기존 파일 충돌 시 쓰지 않는 방향으로 설계되어 있습니다.
 
 ## 이 템플릿 저장소에서 검사하기
 

@@ -6,44 +6,51 @@
 
 ## Metadata
 
-- **Project:** {{PROJECT_NAME}}
-- **Status:** Draft
-- **Owner:** 프로젝트에 맞게 작성
-- **Last reviewed:** YYYY-MM-DD
+- **Project:** coding-agent-docs-template
+- **Status:** In Progress — 공개 v1.7.1 기준과 v2 locale source 전환을 구분
+- **Owner:** Chae Sangwon
+- **Last reviewed:** 2026-09-09
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
 
 ## 1. Context
 
 ### Problem
 
-{{PROJECT_DESCRIPTION}}
+Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용하도록 하는 공개 템플릿입니다. v1.7.1까지는 저장소 root가 한국어 복사형 payload와 저장소 관리 문서를 겸했기 때문에 locale 확장 시 maintainer 작업이 사용자 템플릿에 섞이는 문제가 있습니다.
 
 ### Target Users
 
-- 주요 사용자와 운영 주체
+- 템플릿을 관리·번역·릴리스하는 maintainer
+- AI 코딩 에이전트 협업 규칙을 새 프로젝트에 적용하는 개발자
 
 ### Current State
 
-- 현재 구현 상태
-- 기존 시스템 또는 대체 수단
-- 확인된 제약
+- 공개 기준은 한국어 복사형 `v1.7.1`이며 Origin `main`의 merge commit `113a6a58f9b03707fe8050b5673d3437b9895d03`에 반영되어 있습니다.
+- W-001에서 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source를 분리합니다.
+- `locales/en`, exporter, packager와 installer는 아직 구현·지원 완료 상태가 아닙니다.
+- 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
 
 ## 2. Goals
 
-- 달성해야 하는 측정 가능한 결과
+- `en`·`ko` complete source에서 고정 경로의 단일-locale artifact를 재현 가능하게 생성합니다.
+- artifact와 exact source commit·version·member hash를 결합하고 비파괴 installer로 검증 후 설치합니다.
+- Claude, Codex, Cursor와 OMP에서 locale별 진입점·스킬·리뷰 계약이 동일하게 동작하는지 검증합니다.
 
 ## 3. Non-goals
 
-- 이번 범위에서 의도적으로 다루지 않는 사항
+- `en`·`ko` 외 locale의 공식 번역과 품질 보증
+- 특정 CI runner pipeline 또는 자동 리뷰 실행 구성
+- 기존 프로젝트 문서의 자동 update·overwrite
+- GitHub 저장소 생성, tag·release 게시와 mirror 구성
 
 ## 4. Constraints
 
-- 기술적 제약
-- 보안 및 규제 제약
-- 호환성 요구사항
-- 일정 또는 운영 제약
+- Python 표준 라이브러리만 사용하고 새 production dependency를 추가하지 않습니다.
+- locale은 BCP 47 tag를 사용하며 manifest allowlist에 등록된 값만 지원합니다.
+- 적용 artifact의 `AGENTS.md`, `CLAUDE.md`, `docs/`, tool별 고정 경로는 v1 계약을 유지합니다.
+- path traversal, symlink, 부분 설치, checksum 불일치와 기존 파일 충돌은 쓰기 전에 거부합니다.
 
 ## 5. Current Architecture
 
@@ -53,23 +60,23 @@
 
 | Component | Responsibility | Dependencies | Owner |
 | --------- | -------------- | ------------ | ----- |
-| 예시      | 예시           | 예시         | 예시  |
+| root maintenance plane | 저장소 소개, 제품 결정, 변경 설계·TODO와 maintainer 도구 지침 | artifact source와 분리 | Chae Sangwon |
+| `template/common/` | 현재 언어 비의존으로 확인된 payload source | `locales/manifest.json` inventory | Chae Sangwon |
+| `locales/ko/` | `fb70176`에서 이관한 한국어 v1.7.1 payload source | common source와 합성 예정 | Chae Sangwon |
+| `locales/manifest.json` | baseline, locale 상태, common/localized output inventory | exporter·checker가 후속 사용 | Chae Sangwon |
 
 ### Data Flow
 
-대표 요청 또는 작업이 입력부터 결과까지 이동하는 흐름을 작성합니다.
+현재 W-001은 `fb70176` payload에서 저장소 소개 README를 제외하고, `README-PROJECT.md`를 artifact `README.md`로 정규화한 뒤 common과 `locales/ko` source에 보존합니다. exporter가 없는 현재 source root는 직접 배포하지 않습니다.
 
 ### External Boundaries
 
-- 데이터베이스
-- 외부 API
-- 메시지 큐 또는 스케줄러
-- 파일 및 object storage
-- 인증·권한 시스템
+- Origin은 source branch와 PR을 보관하지만 artifact release host는 아직 결정하지 않았습니다.
+- 파일시스템과 향후 release asset 다운로드가 신뢰 경계입니다. manifest·archive·member hash를 모두 확인해야 합니다.
 
 ### Contracts and Core Design
 
-공개 계약·데이터 모델·오류 처리·주요 신뢰 경계와 기본 설계를 작성합니다. 설정 레퍼런스나 보안 모델 등 별도 정본이 있으면 링크로 연결합니다. 결정 이유는 §8 또는 거기서 지정한 상세 문서에 한 번만 기록합니다.
+상세 요구사항·오류 처리·마이그레이션 계약은 [다국어 템플릿 SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md), 실행 상태는 [PLAN](./changes/2026-09-09-multilingual-template/03-PLAN.md)이 정본입니다.
 
 ## 6. Target Architecture
 
@@ -77,19 +84,17 @@
 
 ### Target Components
 
-| Component | Intended Responsibility | Replaces/Extends | Completion Signal |
-|---|---|---|---|
-| 예시 | 목표 책임 | 현재 구성요소 | 완료를 확인할 근거 |
+W-001 이후 단계의 목표 구조는 아직 Draft SPEC이며 전체 승인 전에는 이 절의 합의된 목표로 올리지 않습니다.
 
 ### Target Data Flow
 
-목표 상태의 대표 흐름과 현재 구조에서 달라지는 경계를 작성합니다.
+미승인 — Draft SPEC §3을 참조합니다.
 
 ### Compatibility Requirements
 
-- 전환 중 유지해야 하는 API·데이터·운영 호환성
-- 병행 운영 또는 단계적 rollout 조건
-- 제거할 legacy 경로와 제거 가능 조건
+- v1.7.1 한국어 payload는 `fb70176` 기준으로 보존합니다.
+- source root를 직접 복사하지 않으며 locale artifact만 적용합니다.
+- 이미 적용한 저장소는 자동 migration하지 않습니다.
 
 ## 7. Transition Plan
 
@@ -97,7 +102,8 @@
 
 | Phase | Change | Preconditions | Compatibility/Rollback | Completion Evidence |
 |---|---|---|---|---|
-| 1 | 전환 작업 | 선행 조건 | 호환성·rollback 방법 | 테스트·배포 근거 |
+| W-001 | root maintainer 영역과 common/ko source 분리 | 사용자 승인, PR #2 병합 | `fb70176` payload 보존; 실패 시 source 분리 폐기 | closed inventory와 path·byte 비교 |
+| W-002 이후 | en locale, 검사, export/package/installer | 각 PLAN 선행조건과 전체 SPEC 승인 | v1.7.1 유지 | 변경 PLAN의 gate |
 
 ## 8. Decisions
 
@@ -105,7 +111,8 @@
 
 | ID | Date | Status | Decision | Rationale / Canonical source | Alternatives / Consequences | Approval |
 |---|---|---|---|---|---|---|
-| D-001 | YYYY-MM-DD | Proposed | 결정 요약 | 이유 또는 상세 SPEC·기존 설계의 정본 링크 | 대안·영향 또는 정본 참조 | 미승인 |
+| D-001 | 2026-09-09 | Accepted | 저장소 root 유지관리 영역과 배포 payload source를 분리하고 W-001을 PR #3에서 구현 | [SPEC §3.1](./changes/2026-09-09-multilingual-template/02-SPEC.md), Origin PR #3 리뷰 F-001 | source root 직접 복사 중단; v1.7.1 snapshot 보존 | Chae Sangwon, 2026-09-09 대화 |
+| D-002 | 2026-09-09 | Proposed | common+locale 합성 artifact와 host-neutral installer를 포함한 v2 전체 구조 | [다국어 템플릿 SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md) | skill 현지화와 release host 미결정 | 미승인 |
 
 중요한 결정이 많아지면 개별 ADR 문서로 분리하고 여기에는 링크와 요약만 남깁니다.
 
@@ -113,37 +120,39 @@
 
 ## 9. Delivery Strategy
 
-### Phase 1
+### Phase 1 — source boundary
 
-- 목표
-- 산출물
-- 완료 조건
+- root maintainer plane과 `template/common`·`locales/ko`를 분리합니다.
+- baseline inventory 보존과 root 직접 복사 금지를 검증합니다.
 
-### Phase 2
+### Phase 2 — multilingual delivery
 
-- 목표
-- 산출물
-- 완료 조건
+- 승인 후 `en`, locale parity 검사, deterministic packaging과 installer를 구현합니다.
+- exact-head consumer E2E 후에만 지원 완료와 release를 별도로 판정합니다.
 
 ## 10. Risks
 
 | Risk | Likelihood | Impact | Mitigation | Trigger/Signal |
 | ---- | ---------- | ------ | ---------- | -------------- |
-| 예시 | Medium     | High   | 대응 방법  | 관찰 신호      |
+| maintainer 문서가 artifact에 포함됨 | Medium | High | manifest의 닫힌 inventory와 artifact 부재 검사 | root 전용 path가 archive member에 등장 |
+| locale 번역의 행동 계약 drift | Medium | High | stable marker·fixture·사람의 최종 검수 | locale parity 또는 소비자 E2E 실패 |
+| installer가 기존 문서를 덮어씀 | Low | High | 충돌 시 전체 중단, `--force` 미제공 | before/after tree hash 차이 |
 
 ## 11. Open Questions
 
-- [ ] 아직 결정되지 않은 질문
+- [ ] skill을 영어 공통으로 둘지 locale별 `description`·본문·출력으로 작성할지 결정합니다. 현재 권고는 locale별 작성입니다.
+- [ ] immutable release asset의 실제 host와 bootstrap URL을 구현 중 확정합니다.
 
 ## 12. Rejected or Deferred Ideas
 
-현재 계획으로 오인되지 않도록 기각·보류 이유와 재검토 조건을 기록합니다.
+- `en`·`ko` 외 공식 locale은 v2 계약과 두 필수 locale 지원 검증 후 재검토합니다.
+- 기존 적용 저장소의 자동 update·overwrite는 사용자 문서 손실 위험 때문에 첫 버전에서 제외합니다.
 
 ## 13. 설계 문서 인덱스
 
 | 범위 | 정본 | 상위 설계와의 관계 | 적용 조건 |
 |---|---|---|---|
-| 기본 제품 설계 | 이 문서 또는 유지하는 기존 설계 문서 | 기본 계약·구조 | 실제 적용 범위 |
-| 장기 확장 (선택) | [10-EXTENSION.md](./10-EXTENSION.md) 또는 기존 확장 문서 | 유지·확장·대체하는 결정·절 | 승인 범위와 선행조건 |
+| 기본 제품 설계 | 이 문서 | 저장소 현재 상태와 승인된 결정 | root 유지관리 작업 |
+| 다국어 배포 변경 | [2026-09-09-multilingual-template SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md) | D-001을 구현하고 D-002를 제안 | 연결된 PLAN의 승인 범위 |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.

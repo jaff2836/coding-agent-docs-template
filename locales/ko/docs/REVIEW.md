@@ -122,8 +122,8 @@ P0와 P1은 end-to-end로 추적한 경우에만 부여합니다.
 프로젝트 고유의 반드시 지켜야 할 불변조건을 2~10개 정도로 작성합니다. 각 규칙에는 잘못된 동작, 영향 및 안전한 경로를 포함하세요.
 
 - **예시:** 결제 승인 전에 주문을 완료 상태로 저장하지 않습니다. 안전한 경로는 승인 결과를 확인한 뒤 하나의 transaction에서 상태를 전환하는 것입니다.
-- **Artifact 경계:** 저장소 root의 maintainer 문서나 source landing README를 사용자 artifact에 포함하지 않습니다. 포함하면 저장소 로드맵이 적용 프로젝트 정책으로 오염되므로, 안전한 경로는 `locales/manifest.json`의 닫힌 inventory에 따라 `template/common/`과 locale 하나만 합성하는 것입니다.
-- **Locale 완전성:** 서로 다른 locale의 자연어 정책·스킬을 한 artifact에 섞거나 미완료 locale을 안정판으로 게시하지 않습니다. agent 행동과 사용자 검수가 언어별로 달라질 수 있으므로, 안전한 경로는 `en`·`ko` complete gate와 locale별 artifact 검사를 통과한 immutable asset만 게시하는 것입니다.
+- **{{PROJECT_INVARIANT_1}}**
+- **{{PROJECT_INVARIANT_2}}**
 
 ## 7. Finding Requirements
 

@@ -32,10 +32,6 @@ SKIP_DIR_NAMES = {
     ".mypy_cache",
     ".pytest_cache",
     "site-packages",
-    # v2 source 저장소의 payload source. 각 locale은 common과 materialize한
-    # artifact root에서 별도로 검사하며 maintainer root 검사에 섞지 않습니다.
-    "locales",
-    "template",
 }
 
 LINK_RE = re.compile(r"\]\(((?!https?://)(?!mailto:)[^)\s#]+?)(?:#[^)]*)?\)")

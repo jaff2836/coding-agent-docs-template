@@ -9,7 +9,7 @@
 - **Originator:** Chae Sangwon
 - **Source:** 2026-09-09 사용자 대화 — locale별 소스 관리, BCP 47, 언어 선택형 다운로드·변환 방식 검토 요청
 - **Parent:** [Template Guide](../../TEMPLATE_GUIDE.md) §1·§2·§4·§5의 배포 구조와 고정 도구 진입점
-- **Approval:** 부분 합의 — locale별 소스 관리, BCP 47 tag, 언어 선택형 installer, 최종 검수자 Chae Sangwon, 첫 안정판의 `en`·`ko` complete 포함. skill 현지화 방식과 전체 명세·구현 범위는 미승인
+- **Approval:** 부분 합의 — locale별 소스 관리, BCP 47 tag, 언어 선택형 installer, 최종 검수자 Chae Sangwon, 첫 안정판의 `en`·`ko` complete 포함, W-001의 payload/maintainer 영역 분리 구현. skill 현지화 방식과 나머지 구현 범위는 미승인
 - **Spec:** [02-SPEC.md](./02-SPEC.md)
 
 ## 1. 문제
@@ -73,3 +73,4 @@
 
 - 2026-09-09: 사용자와 locale별 source, BCP 47, 언어 선택형 다운로드·변환 방향을 합의하고 전체 계약 검토를 위한 Draft를 작성했습니다.
 - 2026-09-09: 최종 번역 검수자를 Chae Sangwon으로 정하고 첫 안정판에 `en`·`ko` complete locale을 함께 포함하기로 합의했습니다. skill 현지화 방식과 실제 repository URL은 미결정으로 유지했습니다.
+- 2026-09-09: Origin PR #3 리뷰 F-001의 수정 방법으로 W-001 payload/maintainer 영역 분리 구현을 승인했습니다. F-002~F-004의 언어 소유권·README·호스트 중립 계약도 리뷰에서 확인된 모순을 제거하는 범위로 교정합니다.

@@ -66,7 +66,6 @@ template/common/                  # 언어 비의존 payload
   CLAUDE.md
   LICENSE
   .gitignore
-  .omp/WATCHDOG.md
   .agents/skills/review-round/agents/openai.yaml
   scripts/check-docs.py
   tests/test_check_docs.py
@@ -79,6 +78,7 @@ locales/en/                       # 영어 locale payload source
   .agents/skills/*/SKILL.md
   .claude/skills/*/SKILL.md
   .cursor/BUGBOT.md
+  .omp/WATCHDOG.md
 locales/ko/                       # 같은 상대 경로의 한국어 locale payload source
   ...
 
@@ -92,12 +92,15 @@ tests/                            # packager·installer·locale 계약 검사
 
 `template/common`과 한 locale tree는 같은 output path를 소유할 수 없습니다. output inventory는 `locales/manifest.json`의 공통 목록과 locale별 필수 목록으로 닫혀 있으며, 예기치 않은 파일·누락·중복은 build 오류입니다.
 
+W-001 이관 시점의 `scripts/check-docs.py`와 테스트는 한국어 heading을 직접 사용하므로 일단 `locales/ko`가 소유합니다. W-003에서 안정 marker 기반의 locale-aware 구현으로 바꾼 뒤 위 목표 layout의 `template/common`으로 이동합니다. 중간 상태를 언어 비의존이라고 표시하지 않습니다.
+
 ### 3.2 locale와 고정 진입점
 
 - locale key는 [BCP 47 / RFC 5646](https://www.rfc-editor.org/info/rfc5646/) tag의 canonical casing을 사용합니다. subtag 구분자는 hyphen(`-`)이며 초기 allowlist는 `en`, `ko`입니다. `_`는 허용하지 않습니다. 첫 구현은 임의 tag를 정규식만으로 "지원"하지 않고 manifest allowlist membership을 판정합니다.
 - release artifact에는 locale 하나만 들어가며 tag는 디렉터리명, manifest key, asset 이름, installer 인자에서 동일합니다.
 - locale source의 `AGENTS.md`가 적용 artifact의 root `AGENTS.md`가 됩니다. 언어 정책은 이 파일과 같은 locale의 REVIEW/스킬에만 존재합니다.
-- `CLAUDE.md`와 `.omp/WATCHDOG.md`는 언어 비의존 import 파일로 common에 둡니다.
+- locale source의 `README.md`는 기존 `README-PROJECT.md` 내용에서 이관한 적용 프로젝트용 양식이며 artifact root `README.md`가 됩니다. 저장소 소개용 root README와 `README-PROJECT.md`는 artifact에 넣지 않습니다.
+- `CLAUDE.md`처럼 내용 전체가 언어 비의존인 import 파일만 common에 둡니다. import 외에 advisor prose가 있는 `.omp/WATCHDOG.md`는 locale source가 소유합니다.
 - skill 현지화가 S2로 승인되면 `description`, `argument-hint`, 본문과 출력 언어 정책은 공식 locale별 source가 소유합니다. 같은 locale 안의 `.agents`와 `.claude` `SKILL.md`는 현재처럼 byte-identical이어야 하며, locale 간에는 안정적인 skill ID·contract marker·행동 fixture가 일치해야 합니다. S1이 선택되면 이 항목은 공통 영어 source와 locale별 출력 언어 설정으로 대체합니다.
 - `.cursor/BUGBOT.md`는 import를 지원하지 않는 계약 때문에 locale별 source에 두고, 같은 locale의 `docs/REVIEW.md` 불변조건과 대조합니다.
 
@@ -127,7 +130,7 @@ python3 installer.py export --version 2.0.0 --locale en --output /empty/path
 python3 installer.py list-locales --version latest
 ```
 
-- remote 설치는 mutable branch의 raw 파일을 조합하지 않고 같은 GitHub release의 manifest와 locale ZIP을 받습니다.
+- remote 설치는 mutable branch의 raw 파일을 조합하지 않고 같은 immutable release/version namespace의 manifest와 locale ZIP을 받습니다. 실제 배포 host와 bootstrap URL은 구현 중 별도 결정하며 GitHub Releases를 숨은 선행조건으로 두지 않습니다.
 - `--locale`는 명시 입력이며 manifest의 `complete` locale이어야 합니다.
 - 다운로드 크기와 member 크기를 제한하고 manifest·archive·각 member hash, source commit, version, locale, exact path inventory를 대조합니다.
 - 절대 경로, `..`, 중복 member, symlink·비정규 파일과 case-fold 충돌을 거부합니다.
@@ -208,3 +211,4 @@ fb70176의 한국어 payload
 
 - 2026-09-09: locale source, BCP 47, deterministic release bundle과 비파괴 installer를 결합한 최초 Draft를 작성했습니다.
 - 2026-09-09: 첫 안정판의 `en`·`ko` 동시 complete gate와 최종 검수자를 확정했습니다. skill 현지화는 S2를 권고하되 미승인 대안으로 구분했습니다.
+- 2026-09-09: Origin PR #3 리뷰에 따라 WATCHDOG의 locale 소유권, 적용 README 정본과 installer의 host-neutral asset 계약을 명확히 했습니다.

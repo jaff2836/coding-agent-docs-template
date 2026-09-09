@@ -58,19 +58,6 @@ class CheckDocsTests(unittest.TestCase):
                 CHECK_DOCS.check_relative_links(errors, [])
             self.assertTrue(errors)
 
-    def test_payload_source_directories_are_not_scanned_as_artifacts(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            for source_directory in ("locales/ko", "template/common"):
-                document = root / source_directory / "BROKEN.md"
-                document.parent.mkdir(parents=True)
-                document.write_text("[artifact-only](./missing.txt)\n", encoding="utf-8")
-
-            errors = []
-            with patch.object(CHECK_DOCS, "ROOT", root):
-                CHECK_DOCS.check_relative_links(errors, [])
-            self.assertEqual(errors, [])
-
     def test_invariant_continuation_lines_are_compared(self) -> None:
         source = """# Review
 ## 6. Project-specific Invariants
