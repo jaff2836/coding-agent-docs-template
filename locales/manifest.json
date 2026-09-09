@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "template_version": "1.7.1",
+    "source_commit": "fb7017624ec1ac11cbc6d00df9a8e3916ace5262"
+  },
+  "required_stable_locales": [
+    "en",
+    "ko"
+  ],
+  "artifact": {
+    "excluded_baseline_paths": [
+      "README.md"
+    ],
+    "renamed_baseline_paths": {
+      "README-PROJECT.md": "README.md"
+    },
+    "common_root": "template/common",
+    "common_paths": [
+      ".agents/skills/review-round/agents/openai.yaml",
+      ".gitignore",
+      "CLAUDE.md",
+      "LICENSE"
+    ],
+    "localized_paths": [
+      ".agents/skills/design/SKILL.md",
+      ".agents/skills/review-round/SKILL.md",
+      ".claude/skills/design/SKILL.md",
+      ".claude/skills/review-round/SKILL.md",
+      ".cursor/BUGBOT.md",
+      ".omp/WATCHDOG.md",
+      "AGENTS.md",
+      "README.md",
+      "docs/00-PROJECT.md",
+      "docs/01-DESIGN.md",
+      "docs/02-TODO.md",
+      "docs/10-EXTENSION.md",
+      "docs/CI.md",
+      "docs/DOCS_GUIDE.md",
+      "docs/PROJECT_ANALYSIS.md",
+      "docs/REVIEW.md",
+      "docs/REVIEW_ROUND.md",
+      "docs/TEMPLATE_GUIDE.md",
+      "docs/changes/_template/01-CHANGE.md",
+      "docs/changes/_template/01-INTENT.md",
+      "docs/changes/_template/02-SPEC.md",
+      "docs/changes/_template/03-PLAN.md",
+      "scripts/check-docs.py",
+      "tests/test_check_docs.py"
+    ]
+  },
+  "locales": {
+    "en": {
+      "status": "experimental",
+      "source_root": null,
+      "baseline_version": null
+    },
+    "ko": {
+      "status": "complete",
+      "source_root": "locales/ko",
+      "baseline_version": "1.7.1"
+    }
+  }
+}

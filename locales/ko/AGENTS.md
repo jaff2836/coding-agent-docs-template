@@ -1,11 +1,11 @@
-# coding-agent-docs-template 프로젝트 지침
+# {{PROJECT_NAME}} 프로젝트 지침
 
 ## Project Overview
 
-- **목적:** Claude, Codex, Cursor, OMP가 같은 문서·설계·리뷰 계약을 사용하도록 locale별 템플릿 source와 검증된 배포 artifact를 관리합니다.
-- **주요 사용자:** 템플릿 관리자와 문서 중심 협업 체계를 프로젝트에 적용하는 개발자
-- **핵심 런타임/프레임워크:** Python 3 표준 라이브러리 기반 검사·패키징 도구와 Markdown 문서
-- **저장소 구조:** root `docs/`와 도구 지침은 저장소 유지관리 영역이며 artifact에서 제외합니다. `template/common/`은 언어 비의존 payload, `locales/<tag>/`는 BCP 47 locale별 payload source입니다.
+- **목적:** {{PROJECT_DESCRIPTION}}
+- **주요 사용자:** 프로젝트에 맞게 작성
+- **핵심 런타임/프레임워크:** 프로젝트에 맞게 작성
+- **저장소 구조:** 주요 애플리케이션, 패키지 및 서비스 경계를 간단히 작성
 
 사용자의 현재 요청이 이 문서와 충돌하지 않는 한 아래 지침을 따르세요. 사용자의 요청을 [`docs/02-TODO.md`](./docs/02-TODO.md) 전체 작업으로 임의 확장하지 마세요.
 
@@ -17,14 +17,14 @@
 
 ## Commands
 
-- **Install:** N/A — production dependency가 없습니다. 분석 또는 리뷰 작업에서는 자동으로 의존성을 설치하지 마세요.
-- **Run:** N/A
-- **Build:** N/A — locale exporter·packager는 아직 구현 전입니다.
-- **Test:** `python3 -m unittest discover -s tests -p 'test_check_docs.py' -v`
-- **Lint:** N/A
-- **Typecheck:** N/A
-- **Docs:** `python3 scripts/check-docs.py`
-- **Docs test:** `python3 -m unittest discover -s tests -p 'test_check_docs.py' -v`
+- **Install:** 프로젝트에 맞게 작성. 분석 또는 리뷰 작업에서는 자동으로 의존성을 설치하지 마세요.
+- **Run:** `{{RUN_COMMAND}}`
+- **Build:** `{{BUILD_COMMAND}}`
+- **Test:** `{{TEST_COMMAND}}`
+- **Lint:** `{{LINT_COMMAND}}`
+- **Typecheck:** `{{TYPECHECK_COMMAND}}`
+- **Docs:** `python scripts/check-docs.py`
+- **Docs test:** `python -m unittest discover -s tests -p 'test_check_docs.py' -v`
 
 `{{...}}` 형태의 placeholder가 남아 있는 명령은 미설정으로 취급하고 실행을 시도하지 마세요. 명령이 `N/A`이거나 실행 환경이 준비되지 않았다면 성공했다고 추정하지 말고 검증하지 못한 이유를 보고하세요.
 

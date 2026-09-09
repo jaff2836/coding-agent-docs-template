@@ -2,22 +2,22 @@
 
 > 프로젝트 전체의 변경·마일스톤·우선순위·의존성을 관리합니다. 제품 기준과 결정은 [00-PROJECT.md](./00-PROJECT.md), 상세 상태의 소유권은 [DOCS_GUIDE.md](./DOCS_GUIDE.md)를 따릅니다.
 >
-> 이 branch에서는 템플릿 저장소 자체의 다국어 변경을 추적합니다. 기존 사용자용 한국어 TODO 양식은 구현 시 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`에서 `locales/ko/docs/02-TODO.md`로 이관하며, 이 maintainer 작업은 locale artifact에 포함하지 않습니다.
+> 아래 항목은 복사용 예시입니다. 적용 시 실제 작업으로 교체하며 예시를 완료 실적으로 집계하지 않습니다.
 
 ## Metadata
 
 - **Status:** Active
-- **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-09 (UTC)
+- **Owner:** 프로젝트에 맞게 작성
+- **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
-- **Integration target:** Origin PR #2가 반영된 이후의 `main`; 현재 설계 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
+- **Integration target:** 프로젝트에 맞게 작성 — 기준 브랜치 또는 로컬 완료 대상
 
 ## Current Milestone
 
-- **Name:** v2 다국어 템플릿 source·배포 구조
-- **Goal:** `en`·`ko` locale source에서 검증된 단일-locale artifact를 만들고 비파괴 installer로 선택 설치할 수 있는 승인된 설계와 구현
-- **Target:** 미정
-- **Status:** In Progress — 설계 Draft, 구현 미승인
+- **Name:** 마일스톤 이름
+- **Goal:** 검증 가능한 결과
+- **Target:** YYYY-MM-DD 또는 미정
+- **Status:** Planned / In Progress / Blocked / Complete
 
 ## 운영 규칙
 
@@ -34,25 +34,35 @@
 
 ## In Progress
 
-- [ ] **T-001 다국어 템플릿 source와 선택형 배포 도입**
-  - 변경-ID: `2026-09-09-multilingual-template`
-  - 범위·우선순위: BCP 47 `en`·`ko` source, common payload, deterministic artifact·manifest, 비파괴 installer와 locale 회귀 검사. v2 공개 전 우선
-  - 선행조건: [Draft SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md)의 사용자 승인, PR #2의 `v1.7.1` 변경 통합 기준 확정
-  - 관련 결정·SPEC: 결정 ID 미발급 — [SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md)
-  - 상세 실행의 정본: [PLAN](./changes/2026-09-09-multilingual-template/03-PLAN.md)
-  - 통합 완료 조건: 승인된 구현이 정확한 `main`에 반영되고 `en`·`ko` deterministic artifact 검사와 실제 Claude·Codex·Cursor·OMP 소비자 E2E가 통과. tag·GitHub release는 별도 위임
+- [ ] **T-001 변경 제목**
+  - 변경-ID: 변경 폴더의 고유 ID
+  - 범위·우선순위: 변경 단위의 요약
+  - 선행조건: 관련 변경-ID 또는 조건
+  - 관련 결정·SPEC: PROJECT 결정 ID와 정본 링크
+  - 상세 실행의 정본: 변경별 PLAN 링크
+  - 통합 완료 조건: 반영할 대상과 필요한 최종 검증
 
 ## Next
 
-없음. T-001의 상세 작업은 변경별 PLAN이 소유합니다.
+- [ ] **T-002 작은 작업 제목**
+  - 범위:
+  - 변경 대상·구현 순서:
+  - 완료 조건:
+  - 검증 방법:
+  - 의존성·관련 결정:
+  - 상세 실행의 정본: 이 항목 (별도 PLAN 없음)
 
 ## Blocked
 
-없음. T-001 구현은 차단이 아니라 설계 승인 대기 상태입니다.
+- [ ] **T-003 변경 제목**
+  - 상세 실행의 정본: PLAN 링크 또는 이 항목
+  - 차단 원인:
+  - 필요한 결정 또는 외부 조치:
+  - 재개 조건:
 
 ## Backlog
 
-- [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
+- [ ] 현재 마일스톤에 포함되지 않은 후보 — 승인 여부와 재검토 조건을 구분
 
 ## Cancelled
 

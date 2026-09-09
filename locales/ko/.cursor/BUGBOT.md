@@ -36,15 +36,15 @@ non-blocking finding도 보고합니다. 유용한 맥락입니다. 기본 리�
 
 Bugbot은 `docs/REVIEW.md` §6을 읽지 못하므로 같은 목록을 여기에 둡니다. 각 항목은 잘못된 동작, 영향 및 안전한 경로를 포함해야 하며, 두 파일의 목록은 항상 같아야 합니다. `scripts/check-docs.py`가 두 목록을 대조합니다.
 
-- **Artifact 경계:** 저장소 root의 maintainer 문서나 source landing README를 사용자 artifact에 포함하지 않습니다. 포함하면 저장소 로드맵이 적용 프로젝트 정책으로 오염되므로, 안전한 경로는 `locales/manifest.json`의 닫힌 inventory에 따라 `template/common/`과 locale 하나만 합성하는 것입니다.
-- **Locale 완전성:** 서로 다른 locale의 자연어 정책·스킬을 한 artifact에 섞거나 미완료 locale을 안정판으로 게시하지 않습니다. agent 행동과 사용자 검수가 언어별로 달라질 수 있으므로, 안전한 경로는 `en`·`ko` complete gate와 locale별 artifact 검사를 통과한 immutable asset만 게시하는 것입니다.
+- **{{PROJECT_INVARIANT_1}}**
+- **{{PROJECT_INVARIANT_2}}**
 
 ## 확정된 설계 결정과 승인된 deferral
 
 `docs/REVIEW.md` §9 Accepted Deferrals와 `docs/00-PROJECT.md` §8 Decisions 중 리뷰 판정에 영향을 주는 항목을 여기에 복제합니다. 여기 있는 결정을 **되돌리라는** 지적은 새 정보가 아니므로 보고하지 않습니다. 결정의 **전제가 깨졌다는 증거**(문서가 약속한 것과 코드가 실제로 하는 것이 다름, 결정이 가정한 조건이 더 이상 성립하지 않음)는 새 정보이므로 보고합니다.
 
 - 승인된 deferral: 실제로 승인된 `DFR-*` 항목이 없으면 이 목록은 비워 둡니다
-- 확정된 결정: D-001 — 저장소 root 유지관리 영역과 배포 payload source를 분리하고 source root를 직접 복사하지 않습니다.
+- 확정된 결정: 되돌리라는 finding을 만들지 않을 `D-*` 항목만 적습니다
 
 ## Finding 필수 항목
 

@@ -1,5 +1,3 @@
-<!-- 적용 시 이 파일을 루트 README.md로 바꿔 넣고, 이 주석을 삭제한 뒤 placeholder를 채우세요. 이 저장소 자체 소개는 README.md입니다. -->
-
 # {{PROJECT_NAME}}
 
 {{PROJECT_DESCRIPTION}}
