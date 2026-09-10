@@ -252,6 +252,63 @@ Translated guidance
                 CHECK_DOCS.PROJECT_INVARIANT_EXAMPLE_MARKER,
             )
 
+    def test_indented_code_bullet_is_not_a_top_level_invariant(self) -> None:
+        text = """# Review
+## Invariants
+<!-- template-section:project-invariants -->
+
+    - **Code example:** not an invariant
+ - **Rule A:** first invariant
+ - **Rule B:** second invariant
+- **Rule C:** shallower invariant
+"""
+        self.assertEqual(
+            CHECK_DOCS.section_bullets(
+                text, CHECK_DOCS.PROJECT_INVARIANTS_MARKER
+            ),
+            [
+                "- **Rule A:** first invariant",
+                "- **Rule B:** second invariant",
+                "- **Rule C:** shallower invariant",
+            ],
+        )
+
+    def test_markdown_line_context_recognizes_blockquote_fences(self) -> None:
+        text = (
+            "> ```markdown\n"
+            "> [decoy](./TARGET.md)\n"
+            "> ```\n"
+            "Visible prose\n"
+        )
+        self.assertEqual(
+            CHECK_DOCS.markdown_line_context(text),
+            ((False, False), (False, False), (False, False), (True, True)),
+        )
+
+        root_fence = (
+            "```markdown\n"
+            "> ```\n"
+            "[decoy](./TARGET.md)\n"
+            "```\n"
+            "Visible prose\n"
+        )
+        self.assertEqual(
+            CHECK_DOCS.markdown_line_context(root_fence),
+            (
+                (False, False),
+                (False, False),
+                (False, False),
+                (False, False),
+                (True, True),
+            ),
+        )
+
+        unclosed_quote_fence = "> ```markdown\n> decoy\nVisible prose\n"
+        self.assertEqual(
+            CHECK_DOCS.markdown_line_context(unclosed_quote_fence),
+            ((False, False), (False, False), (True, True)),
+        )
+
     def test_numbered_headings_ignore_fenced_and_commented_decoys(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "TARGET.md"

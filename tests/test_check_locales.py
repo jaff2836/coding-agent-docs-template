@@ -485,12 +485,16 @@ class LocaleFixtureTests(unittest.TestCase):
             for relative in relatives
         }
 
-        for relative in relatives:
-            self.path(relative).write_text(
-                originals[relative].replace("§1", "§10", 1),
-                encoding="utf-8",
-            )
-        self.assert_error("missing skill token(s): §1")
+        for replacement in ("§10", "§1.2", "§1a", "§1-alpha"):
+            with self.subTest(section_token=replacement):
+                for relative in relatives:
+                    self.path(relative).write_text(
+                        originals[relative].replace("§1", replacement, 1),
+                        encoding="utf-8",
+                    )
+                self.assert_error("missing skill token(s): §1")
+        self.assertTrue(CHECK_LOCALES._contains_observable_token("§1은 범위", "§1"))
+        self.assertTrue(CHECK_LOCALES._contains_observable_token("See §1.", "§1"))
 
         link = "[docs/01-DESIGN.md](../../../docs/01-DESIGN.md)"
         decoy = (
@@ -502,6 +506,33 @@ class LocaleFixtureTests(unittest.TestCase):
         for relative in relatives:
             self.path(relative).write_text(
                 originals[relative].replace(link, decoy, 1),
+                encoding="utf-8",
+            )
+        self.assert_error("is missing canonical skill link")
+
+        blockquote_decoy = (
+            "docs/01-DESIGN.md"
+            "\n\n> ```markdown\n"
+            "> [design](../../../docs/01-DESIGN.md)\n"
+            "> ```\n"
+        )
+        for relative in relatives:
+            self.path(relative).write_text(
+                originals[relative].replace(link, blockquote_decoy, 1),
+                encoding="utf-8",
+            )
+        self.assert_error("is missing canonical skill link")
+
+        root_fence_decoy = (
+            "docs/01-DESIGN.md"
+            "\n\n```markdown\n"
+            "> ```\n"
+            "[design](../../../docs/01-DESIGN.md)\n"
+            "```\n"
+        )
+        for relative in relatives:
+            self.path(relative).write_text(
+                originals[relative].replace(link, root_fence_decoy, 1),
                 encoding="utf-8",
             )
         self.assert_error("is missing canonical skill link")
@@ -648,6 +679,39 @@ class LocaleFixtureTests(unittest.TestCase):
         self.assert_error(
             "example marker must immediately precede an English or Korean "
             "template example bullet"
+        )
+
+        path.write_text(
+            text.replace(
+                "<!-- template-example:project-invariant -->\n",
+                "<!-- template-example:project-invariant -->\n"
+                "Translated guidance\n",
+                1,
+            ),
+            encoding="utf-8",
+        )
+        self.assert_error("example marker must immediately precede its bullet")
+
+    def test_indented_code_bullet_is_not_a_source_invariant(self) -> None:
+        marker = "<!-- template-section:project-invariants -->"
+        text = """# Review
+## Invariants
+%s
+
+    - **Code example:** not an invariant
+ - **Rule A:** first invariant
+ - **Rule B:** second invariant
+- **Rule C:** shallower invariant
+""" % marker
+        bounds = CHECK_LOCALES._section_bounds(text, marker)
+        self.assertIsNotNone(bounds)
+        self.assertEqual(
+            CHECK_LOCALES._top_level_bullets(text, *bounds),
+            [
+                (5, "- **Rule A:** first invariant"),
+                (6, "- **Rule B:** second invariant"),
+                (7, "- **Rule C:** shallower invariant"),
+            ],
         )
 
     def test_status_rules_and_stable_release_gate_are_separate(self) -> None:

@@ -47,6 +47,7 @@ IMPORT_LINE_RE = re.compile(r"^@([^\s]+)\s*$")
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
 HEADING_NUM_RE = re.compile(r"^#{1,6}\s+(\d+(?:\.\d+)*)[.\s]")
 FENCE_LINE_RE = re.compile(r"^[ ]{0,3}(`{3,}|~{3,})(.*)$")
+BLOCKQUOTE_MARKER_RE = re.compile(r"[ ]{0,3}>[ \t]?")
 SECTION_GROUP = r"§\d+(?:\.\d+)*(?:·§\d+(?:\.\d+))*"
 SECTION_LINK_RE = re.compile(
     r"\]\(((?!https?://)[^)\s#]+?\.md)\)\s*(" + SECTION_GROUP + ")"
@@ -280,33 +281,61 @@ def check_imports(errors: List[str], notes: List[str]) -> None:
             notes.append("WATCHDOG.md import: @%s" % spec)
 
 
+def strip_blockquote_markers(
+    line: str, limit: Optional[int] = None
+) -> Tuple[int, str]:
+    """Strip leading blockquote containers, optionally to a stored fence depth."""
+
+    depth = 0
+    cursor = 0
+    while limit is None or depth < limit:
+        marker = BLOCKQUOTE_MARKER_RE.match(line, cursor)
+        if marker is None:
+            break
+        cursor = marker.end()
+        depth += 1
+    return depth, line[cursor:]
+
+
 def markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
     """Return ``(outside_fence, outside_enclosing_comment)`` per line."""
 
     context = []
     fence_character: Optional[str] = None
     fence_length = 0
+    fence_blockquote_depth = 0
     in_html_comment = False
     for line in text.splitlines():
+        blockquote_depth, fence_candidate = strip_blockquote_markers(line)
         if fence_character is not None:
-            context.append((False, False))
-            stripped = line.lstrip(" ")
-            if (
-                len(line) - len(stripped) <= 3
-                and re.fullmatch(
-                    re.escape(fence_character) + "{%d,}[ \t]*" % fence_length,
-                    stripped,
-                )
-            ):
+            if blockquote_depth < fence_blockquote_depth:
                 fence_character = None
                 fence_length = 0
-            continue
+                fence_blockquote_depth = 0
+            else:
+                _, closing_candidate = strip_blockquote_markers(
+                    line, fence_blockquote_depth
+                )
+                context.append((False, False))
+                stripped = closing_candidate.lstrip(" ")
+                if (
+                    len(closing_candidate) - len(stripped) <= 3
+                    and re.fullmatch(
+                        re.escape(fence_character) + "{%d,}[ \t]*" % fence_length,
+                        stripped,
+                    )
+                ):
+                    fence_character = None
+                    fence_length = 0
+                    fence_blockquote_depth = 0
+                continue
 
-        fence = FENCE_LINE_RE.fullmatch(line)
+        fence = FENCE_LINE_RE.fullmatch(fence_candidate)
         if fence is not None:
             sequence = fence.group(1)
             fence_character = sequence[0]
             fence_length = len(sequence)
+            fence_blockquote_depth = blockquote_depth
             context.append((False, False))
             continue
 
@@ -414,14 +443,18 @@ def section_bullets(
             continue
         line = lines[index]
         stripped = line.strip()
-        bullet_match = re.match(r"^(\s*)-\s+", line)
-        if bullet_match and bullet_indent is None:
+        bullet_match = re.match(r"^( {0,3})-\s+", line)
+        if bullet_match is not None and bullet_indent is None:
             bullet_indent = len(bullet_match.group(1))
-        if bullet_match and len(bullet_match.group(1)) == bullet_indent:
+        if (
+            bullet_match is not None
+            and len(bullet_match.group(1)) <= bullet_indent
+        ):
             if current is not None and current_index is not None:
                 entries.append((current_index, "\n".join(current)))
             current = [stripped]
             current_index = index
+            bullet_indent = len(bullet_match.group(1))
             continue
         indent = len(line) - len(line.lstrip(" "))
         if current is not None and stripped and indent > (bullet_indent or 0):

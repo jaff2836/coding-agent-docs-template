@@ -62,6 +62,7 @@ TOP_LEVEL_FRONTMATTER_FIELD_RE = re.compile(
     r"^([A-Za-z][A-Za-z0-9-]*)[ \t]*:(.*)$"
 )
 FENCE_LINE_RE = re.compile(r"^[ ]{0,3}(`{3,}|~{3,})(.*)$")
+BLOCKQUOTE_MARKER_RE = re.compile(r"[ ]{0,3}>[ \t]?")
 PROJECT_INVARIANT_EXAMPLE_PREFIXES = ("- **Example:**", "- **예시:**")
 
 ALLOWED_STATUSES = frozenset(("complete", "experimental", "stale"))
@@ -860,33 +861,61 @@ def _check_placeholder_syntax(
         errors.append("%s:%s contains malformed placeholder syntax" % (tag, relative))
 
 
+def _strip_blockquote_markers(
+    line: str, limit: Optional[int] = None
+) -> Tuple[int, str]:
+    """Strip leading blockquote containers, optionally to a stored fence depth."""
+
+    depth = 0
+    cursor = 0
+    while limit is None or depth < limit:
+        marker = BLOCKQUOTE_MARKER_RE.match(line, cursor)
+        if marker is None:
+            break
+        cursor = marker.end()
+        depth += 1
+    return depth, line[cursor:]
+
+
 def _markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
     """Return ``(outside_fence, outside_html_comment)`` for each line."""
 
     context = []
     fence_character: Optional[str] = None
     fence_length = 0
+    fence_blockquote_depth = 0
     in_html_comment = False
     for line in text.splitlines():
+        blockquote_depth, fence_candidate = _strip_blockquote_markers(line)
         if fence_character is not None:
-            context.append((False, False))
-            stripped = line.lstrip(" ")
-            if (
-                len(line) - len(stripped) <= 3
-                and re.fullmatch(
-                    re.escape(fence_character) + "{%d,}[ \t]*" % fence_length,
-                    stripped,
-                )
-            ):
+            if blockquote_depth < fence_blockquote_depth:
                 fence_character = None
                 fence_length = 0
-            continue
+                fence_blockquote_depth = 0
+            else:
+                _, closing_candidate = _strip_blockquote_markers(
+                    line, fence_blockquote_depth
+                )
+                context.append((False, False))
+                stripped = closing_candidate.lstrip(" ")
+                if (
+                    len(closing_candidate) - len(stripped) <= 3
+                    and re.fullmatch(
+                        re.escape(fence_character) + "{%d,}[ \t]*" % fence_length,
+                        stripped,
+                    )
+                ):
+                    fence_character = None
+                    fence_length = 0
+                    fence_blockquote_depth = 0
+                continue
 
-        fence = FENCE_LINE_RE.fullmatch(line)
+        fence = FENCE_LINE_RE.fullmatch(fence_candidate)
         if fence is not None:
             sequence = fence.group(1)
             fence_character = sequence[0]
             fence_length = len(sequence)
+            fence_blockquote_depth = blockquote_depth
             context.append((False, False))
             continue
 
@@ -1032,7 +1061,9 @@ def _contains_observable_token(text: str, token: str) -> bool:
     visible = _observable_markdown_text(text)
     if re.fullmatch(r"§\d+(?:\.\d+)*", token):
         return re.search(
-            r"(?<![0-9.])%s(?![0-9]|\.[0-9])" % re.escape(token), visible
+            r"(?<![0-9.])%s(?![0-9A-Za-z_-]|\.[0-9A-Za-z_-])"
+            % re.escape(token),
+            visible,
         ) is not None
     if re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*", token):
         return re.search(
@@ -1563,14 +1594,18 @@ def _top_level_bullets(
             continue
         line = lines[index]
         stripped = line.strip()
-        bullet_match = re.match(r"^(\s*)-\s+", line)
-        if bullet_match and bullet_indent is None:
+        bullet_match = re.match(r"^( {0,3})-\s+", line)
+        if bullet_match is not None and bullet_indent is None:
             bullet_indent = len(bullet_match.group(1))
-        if bullet_match and len(bullet_match.group(1)) == bullet_indent:
+        if (
+            bullet_match is not None
+            and len(bullet_match.group(1)) <= bullet_indent
+        ):
             if current is not None and current_index is not None:
                 bullets.append((current_index, "\n".join(current)))
             current = [stripped]
             current_index = index
+            bullet_indent = len(bullet_match.group(1))
             continue
         indent = len(line) - len(line.lstrip(" "))
         if current is not None and stripped and indent > (bullet_indent or 0):
@@ -1647,6 +1682,15 @@ def _check_invariant_contract(
             errors.append("%s review invariant example marker has no following bullet" % tag)
             continue
         example = examples[0]
+        next_content = example_position + 1
+        while next_content < review_bounds[1] and not review_lines[next_content].strip():
+            next_content += 1
+        if example[0] != next_content:
+            errors.append(
+                "%s review invariant example marker must immediately precede its bullet"
+                % tag
+            )
+            continue
         if not example[1].startswith(PROJECT_INVARIANT_EXAMPLE_PREFIXES):
             errors.append(
                 "%s review invariant example marker must immediately precede "
