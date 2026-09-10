@@ -40,7 +40,8 @@
 
 ```text
 변경 도착 → revision checkout → 런타임 → (필요 시) 설치
-  → 문서 검사 → (조건) 문서 검사 회귀
+  → 문서 검사 → (원본 템플릿) locale source 검사
+  → (조건) 각 검사기의 회귀 테스트
   → 린트 / 타입 검사 / 테스트 / 빌드 중 문서화된 것만
   → 실패 있으면 통합 차단, 없으면 통과 표시
 ```
@@ -51,13 +52,15 @@
 | --- | --- | --- | --- | --- |
 | G-docs | 문서 검사 | `python3 scripts/check-docs.py` | 이 템플릿의 `scripts/check-docs.py`를 유지하는 저장소 | 스크립트를 적용 저장소에서 제거한 경우. 제거했다면 들어오는 안내 링크도 정리 |
 | G-docs-test | 문서 검사 회귀 | `python3 -m unittest discover -s tests -p 'test_check_docs.py' -v` | `scripts/check-docs.py` 또는 `tests/test_check_docs.py`를 바꾼 변경. 템플릿 원본 저장소는 상시 | 적용 저장소에서 검사 스크립트를 바꾸지 않은 일상 변경. 테스트 파일을 제거했다면 G-docs만 유지 |
+| G-locale-source | locale source 검사 | `python3 scripts/check-locales.py` | locale source를 관리하는 이 템플릿 원본 저장소 | 적용 artifact와 일반 적용 저장소. 이 gate는 artifact에 포함되지 않음 |
+| G-locale-source-test | locale source 검사 회귀 | `python3 -m unittest discover -s tests -p 'test_check_locales.py' -v` | 이 템플릿 원본 저장소는 상시 | 적용 artifact와 일반 적용 저장소 |
 | G-lint | 린트 | AGENTS.md / README의 Lint | 해당 명령이 `N/A`가 아니고 검증된 때 | 미설정 placeholder, `N/A`, 또는 미검증으로 기록된 때 |
 | G-type | 타입 검사 | AGENTS.md / README의 Typecheck | 위와 같음 | 위와 같음 |
 | G-test | 프로젝트 테스트 | AGENTS.md / README의 Test | 위와 같음 | 위와 같음 |
 | G-build | 빌드 | AGENTS.md / README의 Build | 산출물이 있고 명령이 `N/A`가 아닌 때 | 위와 같음 |
 | G-adopt | placeholder 검색 | [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §3의 `rg`/`grep` | 템플릿을 적용한 직후 한 번 | 원본 템플릿 저장소. 이미 값을 채운 뒤의 매 파이프라인. TEMPLATE_GUIDE를 삭제했다면 적용 당시 복사한 검색 명령 또는 [DOCS_GUIDE.md](./DOCS_GUIDE.md) 체크리스트로 대체 |
 
-G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니다. 적용 저장소의 placeholder는 G-adopt와 [DOCS_GUIDE.md](./DOCS_GUIDE.md) 체크리스트로 확인합니다.
+G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니다. G-locale-source는 manifest에 선언한 common·locale source 전체의 placeholder·marker·구조 계약을 검사합니다. 적용 저장소의 placeholder는 G-adopt와 [DOCS_GUIDE.md](./DOCS_GUIDE.md) 체크리스트로 확인합니다.
 
 새 프로젝트 게이트를 추가할 때는 이 표에 행을 넣고 AGENTS.md·README 명령과 같은 문자열을 씁니다. 표에만 있고 문서 명령에 없는 검사를 두지 마세요.
 
@@ -87,7 +90,7 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 
 ### 이 템플릿 원본과 적용 저장소
 
-- [ ] **원본 템플릿 저장소:** G-docs와 G-docs-test를 상시 실행한다. G-adopt(placeholder 검색)는 넣지 않는다.
+- [ ] **원본 템플릿 저장소:** G-docs·G-docs-test·G-locale-source·G-locale-source-test를 상시 실행한다. G-adopt(placeholder 검색)는 넣지 않는다.
 - [ ] **적용 저장소:** G-docs를 유지한다. G-lint·G-type·G-test·G-build는 채운 명령만 실행한다. 적용 직후 G-adopt를 한 번 확인한다.
 - [ ] CI를 쓰지 않으면 같은 게이트를 로컬에서 실행한 기록과, CI를 안 쓰는 이유를 남긴다.
 - [ ] 사용자가 러너 제품을 지정하기 전에는 `.github/workflows/`, Buildkite pipeline 파일, 그 외 제품 전용 설정을 새로 만들지 않는다.

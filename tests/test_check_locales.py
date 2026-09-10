@@ -272,6 +272,29 @@ class LocaleFixtureTests(unittest.TestCase):
         )
         self.assert_error("section marker sequence differs")
 
+    def test_section_markers_must_be_visible_and_adjacent(self) -> None:
+        path = self.path("locales/en/docs/REVIEW.md")
+        text = path.read_text(encoding="utf-8")
+        marker = "<!-- template-section:project-invariants -->"
+        mutations = (
+            (
+                text.replace(marker, "```text\n%s\n```" % marker, 1),
+                "section marker sequence differs",
+            ),
+            (
+                text.replace(marker, "<!--\n%s\n-->" % marker, 1),
+                "section marker sequence differs",
+            ),
+            (
+                text.replace(marker, "Translated guidance\n%s" % marker, 1),
+                "must directly follow a Markdown heading",
+            ),
+        )
+        for content, expected in mutations:
+            with self.subTest(expected=expected):
+                path.write_text(content, encoding="utf-8")
+                self.assert_error(expected)
+
     def test_unknown_marker_is_rejected(self) -> None:
         path = self.path("locales/en/README.md")
         path.write_text(
@@ -286,6 +309,16 @@ class LocaleFixtureTests(unittest.TestCase):
         text = path.read_text(encoding="utf-8")
         path.write_text(
             text.replace("python scripts/check-docs.py", "python3 scripts/check-docs.py", 1),
+            encoding="utf-8",
+        )
+        self.assert_error("must contain command docs-check exactly once")
+
+    def test_required_command_cannot_use_an_html_comment_decoy(self) -> None:
+        path = self.path("locales/en/AGENTS.md")
+        text = path.read_text(encoding="utf-8")
+        path.write_text(
+            text.replace("`python scripts/check-docs.py`", "N/A", 1)
+            + "\n<!--\n`python scripts/check-docs.py`\n-->\n",
             encoding="utf-8",
         )
         self.assert_error("must contain command docs-check exactly once")
@@ -442,6 +475,37 @@ class LocaleFixtureTests(unittest.TestCase):
             )
         self.assert_error("is missing canonical skill link")
 
+    def test_skill_fixture_tokens_and_links_reject_decoys(self) -> None:
+        relatives = (
+            "locales/en/.agents/skills/design/SKILL.md",
+            "locales/en/.claude/skills/design/SKILL.md",
+        )
+        originals = {
+            relative: self.path(relative).read_text(encoding="utf-8")
+            for relative in relatives
+        }
+
+        for relative in relatives:
+            self.path(relative).write_text(
+                originals[relative].replace("§1", "§10", 1),
+                encoding="utf-8",
+            )
+        self.assert_error("missing skill token(s): §1")
+
+        link = "[docs/01-DESIGN.md](../../../docs/01-DESIGN.md)"
+        decoy = (
+            "docs/01-DESIGN.md"
+            "\n\n```markdown\n"
+            "[design](../../../docs/01-DESIGN.md)\n"
+            "```\n"
+        )
+        for relative in relatives:
+            self.path(relative).write_text(
+                originals[relative].replace(link, decoy, 1),
+                encoding="utf-8",
+            )
+        self.assert_error("is missing canonical skill link")
+
     def test_skill_fixture_assertions_are_exact_and_adjacent(self) -> None:
         cases = (
             (
@@ -554,6 +618,17 @@ class LocaleFixtureTests(unittest.TestCase):
         self.assert_error("must be followed by its exact assertion")
         self.assert_error("fixture stable assertion sequence differs")
 
+        for relative in relatives:
+            self.path(relative).write_text(
+                originals[relative].replace(
+                    marker, "<!--\n%s\n-->" % marker, 1
+                ),
+                encoding="utf-8",
+            )
+        self.assert_error(
+            "must appear exactly once outside fenced code and enclosing HTML comments"
+        )
+
     def test_review_and_bugbot_invariant_lists_must_match(self) -> None:
         path = self.path("locales/en/.cursor/BUGBOT.md")
         text = path.read_text(encoding="utf-8")
@@ -562,6 +637,18 @@ class LocaleFixtureTests(unittest.TestCase):
             encoding="utf-8",
         )
         self.assert_error("REVIEW/BUGBOT project invariants differ")
+
+    def test_review_invariant_example_marker_cannot_hide_a_real_rule(self) -> None:
+        path = self.path("locales/en/docs/REVIEW.md")
+        text = path.read_text(encoding="utf-8")
+        path.write_text(
+            text.replace("- **Example:**", "- **Rule A:**", 1),
+            encoding="utf-8",
+        )
+        self.assert_error(
+            "example marker must immediately precede an English or Korean "
+            "template example bullet"
+        )
 
     def test_status_rules_and_stable_release_gate_are_separate(self) -> None:
         manifest = self.load_manifest()

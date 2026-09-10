@@ -139,7 +139,7 @@ class CheckDocsTests(unittest.TestCase):
 <!-- template-section:project-invariants -->
 
 <!-- template-example:project-invariant -->
-- **Localized example:** ignored
+- **Example:** ignored
 - **Rule:** shared first line
   source-only continuation
 """
@@ -161,7 +161,7 @@ class CheckDocsTests(unittest.TestCase):
             ),
         )
 
-    def test_example_is_omitted_only_when_its_marker_is_present(self) -> None:
+    def test_example_is_omitted_only_while_marker_labels_an_example(self) -> None:
         without_example_marker = """# Review
 ## Invariants
 <!-- template-section:project-invariants -->
@@ -189,7 +189,7 @@ class CheckDocsTests(unittest.TestCase):
         with_example_marker = without_example_marker.replace(
             "- **First real invariant**",
             "<!-- template-example:project-invariant -->\n"
-            "- **First real invariant**",
+            "- **Example:** template-only rule",
         )
         self.assertEqual(
             CHECK_DOCS.section_bullets(
@@ -199,6 +199,18 @@ class CheckDocsTests(unittest.TestCase):
             ),
             copy_bullets,
         )
+
+        marker_before_real_rule = without_example_marker.replace(
+            "- **First real invariant**",
+            "<!-- template-example:project-invariant -->\n"
+            "- **First real invariant**",
+        )
+        with self.assertRaises(ValueError):
+            CHECK_DOCS.section_bullets(
+                marker_before_real_rule,
+                CHECK_DOCS.PROJECT_INVARIANTS_MARKER,
+                CHECK_DOCS.PROJECT_INVARIANT_EXAMPLE_MARKER,
+            )
 
     def test_section_markers_must_exist_once_and_follow_the_heading(self) -> None:
         missing = """# Review
@@ -239,6 +251,19 @@ Translated guidance
                 CHECK_DOCS.PROJECT_INVARIANTS_MARKER,
                 CHECK_DOCS.PROJECT_INVARIANT_EXAMPLE_MARKER,
             )
+
+    def test_numbered_headings_ignore_fenced_and_commented_decoys(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "TARGET.md"
+            path.write_text(
+                "# Target\n"
+                "## 1. Visible\n"
+                "```text\n## 2. Fenced decoy\n```\n"
+                "<!--\n## 3. Commented decoy\n-->\n",
+                encoding="utf-8",
+            )
+
+            self.assertEqual(CHECK_DOCS.numbered_headings(path), {"1"})
 
     def test_release_history_marker_controls_section_reference_cutoff(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

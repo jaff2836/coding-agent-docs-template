@@ -39,14 +39,14 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
   - 대응 요구사항: R-001, R-008, R-009, R-011, R-012
   - 선행조건: W-001 inventory 확정, skill 현지화 S2 승인. 최종 번역 검수자는 Chae Sangwon으로 확정
   - 검증 방법: 필수 file/marker/placeholder/명령 parity, 같은 locale의 skill pair와 REVIEW/BUGBOT 대조, 번역 리뷰 기록
-  - 결과·근거: `2a735eb` 기준 commit `9f66c3148a52595cfa710c2721877578ee76e9fe`와 Origin draft PR #4에 영어 24개 localized path와 S2 skill·section marker 계약을 구현했습니다. en/ko inventory·placeholder·heading·link·절 참조·정본 명령 parity, locale 내부 skill pair와 REVIEW/BUGBOT, 양 locale materialized G-docs·G-docs-test가 통과했습니다. Chae Sangwon의 영어 번역 최종 검수가 남아 있어 `en`은 `experimental`이고 이 항목은 미완료로 유지합니다.
+  - 결과·근거: `2a735eb` 기준 commit `3701973dc2bf34bd1afa728274952b9629c4e386`과 Origin PR #4 version #2에 영어 24개 localized path와 S2 skill·section marker 계약을 구현했습니다. en/ko inventory·placeholder·heading·link·절 참조·정본 명령 parity, locale 내부 skill pair와 REVIEW/BUGBOT, 양 locale materialized G-docs·G-docs-test가 통과했습니다. 리뷰에서 확인된 영어 Owner placeholder 검색 누락도 `rg`·`grep` 양쪽에 반영했습니다. Chae Sangwon의 영어 번역 최종 검수가 남아 있어 `en`은 `experimental`이고 이 항목은 미완료로 유지합니다.
 
 - [x] **W-003 locale-aware 문서·source 검사 구현**
   - 범위·변경 파일: `scripts/check-docs.py`, `scripts/check-locales.py`, 관련 단위·negative fixture
   - 대응 요구사항: R-004, R-008, R-009, R-010
   - 선행조건: W-001~W-002의 inventory·marker 계약
   - 검증 방법: 누락 파일, 중복 output, placeholder 차이, marker 순서, 깨진 링크, 깊은 절 참조, 불변조건·skill drift가 각각 실패하는 테스트
-  - 결과·근거: W-002 exact head `9f66c31`에서 분기한 `codex/multilingual-template-w003`에 manifest 기반 source checker, import 가능한 검사 API, marker 기반 공통 artifact checker와 root wrapper를 구현했습니다. checker·negative fixture, en/ko 28-file materialized artifact의 기본·`--root` 검사와 artifact 단위 테스트가 모두 통과했습니다. `en`의 최종 번역 검수와 stable release gate는 의도적으로 W-002·W-004에 남아 있습니다.
+  - 결과·근거: W-002 exact head `3701973`을 포함하도록 restack한 `codex/multilingual-template-w003`에 manifest 기반 source checker, import 가능한 검사 API, marker 기반 공통 artifact checker와 root wrapper를 구현했습니다. 리뷰 후 fenced code·HTML comment decoy와 section token 경계, marker-heading 인접성, 예시 불변조건 marker 수명주기, root locale gate 연결을 보강했습니다. checker·negative fixture, en/ko 28-file materialized artifact의 기본·`--root` 검사와 artifact 단위 테스트가 모두 통과했습니다. `en`의 최종 번역 검수와 stable release gate는 의도적으로 W-002·W-004에 남아 있습니다.
 
 - [ ] **W-004 deterministic export와 release packaging 구현**
   - 범위·변경 파일: `scripts/export-template.py`, `scripts/package-release.py`, `schemas/release-manifest.schema.json`, packaging tests
@@ -83,8 +83,8 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
 | Draft 문서 구조 | `fb70176`에서 분기한 미커밋 설계 문서와 T-001 | `python3 scripts/check-docs.py`; `python3 -m unittest discover -s tests -p 'test_check_docs.py' -v`; `git diff --check` | 통과 — 상대 링크 265개, 절 참조 60건, 문서 검사 6개. 구현 artifact 검증은 미실행 |
 | 참조 구현 조사 | `claude-code-pr-review` `origin/main` `a828f26ac0480ae2b6287c475f2c28a9e97cd9ab` | installer, package_release, locale checker와 tests 읽기 | locale bundle 패턴 재사용 가능. 자동 update는 이 템플릿에 부적합 |
 | W-001 source boundary | 구현 commit `01240fb0dbd5ac1c1fa61c76a1208c4197ba456f` | manifest/실제/baseline path 집합 대조, 25개 byte 비교, common+ko 임시 materialize 후 G-docs·G-docs-test, root G-docs·G-docs-test, `git diff --check` | 통과 — output 28개, root 검사 7건·ko artifact 검사 6건. release artifact와 소비자 E2E는 후속 단계 |
-| W-002 영어 locale 구현 중 | `codex/multilingual-template-w002` commit `9f66c3148a52595cfa710c2721877578ee76e9fe`, Origin draft PR #4 | 24 localized+4 common inventory, placeholder·heading·link·절 참조·명령·marker parity; en/ko materialized G-docs와 각 6개 G-docs-test; root G-docs 7개; JSON·`git diff --check`; 번역 교차 검토 | 자동 검사 통과 — en/ko 각 상대 링크 221개·절 참조 55건. 교차 검토와 parity에서 확인한 번역·계약 drift와 lifecycle 정합성 잔존 문구를 수정했습니다. Chae Sangwon 최종 번역 검수 전이므로 W-002와 `en complete`는 미완료 |
-| W-003 locale-aware 검사 | W-002 commit `9f66c31`에서 분기한 `codex/multilingual-template-w003` 전체 변경 | `python3 scripts/check-locales.py`; negative fixture를 포함한 locale source test 36개; root G-docs와 root checker test 17개; common checker test 15개; en/ko 28-file materialize 후 기본·`--root` G-docs와 각 artifact test 15개; JSON·`git diff --check` | 통과 — strict manifest·inventory·BCP 47 profile·SemVer·placeholder·marker·명령·skill fixture/status 계약과 artifact 외부 경로·release history 실패 경로를 확인했습니다. `--require-stable`은 `en=experimental`이므로 의도대로 실패하며 안정판 gate 적용은 W-004 범위입니다. |
+| W-002 영어 locale 구현 중 | `codex/multilingual-template-w002` commit `3701973dc2bf34bd1afa728274952b9629c4e386`, Origin PR #4 version #2 | 24 localized+4 common inventory, placeholder·heading·link·절 참조·명령·marker parity; en/ko materialized G-docs와 각 6개 G-docs-test; root G-docs 7개; 영어 adoption `rg`·`grep`; JSON·`git diff --check`; 번역 교차 검토 | 자동 검사 통과 — en/ko 각 상대 링크 221개·절 참조 55건이며 영어 Owner placeholder를 두 검색기가 모두 찾았습니다. 교차 검토와 parity에서 확인한 번역·계약 drift와 lifecycle 정합성 잔존 문구를 수정했습니다. Chae Sangwon 최종 번역 검수 전이므로 W-002와 `en complete`는 미완료 |
+| W-003 locale-aware 검사 | W-002 commit `3701973`을 포함하도록 restack한 `codex/multilingual-template-w003` 전체 변경 | `python3 scripts/check-locales.py`; negative fixture를 포함한 locale source test 40개; root G-docs와 전체 test 58개·root checker test 18개; common checker test 16개; en/ko 28-file materialize 후 기본·`--root` G-docs와 각 artifact test 16개; Python compile·JSON·`git diff --check` | 통과 — strict manifest·inventory·BCP 47 profile·SemVer·placeholder·marker·명령·skill fixture/status 계약과 marker·heading·token·fence/comment decoy, artifact 외부 경로·release history 실패 경로를 확인했습니다. `--require-stable`은 `en=experimental`이므로 의도대로 실패하며 안정판 gate 적용은 W-004 범위입니다. |
 
 ## 4. 변경·재검증 기록
 
@@ -93,9 +93,10 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
 - 2026-09-09: PR #2 병합 후 사용자 승인에 따라 W-001을 구현했습니다. 한국어 checker는 W-003 전까지 locale source가 소유하며 root checker는 source 디렉터리를 materialized artifact로 오인하지 않습니다.
 - 2026-09-09: PR #3 병합과 전체 SPEC·S2 승인 후 W-002를 시작했습니다. 영어 payload source와 안정 marker를 구현하고 자동 parity·artifact 검사를 통과했으나, 최종 번역 검수 전에는 `en`을 `complete`로 승격하지 않습니다.
 - 2026-09-10: 사용자와 W-003을 W-002 위 stacked branch·PR로 진행하기로 확인했습니다. W-002의 inventory·marker contract가 고정된 exact head에서 구현하되 영어 번역 최종 검수와 merge 순서는 건너뛰지 않습니다.
+- 2026-09-10: PR #4 리뷰의 영어 Owner placeholder 검색 누락을 `3701973`에서 수정했습니다. PR #5 리뷰에 따라 예시 불변조건 marker 수명주기, locale source root gate, marker·heading 인접성, exact section token과 fenced/comment decoy 방어를 보강하고 W-002 version #2 exact head 위로 restack했습니다.
 
 ## 5. 인계
 
-- PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에서 W-001이 통합됐습니다. W-002는 draft PR #4에서 Chae Sangwon의 영어 검수 대기 중이며, W-003은 그 exact head 위 stacked branch에서 구현·검증했습니다. 통합 순서는 W-002 → W-003입니다.
+- PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에서 W-001이 통합됐습니다. W-002는 open PR #4 version #2에서 Chae Sangwon의 영어 검수 대기 중이며, W-003은 그 exact head를 포함하도록 restack한 branch와 PR #5에서 구현·검증했습니다. 통합 순서는 W-002 → W-003입니다.
 - 실제 repository URL은 구현 중 결정합니다.
 - 구현·통합·release는 각각 별도 완료 조건이며 tag와 release 게시 권한은 아직 위임되지 않았습니다.

@@ -37,6 +37,7 @@ Origin 같은 Git 호스트에는 source와 변경 이력을 보관합니다. �
 | [docs/PROJECT_ANALYSIS.md](./docs/PROJECT_ANALYSIS.md) | 명시 요청 시의 전체 분석 절차 |
 | [docs/CI.md](./docs/CI.md) | 러너 불문의 품질 게이트 워크플로와 연결 체크리스트 |
 | `scripts/check-docs.py` | 의존성 없는 문서 검사 (상대 링크, 스킬 사본, import, 불변조건, 절 번호, 판 번호) |
+| `scripts/check-locales.py` | manifest inventory와 locale별 구조·placeholder·marker·skill 계약 검사 |
 | `.agents/skills/`, `.claude/skills/` | `design`·`review-round` 스킬 어댑터 |
 | `.cursor/BUGBOT.md`, `.omp/WATCHDOG.md` | 선택형 도구 전용 리뷰 연결 |
 
@@ -58,14 +59,16 @@ Origin 같은 Git 호스트에는 source와 변경 이력을 보관합니다. �
 
 ## 이 템플릿 저장소에서 검사하기
 
-문서 검사와 검사 스크립트의 회귀 테스트는 Python 3 표준 라이브러리만 사용하며, 아래 명령은 `python3`을 기준으로 합니다.
+문서·locale source 검사와 검사 스크립트의 회귀 테스트는 Python 3 표준 라이브러리만 사용하며, 아래 명령은 `python3`을 기준으로 합니다.
 
 ```text
 python3 scripts/check-docs.py
+python3 scripts/check-locales.py
 python3 -m unittest discover -s tests -p 'test_check_docs.py' -v
+python3 -m unittest discover -s tests -p 'test_check_locales.py' -v
 ```
 
-적용을 마친 저장소에서도 `scripts/check-docs.py`는 동작합니다. 원본 템플릿의 placeholder 잔존은 이 검사가 실패로 보지 않습니다. 같은 게이트를 원격 CI에 붙이는 순서와 체크리스트는 [CI.md](./docs/CI.md)를 따릅니다.
+적용을 마친 저장소에서도 `scripts/check-docs.py`는 동작합니다. `scripts/check-locales.py`는 원본 템플릿 저장소의 source 전용 gate이며 locale artifact에는 포함되지 않습니다. 원본 템플릿의 placeholder 잔존은 문서 검사가 실패로 보지 않습니다. 같은 게이트를 원격 CI에 붙이는 순서와 체크리스트는 [CI.md](./docs/CI.md)를 따릅니다.
 
 ## 문서와 도구
 

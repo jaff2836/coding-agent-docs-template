@@ -46,6 +46,7 @@ VERSION_RE = re.compile(
 IMPORT_LINE_RE = re.compile(r"^@([^\s]+)\s*$")
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
 HEADING_NUM_RE = re.compile(r"^#{1,6}\s+(\d+(?:\.\d+)*)[.\s]")
+FENCE_LINE_RE = re.compile(r"^[ ]{0,3}(`{3,}|~{3,})(.*)$")
 SECTION_GROUP = r"§\d+(?:\.\d+)*(?:·§\d+(?:\.\d+))*"
 SECTION_LINK_RE = re.compile(
     r"\]\(((?!https?://)[^)\s#]+?\.md)\)\s*(" + SECTION_GROUP + ")"
@@ -59,6 +60,7 @@ RELEASE_HISTORY_MARKER = "<!-- template-section:release-history -->"
 PROJECT_INVARIANT_EXAMPLE_MARKER = (
     "<!-- template-example:project-invariant -->"
 )
+PROJECT_INVARIANT_EXAMPLE_PREFIXES = ("- **Example:**", "- **예시:**")
 
 HISTORY_PATH = "docs/TEMPLATE_GUIDE.md"
 
@@ -278,6 +280,48 @@ def check_imports(errors: List[str], notes: List[str]) -> None:
             notes.append("WATCHDOG.md import: @%s" % spec)
 
 
+def markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
+    """Return ``(outside_fence, outside_enclosing_comment)`` per line."""
+
+    context = []
+    fence_character: Optional[str] = None
+    fence_length = 0
+    in_html_comment = False
+    for line in text.splitlines():
+        if fence_character is not None:
+            context.append((False, False))
+            stripped = line.lstrip(" ")
+            if (
+                len(line) - len(stripped) <= 3
+                and re.fullmatch(
+                    re.escape(fence_character) + "{%d,}[ \t]*" % fence_length,
+                    stripped,
+                )
+            ):
+                fence_character = None
+                fence_length = 0
+            continue
+
+        fence = FENCE_LINE_RE.fullmatch(line)
+        if fence is not None:
+            sequence = fence.group(1)
+            fence_character = sequence[0]
+            fence_length = len(sequence)
+            context.append((False, False))
+            continue
+
+        context.append((True, not in_html_comment))
+        cursor = 0
+        while cursor < len(line):
+            token = "-->" if in_html_comment else "<!--"
+            position = line.find(token, cursor)
+            if position < 0:
+                break
+            in_html_comment = not in_html_comment
+            cursor = position + len(token)
+    return tuple(context)
+
+
 def marked_section_bounds(
     text: str, marker: str
 ) -> Tuple[int, int, int, List[str]]:
@@ -288,7 +332,12 @@ def marked_section_bounds(
     text out of the checker contract while making misplaced markers fail closed.
     """
     lines = text.splitlines()
-    indexes = [index for index, line in enumerate(lines) if line.strip() == marker]
+    context = markdown_line_context(text)
+    indexes = [
+        index
+        for index, line in enumerate(lines)
+        if line.strip() == marker and all(context[index])
+    ]
     if len(indexes) != 1:
         raise ValueError(
             "marker %s must appear exactly once (found %d)" % (marker, len(indexes))
@@ -301,7 +350,7 @@ def marked_section_bounds(
     if heading_index < 0:
         raise ValueError("marker %s must follow a Markdown heading" % marker)
     heading = HEADING_RE.match(lines[heading_index])
-    if heading is None:
+    if heading is None or not all(context[heading_index]):
         raise ValueError(
             "marker %s must directly follow a Markdown heading" % marker
         )
@@ -310,7 +359,11 @@ def marked_section_bounds(
     end_index = len(lines)
     for index in range(marker_index + 1, len(lines)):
         following_heading = HEADING_RE.match(lines[index])
-        if following_heading and len(following_heading.group(1)) <= level:
+        if (
+            following_heading
+            and all(context[index])
+            and len(following_heading.group(1)) <= level
+        ):
             end_index = index
             break
     return heading_index, marker_index, end_index, lines
@@ -323,17 +376,20 @@ def section_bullets(
 ) -> List[str]:
     """Return complete top-level bullets from a section selected by a marker.
 
-    When ``example_marker`` occurs once inside the section, only the top-level
-    bullet immediately following it is omitted. If the marker is absent no
-    bullet is omitted, which is important after an adopted project deletes the
-    template example.
+    When ``example_marker`` occurs once inside the section, only a recognized
+    English or Korean template-example bullet immediately following it is
+    omitted. If an adopter deletes or rewrites the example, the marker must be
+    deleted too so a real invariant can never be silently excluded.
     """
     _, marker_index, end_index, lines = marked_section_bounds(text, marker)
 
     example_index: Optional[int] = None
     if example_marker is not None:
+        context = markdown_line_context(text)
         indexes = [
-            index for index, line in enumerate(lines) if line.strip() == example_marker
+            index
+            for index, line in enumerate(lines)
+            if line.strip() == example_marker and all(context[index])
         ]
         if len(indexes) > 1:
             raise ValueError(
@@ -348,11 +404,14 @@ def section_bullets(
                     % (example_marker, marker)
                 )
 
+    context = markdown_line_context(text)
     entries: List[Tuple[int, str]] = []
     current: Optional[List[str]] = None
     current_index: Optional[int] = None
     bullet_indent: Optional[int] = None
     for index in range(marker_index + 1, end_index):
+        if not all(context[index]):
+            continue
         line = lines[index]
         stripped = line.strip()
         bullet_match = re.match(r"^(\s*)-\s+", line)
@@ -374,11 +433,17 @@ def section_bullets(
         next_content = example_index + 1
         while next_content < end_index and not lines[next_content].strip():
             next_content += 1
-        entry_indexes = {index for index, _ in entries}
-        if next_content not in entry_indexes:
+        entries_by_index = {index: body for index, body in entries}
+        example_body = entries_by_index.get(next_content)
+        if example_body is None:
             raise ValueError(
                 "marker %s must immediately precede a top-level bullet"
                 % example_marker
+            )
+        if not example_body.startswith(PROJECT_INVARIANT_EXAMPLE_PREFIXES):
+            raise ValueError(
+                "marker %s must immediately precede an English or Korean "
+                "template example bullet" % example_marker
             )
         entries = [entry for entry in entries if entry[0] != next_content]
 
@@ -387,7 +452,10 @@ def section_bullets(
 
 def numbered_headings(path: Path) -> set:
     numbers = set()
-    for line in path.read_text(encoding="utf-8").splitlines():
+    text = path.read_text(encoding="utf-8")
+    for line, context in zip(text.splitlines(), markdown_line_context(text)):
+        if not all(context):
+            continue
         match = HEADING_NUM_RE.match(line)
         if match:
             numbers.add(match.group(1))

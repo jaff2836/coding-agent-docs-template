@@ -54,7 +54,6 @@ HEADING_RE = re.compile(r"^#{1,6}\s+", re.MULTILINE)
 NUMBERED_HEADING_RE = re.compile(
     r"^(#{1,6})[ \t]+(\d+(?:\.\d+)*)(?=[. \t])", re.MULTILINE
 )
-TOP_LEVEL_BULLET_RE = re.compile(r"^-\s+", re.MULTILINE)
 URI_SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 TEMPLATE_CONTRACT_ASSERTION_RE = re.compile(
     r"^> \[template-contract:[^]\r\n]+\] [^\r\n]+$", re.MULTILINE
@@ -63,6 +62,7 @@ TOP_LEVEL_FRONTMATTER_FIELD_RE = re.compile(
     r"^([A-Za-z][A-Za-z0-9-]*)[ \t]*:(.*)$"
 )
 FENCE_LINE_RE = re.compile(r"^[ ]{0,3}(`{3,}|~{3,})(.*)$")
+PROJECT_INVARIANT_EXAMPLE_PREFIXES = ("- **Example:**", "- **예시:**")
 
 ALLOWED_STATUSES = frozenset(("complete", "experimental", "stale"))
 IGNORED_SOURCE_PARTS = frozenset(("__pycache__",))
@@ -914,6 +914,16 @@ def _visible_contract_assertions(text: str) -> List[str]:
     ]
 
 
+def _visible_full_line_matches(text: str, pattern: Any) -> List[str]:
+    lines = text.splitlines()
+    context = _markdown_line_context(text)
+    return [
+        line
+        for line, line_context in zip(lines, context)
+        if all(line_context) and pattern.fullmatch(line) is not None
+    ]
+
+
 def _mask_html_comments(text: str) -> str:
     """Replace HTML comments with whitespace while preserving line structure."""
 
@@ -935,6 +945,26 @@ def _mask_html_comments(text: str) -> str:
         )
         cursor = comment_end
     return "".join(parts)
+
+
+def _mask_fenced_code_blocks(text: str) -> str:
+    masked_lines: List[str] = []
+    for line, (outside_fence, _) in zip(
+        text.splitlines(keepends=True), _markdown_line_context(text)
+    ):
+        if outside_fence:
+            masked_lines.append(line)
+        else:
+            masked_lines.append(
+                "".join("\n" if character == "\n" else " " for character in line)
+            )
+    return "".join(masked_lines)
+
+
+def _observable_markdown_text(text: str) -> str:
+    """Return prose/source text outside HTML comments and fenced examples."""
+
+    return _mask_fenced_code_blocks(_mask_html_comments(text))
 
 
 def _mask_inline_code_spans(text: str) -> str:
@@ -995,7 +1025,60 @@ def _mask_inline_code_spans(text: str) -> str:
 
 
 def _structural_markdown_text(text: str) -> str:
-    return _mask_inline_code_spans(_mask_html_comments(text))
+    return _mask_inline_code_spans(_observable_markdown_text(text))
+
+
+def _contains_observable_token(text: str, token: str) -> bool:
+    visible = _observable_markdown_text(text)
+    if re.fullmatch(r"§\d+(?:\.\d+)*", token):
+        return re.search(
+            r"(?<![0-9.])%s(?![0-9]|\.[0-9])" % re.escape(token), visible
+        ) is not None
+    if re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*", token):
+        return re.search(
+            r"(?<![A-Za-z0-9_-])%s(?![A-Za-z0-9_-])" % re.escape(token),
+            visible,
+        ) is not None
+    return token in visible
+
+
+def _marked_section_line_bounds(
+    text: str, marker: str
+) -> Tuple[int, int, int, List[str]]:
+    lines = text.splitlines()
+    context = _markdown_line_context(text)
+    indexes = [
+        index
+        for index, line in enumerate(lines)
+        if line == marker and all(context[index])
+    ]
+    if len(indexes) != 1:
+        raise ValueError(
+            "marker %s must appear exactly once outside fenced code and "
+            "enclosing HTML comments (found %d)" % (marker, len(indexes))
+        )
+
+    marker_index = indexes[0]
+    heading_index = marker_index - 1
+    while heading_index >= 0 and not lines[heading_index].strip():
+        heading_index -= 1
+    if (
+        heading_index < 0
+        or not all(context[heading_index])
+        or HEADING_RE.match(lines[heading_index]) is None
+    ):
+        raise ValueError("marker %s must directly follow a Markdown heading" % marker)
+
+    level = len(lines[heading_index]) - len(lines[heading_index].lstrip("#"))
+    end_index = len(lines)
+    for index in range(marker_index + 1, len(lines)):
+        heading = HEADING_RE.match(lines[index])
+        if heading is not None and all(context[index]):
+            heading_level = len(lines[index]) - len(lines[index].lstrip("#"))
+            if heading_level <= level:
+                end_index = index
+                break
+    return heading_index, marker_index, end_index, lines
 
 
 def _numbered_heading_sequence(text: str) -> Tuple[Tuple[int, str], ...]:
@@ -1096,21 +1179,23 @@ def _check_markers(
             text = texts.get((tag, relative))
             if text is None:
                 continue
-            actual_sections = SECTION_MARKER_RE.findall(text)
+            actual_sections = _visible_full_line_matches(text, SECTION_MARKER_RE)
             expected_sections = section_expected.get(relative, [])
             if actual_sections != expected_sections:
                 errors.append(
                     "%s:%s section marker sequence differs: expected %r, got %r"
                     % (tag, relative, expected_sections, actual_sections)
                 )
-            actual_skills = SKILL_TEMPLATE_MARKER_RE.findall(text)
+            actual_skills = _visible_full_line_matches(
+                text, SKILL_TEMPLATE_MARKER_RE
+            )
             expected_skills = skill_expected.get(relative, [])
             if actual_skills != expected_skills:
                 errors.append(
                     "%s:%s skill marker sequence differs: expected %r, got %r"
                     % (tag, relative, expected_skills, actual_skills)
                 )
-            for marker in TEMPLATE_MARKER_RE.findall(text):
+            for marker in _visible_full_line_matches(text, TEMPLATE_MARKER_RE):
                 if marker not in registered_markers:
                     errors.append("%s:%s has unknown template marker %s" % (tag, relative, marker))
             for assertion in _visible_contract_assertions(text):
@@ -1119,6 +1204,13 @@ def _check_markers(
                         "%s:%s has unregistered template contract assertion %s"
                         % (tag, relative, assertion)
                     )
+            for marker in expected_sections:
+                if not marker.startswith("<!-- template-section:"):
+                    continue
+                try:
+                    _marked_section_line_bounds(text, marker)
+                except ValueError as error:
+                    errors.append("%s:%s %s" % (tag, relative, error))
 
 
 def _command_occurrences(text: str, command: str) -> int:
@@ -1148,7 +1240,9 @@ def _check_commands(
                 text = texts.get((tag, relative))
                 if text is None:
                     continue
-                count = _command_occurrences(text, contract["value"])
+                count = _command_occurrences(
+                    _mask_html_comments(text), contract["value"]
+                )
                 if count != 1:
                     errors.append(
                         "%s:%s must contain command %s exactly once (found %d)"
@@ -1159,7 +1253,7 @@ def _check_commands(
             text = texts.get((tag, relative))
             if text is None:
                 continue
-            actual = _python_commands(text)
+            actual = _python_commands(_mask_html_comments(text))
             expected = declared.get(relative, Counter())
             if actual != expected:
                 errors.append(
@@ -1264,7 +1358,14 @@ def _check_skills(
                 text = texts.get((tag, relative))
                 if text is None:
                     continue
-                if text.count(contract["marker"]) != 1:
+                visible_marker_count = sum(
+                    1
+                    for line, line_context in zip(
+                        text.splitlines(), _markdown_line_context(text)
+                    )
+                    if line == contract["marker"] and all(line_context)
+                )
+                if visible_marker_count != 1:
                     errors.append(
                         "%s:%s must contain skill marker %s exactly once"
                         % (tag, relative, contract["id"])
@@ -1316,14 +1417,14 @@ def _check_skill_fixture_observables(
             missing_skill_tokens = [
                 token
                 for token in rule.get("skill_tokens", ())
-                if token not in skill_text
+                if not _contains_observable_token(skill_text, token)
             ]
             if missing_skill_tokens:
                 errors.append(
                     "%s fixture %s is missing skill token(s): %s"
                     % (tag, fixture_id, ", ".join(missing_skill_tokens))
                 )
-            links = set(LINK_TARGET_RE.findall(skill_text))
+            links = set(_relative_link_target_sequence(skill_text))
             missing_links = [
                 target
                 for target in rule.get("skill_links", ())
@@ -1347,7 +1448,7 @@ def _check_skill_fixture_observables(
                     missing_document_tokens = [
                         token
                         for token in rule.get("document_tokens", ())
-                        if token not in document
+                        if not _contains_observable_token(document, token)
                     ]
                     if missing_document_tokens:
                         errors.append(
@@ -1417,12 +1518,12 @@ def _check_skill_fixture_observables(
                 indexes = [
                     index
                     for index, line in enumerate(lines)
-                    if line == marker and context[index][0]
+                    if line == marker and all(context[index])
                 ]
                 if len(indexes) != 1:
                     errors.append(
                         "%s fixture marker %s must appear exactly once outside "
-                        "fenced code"
+                        "fenced code and enclosing HTML comments"
                         % (tag, marker)
                     )
                     continue
@@ -1441,23 +1542,41 @@ def _check_skill_fixture_observables(
 
 
 def _section_bounds(text: str, marker: str) -> Optional[Tuple[int, int]]:
-    position = text.find(marker)
-    if position < 0 or text.find(marker, position + len(marker)) >= 0:
+    try:
+        _, marker_index, end_index, _ = _marked_section_line_bounds(text, marker)
+    except ValueError:
         return None
-    start = position + len(marker)
-    heading = HEADING_RE.search(text, start)
-    return start, heading.start() if heading else len(text)
+    return marker_index, end_index
 
 
-def _top_level_bullets(text: str, start: int, end: int) -> List[Tuple[int, str]]:
-    section = text[start:end]
-    matches = list(TOP_LEVEL_BULLET_RE.finditer(section))
+def _top_level_bullets(
+    text: str, marker_index: int, end_index: int
+) -> List[Tuple[int, str]]:
+    lines = text.splitlines()
+    context = _markdown_line_context(text)
     bullets: List[Tuple[int, str]] = []
-    for index, match in enumerate(matches):
-        bullet_start = start + match.start()
-        bullet_end = start + (matches[index + 1].start() if index + 1 < len(matches) else len(section))
-        body = text[bullet_start:bullet_end].rstrip()
-        bullets.append((bullet_start, body))
+    current: Optional[List[str]] = None
+    current_index: Optional[int] = None
+    bullet_indent: Optional[int] = None
+    for index in range(marker_index + 1, end_index):
+        if not all(context[index]):
+            continue
+        line = lines[index]
+        stripped = line.strip()
+        bullet_match = re.match(r"^(\s*)-\s+", line)
+        if bullet_match and bullet_indent is None:
+            bullet_indent = len(bullet_match.group(1))
+        if bullet_match and len(bullet_match.group(1)) == bullet_indent:
+            if current is not None and current_index is not None:
+                bullets.append((current_index, "\n".join(current)))
+            current = [stripped]
+            current_index = index
+            continue
+        indent = len(line) - len(line.lstrip(" "))
+        if current is not None and stripped and indent > (bullet_indent or 0):
+            current.append(stripped)
+    if current is not None and current_index is not None:
+        bullets.append((current_index, "\n".join(current)))
     return bullets
 
 
@@ -1510,10 +1629,17 @@ def _check_invariant_contract(
         bugbot_bounds = _section_bounds(bugbot, section_marker)
         if review_bounds is None or bugbot_bounds is None:
             continue
-        example_position = review.find(example_marker, review_bounds[0], review_bounds[1])
-        if example_position < 0:
+        review_lines = review.splitlines()
+        review_context = _markdown_line_context(review)
+        example_indexes = [
+            index
+            for index in range(review_bounds[0] + 1, review_bounds[1])
+            if review_lines[index] == example_marker and all(review_context[index])
+        ]
+        if len(example_indexes) != 1:
             errors.append("%s review invariant example marker is outside its section" % tag)
             continue
+        example_position = example_indexes[0]
         review_bullets = _top_level_bullets(review, *review_bounds)
         bugbot_bullets = _top_level_bullets(bugbot, *bugbot_bounds)
         examples = [item for item in review_bullets if item[0] > example_position]
@@ -1521,6 +1647,12 @@ def _check_invariant_contract(
             errors.append("%s review invariant example marker has no following bullet" % tag)
             continue
         example = examples[0]
+        if not example[1].startswith(PROJECT_INVARIANT_EXAMPLE_PREFIXES):
+            errors.append(
+                "%s review invariant example marker must immediately precede "
+                "an English or Korean template example bullet" % tag
+            )
+            continue
         if not review_bullets or review_bullets[0][0] != example[0]:
             errors.append("%s review invariant example must be the first bullet" % tag)
         invariants = [body for position, body in review_bullets if position != example[0]]
