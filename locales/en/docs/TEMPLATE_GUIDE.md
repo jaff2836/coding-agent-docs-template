@@ -130,13 +130,13 @@ Replacement targets are not limited to the `{{...}}` form. Instructional placeho
 
 ```bash
 rg --hidden -n --glob '*.md' --glob '!**/.git/**' --glob '!docs/TEMPLATE_GUIDE.md' --glob '!docs/DOCS_GUIDE.md' \
-  "\{\{|Adapt to the project|Describe as appropriate for the project|Briefly describe|YYYY-MM-DD|\| Example|Example decision|Example completion|\*\*Example:\*\*" .
+  "\{\{|Adapt to the project|Describe as appropriate for the project|Customize for the project|Briefly describe|YYYY-MM-DD|\| Example|Example decision|Example completion|\*\*Example:\*\*" .
 ```
 
 If `rg` is unavailable, use:
 
 ```bash
-grep -rnE "\{\{|Adapt to the project|Describe as appropriate for the project|Briefly describe|YYYY-MM-DD|\| Example|Example decision|Example completion|\*\*Example:\*\*" \
+grep -rnE "\{\{|Adapt to the project|Describe as appropriate for the project|Customize for the project|Briefly describe|YYYY-MM-DD|\| Example|Example decision|Example completion|\*\*Example:\*\*" \
   --include='*.md' --exclude=TEMPLATE_GUIDE.md --exclude=DOCS_GUIDE.md \
   --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv .
 ```
@@ -172,7 +172,7 @@ Use `python3` if `python` is unavailable. Moving a file can break links even wit
 | `{{PROJECT_INVARIANT_1}}`, `{{PROJECT_INVARIANT_2}}` | Project-specific rules that must hold. Use the same content in both [REVIEW.md](./REVIEW.md) §6 and [.cursor/BUGBOT.md](../.cursor/BUGBOT.md) |
 
 - Mark unused commands `N/A` and record the reason in [AGENTS.md](../AGENTS.md). Do not leave nonexistent commands looking like runnable examples.
-- Replace `Adapt to the project`, `Describe as appropriate for the project`, `YYYY-MM-DD`, and owner, milestone, and task examples with actual information.
+- Replace `Adapt to the project`, `Describe as appropriate for the project`, `Customize for the project`, `YYYY-MM-DD`, and owner, milestone, and task examples with actual information.
 - Examples in the global TODO and change forms are not actual completion history. Record the integration target and required verification for global completion; in a PLAN, record implementation and verification evidence from that branch.
 - Keep unresolved items in [00-PROJECT.md](./00-PROJECT.md) unresolved; do not turn proposals into agreed decisions. Delete the example decision row (`D-001`) or replace it with a real decision. Sections §1–§5, §8, and §11 are required; the others may be deleted when not applicable. Clean up incoming section references at the same time. Do not leave empty sections containing placeholders.
 - Do not automatically adopt the example invariants or commented-out exceptions in [REVIEW.md](./REVIEW.md) as project policy.
