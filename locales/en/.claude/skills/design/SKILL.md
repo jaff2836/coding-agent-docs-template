@@ -7,6 +7,15 @@ argument-hint: "[change summary]"
 # Design
 <!-- template-skill-contract:design:v1 -->
 
+The following `[template-contract:v1]` assertions are normative. Localized prose must not contradict them.
+
+<!-- template-skill-fixture:design-minimal-artifact -->
+> [template-contract:v1] MUST_USE_MINIMUM_REQUIRED_DESIGN_ARTIFACTS
+<!-- template-skill-fixture:design-requires-approval -->
+> [template-contract:v1] MUST_NOT_IMPLEMENT_BEFORE_USER_AGREEMENT
+<!-- template-skill-fixture:design-reuses-accepted-spec -->
+> [template-contract:v1] MUST_REUSE_ACCEPTED_SCOPE_WITHOUT_REAPPROVAL
+
 1. Check the applicability criteria in [docs/01-DESIGN.md](../../../docs/01-DESIGN.md) §1. If the change does not require the full procedure, review only the relevant parent design and necessary execution plan, then carry out the request.
 2. If it does, select the minimum deliverable format in §2 and proceed with §3. Use [docs/00-PROJECT.md](../../../docs/00-PROJECT.md) and its linked product and extension designs for context, and [docs/REVIEW.md](../../../docs/REVIEW.md) §6 for invariants.
 3. Do not implement before agreement. Proceed without renewed approval for a scope already approved in the existing conversation. Connect the intent, specification, and decision rationale to [docs/02-TODO.md](../../../docs/02-TODO.md) as described in §4.

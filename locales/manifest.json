@@ -20,7 +20,9 @@
       ".agents/skills/review-round/agents/openai.yaml",
       ".gitignore",
       "CLAUDE.md",
-      "LICENSE"
+      "LICENSE",
+      "scripts/check-docs.py",
+      "tests/test_check_docs.py"
     ],
     "localized_paths": [
       ".agents/skills/design/SKILL.md",
@@ -44,9 +46,7 @@
       "docs/changes/_template/01-CHANGE.md",
       "docs/changes/_template/01-INTENT.md",
       "docs/changes/_template/02-SPEC.md",
-      "docs/changes/_template/03-PLAN.md",
-      "scripts/check-docs.py",
-      "tests/test_check_docs.py"
+      "docs/changes/_template/03-PLAN.md"
     ]
   },
   "contracts": {
@@ -60,9 +60,39 @@
         ]
       },
       {
+        "id": "project-invariant-example",
+        "marker": "<!-- template-example:project-invariant -->",
+        "paths": [
+          "docs/REVIEW.md"
+        ]
+      },
+      {
         "id": "release-history",
         "marker": "<!-- template-section:release-history -->",
         "paths": [
+          "docs/TEMPLATE_GUIDE.md"
+        ]
+      }
+    ],
+    "required_commands": [
+      {
+        "id": "docs-check",
+        "value": "python scripts/check-docs.py",
+        "paths": [
+          "AGENTS.md",
+          "README.md",
+          "docs/CI.md",
+          "docs/TEMPLATE_GUIDE.md"
+        ]
+      },
+      {
+        "id": "docs-test",
+        "value": "python -m unittest discover -s tests -p 'test_check_docs.py' -v",
+        "paths": [
+          "AGENTS.md",
+          "README.md",
+          "docs/CI.md",
+          "docs/DOCS_GUIDE.md",
           "docs/TEMPLATE_GUIDE.md"
         ]
       }

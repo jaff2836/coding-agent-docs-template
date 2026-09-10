@@ -1,144 +1,54 @@
 from __future__ import annotations
 
 import importlib.util
-import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-SPEC = importlib.util.spec_from_file_location(
-    "check_docs", REPOSITORY_ROOT / "scripts" / "check-docs.py"
+
+
+def load_module(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+COMMON_TESTS = load_module(
+    "common_test_check_docs",
+    REPOSITORY_ROOT / "template/common/tests/test_check_docs.py",
 )
-assert SPEC is not None and SPEC.loader is not None
-CHECK_DOCS = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(CHECK_DOCS)
+MAINTAINER_CHECKER = load_module(
+    "maintainer_check_docs",
+    REPOSITORY_ROOT / "scripts/check-docs.py",
+)
+
+# Re-export the canonical artifact suite so the documented maintainer test
+# command exercises the exact checker and tests shipped in every artifact.
+CheckDocsTests = COMMON_TESTS.CheckDocsTests
 
 
-class CheckDocsTests(unittest.TestCase):
-    def test_codex_policy_must_be_boolean_false(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            skill = root / ".agents/skills/review-round/SKILL.md"
-            config = root / ".agents/skills/review-round/agents/openai.yaml"
-            config.parent.mkdir(parents=True)
-            skill.write_text("skill", encoding="utf-8")
-
-            for value in ("true", '"false"', "missing"):
-                if value == "missing":
-                    config.write_text("policy: {}\n", encoding="utf-8")
-                else:
-                    config.write_text(
-                        "policy:\n  allow_implicit_invocation: %s\n" % value,
-                        encoding="utf-8",
-                    )
-                errors = []
-                with patch.object(CHECK_DOCS, "ROOT", root):
-                    CHECK_DOCS.check_skill_configs(errors, [])
-                self.assertTrue(errors, value)
-
-            config.write_text(
-                "policy:\n  allow_implicit_invocation: false\n", encoding="utf-8"
-            )
-            errors = []
-            with patch.object(CHECK_DOCS, "ROOT", root):
-                CHECK_DOCS.check_skill_configs(errors, [])
-            self.assertEqual(errors, [])
-
-    def test_checkout_parent_named_build_does_not_skip_docs(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory) / "build" / "repository"
-            document = root / "docs/BROKEN.md"
-            document.parent.mkdir(parents=True)
-            document.write_text("[missing](./missing.txt)\n", encoding="utf-8")
-
-            errors = []
-            with patch.object(CHECK_DOCS, "ROOT", root):
-                CHECK_DOCS.check_relative_links(errors, [])
-            self.assertTrue(errors)
-
-    def test_payload_source_directories_are_not_scanned_as_artifacts(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            for source_directory in ("locales/ko", "template/common"):
-                document = root / source_directory / "BROKEN.md"
-                document.parent.mkdir(parents=True)
-                document.write_text("[artifact-only](./missing.txt)\n", encoding="utf-8")
-
-            errors = []
-            with patch.object(CHECK_DOCS, "ROOT", root):
-                CHECK_DOCS.check_relative_links(errors, [])
-            self.assertEqual(errors, [])
-
-    def test_invariant_continuation_lines_are_compared(self) -> None:
-        source = """# Review
-## 6. Project-specific Invariants
-- **Rule:** shared first line
-  source-only continuation
-"""
-        copy = """# Bugbot
-## 불변조건
-- **Rule:** shared first line
-  different continuation
-"""
-        self.assertNotEqual(
-            CHECK_DOCS.section_bullets(source, "Project-specific Invariants"),
-            CHECK_DOCS.section_bullets(copy, "불변조건"),
+class MaintainerCheckDocsTests(unittest.TestCase):
+    def test_no_arguments_check_source_tree_with_payload_exclusions(self) -> None:
+        with patch.object(
+            MAINTAINER_CHECKER.CHECK_DOCS, "run_checks", return_value=0
+        ) as run_checks:
+            self.assertEqual(MAINTAINER_CHECKER.main([]), 0)
+        run_checks.assert_called_once_with(
+            REPOSITORY_ROOT,
+            excluded_top_level=("locales", "template"),
         )
 
-    def test_deep_section_reference_is_not_truncated(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            docs = root / "docs"
-            docs.mkdir()
-            (docs / "TARGET.md").write_text(
-                "# Target\n## 1.2 Existing\n", encoding="utf-8"
-            )
-            (docs / "SOURCE.md").write_text(
-                "[target](./TARGET.md) §1.2.99\n", encoding="utf-8"
-            )
-
-            errors = []
-            with patch.object(CHECK_DOCS, "ROOT", root):
-                CHECK_DOCS.check_section_refs(errors, [])
-            self.assertTrue(errors)
-            self.assertIn("§1.2.99", "\n".join(errors))
-
-    def test_missing_explicit_section_path_is_an_error(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            docs = root / "docs"
-            docs.mkdir()
-            (docs / "SOURCE.md").write_text(
-                "`docs/MISSING.md` §9\n", encoding="utf-8"
-            )
-
-            errors = []
-            with patch.object(CHECK_DOCS, "ROOT", root):
-                CHECK_DOCS.check_section_refs(errors, [])
-            self.assertTrue(errors)
-            self.assertIn("문서 대상이 없습니다", "\n".join(errors))
-
-    def test_combined_form_can_be_copied_without_optional_siblings(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            docs = root / "docs"
-            change = docs / "changes/example"
-            change.mkdir(parents=True)
-            for name in ("00-PROJECT.md", "01-DESIGN.md", "02-TODO.md"):
-                (docs / name).write_text("# Placeholder\n", encoding="utf-8")
-            (change / "01-CHANGE.md").write_text(
-                (REPOSITORY_ROOT / "docs/changes/_template/01-CHANGE.md").read_text(
-                    encoding="utf-8"
-                ),
-                encoding="utf-8",
-            )
-
-            errors = []
-            with patch.object(CHECK_DOCS, "ROOT", root):
-                CHECK_DOCS.check_relative_links(errors, [])
-            self.assertEqual(errors, [])
+    def test_explicit_arguments_use_artifact_cli_without_exclusions(self) -> None:
+        arguments = ["--root", "/tmp/example-artifact"]
+        with patch.object(
+            MAINTAINER_CHECKER.CHECK_DOCS, "main", return_value=0
+        ) as artifact_main:
+            self.assertEqual(MAINTAINER_CHECKER.main(arguments), 0)
+        artifact_main.assert_called_once_with(arguments)
 
 
 if __name__ == "__main__":

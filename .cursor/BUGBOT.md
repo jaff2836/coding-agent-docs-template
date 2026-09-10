@@ -34,6 +34,8 @@ non-blocking finding도 보고합니다. 유용한 맥락입니다. 기본 리�
 
 ## 이 저장소의 불변조건
 
+<!-- template-section:project-invariants -->
+
 Bugbot은 `docs/REVIEW.md` §6을 읽지 못하므로 같은 목록을 여기에 둡니다. 각 항목은 잘못된 동작, 영향 및 안전한 경로를 포함해야 하며, 두 파일의 목록은 항상 같아야 합니다. `scripts/check-docs.py`가 두 목록을 대조합니다.
 
 - **Artifact 경계:** 저장소 root의 maintainer 문서나 source landing README를 사용자 artifact에 포함하지 않습니다. 포함하면 저장소 로드맵이 적용 프로젝트 정책으로 오염되므로, 안전한 경로는 `locales/manifest.json`의 닫힌 inventory에 따라 `template/common/`과 locale 하나만 합성하는 것입니다.

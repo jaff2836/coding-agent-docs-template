@@ -1,21 +1,25 @@
 #!/usr/bin/env python3
-"""Dependency-free checks for the documentation template.
+"""Dependency-free checks for a materialized documentation template.
 
 Checks relative links, skill copies and the Codex explicit-invocation policy,
 known @imports, invariant lists in REVIEW and BUGBOT, section-number references
 that identify a document, and the Template version in the guide documents. Any
-failure produces exit code 1. Paths are relative to the repository root and the
-current working directory may be elsewhere.
+failure produces exit code 1. Pass ``--root`` to check an arbitrary materialized
+artifact; otherwise the artifact root is inferred from this script's location.
 """
 
 from __future__ import annotations
 
+import argparse
 import re
 import sys
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Sequence, Tuple
 
-ROOT = Path(__file__).resolve().parent.parent
+
+DEFAULT_ROOT = Path(__file__).resolve().parent.parent
+ROOT = DEFAULT_ROOT
+EXCLUDED_TOP_LEVEL_NAMES = frozenset()
 
 SKIP_DIR_NAMES = {
     ".git",
@@ -41,10 +45,6 @@ VERSION_RE = re.compile(
 )
 IMPORT_LINE_RE = re.compile(r"^@([^\s]+)\s*$")
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
-
-# Example line used only as guidance in the template. Exclude it from comparison.
-EXAMPLE_BULLET_PREFIX = "- **Example:"
-
 HEADING_NUM_RE = re.compile(r"^#{1,6}\s+(\d+(?:\.\d+)*)[.\s]")
 SECTION_GROUP = r"§\d+(?:\.\d+)*(?:·§\d+(?:\.\d+))*"
 SECTION_LINK_RE = re.compile(
@@ -54,12 +54,13 @@ SECTION_PATH_RE = re.compile(r"`([^`\s]+\.md)`\s*(" + SECTION_GROUP + ")")
 SECTION_NAME_RE = re.compile(r"\b([A-Z][A-Z_]*)(?:\.md)?\s+(" + SECTION_GROUP + ")")
 SECTION_SPLIT_RE = re.compile(r"[§·]+")
 
-# Release history intentionally quotes old filenames and section numbers to
-# describe the structure of that version (see TEMPLATE_GUIDE.md).
-HISTORY_SECTION: Tuple[str, str] = (
-    "docs/TEMPLATE_GUIDE.md",
-    "Template Revision History",
+PROJECT_INVARIANTS_MARKER = "<!-- template-section:project-invariants -->"
+RELEASE_HISTORY_MARKER = "<!-- template-section:release-history -->"
+PROJECT_INVARIANT_EXAMPLE_MARKER = (
+    "<!-- template-example:project-invariant -->"
 )
+
+HISTORY_PATH = "docs/TEMPLATE_GUIDE.md"
 
 SKILL_PAIRS: List[Tuple[str, str]] = [
     (
@@ -80,10 +81,8 @@ SKILL_CONFIGS: List[Tuple[str, str]] = [
     ),
 ]
 
-# Source of truth and copy of the invariant list. Find by heading text because
-# section numbers may vary between repositories.
-INVARIANT_SOURCE: Tuple[str, str] = ("docs/REVIEW.md", "Project-specific Invariants")
-INVARIANT_COPY: Tuple[str, str] = (".cursor/BUGBOT.md", "Invariants")
+INVARIANT_SOURCE = "docs/REVIEW.md"
+INVARIANT_COPY = ".cursor/BUGBOT.md"
 
 
 def is_skipped(path: Path) -> bool:
@@ -91,13 +90,21 @@ def is_skipped(path: Path) -> bool:
         parts = path.relative_to(ROOT).parts
     except ValueError:
         parts = path.parts
-    return any(part in SKIP_DIR_NAMES for part in parts)
+        return any(part in SKIP_DIR_NAMES for part in parts)
+    return (
+        bool(parts) and parts[0] in EXCLUDED_TOP_LEVEL_NAMES
+    ) or any(part in SKIP_DIR_NAMES for part in parts)
 
 
-def md_files() -> List[Path]:
+def md_files(errors: Optional[List[str]] = None) -> List[Path]:
     files = []
     for path in ROOT.rglob("*.md"):
         if is_skipped(path):
+            continue
+        if not is_inside_root(path):
+            message = "Markdown source escapes artifact root: %s" % rel(path)
+            if errors is not None and message not in errors:
+                errors.append(message)
             continue
         files.append(path)
     return sorted(files)
@@ -110,18 +117,34 @@ def rel(path: Path) -> str:
         return str(path)
 
 
+def is_inside_root(path: Path) -> bool:
+    """Return whether *path* resolves inside the checked artifact root."""
+
+    try:
+        path.resolve().relative_to(ROOT.resolve())
+    except (OSError, RuntimeError, ValueError):
+        return False
+    return True
+
+
+def is_file_inside_root(path: Path) -> bool:
+    return is_inside_root(path) and path.is_file()
+
+
 def check_relative_links(errors: List[str], notes: List[str]) -> None:
     broken = []
     scanned = 0
     links = 0
-    for md in md_files():
+    for md in md_files(errors):
         scanned += 1
         text = md.read_text(encoding="utf-8")
         for match in LINK_RE.finditer(text):
             target = match.group(1)
             links += 1
-            dest = (md.parent / target)
-            if not dest.exists():
+            dest = md.parent / target
+            if not is_inside_root(dest):
+                broken.append("%s: %s (target escapes artifact root)" % (rel(md), target))
+            elif not dest.exists():
                 broken.append("%s: %s" % (rel(md), target))
     if broken:
         errors.append("Broken relative links:")
@@ -137,13 +160,13 @@ def check_skill_copies(errors: List[str], notes: List[str]) -> None:
     for left, right in SKILL_PAIRS:
         a = ROOT / left
         b = ROOT / right
-        if not a.is_file() and not b.is_file():
+        if not is_file_inside_root(a) and not is_file_inside_root(b):
             errors.append("Skill files are missing: %s, %s" % (left, right))
             continue
-        if not a.is_file():
+        if not is_file_inside_root(a):
             errors.append("Skill source is missing: %s" % left)
             continue
-        if not b.is_file():
+        if not is_file_inside_root(b):
             notes.append("Skill copy omitted (allowed): %s" % right)
             continue
         if a.read_bytes() != b.read_bytes():
@@ -196,10 +219,10 @@ def read_implicit_invocation_policy(path: Path) -> Optional[bool]:
 
 def check_skill_configs(errors: List[str], notes: List[str]) -> None:
     for skill, config in SKILL_CONFIGS:
-        if not (ROOT / skill).is_file():
+        if not is_file_inside_root(ROOT / skill):
             continue
         config_path = ROOT / config
-        if not config_path.is_file():
+        if not is_file_inside_root(config_path):
             errors.append(
                 "Codex explicit-invocation config is missing: %s "
                 "(implicit invocation is enabled for %s)"
@@ -223,7 +246,7 @@ def check_skill_configs(errors: List[str], notes: List[str]) -> None:
 
 def check_imports(errors: List[str], notes: List[str]) -> None:
     claude = ROOT / "CLAUDE.md"
-    if not claude.is_file():
+    if not is_file_inside_root(claude):
         errors.append("CLAUDE.md is missing")
     else:
         body = claude.read_text(encoding="utf-8").strip()
@@ -233,7 +256,7 @@ def check_imports(errors: List[str], notes: List[str]) -> None:
             notes.append("CLAUDE.md import: @AGENTS.md")
 
     watchdog = ROOT / ".omp" / "WATCHDOG.md"
-    if not watchdog.is_file():
+    if not is_file_inside_root(watchdog):
         notes.append("WATCHDOG.md omitted (allowed)")
         return
 
@@ -247,50 +270,119 @@ def check_imports(errors: List[str], notes: List[str]) -> None:
         return
     for spec in imports:
         dest = watchdog.parent / spec
-        if not dest.is_file():
+        if not is_inside_root(dest):
+            errors.append(".omp/WATCHDOG.md import escapes artifact root: %s" % spec)
+        elif not dest.is_file():
             errors.append(".omp/WATCHDOG.md import target is missing: %s" % spec)
         else:
             notes.append("WATCHDOG.md import: @%s" % spec)
 
 
-def section_bullets(text: str, heading_needle: str) -> Optional[List[str]]:
-    """Find a section by heading text and return complete top-level bullets."""
-    lines = text.splitlines()
-    start = None
-    level = 0
-    for index, line in enumerate(lines):
-        match = HEADING_RE.match(line)
-        if match and heading_needle in match.group(2):
-            start = index + 1
-            level = len(match.group(1))
-            break
-    if start is None:
-        return None
+def marked_section_bounds(
+    text: str, marker: str
+) -> Tuple[int, int, int, List[str]]:
+    """Return heading, marker, and end line indexes for one marked section.
 
-    bullets = []
-    current: Optional[List[str]] = None
-    bullet_indent: Optional[int] = None
-    skip_current = False
-    for line in lines[start:]:
-        match = HEADING_RE.match(line)
-        if match and len(match.group(1)) <= level:
+    A stable marker must occur exactly once and directly follow its Markdown
+    heading, with only blank lines between them. This keeps translated heading
+    text out of the checker contract while making misplaced markers fail closed.
+    """
+    lines = text.splitlines()
+    indexes = [index for index, line in enumerate(lines) if line.strip() == marker]
+    if len(indexes) != 1:
+        raise ValueError(
+            "marker %s must appear exactly once (found %d)" % (marker, len(indexes))
+        )
+
+    marker_index = indexes[0]
+    heading_index = marker_index - 1
+    while heading_index >= 0 and not lines[heading_index].strip():
+        heading_index -= 1
+    if heading_index < 0:
+        raise ValueError("marker %s must follow a Markdown heading" % marker)
+    heading = HEADING_RE.match(lines[heading_index])
+    if heading is None:
+        raise ValueError(
+            "marker %s must directly follow a Markdown heading" % marker
+        )
+
+    level = len(heading.group(1))
+    end_index = len(lines)
+    for index in range(marker_index + 1, len(lines)):
+        following_heading = HEADING_RE.match(lines[index])
+        if following_heading and len(following_heading.group(1)) <= level:
+            end_index = index
             break
+    return heading_index, marker_index, end_index, lines
+
+
+def section_bullets(
+    text: str,
+    marker: str,
+    example_marker: Optional[str] = None,
+) -> List[str]:
+    """Return complete top-level bullets from a section selected by a marker.
+
+    When ``example_marker`` occurs once inside the section, only the top-level
+    bullet immediately following it is omitted. If the marker is absent no
+    bullet is omitted, which is important after an adopted project deletes the
+    template example.
+    """
+    _, marker_index, end_index, lines = marked_section_bounds(text, marker)
+
+    example_index: Optional[int] = None
+    if example_marker is not None:
+        indexes = [
+            index for index, line in enumerate(lines) if line.strip() == example_marker
+        ]
+        if len(indexes) > 1:
+            raise ValueError(
+                "marker %s must appear at most once (found %d)"
+                % (example_marker, len(indexes))
+            )
+        if indexes:
+            example_index = indexes[0]
+            if not marker_index < example_index < end_index:
+                raise ValueError(
+                    "marker %s must follow %s inside the same section"
+                    % (example_marker, marker)
+                )
+
+    entries: List[Tuple[int, str]] = []
+    current: Optional[List[str]] = None
+    current_index: Optional[int] = None
+    bullet_indent: Optional[int] = None
+    for index in range(marker_index + 1, end_index):
+        line = lines[index]
         stripped = line.strip()
         bullet_match = re.match(r"^(\s*)-\s+", line)
         if bullet_match and bullet_indent is None:
             bullet_indent = len(bullet_match.group(1))
         if bullet_match and len(bullet_match.group(1)) == bullet_indent:
-            if current is not None and not skip_current:
-                bullets.append("\n".join(current))
+            if current is not None and current_index is not None:
+                entries.append((current_index, "\n".join(current)))
             current = [stripped]
-            skip_current = stripped.startswith(EXAMPLE_BULLET_PREFIX)
+            current_index = index
             continue
         indent = len(line) - len(line.lstrip(" "))
         if current is not None and stripped and indent > (bullet_indent or 0):
             current.append(stripped)
-    if current is not None and not skip_current:
-        bullets.append("\n".join(current))
-    return bullets
+    if current is not None and current_index is not None:
+        entries.append((current_index, "\n".join(current)))
+
+    if example_index is not None:
+        next_content = example_index + 1
+        while next_content < end_index and not lines[next_content].strip():
+            next_content += 1
+        entry_indexes = {index for index, _ in entries}
+        if next_content not in entry_indexes:
+            raise ValueError(
+                "marker %s must immediately precede a top-level bullet"
+                % example_marker
+            )
+        entries = [entry for entry in entries if entry[0] != next_content]
+
+    return [body for _, body in entries]
 
 
 def numbered_headings(path: Path) -> set:
@@ -302,27 +394,34 @@ def numbered_headings(path: Path) -> set:
     return numbers
 
 
-def doc_short_names() -> dict:
+def doc_short_names(errors: Optional[List[str]] = None) -> dict:
     """Collect short docs/ names for references such as `PROJECT §8`."""
     names = {}
     for path in sorted((ROOT / "docs").glob("*.md")):
+        if not is_inside_root(path):
+            message = "Markdown source escapes artifact root: %s" % rel(path)
+            if errors is not None and message not in errors:
+                errors.append(message)
+            continue
+        if not path.is_file():
+            continue
         names[re.sub(r"^\d+-", "", path.stem)] = path
     return names
 
 
-def history_cut() -> Optional[Tuple[Path, int]]:
-    """Return where release history starts; section refs after it are skipped."""
-    path_name, needle = HISTORY_SECTION
-    path = ROOT / path_name
-    if not path.is_file():
+def history_cut(errors: List[str]) -> Optional[Tuple[Path, int]]:
+    """Return where marked release history starts; refs after it are skipped."""
+    path = ROOT / HISTORY_PATH
+    if not is_file_inside_root(path):
         return None
-    offset = 0
-    for line in path.read_text(encoding="utf-8").splitlines(keepends=True):
-        match = HEADING_RE.match(line.rstrip("\n"))
-        if match and needle in match.group(2):
-            return (path, offset)
-        offset += len(line)
-    return None
+    text = path.read_text(encoding="utf-8")
+    try:
+        heading_index, _, _, _ = marked_section_bounds(text, RELEASE_HISTORY_MARKER)
+    except ValueError as error:
+        errors.append("%s: %s" % (HISTORY_PATH, error))
+        return None
+    lines = text.splitlines(keepends=True)
+    return path, sum(len(line) for line in lines[:heading_index])
 
 
 def check_section_refs(errors: List[str], notes: List[str]) -> None:
@@ -331,13 +430,13 @@ def check_section_refs(errors: List[str], notes: List[str]) -> None:
     Same-file references such as `§4` do not identify their target document and
     are therefore not checked.
     """
-    names = doc_short_names()
-    cut_at = history_cut()
+    names = doc_short_names(errors)
+    cut_at = history_cut(errors)
     headings: dict = {}
     broken: List[str] = []
     checked = 0
 
-    for md in md_files():
+    for md in md_files(errors):
         text = md.read_text(encoding="utf-8")
         limit = len(text)
         if cut_at and md == cut_at[0]:
@@ -355,7 +454,11 @@ def check_section_refs(errors: List[str], notes: List[str]) -> None:
                     target = names.get(ref)
                 else:
                     target = next(
-                        (c for c in (md.parent / ref, ROOT / ref) if c.is_file()),
+                        (
+                            candidate
+                            for candidate in (md.parent / ref, ROOT / ref)
+                            if is_inside_root(candidate) and candidate.is_file()
+                        ),
                         None,
                     )
                 if target is None:
@@ -384,26 +487,34 @@ def check_section_refs(errors: List[str], notes: List[str]) -> None:
 
 
 def check_invariants(errors: List[str], notes: List[str]) -> None:
-    copy_path, copy_needle = INVARIANT_COPY
-    copy_file = ROOT / copy_path
-    if not copy_file.is_file():
+    copy_file = ROOT / INVARIANT_COPY
+    if not is_file_inside_root(copy_file):
         notes.append("BUGBOT.md omitted (allowed)")
         return
 
-    source_path, source_needle = INVARIANT_SOURCE
-    source_file = ROOT / source_path
-    if not source_file.is_file():
-        errors.append("Cannot compare invariants because %s is missing" % source_path)
+    source_file = ROOT / INVARIANT_SOURCE
+    if not is_file_inside_root(source_file):
+        errors.append(
+            "Cannot compare invariants because %s is missing" % INVARIANT_SOURCE
+        )
         return
 
-    source = section_bullets(source_file.read_text(encoding="utf-8"), source_needle)
-    copy = section_bullets(copy_file.read_text(encoding="utf-8"), copy_needle)
-    if source is None:
-        errors.append(
-            "Heading `%s` was not found in %s" % (source_needle, source_path)
+    try:
+        source = section_bullets(
+            source_file.read_text(encoding="utf-8"),
+            PROJECT_INVARIANTS_MARKER,
+            PROJECT_INVARIANT_EXAMPLE_MARKER,
         )
-    if copy is None:
-        errors.append("Heading `%s` was not found in %s" % (copy_needle, copy_path))
+    except ValueError as error:
+        errors.append("%s: %s" % (INVARIANT_SOURCE, error))
+        source = None
+    try:
+        copy = section_bullets(
+            copy_file.read_text(encoding="utf-8"), PROJECT_INVARIANTS_MARKER
+        )
+    except ValueError as error:
+        errors.append("%s: %s" % (INVARIANT_COPY, error))
+        copy = None
     if source is None or copy is None:
         return
 
@@ -411,17 +522,17 @@ def check_invariants(errors: List[str], notes: List[str]) -> None:
         notes.append("Invariant lists match: %d items" % len(source))
         return
 
-    errors.append("Invariant lists differ: %s ↔ %s" % (source_path, copy_path))
+    errors.append("Invariant lists differ: %s ↔ %s" % (INVARIANT_SOURCE, INVARIANT_COPY))
     for item in source:
         if item not in copy:
-            errors.append("  Only in %s: %s" % (source_path, item))
+            errors.append("  Only in %s: %s" % (INVARIANT_SOURCE, item))
     for item in copy:
         if item not in source:
-            errors.append("  Only in %s: %s" % (copy_path, item))
+            errors.append("  Only in %s: %s" % (INVARIANT_COPY, item))
 
 
 def read_template_version(path: Path) -> Optional[str]:
-    if not path.is_file():
+    if not is_file_inside_root(path):
         return None
     match = VERSION_RE.search(path.read_text(encoding="utf-8"))
     return match.group(1) if match else None
@@ -434,8 +545,8 @@ def check_versions(errors: List[str], notes: List[str]) -> None:
     if v2 is None:
         errors.append("Template version not found in docs/DOCS_GUIDE.md")
 
-    # TEMPLATE_GUIDE.md may be deleted after adoption (TEMPLATE_GUIDE.md §5).
-    if not guide.is_file():
+    # TEMPLATE_GUIDE.md may be deleted after adoption.
+    if not is_file_inside_root(guide):
         notes.append(
             "TEMPLATE_GUIDE.md omitted (allowed): checking version only in "
             "DOCS_GUIDE.md"
@@ -455,7 +566,18 @@ def check_versions(errors: List[str], notes: List[str]) -> None:
     elif v1 and v2:
         notes.append("Template versions match: %s" % v1)
         history = guide.read_text(encoding="utf-8")
-        if ("### v%s" % v1) not in history and ("### %s" % v1) not in history:
+        try:
+            _, marker_index, end_index, lines = marked_section_bounds(
+                history, RELEASE_HISTORY_MARKER
+            )
+        except ValueError as error:
+            errors.append("%s: %s" % (HISTORY_PATH, error))
+            return
+        release_history = "\n".join(lines[marker_index + 1 : end_index])
+        version_heading = re.compile(
+            r"^###\s+v?%s(?:\s|$)" % re.escape(v1), re.MULTILINE
+        )
+        if version_heading.search(release_history) is None:
             errors.append(
                 "Current version is absent from TEMPLATE_GUIDE.md history: %s" % v1
             )
@@ -463,12 +585,9 @@ def check_versions(errors: List[str], notes: List[str]) -> None:
             notes.append("Current version is present in revision history: %s" % v1)
 
 
-def main() -> int:
+def _run_checks() -> int:
     if not (ROOT / "AGENTS.md").is_file():
-        sys.stderr.write(
-            "AGENTS.md was not found at the repository root: %s\n"
-            "Place check-docs.py under the repository's scripts/ directory.\n" % ROOT
-        )
+        sys.stderr.write("AGENTS.md was not found at the artifact root: %s\n" % ROOT)
         return 2
     errors: List[str] = []
     notes: List[str] = []
@@ -488,6 +607,52 @@ def main() -> int:
         return 1
     sys.stdout.write("All checks passed\n")
     return 0
+
+
+def run_checks(
+    root: Path = DEFAULT_ROOT,
+    *,
+    excluded_top_level: Sequence[str] = (),
+) -> int:
+    """Run checks at ``root`` with optional source-repository exclusions.
+
+    ``excluded_top_level`` is an internal integration hook for a maintainer
+    wrapper. It excludes only matching first path components from recursive
+    Markdown discovery; fixed contract paths such as ``docs/REVIEW.md`` remain
+    checked. The public CLI intentionally does not expose this option.
+    """
+    exclusions = frozenset(excluded_top_level)
+    for name in exclusions:
+        if not name or Path(name).parts != (name,) or name in {".", ".."}:
+            raise ValueError(
+                "excluded_top_level entries must be single relative path names: %r"
+                % name
+            )
+
+    global ROOT, EXCLUDED_TOP_LEVEL_NAMES
+    previous_root = ROOT
+    previous_exclusions = EXCLUDED_TOP_LEVEL_NAMES
+    ROOT = root.expanduser().resolve()
+    EXCLUDED_TOP_LEVEL_NAMES = exclusions
+    try:
+        return _run_checks()
+    finally:
+        ROOT = previous_root
+        EXCLUDED_TOP_LEVEL_NAMES = previous_exclusions
+
+
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Check one materialized coding-agent documentation template."
+    )
+    parser.add_argument(
+        "--root",
+        type=Path,
+        default=DEFAULT_ROOT,
+        help="materialized artifact root (default: inferred from this script)",
+    )
+    args = parser.parse_args(argv)
+    return run_checks(args.root)
 
 
 if __name__ == "__main__":

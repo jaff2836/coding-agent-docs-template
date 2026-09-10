@@ -122,6 +122,7 @@ A P2 finding with `blocking=true` is called a **Blocking P2**. The default pass 
 
 Write approximately 2–10 project-specific invariants that must always hold. Include the incorrect behavior, its impact, and the safe path in each rule.
 
+<!-- template-example:project-invariant -->
 - **Example:** Do not store an order as complete before payment approval. The safe path is to verify the approval result and then transition the state in one transaction.
 - **{{PROJECT_INVARIANT_1}}**
 - **{{PROJECT_INVARIANT_2}}**
