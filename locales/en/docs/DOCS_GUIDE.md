@@ -5,7 +5,7 @@
 - **Status:** Active
 - **Template version:** 1.7.1
 - **Template source:** Describe the original template repository URL or another retrievable archive location as appropriate for the project
-- **Template revision:** Describe the full SHA of the source commit copied as appropriate for the project (undetermined if uncommitted changes are included)
+- **Template revision:** Describe the full SHA of the copied source commit as appropriate for the project; if the copy includes uncommitted changes, record it as `Unconfirmed`
 - **Owner:** Describe as appropriate for the project
 - **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** When the documentation system changes

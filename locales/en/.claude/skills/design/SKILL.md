@@ -1,6 +1,6 @@
 ---
 name: design
-description: Design changes involving structure, the technology stack, public contracts, schemas, migrations, or tradeoffs between alternatives, as well as feature changes whose requirements are ambiguous or whose intent must be preserved across sessions. Confirm Intent → define the Spec, alternatives, and design → create an execution plan → reach user agreement. Use minimal documentation for small changes, and do not repeat the full procedure when implementing an approved design. Apply when explicitly invoked.
+description: Design changes involving structure, the technology stack, public contracts, schemas, migrations, or trade-offs between alternatives, as well as feature changes whose requirements are ambiguous or whose intent must be preserved across sessions. Confirm Intent → define the Spec, alternatives, and design → create an execution plan → reach user agreement. Use minimal documentation for small changes, and do not repeat the full procedure when implementing an approved design. Apply when explicitly invoked.
 argument-hint: "[change summary]"
 ---
 

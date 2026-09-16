@@ -9,7 +9,7 @@ The template does not include an initialization script, review prompts or automa
 - **Status:** Active
 - **Template version:** 1.7.1
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
-- **Template revision:** Adapt to the project with the full SHA of the source commit used for copying (§5)
+- **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
 - **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** When the template structure or tool integration changes
@@ -62,7 +62,7 @@ The template does not include an initialization script, review prompts or automa
     ├── REVIEW.md              # Shared PR review policy
     ├── REVIEW_ROUND.md        # Review-round process and delegated authority
     ├── PROJECT_ANALYSIS.md    # Whole-project analysis process used on request
-    └── CI.md                  # Runner-neutral quality-gate workflow and integration checklist
+    └── CI.md                  # Runner-agnostic quality-gate workflow and integration checklist
 ```
 
 ## 2. Applying to a New Project
@@ -250,7 +250,7 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 | Case | Expected Behavior | Failure | Basis |
 |---|---|---|---|
 | Small bug fix | Make the fix without design files | Require INTENT and SPEC | [01-DESIGN.md](./01-DESIGN.md) §1 |
-| Implementing an approved design | Link the parent section and create only a PLAN if needed; no reapproval | Require the full design process or reapproval | [01-DESIGN.md](./01-DESIGN.md) §1·§3.6 |
+| Implementing an approved design | Link the parent section and create only a PLAN if needed; no reapproval | Require the full design process or reapproval | [01-DESIGN.md](./01-DESIGN.md) §1 and §3.6 |
 | Completing PLAN checkboxes | Report only implementation and verification complete on that branch | Report integration, release, or support verification complete | [DOCS_GUIDE.md](./DOCS_GUIDE.md), [01-DESIGN.md](./01-DESIGN.md) §4 |
 | Tool-specific instructions in a repository without OMP | Allow dedicated files that do not duplicate shared rules | Prohibit them in every project | This document §4 |
 | CI request with no runner selected | Write and connect only the workflow and checklist in [CI.md](./CI.md) | Create product-specific YAML for GitHub Actions, Buildkite, or another runner | [CI.md](./CI.md) §4 and §6 |
@@ -273,7 +273,7 @@ Use this history to identify changes that an adopted repository has not yet appl
 - Restricted the G-docs-test discovery pattern to `test_check_docs.py`, so it does not run unrelated `test*.py` files in an adopted project.
 - Verify in the adopted repository: if retaining the documentation checker, keep both command strings identical in project instructions and the README, and update the existing CI G-docs-test to the restricted pattern.
 
-### v1.7 — Separate Template-introduction README and Runner-neutral CI Gates
+### v1.7 — Separate Template-introduction README and Runner-agnostic CI Gates
 
 - Made the root `README.md` the introduction for the template repository and separated the adopted-project README template into `README-PROJECT.md`. Opening the source repository on Origin or another host now shows the template description rather than project placeholders.
 - Changed step 2 of adoption §2: place `README-PROJECT.md` as `README.md`, remove its adoption comment at the top, and then fill the placeholders. Do not leave the template-introduction README or `README-PROJECT.md` in the adopted repository.
@@ -308,7 +308,7 @@ Use this history to identify changes that an adopted repository has not yet appl
 
 - `docs/TEMPLATE_GUIDE.md` §4: made the prohibition on additional instruction files such as `.claude/CLAUDE.md` conditional on OMP use. Tool-specific files are allowed without OMP, but shared rules must not be duplicated.
 - `scripts/check-docs.py`: checks relative links, skill copies, `CLAUDE.md`/WATCHDOG imports, and Template version in both guide documents using only the standard library, and returns a nonzero exit code on failure. This replaced the inline link-check example.
-- Defined issuance scopes and parallel-branch collision handling for change IDs, `D-nnn`, `T-nnn`, and change-internal IDs. Completed, canceled, and deferred change directories remain, while implemented contracts enter the current PROJECT baseline only after integration.
+- Defined issuance scopes and parallel-branch collision handling for change IDs, `D-nnn`, `T-nnn`, and change-internal IDs. Completed, cancelled, and deferred change directories remain, while implemented contracts enter the current PROJECT baseline only after integration.
 - Added behavior-verification cases for instruction, skill, and checker changes.
 - Verify in the adopted repository: ensure there is no blanket prohibition on tool-specific instruction files when OMP is unused; copy `scripts/check-docs.py`; do not mix `D-` or `T-` IDs with change-internal IDs; and do not treat a completed SPEC as the current product baseline.
 
