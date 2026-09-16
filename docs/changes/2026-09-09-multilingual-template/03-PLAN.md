@@ -48,12 +48,12 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
   - 검증 방법: 누락 파일, 중복 output, placeholder 차이, marker 순서, 깨진 링크, 깊은 절 참조, 불변조건·skill drift가 각각 실패하는 테스트
   - 결과·근거: PR #4 merge commit `fa01b20ccebb81788241cc41ba5d68610a6663fe`을 병합한 `codex/multilingual-template-w003`에 manifest 기반 source checker, import 가능한 검사 API, marker 기반 공통 artifact checker와 root wrapper를 구현했습니다. 리뷰 후 fenced code·HTML comment·blockquote fence decoy와 section token 경계, marker-heading·example-bullet 인접성, top-level list와 4-space code의 indentation 경계, 예시 불변조건 marker 수명주기, root locale gate 연결을 보강했습니다. checker·negative fixture, en/ko 28-file materialized artifact의 기본·`--root` 검사와 artifact 단위 테스트가 모두 통과했고, 두 locale의 `complete` 판정과 stable gate도 통과했습니다.
 
-- [ ] **W-004 deterministic export와 release packaging 구현**
+- [x] **W-004 deterministic export와 release packaging 구현**
   - 범위·변경 파일: `scripts/export-template.py`, `scripts/package-release.py`, `schemas/release-manifest.schema.json`, packaging tests
   - 대응 요구사항: R-003, R-004, R-005, R-011
   - 선행조건: W-003 검사 API와 complete locale 판정
   - 검증 방법: 빈 디렉터리 export E2E, 두 번 build한 archive·manifest byte 비교, exact member/mode/timestamp/hash, source commit·version binding과 rebuild 검증
-  - 결과·근거: 미실행
+  - 결과·근거: manifest의 닫힌 inventory만 외부 빈 디렉터리에 원자적으로 materialize하고 artifact checker를 실행하는 exporter를 구현했습니다. packager는 `complete` locale과 stable gate를 요구하고, 고정 `stored` ZIP·mode `0644`·1980-01-01 timestamp, member hash·bytes, exact SemVer·source commit·repository를 release manifest와 `SHA256SUMS`에 결합합니다. 실제 installer source는 W-005가 소유하므로 packager는 저장소의 고정 `scripts/installer.py`만 받아 외부 bytes가 source commit에 섞이지 않게 했습니다. en/ko export E2E, 이중 build byte 비교, archive/manifest 검증, clean Git source binding과 실패 경로 테스트가 통과했습니다.
 
 - [ ] **W-005 비파괴 locale installer 구현**
   - 범위·변경 파일: `scripts/installer.py`, installer tests와 fake release server fixture
@@ -85,6 +85,7 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
 | W-001 source boundary | 구현 commit `01240fb0dbd5ac1c1fa61c76a1208c4197ba456f` | manifest/실제/baseline path 집합 대조, 25개 byte 비교, common+ko 임시 materialize 후 G-docs·G-docs-test, root G-docs·G-docs-test, `git diff --check` | 통과 — output 28개, root 검사 7건·ko artifact 검사 6건. release artifact와 소비자 E2E는 후속 단계 |
 | W-002 영어 locale | Origin PR #4 final head `3465885cc4a5085d8c897c6fb3528556734c5add`, merge commit `fa01b20ccebb81788241cc41ba5d68610a6663fe` | 24 localized+6 common inventory, placeholder·heading·link·절 참조·명령·marker parity; en/ko materialized G-docs와 G-docs-test; root G-docs; 영어 adoption `rg`·`grep`; JSON·`git diff --check`; 번역 교차·최종 검토 | 통과 — 교차 검토에서 확인한 번역·계약 drift와 lifecycle 정합성 문구를 수정했고 Chae Sangwon의 최종 검수 승인을 받아 `en=complete`로 판정 |
 | W-003 locale-aware 검사 | PR #4 merge commit `fa01b20`을 병합한 `codex/multilingual-template-w003` 전체 변경 | `python3 scripts/check-locales.py`; `python3 scripts/check-locales.py --require-stable`; negative fixture를 포함한 locale source test 41개; root G-docs와 root checker test 20개; common checker test 18개; JSON·`git diff --check` | 통과 — strict manifest·inventory·BCP 47 profile·SemVer·placeholder·marker·명령·skill fixture/status 계약과 marker·heading·token·fence/comment/blockquote decoy, example 인접성·indent, artifact 외부 경로·release history 실패 경로를 확인했고 `en`·`ko` stable gate가 통과 |
+| W-004 deterministic export/package | Origin `main` `7657d2cd8f4789dab4d64904b30e4ccc2eea169a`에서 분기한 `codex/multilingual-template-w004` 작업 트리 | en/ko 각 28-file export와 artifact test, exporter 7개·packager 7개 회귀 테스트, 두 build byte 비교, ZIP member/order/mode/timestamp/hash, manifest/SHA256SUMS, stable gate, source revision binding, JSON·Python compile·`git diff --check` | 통과 — exporter와 packager core 구현 완료. 실제 `installer.py` 구현과 이를 포함한 repository exact-head CLI package E2E는 W-005 선행조건으로 남음 |
 
 ## 4. 변경·재검증 기록
 
@@ -95,9 +96,10 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
 - 2026-09-10: 사용자와 W-003을 W-002 위 stacked branch·PR로 진행하기로 확인했습니다. W-002의 inventory·marker contract가 고정된 exact head에서 구현하되 영어 번역 최종 검수와 merge 순서는 건너뛰지 않습니다.
 - 2026-09-10: PR #4 리뷰의 영어 Owner placeholder 검색 누락을 `3701973`에서 수정했습니다. PR #5 리뷰에 따라 예시 불변조건 marker 수명주기, locale source root gate, marker·heading·example 인접성, top-level list와 4-space code의 indentation 경계, exact section token과 fenced/comment/blockquote decoy 방어를 보강하고 W-002 version #2 exact head 위로 restack했습니다.
 - 2026-09-16: PR #4 final head `3465885`의 영어 번역을 Chae Sangwon이 최종 승인했고 merge commit `fa01b20`으로 통합했습니다. W-003에 해당 main을 병합한 뒤 `en`을 `complete`로 승격하고 stable locale gate를 재검증했습니다.
+- 2026-09-16: PR #5 merge commit `7657d2c`에서 W-003을 통합했습니다. 해당 main에서 W-004를 분기해 원자적 locale exporter, deterministic release packager, release manifest schema와 negative/E2E fixture를 구현했습니다. installer asset의 실제 구현은 W-005에 유지하되 packager 입력은 source commit에 포함되는 고정 경로로 제한했습니다.
 
 ## 5. 인계
 
-- PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에서 W-001, PR #4 merge commit `fa01b20ccebb81788241cc41ba5d68610a6663fe`에서 W-002가 통합됐습니다. W-003은 최신 `main`을 병합한 branch와 PR #5에서 구현·검증했으며 PR #5 통합 후 W-004를 시작할 수 있습니다.
+- PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에서 W-001, PR #4 merge commit `fa01b20ccebb81788241cc41ba5d68610a6663fe`에서 W-002, PR #5 merge commit `7657d2cd8f4789dab4d64904b30e4ccc2eea169a`에서 W-003이 통합됐습니다. W-004는 `codex/multilingual-template-w004` 작업 트리에서 구현·검증했으며, W-005는 W-004 통합 후 시작합니다.
 - 실제 repository URL은 구현 중 결정합니다.
 - 구현·통합·release는 각각 별도 완료 조건이며 tag와 release 게시 권한은 아직 위임되지 않았습니다.

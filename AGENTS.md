@@ -19,14 +19,15 @@
 
 - **Install:** N/A — production dependency가 없습니다. 분석 또는 리뷰 작업에서는 자동으로 의존성을 설치하지 마세요.
 - **Run:** N/A
-- **Build:** N/A — locale exporter·packager는 아직 구현 전입니다.
-- **Test:** `python3 -m unittest discover -s tests -p 'test_check_docs.py' -v`
+- **Build:** N/A — release package는 W-005 installer 구현 후 완성됩니다.
+- **Test:** `python3 -m unittest discover -s tests -v`
 - **Lint:** N/A
 - **Typecheck:** N/A
 - **Docs:** `python3 scripts/check-docs.py`
 - **Docs test:** `python3 -m unittest discover -s tests -p 'test_check_docs.py' -v`
 - **Locale source:** `python3 scripts/check-locales.py`
 - **Locale source test:** `python3 -m unittest discover -s tests -p 'test_check_locales.py' -v`
+- **Export:** `python3 scripts/export-template.py --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}`
 
 `{{...}}` 형태의 placeholder가 남아 있는 명령은 미설정으로 취급하고 실행을 시도하지 마세요. 명령이 `N/A`이거나 실행 환경이 준비되지 않았다면 성공했다고 추정하지 말고 검증하지 못한 이유를 보고하세요.
 
