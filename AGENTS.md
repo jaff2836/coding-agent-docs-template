@@ -25,6 +25,8 @@
 - **Typecheck:** N/A
 - **Docs:** `python3 scripts/check-docs.py`
 - **Docs test:** `python3 -m unittest discover -s tests -p 'test_check_docs.py' -v`
+- **Locale source:** `python3 scripts/check-locales.py`
+- **Locale source test:** `python3 -m unittest discover -s tests -p 'test_check_locales.py' -v`
 
 `{{...}}` 형태의 placeholder가 남아 있는 명령은 미설정으로 취급하고 실행을 시도하지 마세요. 명령이 `N/A`이거나 실행 환경이 준비되지 않았다면 성공했다고 추정하지 말고 검증하지 못한 이유를 보고하세요.
 

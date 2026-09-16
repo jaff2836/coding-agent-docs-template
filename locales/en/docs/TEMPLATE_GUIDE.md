@@ -70,7 +70,7 @@ The template does not include an initialization script, review prompts or automa
 1. Install a verified locale artifact into an empty project directory, then record its version and source commit in both guide documents as described in §5. Confirm that the artifact inventory includes the hidden `.agents/`, `.claude/`, `.cursor/`, and `.omp/` entries, `.gitignore`, and all four templates under `docs/changes/_template/`. Do not copy the source repository root directly.
 2. The root [README.md](../README.md) is already the project template in the selected locale. Fill in the project name, description, requirements, installation, execution and verification instructions, security guidance, and license.
 3. Adapt the project information and commands in [AGENTS.md](../AGENTS.md) to the actual repository. Confirm that they agree with the README's execution instructions.
-4. Replace the placeholders and example items listed below.
+4. Replace the placeholders and example items listed below. When deleting the example invariant in [REVIEW.md](./REVIEW.md) or turning it into a real rule, also delete the `template-example:project-invariant` marker immediately above it.
 5. In [00-PROJECT.md](./00-PROJECT.md), distinguish the current product baseline from approved goals and link the sources of truth for existing designs. In [02-TODO.md](./02-TODO.md), record the integration target and change-level work items for the first milestone. If a change has a PLAN, keep its detailed work and verification status only in that PLAN. If there is no long-term extension, remove `10-EXTENSION.md` and incoming links to it.
 6. Record only project-specific invariants and actually approved exceptions in [REVIEW.md](./REVIEW.md).
 7. Check the default round count and pass threshold in [REVIEW_ROUND.md](./REVIEW_ROUND.md), and list every reviewer that runs in this repository in §2.1. The user may change the threshold; use the confirmed values in an actual round. Follow §6, §7, and §9 for handoff and documentation updates after a pass. Use the "Reviewer Research Hints" below as a starting point, but verify actual behavior directly.
@@ -130,13 +130,13 @@ Replacement targets are not limited to the `{{...}}` form. Instructional placeho
 
 ```bash
 rg --hidden -n --glob '*.md' --glob '!**/.git/**' --glob '!docs/TEMPLATE_GUIDE.md' --glob '!docs/DOCS_GUIDE.md' \
-  "\{\{|Adapt to the project|Describe as appropriate for the project|Customize for the project|Briefly describe|YYYY-MM-DD|\| Example|Example decision|Example completion|\*\*Example:\*\*" .
+  "\{\{|Adapt to the project|Describe as appropriate for the project|Customize for the project|Briefly describe|YYYY-MM-DD|\| Example|Example decision|Example completion|\*\*Example:\*\*|template-example:project-invariant" .
 ```
 
 If `rg` is unavailable, use:
 
 ```bash
-grep -rnE "\{\{|Adapt to the project|Describe as appropriate for the project|Customize for the project|Briefly describe|YYYY-MM-DD|\| Example|Example decision|Example completion|\*\*Example:\*\*" \
+grep -rnE "\{\{|Adapt to the project|Describe as appropriate for the project|Customize for the project|Briefly describe|YYYY-MM-DD|\| Example|Example decision|Example completion|\*\*Example:\*\*|template-example:project-invariant" \
   --include='*.md' --exclude=TEMPLATE_GUIDE.md --exclude=DOCS_GUIDE.md \
   --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv .
 ```
@@ -175,7 +175,7 @@ Use `python3` if `python` is unavailable. Moving a file can break links even wit
 - Replace `Adapt to the project`, `Describe as appropriate for the project`, `Customize for the project`, `YYYY-MM-DD`, and owner, milestone, and task examples with actual information.
 - Examples in the global TODO and change templates are not actual completion history. Record the integration target and required verification for global completion; in a PLAN, record implementation and verification evidence from that branch.
 - Keep unresolved items in [00-PROJECT.md](./00-PROJECT.md) unresolved; do not turn proposals into agreed decisions. Delete the example decision row (`D-001`) or replace it with a real decision. Sections §1–§5, §8, and §11 are required; the others may be deleted when not applicable. Clean up incoming section references at the same time. Do not leave empty sections containing placeholders.
-- Do not automatically adopt the example invariants or commented-out exceptions in [REVIEW.md](./REVIEW.md) as project policy.
+- Delete the example invariant in [REVIEW.md](./REVIEW.md) together with the `template-example:project-invariant` marker immediately above it. Do not automatically adopt commented-out exceptions as project policy.
 - Write `Last reviewed` using the **UTC date** on which the content was actually reviewed. Copying the template alone does not establish completed verification. A local-time date can appear later than a PR timestamp shown by GitHub and prompt reviewer findings.
 - Do not invent an undecided license, security-reporting channel, or operational information. The bundled `LICENSE` is the MIT license for the template itself. Replace it once the project license is decided; if it is undecided, delete the file and mark the README License section as undecided.
 

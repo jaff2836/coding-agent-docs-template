@@ -70,7 +70,7 @@
 1. 검증된 locale artifact를 빈 프로젝트 폴더에 설치하고 §5에 따라 version·source commit을 두 안내 문서에 기록합니다. 숨김 항목인 `.agents/`, `.claude/`, `.cursor/`, `.omp/`와 `.gitignore`, `docs/changes/_template/`의 네 양식도 artifact inventory에 포함되었는지 확인하세요. source 저장소 root를 직접 복사하지 마세요.
 2. 루트 [README.md](../README.md)는 이미 선택한 locale의 적용 프로젝트 양식입니다. 프로젝트 이름, 설명, 요구사항, 설치·실행·검증 방법, 보안 안내 및 라이선스를 작성합니다.
 3. [AGENTS.md](../AGENTS.md)의 프로젝트 정보와 명령을 실제 저장소에 맞게 작성합니다. README의 실행 방법과 서로 일치하도록 확인하세요.
-4. 아래 placeholder와 예시 항목을 교체합니다.
+4. 아래 placeholder와 예시 항목을 교체합니다. [REVIEW.md](./REVIEW.md)의 예시 불변조건을 삭제하거나 실제 규칙으로 바꿀 때는 바로 위 `template-example:project-invariant` marker도 함께 삭제합니다.
 5. [00-PROJECT.md](./00-PROJECT.md)에 현재 제품 기준과 승인된 목표를 구분하고 기존 설계의 정본을 연결합니다. [02-TODO.md](./02-TODO.md)에 통합 대상과 첫 마일스톤의 변경 단위 항목을 작성합니다. 변경별 PLAN이 있으면 상세 작업·검증 상태는 PLAN에만 둡니다. 장기 확장이 없으면 `10-EXTENSION.md`와 들어오는 링크를 제거합니다.
 6. [REVIEW.md](./REVIEW.md)에 프로젝트 고유 불변조건과 실제 승인된 예외만 기록합니다.
 7. [REVIEW_ROUND.md](./REVIEW_ROUND.md)의 기본 라운드 수와 통과 임계값을 확인하고, §2.1에 이 저장소에서 도는 리뷰어를 전부 기록합니다. 임계값은 사용자가 변경할 수 있으며 실제 라운드에서는 확정한 값을 적용합니다. 통과 후 인계와 다음 작업의 문서 반영은 §6·§7·§9를 따릅니다. 아래 「리뷰어 조사 힌트」를 참고하되 실제 동작은 직접 확인하세요.
@@ -130,13 +130,13 @@ gh api graphql \
 
 ```bash
 rg --hidden -n --glob '*.md' --glob '!**/.git/**' --glob '!docs/TEMPLATE_GUIDE.md' --glob '!docs/DOCS_GUIDE.md' \
-  "\{\{|프로젝트에 맞게 작성|간단히 작성|YYYY-MM-DD|\| 예시|예시 결정|예시 완료|\*\*예시:\*\*" .
+  "\{\{|프로젝트에 맞게 작성|간단히 작성|YYYY-MM-DD|\| 예시|예시 결정|예시 완료|\*\*예시:\*\*|template-example:project-invariant" .
 ```
 
 `rg`가 없으면 다음을 사용하세요.
 
 ```bash
-grep -rnE "\{\{|프로젝트에 맞게 작성|간단히 작성|YYYY-MM-DD|\| 예시|예시 결정|예시 완료|\*\*예시:\*\*" \
+grep -rnE "\{\{|프로젝트에 맞게 작성|간단히 작성|YYYY-MM-DD|\| 예시|예시 결정|예시 완료|\*\*예시:\*\*|template-example:project-invariant" \
   --include='*.md' --exclude=TEMPLATE_GUIDE.md --exclude=DOCS_GUIDE.md \
   --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv .
 ```
@@ -175,7 +175,7 @@ python -m unittest discover -s tests -p 'test_check_docs.py' -v
 - `프로젝트에 맞게 작성`, `YYYY-MM-DD`, 담당자·마일스톤·태스크 예시도 실제 정보로 바꿉니다.
 - 전역 TODO와 변경별 양식의 예시는 실제 완료 이력이 아닙니다. 전역 완료에는 통합 대상과 필요한 검증을, PLAN에는 해당 브랜치의 구현·검증 근거를 구분해 기록하세요.
 - [00-PROJECT.md](./00-PROJECT.md)의 미정 사항은 미정으로 유지하고, 제안을 이미 합의된 결정으로 바꾸지 마세요. 예시 결정 행(`D-001`)도 삭제하거나 실제 결정으로 교체하세요. 필수 절은 §1~§5·§8·§11이며 나머지는 해당 사항이 없으면 삭제할 수 있습니다. 들어오는 절 참조를 함께 정리하세요. 빈 절을 placeholder 채로 남기지 마세요.
-- [REVIEW.md](./REVIEW.md)의 예시 불변조건과 주석 처리된 예외는 프로젝트 정책으로 자동 채택하지 않습니다.
+- [REVIEW.md](./REVIEW.md)의 예시 불변조건과 바로 위 `template-example:project-invariant` marker를 함께 삭제하고, 주석 처리된 예외는 프로젝트 정책으로 자동 채택하지 않습니다.
 - `Last reviewed`는 실제 내용을 검토한 날짜를 **UTC 기준**으로 작성합니다. 템플릿을 복사한 것만으로 검증 완료를 표시하지 마세요. 로컬 시간대로 적으면 GitHub이 표시하는 PR 시각보다 미래 날짜가 되어 리뷰어가 지적합니다.
 - 아직 정하지 않은 라이선스, 보안 신고 채널 및 운영 정보를 임의로 만들어 넣지 마세요. 템플릿에 포함된 `LICENSE`는 템플릿 자체의 MIT 라이선스입니다. 프로젝트 라이선스가 정해지면 교체하고, 정해지지 않았다면 삭제하고 README License 절에 미정으로 남기세요.
 

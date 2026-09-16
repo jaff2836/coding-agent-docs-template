@@ -9,6 +9,15 @@ disable-model-invocation: true
 
 <!-- template-skill-contract:review-round:v1 -->
 
+아래 `[template-contract:v1]` assertion은 정본 행동 계약입니다. 현지화 prose는 이 계약을 거스르면 안 됩니다.
+
+<!-- template-skill-fixture:review-round-explicit-only -->
+> [template-contract:v1] MUST_REQUIRE_EXPLICIT_USER_INVOCATION
+<!-- template-skill-fixture:review-round-exact-head-gate -->
+> [template-contract:v1] MUST_GATE_ON_EXACT_HEAD_AND_BASE
+<!-- template-skill-fixture:review-round-user-confirmed-merge -->
+> [template-contract:v1] MUST_REQUIRE_USER_CONFIRMATION_BEFORE_MERGE
+
 **사용자가 이 스킬을 명시적으로 호출한 경우에만 실행하세요.** 모델 판단으로 자동 실행하지 마세요. 이 절차는 commit과 merge를 수행합니다.
 
 1. `docs/REVIEW_ROUND.md`를 읽고 그 절차를 그대로 적용합니다. → [docs/REVIEW_ROUND.md](../../../docs/REVIEW_ROUND.md)
