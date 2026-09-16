@@ -135,8 +135,8 @@ A remote repository, PR, and CI are optional. Record the adopting project's inte
 - [ ] If using CI, integrated gates into the existing runner using the [CI.md](./CI.md) checklist. This template does not provide product-specific YAML; did not create one before the user specified a runner. If not using CI, recorded local execution of the same gates and why CI is not used.
 - [ ] Recorded project invariants and only actually approved deferrals in REVIEW. When using Bugbot, copied §6 and §9, plus the relevant settled decisions.
 - [ ] If REVIEW or PROJECT section numbers changed, compared section references in DESIGN, REVIEW_ROUND, BUGBOT, and WATCHDOG. `scripts/check-docs.py` checks document-qualified references, but a person checks ambiguous references within the same file.
-- [ ] Preserved review-round user-defined thresholds, same-head passage, session handoff, and the next task's documentation update rules.
-- [ ] When using an external reviewer, recorded the verified publication location, head identification, arrival cadence, no-finding behavior, and re-request method in the registry. A local self-review does not require registration.
+- [ ] Preserved review-round user-defined thresholds, same-head pass, session handoff, and the next task's documentation update rules.
+- [ ] When using an external reviewer, recorded the verified publication location, head identification, arrival cadence, no-finding behavior, and the `Rereview request method` (parameter `rereview`) in the registry. A local self-review does not require registration.
 - [ ] Verified that instructions and skills load in the tools being used. Did not assume a Markdown link triggers automatic loading.
 - [ ] Verified identical skill contents at both paths and copied the Codex [explicit invocation setting](../.agents/skills/review-round/agents/openai.yaml). `policy.allow_implicit_invocation` is the boolean `false`.
 - [ ] When using OMP, verified the [WATCHDOG](../.omp/WATCHDOG.md) import with the version in use.
