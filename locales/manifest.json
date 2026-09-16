@@ -128,7 +128,7 @@
   },
   "locales": {
     "en": {
-      "status": "experimental",
+      "status": "complete",
       "source_root": "locales/en",
       "baseline_version": "1.7.1"
     },

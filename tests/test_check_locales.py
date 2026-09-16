@@ -716,6 +716,11 @@ class LocaleFixtureTests(unittest.TestCase):
 
     def test_status_rules_and_stable_release_gate_are_separate(self) -> None:
         manifest = self.load_manifest()
+        self.assertEqual(CHECK_LOCALES.complete_locales(manifest), ("en", "ko"))
+        self.assertEqual(self.errors(), [])
+
+        manifest["locales"]["en"]["status"] = "experimental"
+        self.write_manifest(manifest)
         self.assertEqual(CHECK_LOCALES.complete_locales(manifest), ("ko",))
         self.assertEqual(self.errors(), [])
         self.assert_error("is not complete", self.errors(require_stable=True))
