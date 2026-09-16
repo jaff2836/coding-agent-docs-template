@@ -1,6 +1,6 @@
 # Template Guide
 
-This document explains how to adopt the documentation-centered project template for the first time. The locale artifact's root [README.md](../README.md) is a project-specific template for the project overview, installation, and execution; the introduction for the template source repository is not included in the artifact.
+This document explains how to adopt the documentation-centered project template for the first time. In this locale artifact, the root [README.md](../README.md) is the adopting project's overview, setup, and run template. It does not include the template source repository's introductory README.
 
 The template does not include an initialization script, review prompts or automatic review configuration for GitHub Actions, or pipeline files for a particular CI product. Copy the files and fill in the project values yourself. Follow [CI.md](./CI.md) for quality-gate order and integration checks.
 
@@ -8,8 +8,8 @@ The template does not include an initialization script, review prompts or automa
 
 - **Status:** Active
 - **Template version:** 1.7.1
-- **Template source:** Adapt to the project with the URL of the original template repository or another location that can be accessed again
-- **Template revision:** Adapt to the project with the full SHA of the source commit used for copying (§5)
+- **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
+- **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
 - **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** When the template structure or tool integration changes
@@ -54,7 +54,7 @@ The template does not include an initialization script, review prompts or automa
     ├── 02-TODO.md             # Global changes, priorities, dependencies, and integration results
     ├── 10-EXTENSION.md        # Optional extension design and phased completion criteria
     ├── changes/
-    │   └── _template/        # Copyable forms; actual work uses a separate change-ID directory
+    │   └── _template/        # Copyable templates; actual work uses a separate change-ID directory
     │       ├── 01-CHANGE.md   # Combined form: Intent and Spec in one file
     │       ├── 01-INTENT.md   # Request, problem, and expected outcome
     │       ├── 02-SPEC.md     # Requirements, scenarios, and design
@@ -62,12 +62,12 @@ The template does not include an initialization script, review prompts or automa
     ├── REVIEW.md              # Shared PR review policy
     ├── REVIEW_ROUND.md        # Review-round process and delegated authority
     ├── PROJECT_ANALYSIS.md    # Whole-project analysis process used on request
-    └── CI.md                  # Runner-neutral quality-gate workflow and integration checklist
+    └── CI.md                  # Runner-agnostic quality-gate workflow and integration checklist
 ```
 
 ## 2. Applying to a New Project
 
-1. Install a verified locale artifact into an empty project directory, then record its version and source commit in both guide documents as described in §5. Confirm that the artifact inventory includes the hidden `.agents/`, `.claude/`, `.cursor/`, and `.omp/` entries, `.gitignore`, and all four forms under `docs/changes/_template/`. Do not copy the source repository root directly.
+1. Install a verified locale artifact into an empty project directory, then record its version and source commit in both guide documents as described in §5. Confirm that the artifact inventory includes the hidden `.agents/`, `.claude/`, `.cursor/`, and `.omp/` entries, `.gitignore`, and all four templates under `docs/changes/_template/`. Do not copy the source repository root directly.
 2. The root [README.md](../README.md) is already the project template in the selected locale. Fill in the project name, description, requirements, installation, execution and verification instructions, security guidance, and license.
 3. Adapt the project information and commands in [AGENTS.md](../AGENTS.md) to the actual repository. Confirm that they agree with the README's execution instructions.
 4. Replace the placeholders and example items listed below. When deleting the example invariant in [REVIEW.md](./REVIEW.md) or turning it into a real rule, also delete the `template-example:project-invariant` marker immediately above it.
@@ -99,7 +99,7 @@ When adopting the template in an existing project, do not overwrite same-named f
 - When integrating existing product designs, keep execution status in TODO or PLAN and completed history in the existing CHANGELOG. Preserve contracts, decision rationale, and approval evidence. In extension designs, state which parts of the parent document are preserved, extended, or replaced.
 - Preserve any historical rule that freezes the body of past change files. For the new format, apply the approved-version preservation and update rules in 01-DESIGN.md §4. Preserve previously approved content even in an uncommitted state.
 - Do not determine scope from the number of PRs alone. Split local Git work into reviewable change units and record either the integration target or the local completion target in the global TODO. A remote service or automatic commit is not required.
-- Confirm that active work does not point to the forms directory as its source of truth. Use only the forms needed for small work and implementations of parent designs.
+- Confirm that active work does not point to the templates directory as its source of truth. Use only the templates needed for small work and implementations of parent designs.
 
 ### Reviewer Research Hints
 
@@ -122,7 +122,7 @@ gh api graphql \
 
 Confirm acceptance by checking that GraphQL `Bot.login` in the response's `reviewRequests` is `copilot-pull-request-reviewer` (without `[bot]`). Do not use REST `requested_reviewers`, which can be a no-op even with a 200 response. Once review begins, the reviewer leaves the request list, so a later `gh pr view` may show an empty list.
 
-Self-hosted bots and GitHub Actions-based reviewers differ by repository and version. Verify their marker comments and trigger conditions directly. The first two public reviewers do not run on every push in their default configuration, so a repository with only those reviewers cannot obtain an always-on reviewer result from the second round onward unless `rereview = request`.
+Self-hosted bots and GitHub Actions-based reviewers differ by repository and version. Verify their marker comments and trigger conditions directly. The first two public reviewers do not run on every push in their default configuration, so a repository with only those reviewers cannot obtain a standing-reviewer result from the second round onward unless `rereview = request`.
 
 ## 3. Values to Replace
 
@@ -173,7 +173,7 @@ Use `python3` if `python` is unavailable. Moving a file can break links even wit
 
 - Mark unused commands `N/A` and record the reason in [AGENTS.md](../AGENTS.md). Do not leave nonexistent commands looking like runnable examples.
 - Replace `Adapt to the project`, `Describe as appropriate for the project`, `Customize for the project`, `YYYY-MM-DD`, and owner, milestone, and task examples with actual information.
-- Examples in the global TODO and change forms are not actual completion history. Record the integration target and required verification for global completion; in a PLAN, record implementation and verification evidence from that branch.
+- Examples in the global TODO and change templates are not actual completion history. Record the integration target and required verification for global completion; in a PLAN, record implementation and verification evidence from that branch.
 - Keep unresolved items in [00-PROJECT.md](./00-PROJECT.md) unresolved; do not turn proposals into agreed decisions. Delete the example decision row (`D-001`) or replace it with a real decision. Sections §1–§5, §8, and §11 are required; the others may be deleted when not applicable. Clean up incoming section references at the same time. Do not leave empty sections containing placeholders.
 - Delete the example invariant in [REVIEW.md](./REVIEW.md) together with the `template-example:project-invariant` marker immediately above it. Do not automatically adopt commented-out exceptions as project policy.
 - Write `Last reviewed` using the **UTC date** on which the content was actually reviewed. Copying the template alone does not establish completed verification. A local-time date can appear later than a PR timestamp shown by GitHub and prompt reviewer findings.
@@ -250,7 +250,7 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 | Case | Expected Behavior | Failure | Basis |
 |---|---|---|---|
 | Small bug fix | Make the fix without design files | Require INTENT and SPEC | [01-DESIGN.md](./01-DESIGN.md) §1 |
-| Implementing an approved design | Link the parent section and create only a PLAN if needed; no reapproval | Require the full design process or reapproval | [01-DESIGN.md](./01-DESIGN.md) §1·§3.6 |
+| Implementing an approved design | Link the parent section and create only a PLAN if needed; no reapproval | Require the full design process or reapproval | [01-DESIGN.md](./01-DESIGN.md) §1 and §3.6 |
 | Completing PLAN checkboxes | Report only implementation and verification complete on that branch | Report integration, release, or support verification complete | [DOCS_GUIDE.md](./DOCS_GUIDE.md), [01-DESIGN.md](./01-DESIGN.md) §4 |
 | Tool-specific instructions in a repository without OMP | Allow dedicated files that do not duplicate shared rules | Prohibit them in every project | This document §4 |
 | CI request with no runner selected | Write and connect only the workflow and checklist in [CI.md](./CI.md) | Create product-specific YAML for GitHub Actions, Buildkite, or another runner | [CI.md](./CI.md) §4 and §6 |
@@ -273,9 +273,9 @@ Use this history to identify changes that an adopted repository has not yet appl
 - Restricted the G-docs-test discovery pattern to `test_check_docs.py`, so it does not run unrelated `test*.py` files in an adopted project.
 - Verify in the adopted repository: if retaining the documentation checker, keep both command strings identical in project instructions and the README, and update the existing CI G-docs-test to the restricted pattern.
 
-### v1.7 — Separate Template-introduction README and Runner-neutral CI Gates
+### v1.7 — Separate Template-introduction README and Runner-agnostic CI Gates
 
-- Made the root `README.md` the introduction for the template repository and separated the adopted-project README form into `README-PROJECT.md`. Opening the source repository on Origin or another host now shows the template description rather than project placeholders.
+- Made the root `README.md` the introduction for the template repository and separated the adopted-project README template into `README-PROJECT.md`. Opening the source repository on Origin or another host now shows the template description rather than project placeholders.
 - Changed step 2 of adoption §2: place `README-PROJECT.md` as `README.md`, remove its adoption comment at the top, and then fill the placeholders. Do not leave the template-introduction README or `README-PROJECT.md` in the adopted repository.
 - Added the README replacement item to the adoption checklist in [DOCS_GUIDE.md](./DOCS_GUIDE.md).
 - Added [CI.md](./CI.md): it contains only the quality-gate workflow and integration checklist, without product-specific YAML for GitHub Actions, Buildkite, or another runner. Step 13 of adoption §2, AGENTS.md, and the adoption checklist point to it.
@@ -286,7 +286,7 @@ Use this history to identify changes that an adopted repository has not yet appl
 - Corrected the mistyped `v1.31` tag and history entry to `v1.3.1`, preventing numeric version sorting from selecting it as newer than `v1.6`.
 - Updated `scripts/check-docs.py` to validate the boolean `policy.allow_implicit_invocation: false`, avoid being affected by excluded directory names outside the repository, and check multiline invariants, deep section numbers, and missing document targets.
 - Fixed these failure paths and standalone use of the combined form in `tests/test_check_docs.py`.
-- Kept all four forms under `_template/` during adoption, while clarifying that an actual change directory uses only the forms it needs.
+- Kept all four templates under `_template/` during adoption, while clarifying that an actual change directory uses only the templates it needs.
 
 ### v1.6 — Expanded Documentation Checks and Combined Change Form
 
@@ -308,14 +308,14 @@ Use this history to identify changes that an adopted repository has not yet appl
 
 - `docs/TEMPLATE_GUIDE.md` §4: made the prohibition on additional instruction files such as `.claude/CLAUDE.md` conditional on OMP use. Tool-specific files are allowed without OMP, but shared rules must not be duplicated.
 - `scripts/check-docs.py`: checks relative links, skill copies, `CLAUDE.md`/WATCHDOG imports, and Template version in both guide documents using only the standard library, and returns a nonzero exit code on failure. This replaced the inline link-check example.
-- Defined issuance scopes and parallel-branch collision handling for change IDs, `D-nnn`, `T-nnn`, and change-internal IDs. Completed, canceled, and deferred change directories remain, while implemented contracts enter the current PROJECT baseline only after integration.
+- Defined issuance scopes and parallel-branch collision handling for change IDs, `D-nnn`, `T-nnn`, and change-internal IDs. Completed, cancelled, and deferred change directories remain, while implemented contracts enter the current PROJECT baseline only after integration.
 - Added behavior-verification cases for instruction, skill, and checker changes.
 - Verify in the adopted repository: ensure there is no blanket prohibition on tool-specific instruction files when OMP is unused; copy `scripts/check-docs.py`; do not mix `D-` or `T-` IDs with change-internal IDs; and do not treat a completed SPEC as the current product baseline.
 
 ### v1.4 — Numbered Documents and Per-change Artifacts
 
 - Migrated shared documents to `00-PROJECT.md`, `01-DESIGN.md`, and `02-TODO.md`. PROJECT now contains the base product design and existing-design index.
-- Added the optional `10-EXTENSION.md` and uppercase INTENT, SPEC, and PLAN forms under `changes/_template/`. Small work uses minimal documentation; implementation of an approved phase references its parent design.
+- Added the optional `10-EXTENSION.md` and uppercase INTENT, SPEC, and PLAN templates under `changes/_template/`. Small work uses minimal documentation; implementation of an approved phase references its parent design.
 - Defined ownership of the global change list and detailed execution status, along with local Git, parallel branches, integration completion, and approval evidence. The new format distinguishes updating a spec or execution plan while preserving approved versions.
 - Updated instruction, skill, review, and analysis paths and handoff targets. After a review round passes, the PLAN is also frozen and its records are applied during the next related task.
 - Verify in the adopted repository: use the §2 migration table to check fixed policy paths, checker code, skill references, and duplicate status.

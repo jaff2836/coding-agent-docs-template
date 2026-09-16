@@ -15,7 +15,7 @@ The purpose of an analysis is to answer the following questions using evidence f
 
 - What problem does this project solve, and for whom?
 - How do the currently implemented features differ from the documented goals?
-- What technologies and structure make it work, and how does its core data flow?
+- What technologies and architecture does it use, and how does core data flow through the system?
 - What is required for local execution and testing, and for deployment and operations?
 - What are the primary correctness, security, performance, and maintainability risks?
 - Is it ready to adopt or extend now? If not, what must be improved first?

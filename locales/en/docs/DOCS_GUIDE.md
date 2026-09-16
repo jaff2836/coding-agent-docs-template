@@ -5,7 +5,7 @@
 - **Status:** Active
 - **Template version:** 1.7.1
 - **Template source:** Describe the original template repository URL or another retrievable archive location as appropriate for the project
-- **Template revision:** Describe the full SHA of the source commit copied as appropriate for the project (undetermined if uncommitted changes are included)
+- **Template revision:** Describe the full SHA of the copied source commit as appropriate for the project; if the copy includes uncommitted changes, record it as `Unconfirmed`
 - **Owner:** Describe as appropriate for the project
 - **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** When the documentation system changes
@@ -135,8 +135,8 @@ A remote repository, PR, and CI are optional. Record the adopting project's inte
 - [ ] If using CI, integrated gates into the existing runner using the [CI.md](./CI.md) checklist. This template does not provide product-specific YAML; did not create one before the user specified a runner. If not using CI, recorded local execution of the same gates and why CI is not used.
 - [ ] Recorded project invariants and only actually approved deferrals in REVIEW. When using Bugbot, copied §6 and §9, plus the relevant settled decisions.
 - [ ] If REVIEW or PROJECT section numbers changed, compared section references in DESIGN, REVIEW_ROUND, BUGBOT, and WATCHDOG. `scripts/check-docs.py` checks document-qualified references, but a person checks ambiguous references within the same file.
-- [ ] Preserved review-round user-defined thresholds, same-head passage, session handoff, and the next task's documentation update rules.
-- [ ] When using an external reviewer, recorded the verified publication location, head identification, arrival cadence, no-finding behavior, and re-request method in the registry. A local self-review does not require registration.
+- [ ] Preserved review-round user-defined thresholds, same-head pass, session handoff, and the next task's documentation update rules.
+- [ ] When using an external reviewer, recorded the verified publication location, head identification, arrival cadence, no-finding behavior, and the `Rereview request method` (parameter `rereview`) in the registry. A local self-review does not require registration.
 - [ ] Verified that instructions and skills load in the tools being used. Did not assume a Markdown link triggers automatic loading.
 - [ ] Verified identical skill contents at both paths and copied the Codex [explicit invocation setting](../.agents/skills/review-round/agents/openai.yaml). `policy.allow_implicit_invocation` is the boolean `false`.
 - [ ] When using OMP, verified the [WATCHDOG](../.omp/WATCHDOG.md) import with the version in use.
