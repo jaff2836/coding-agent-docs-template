@@ -5,11 +5,11 @@
 ## Metadata
 
 - **Change ID:** 2026-09-09-multilingual-template
-- **Status:** Draft
+- **Status:** Accepted
 - **Originator:** Chae Sangwon
 - **Source:** 2026-09-09 사용자 대화 — locale별 소스 관리, BCP 47, 언어 선택형 다운로드·변환 방식 검토 요청
 - **Parent:** [Template Guide](../../TEMPLATE_GUIDE.md) §1·§2·§4·§5의 배포 구조와 고정 도구 진입점
-- **Approval:** 부분 합의 — locale별 소스 관리, BCP 47 tag, 언어 선택형 installer, 최종 검수자 Chae Sangwon, 첫 안정판의 `en`·`ko` complete 포함, W-001의 payload/maintainer 영역 분리 구현. skill 현지화 방식과 나머지 구현 범위는 미승인
+- **Approval:** Chae Sangwon, 2026-09-09 사용자 대화 — locale별 source, BCP 47 tag, 언어 선택형 installer, `v2.0.0` breaking contract와 PLAN 전체 구현 착수 승인. skill 현지화는 권고안 S2(설명·본문·출력 정책을 locale별 작성)를 채택하며, 공개 release host는 구현 중 별도 확정
 - **Spec:** [02-SPEC.md](./02-SPEC.md)
 
 ## 1. 문제
@@ -66,11 +66,12 @@
 
 - [x] 영어판 전체 번역과 한국어판 재검수의 최종 승인자는 Chae Sangwon입니다.
 - [x] 첫 안정판은 `en`, `ko`를 모두 `complete` 상태로 포함합니다. 어느 하나라도 완료 조건을 충족하지 못하면 안정판을 게시하지 않습니다.
-- [ ] skill 자연어를 영어로 공통화하고 출력 언어만 locale로 제어할지, `description`·본문·출력을 모두 locale별로 작성할지 결정합니다. 권고안은 후자이며, 번역하지 않는 contract ID·marker와 locale 공통 행동 fixture로 의미 동등성을 검증합니다.
-- [ ] installer bootstrap URL과 release asset 이름의 실제 owner/repository는 이 Draft PR에서 고정하지 않고 구현 중 공개 저장소 구성이 확정되면 결정합니다.
+- [x] skill은 `description`·본문·출력 정책을 locale별로 작성하는 S2를 채택합니다. 번역하지 않는 contract ID·marker와 locale 공통 행동 fixture로 의미 동등성을 검증합니다.
+- [ ] installer bootstrap URL과 release asset 이름의 실제 owner/repository는 구현 중 공개 저장소 구성이 확정되면 결정합니다.
 
 ## 6. 변경 기록
 
 - 2026-09-09: 사용자와 locale별 source, BCP 47, 언어 선택형 다운로드·변환 방향을 합의하고 전체 계약 검토를 위한 Draft를 작성했습니다.
 - 2026-09-09: 최종 번역 검수자를 Chae Sangwon으로 정하고 첫 안정판에 `en`·`ko` complete locale을 함께 포함하기로 합의했습니다. skill 현지화 방식과 실제 repository URL은 미결정으로 유지했습니다.
 - 2026-09-09: Origin PR #3 리뷰 F-001의 수정 방법으로 W-001 payload/maintainer 영역 분리 구현을 승인했습니다. F-002~F-004의 언어 소유권·README·호스트 중립 계약도 리뷰에서 확인된 모순을 제거하는 범위로 교정합니다.
+- 2026-09-09: PR #3 병합 후 전체 `v2.0.0` SPEC과 PLAN 구현 착수를 승인하고 skill 현지화는 S2로 확정했습니다. release host는 구현 단계의 열린 설정으로 유지합니다.

@@ -49,11 +49,58 @@
       "tests/test_check_docs.py"
     ]
   },
+  "contracts": {
+    "section_markers": [
+      {
+        "id": "project-invariants",
+        "marker": "<!-- template-section:project-invariants -->",
+        "paths": [
+          ".cursor/BUGBOT.md",
+          "docs/REVIEW.md"
+        ]
+      },
+      {
+        "id": "release-history",
+        "marker": "<!-- template-section:release-history -->",
+        "paths": [
+          "docs/TEMPLATE_GUIDE.md"
+        ]
+      }
+    ],
+    "skills": [
+      {
+        "id": "design",
+        "marker": "<!-- template-skill-contract:design:v1 -->",
+        "paths": [
+          ".agents/skills/design/SKILL.md",
+          ".claude/skills/design/SKILL.md"
+        ],
+        "fixture_ids": [
+          "design-minimal-artifact",
+          "design-requires-approval",
+          "design-reuses-accepted-spec"
+        ]
+      },
+      {
+        "id": "review-round",
+        "marker": "<!-- template-skill-contract:review-round:v1 -->",
+        "paths": [
+          ".agents/skills/review-round/SKILL.md",
+          ".claude/skills/review-round/SKILL.md"
+        ],
+        "fixture_ids": [
+          "review-round-explicit-only",
+          "review-round-exact-head-gate",
+          "review-round-user-confirmed-merge"
+        ]
+      }
+    ]
+  },
   "locales": {
     "en": {
       "status": "experimental",
-      "source_root": null,
-      "baseline_version": null
+      "source_root": "locales/en",
+      "baseline_version": "1.7.1"
     },
     "ko": {
       "status": "complete",

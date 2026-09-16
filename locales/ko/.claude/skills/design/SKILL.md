@@ -6,6 +6,8 @@ argument-hint: "[변경 요약]"
 
 # Design
 
+<!-- template-skill-contract:design:v1 -->
+
 1. [docs/01-DESIGN.md](../../../docs/01-DESIGN.md) §1 적용 조건을 확인합니다. 전체 절차 대상이 아니면 관련 상위 설계와 필요한 실행 계획만 확인하고 요청을 수행합니다.
 2. 대상이면 §2의 최소 산출물 형식을 고르고 §3을 진행합니다. 맥락은 [docs/00-PROJECT.md](../../../docs/00-PROJECT.md)와 연결된 제품·확장 설계, 불변조건은 [docs/REVIEW.md](../../../docs/REVIEW.md) §6입니다.
 3. 합의 전에는 구현하지 않습니다. 기존 대화에서 승인한 범위는 재승인 없이 진행합니다. §4에 따라 의도·명세·결정 근거와 [docs/02-TODO.md](../../../docs/02-TODO.md)를 연결합니다.

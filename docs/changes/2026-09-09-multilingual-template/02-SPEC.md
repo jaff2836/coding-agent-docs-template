@@ -1,15 +1,15 @@
 # 변경 명세: 다국어 템플릿 소스와 배포 구조
 
-> 이 명세는 Draft입니다. 사용자 승인 전에는 locale 구조, packager 또는 installer를 구현하지 않습니다.
+> 이 명세는 승인된 `v2.0.0` 구현 계약입니다. 구현 상태와 검증 근거는 [PLAN](./03-PLAN.md)이 소유합니다.
 
 ## Metadata
 
 - **Change ID:** 2026-09-09-multilingual-template
-- **Status:** Draft
+- **Status:** Accepted
 - **Intent:** [01-INTENT.md](./01-INTENT.md)
 - **Parent:** `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`의 [Template Guide](../../TEMPLATE_GUIDE.md) §1·§2·§4·§5
-- **Decision:** 미발급 — 승인되면 [PROJECT §8](../../00-PROJECT.md)에 등재
-- **Approval:** 미승인 — 2026-09-09 대화에서 locale source, BCP 47, 선택형 installer, 최종 검수자와 첫 안정판의 `en`·`ko` complete 포함까지 부분 합의. skill 현지화 방식과 전체 명세는 미승인
+- **Decision:** [PROJECT §8 D-002](../../00-PROJECT.md)
+- **Approval:** Chae Sangwon, 2026-09-09 사용자 대화 — 전체 `v2.0.0` 계약과 PLAN 구현 착수 승인, skill 현지화 S2 채택. 실제 release host는 구현 중 별도 확정
 - **Execution:** [03-PLAN.md](./03-PLAN.md), 전역 [T-001](../../02-TODO.md)
 
 ## 1. 요구사항과 시나리오
@@ -46,9 +46,9 @@ skill 현지화는 다음 두 안을 별도로 비교합니다.
 | 대안 | 장점 | 비용·위험 | 현재 판단 |
 |---|---|---|---|
 | S1. 영어 `description`·본문을 공통 사용하고 출력 언어만 locale로 지정 | 실행 prompt 정본 하나로 의미 drift가 가장 적음 | 한국어 `complete` artifact에도 사용자가 읽고 수정할 핵심 지침이 영어로 남고, 기존 한국어판에서 사용성이 후퇴함 | 미선택 |
-| S2. `description`·본문·출력 정책을 locale별로 작성 | artifact 전체가 해당 locale로 일관되고 사용자가 직접 검토·수정하기 쉬움 | 번역 간 호출 조건·행동 drift를 별도 검증해야 함 | **권고안, 사용자 결정 대기** |
+| S2. `description`·본문·출력 정책을 locale별로 작성 | artifact 전체가 해당 locale로 일관되고 사용자가 직접 검토·수정하기 쉬움 | 번역 간 호출 조건·행동 drift를 별도 검증해야 함 | **선택** |
 
-S2를 선택하면 번역 문자열을 정본으로 서로 대조하지 않습니다. `locales/manifest.json`의 안정적인 skill ID·contract marker·fixture ID가 공통 계약을 소유하고, 각 locale의 자연어는 동일한 행동 fixture를 통과해야 합니다. 최종 번역·의미 검수자는 Chae Sangwon입니다.
+S2에서는 번역 문자열을 정본으로 서로 대조하지 않습니다. `locales/manifest.json`의 안정적인 skill ID·contract marker·fixture ID가 공통 계약을 소유하고, 각 locale의 자연어는 동일한 행동 fixture를 통과해야 합니다. 최종 번역·의미 검수자는 Chae Sangwon입니다.
 
 ## 3. 설계와 계약
 
@@ -101,7 +101,7 @@ W-001 이관 시점의 `scripts/check-docs.py`와 테스트는 한국어 heading
 - locale source의 `AGENTS.md`가 적용 artifact의 root `AGENTS.md`가 됩니다. 언어 정책은 이 파일과 같은 locale의 REVIEW/스킬에만 존재합니다.
 - locale source의 `README.md`는 기존 `README-PROJECT.md` 내용에서 이관한 적용 프로젝트용 양식이며 artifact root `README.md`가 됩니다. 저장소 소개용 root README와 `README-PROJECT.md`는 artifact에 넣지 않습니다.
 - `CLAUDE.md`처럼 내용 전체가 언어 비의존인 import 파일만 common에 둡니다. import 외에 advisor prose가 있는 `.omp/WATCHDOG.md`는 locale source가 소유합니다.
-- skill 현지화가 S2로 승인되면 `description`, `argument-hint`, 본문과 출력 언어 정책은 공식 locale별 source가 소유합니다. 같은 locale 안의 `.agents`와 `.claude` `SKILL.md`는 현재처럼 byte-identical이어야 하며, locale 간에는 안정적인 skill ID·contract marker·행동 fixture가 일치해야 합니다. S1이 선택되면 이 항목은 공통 영어 source와 locale별 출력 언어 설정으로 대체합니다.
+- skill의 `description`, `argument-hint`, 본문과 출력 언어 정책은 공식 locale별 source가 소유합니다. 같은 locale 안의 `.agents`와 `.claude` `SKILL.md`는 현재처럼 byte-identical이어야 하며, locale 간에는 안정적인 skill ID·contract marker·행동 fixture가 일치해야 합니다.
 - `.cursor/BUGBOT.md`는 import를 지원하지 않는 계약 때문에 locale별 source에 두고, 같은 locale의 `docs/REVIEW.md` 불변조건과 대조합니다.
 
 ### 3.3 build와 release contract
@@ -171,7 +171,7 @@ fb70176의 한국어 payload
 - §4의 root 진입점과 import 관계는 유지하되 source 위치와 materialize 단계를 추가합니다.
 - §5의 적용 후 관리는 template version/source revision 비교를 유지하며 자동 update를 금지하는 새 installer 계약을 연결합니다.
 - [Documentation Guide](../../DOCS_GUIDE.md)의 단일 언어 운영 원칙은 적용 artifact에 그대로 유지하고, 원본 저장소의 locale source 관리 규칙을 추가합니다.
-- 승인되면 PROJECT §8에 새 결정을 추가하고, root 문서는 저장소 유지관리 정본으로 전환합니다. 승인 전에는 현재 제품 기준으로 기록하지 않습니다.
+- [PROJECT §8 D-002](../../00-PROJECT.md)에 승인 결정을 기록하고, root 문서를 저장소 유지관리 정본으로 전환합니다.
 
 ## 5. 위험·호환성·rollback
 
@@ -205,10 +205,11 @@ fb70176의 한국어 payload
 - `v2.0.0` tag·GitHub release 게시와 원격 checksum은 별도 명시적 위임이 있을 때만 수행합니다.
 - 실제 Claude, Codex, Cursor, OMP가 `en`, `ko` artifact의 고정 진입점과 스킬을 로드하는 소비자 저장소 E2E를 통과해야 두 locale을 지원 완료로 표시합니다.
 
-남은 질문은 [Intent §5](./01-INTENT.md)의 skill 현지화 방식과 실제 공개 repository URL입니다. 번역 최종 승인자와 첫 안정판의 `en`·`ko` complete 포함은 합의되었습니다.
+남은 질문은 [Intent §5](./01-INTENT.md)의 실제 공개 repository URL입니다. skill 현지화는 S2로 확정했으며 번역 최종 승인자와 첫 안정판의 `en`·`ko` complete 포함도 합의되었습니다.
 
 ## 7. 명세 변경 기록
 
 - 2026-09-09: locale source, BCP 47, deterministic release bundle과 비파괴 installer를 결합한 최초 Draft를 작성했습니다.
 - 2026-09-09: 첫 안정판의 `en`·`ko` 동시 complete gate와 최종 검수자를 확정했습니다. skill 현지화는 S2를 권고하되 미승인 대안으로 구분했습니다.
 - 2026-09-09: Origin PR #3 리뷰에 따라 WATCHDOG의 locale 소유권, 적용 README 정본과 installer의 host-neutral asset 계약을 명확히 했습니다.
+- 2026-09-09: Chae Sangwon이 전체 `v2.0.0` 계약과 구현 착수를 승인하고 skill 현지화 S2를 선택했습니다. 상태를 Accepted로 전환하고 D-002에 연결했습니다.

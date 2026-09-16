@@ -26,8 +26,8 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 ### Current State
 
 - 공개 기준은 한국어 복사형 `v1.7.1`이며 Origin `main`의 merge commit `113a6a58f9b03707fe8050b5673d3437b9895d03`에 반영되어 있습니다.
-- W-001에서 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source를 분리합니다.
-- `locales/en`, exporter, packager와 installer는 아직 구현·지원 완료 상태가 아닙니다.
+- W-001의 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source 분리는 Origin PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에 통합됐습니다.
+- 승인된 W-002에서 `locales/en`과 locale별 skill S2 계약을 구현 중이며, exporter, packager와 installer는 아직 구현·지원 완료 상태가 아닙니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -84,11 +84,11 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Target Components
 
-W-001 이후 단계의 목표 구조는 아직 Draft SPEC이며 전체 승인 전에는 이 절의 합의된 목표로 올리지 않습니다.
+승인된 목표 구성은 `template/common/`과 BCP 47 tag별 `locales/<tag>/` source, 닫힌 manifest inventory, locale 검사, deterministic exporter·packager와 비파괴 installer입니다. 첫 안정판은 `en`·`ko`가 모두 `complete`일 때만 만들며 skill prose와 출력 정책은 locale별 source가 소유합니다.
 
 ### Target Data Flow
 
-미승인 — Draft SPEC §3을 참조합니다.
+common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경로로 합성하고 검사합니다. exact source commit과 version에 결합된 locale별 archive·manifest를 만든 뒤 installer가 검증·stage·전체 충돌 검사를 거쳐 대상에 기록합니다. 상세 계약은 [SPEC §3](./changes/2026-09-09-multilingual-template/02-SPEC.md)을 따릅니다.
 
 ### Compatibility Requirements
 
@@ -102,8 +102,8 @@ W-001 이후 단계의 목표 구조는 아직 Draft SPEC이며 전체 승인 �
 
 | Phase | Change | Preconditions | Compatibility/Rollback | Completion Evidence |
 |---|---|---|---|---|
-| W-001 | root maintainer 영역과 common/ko source 분리 | 사용자 승인, PR #2 병합 | `fb70176` payload 보존; 실패 시 source 분리 폐기 | closed inventory와 path·byte 비교 |
-| W-002 이후 | en locale, 검사, export/package/installer | 각 PLAN 선행조건과 전체 SPEC 승인 | v1.7.1 유지 | 변경 PLAN의 gate |
+| W-001 | root maintainer 영역과 common/ko source 분리 | 사용자 승인, PR #2 병합 | `fb70176` payload 보존; 실패 시 source 분리 폐기 | PR #3 merge commit `2a735eb`, closed inventory와 path·byte 비교 |
+| W-002 이후 | en locale, 검사, export/package/installer | Accepted SPEC과 각 PLAN 선행조건 | v1.7.1 유지 | 변경 PLAN의 gate |
 
 ## 8. Decisions
 
@@ -112,7 +112,7 @@ W-001 이후 단계의 목표 구조는 아직 Draft SPEC이며 전체 승인 �
 | ID | Date | Status | Decision | Rationale / Canonical source | Alternatives / Consequences | Approval |
 |---|---|---|---|---|---|---|
 | D-001 | 2026-09-09 | Accepted | 저장소 root 유지관리 영역과 배포 payload source를 분리하고 W-001을 PR #3에서 구현 | [SPEC §3.1](./changes/2026-09-09-multilingual-template/02-SPEC.md), Origin PR #3 리뷰 F-001 | source root 직접 복사 중단; v1.7.1 snapshot 보존 | Chae Sangwon, 2026-09-09 대화 |
-| D-002 | 2026-09-09 | Proposed | common+locale 합성 artifact와 host-neutral installer를 포함한 v2 전체 구조 | [다국어 템플릿 SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md) | skill 현지화와 release host 미결정 | 미승인 |
+| D-002 | 2026-09-09 | Accepted | common+locale 합성 artifact, locale별 skill S2 계약과 host-neutral installer를 포함한 v2 전체 구조 | [다국어 템플릿 SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md) | v2 breaking change; release host는 구현 중 확정 | Chae Sangwon, 2026-09-09 대화 |
 
 중요한 결정이 많아지면 개별 ADR 문서로 분리하고 여기에는 링크와 요약만 남깁니다.
 
@@ -127,7 +127,7 @@ W-001 이후 단계의 목표 구조는 아직 Draft SPEC이며 전체 승인 �
 
 ### Phase 2 — multilingual delivery
 
-- 승인 후 `en`, locale parity 검사, deterministic packaging과 installer를 구현합니다.
+- 승인된 순서에 따라 `en`, locale parity 검사, deterministic packaging과 installer를 구현합니다.
 - exact-head consumer E2E 후에만 지원 완료와 release를 별도로 판정합니다.
 
 ## 10. Risks
@@ -140,7 +140,6 @@ W-001 이후 단계의 목표 구조는 아직 Draft SPEC이며 전체 승인 �
 
 ## 11. Open Questions
 
-- [ ] skill을 영어 공통으로 둘지 locale별 `description`·본문·출력으로 작성할지 결정합니다. 현재 권고는 locale별 작성입니다.
 - [ ] immutable release asset의 실제 host와 bootstrap URL을 구현 중 확정합니다.
 
 ## 12. Rejected or Deferred Ideas
