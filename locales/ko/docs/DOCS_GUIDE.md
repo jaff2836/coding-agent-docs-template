@@ -123,7 +123,7 @@
 
 - [ ] TEMPLATE_GUIDE의 이관 절차로 이전 파일명·절·코드·테스트·도구 참조를 확인했다.
 - [ ] 루트 README.md의 placeholder를 실제 프로젝트 사용법으로 바꿨고, 템플릿 source 저장소의 소개문을 복사하지 않았다.
-- [ ] release installer의 최종 asset URL·exact version·locale을 확인하고 Template source·version·revision에 기록했다.
+- [ ] release installer를 사용했다면 최종 asset URL·exact version·locale을 확인했고, source checkout exporter를 사용했다면 exact source revision과 미커밋 변경 포함 여부를 기록했다.
 - [ ] 기존 프로젝트에는 artifact를 별도 빈 디렉터리로 export해 수동 병합했으며, 기존 문서·명령·결정·라이선스를 자동 덮어쓰지 않았다.
 - [ ] 프로젝트 정보·명령·담당자·예시를 실제 값으로 교체했다. 원본 양식은 실제 작업으로 집계하지 않는다.
 - [ ] `docs/changes/_template/`의 합본형·분리형·PLAN 양식 네 파일을 모두 유지했다. 실제 변경 폴더에는 필요한 형식만 복사한다.
