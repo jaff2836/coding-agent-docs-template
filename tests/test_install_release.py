@@ -111,11 +111,23 @@ def build_release_payloads(
 class FakeReleaseServer:
     """Serve release assets from an in-memory path map on localhost."""
 
-    def __init__(self, payloads: dict[str, bytes]) -> None:
+    def __init__(
+        self,
+        payloads: dict[str, bytes],
+        redirects: dict[str, str] | None = None,
+    ) -> None:
         served = payloads
+        redirected = redirects or {}
 
         class Handler(http.server.BaseHTTPRequestHandler):
             def do_GET(self) -> None:  # noqa: N802
+                location = redirected.get(self.path)
+                if location is not None:
+                    self.send_response(302)
+                    self.send_header("Location", location)
+                    self.send_header("Content-Length", "0")
+                    self.end_headers()
+                    return
                 payload = served.get(self.path)
                 if payload is None:
                     self.send_response(404)
@@ -410,6 +422,14 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("case-fold", str(context.exception))
         self.assertFalse(target.exists())
 
+    def test_rejects_member_path_prefix_conflicts_before_writing(self) -> None:
+        base = self.publish(members={"docs": b"file\n", "docs/a.md": b"nested\n"})
+        target = self.temp_root() / "project"
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            self.call_install(base, target)
+        self.assertIn("prefix conflict", str(context.exception))
+        self.assertFalse(target.exists())
+
     def test_rejects_duplicate_archive_members(self) -> None:
         archive = _zip_with_duplicate_members("AGENTS.md", (b"first\n", b"second\n"))
         base = self.publish(members={"AGENTS.md": b"first\n"}, archive=archive)
@@ -438,6 +458,20 @@ class InstallerTests(unittest.TestCase):
             self.call_install("https://example.invalid/releases", target, version="2.0")
         self.assertIn("SemVer", str(context.exception))
 
+    def test_rejects_release_asset_redirects(self) -> None:
+        payloads = build_release_payloads()
+        manifest_path = "%s/release-manifest.json" % VERSION_DIR
+        redirected_path = "%s/redirected-manifest.json" % VERSION_DIR
+        payloads[redirected_path] = payloads[manifest_path]
+        server = FakeReleaseServer(
+            payloads,
+            redirects={manifest_path: redirected_path},
+        )
+        self.addCleanup(server.close)
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            INSTALLER.list_locales(server.base_url, "2.0.0")
+        self.assertIn("HTTP 302", str(context.exception))
+
     def test_mid_write_failure_rolls_back_created_files(self) -> None:
         base = self.publish()
         target = self.temp_root() / "project"
@@ -456,6 +490,18 @@ class InstallerTests(unittest.TestCase):
                 self.call_install(base, target)
         finally:
             INSTALLER.os.chmod = real_chmod
+        self.assertIn("left unchanged", str(context.exception))
+        self.assertEqual(_tree_state(target), before)
+
+    def test_installer_error_mid_write_rolls_back_created_files(self) -> None:
+        target = self.temp_root() / "project"
+        target.mkdir()
+        before = _tree_state(target)
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            INSTALLER._write_members(
+                target,
+                {"docs": b"file\n", "docs/a.md": b"nested\n"},
+            )
         self.assertIn("left unchanged", str(context.exception))
         self.assertEqual(_tree_state(target), before)
 

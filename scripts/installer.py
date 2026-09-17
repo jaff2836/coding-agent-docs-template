@@ -61,6 +61,13 @@ class InstallerError(ValueError):
     """Raised when a release asset or target tree violates the contract."""
 
 
+class _RejectRedirects(urllib.request.HTTPRedirectHandler):
+    """Keep every asset fetch bound to the explicitly selected release URL."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
 def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -98,7 +105,8 @@ def _fetch(url: str, max_bytes: int) -> bytes:
         url, headers={"User-Agent": USER_AGENT}, method="GET"
     )
     try:
-        with urllib.request.urlopen(request, timeout=FETCH_TIMEOUT) as response:
+        opener = urllib.request.build_opener(_RejectRedirects())
+        with opener.open(request, timeout=FETCH_TIMEOUT) as response:
             if response.status != 200:
                 raise InstallerError(
                     "release asset request failed: HTTP %s for %s" % (response.status, url)
@@ -219,6 +227,17 @@ def _validated_locale_record(tag: str, record: Any, version: str) -> None:
         raise InstallerError("locale %s declares case-fold colliding member paths" % tag)
     for path in paths:
         _validated_member_path(path)
+    folded_paths = {path.lower(): path for path in paths}
+    for path in paths:
+        parts = PurePosixPath(path).parts
+        for length in range(1, len(parts)):
+            parent = "/".join(parts[:length])
+            conflicting = folded_paths.get(parent.lower())
+            if conflicting is not None:
+                raise InstallerError(
+                    "locale %s declares member path prefix conflict: %s and %s"
+                    % (tag, conflicting, path)
+                )
 
 
 def _validated_member_record(tag: str, member: Any) -> None:
@@ -405,20 +424,20 @@ def _write_members(root: Path, members: Mapping[str, bytes]) -> tuple[str, ...]:
         )
     created_dirs: list[Path] = []
     created_files: list[Path] = []
-    if not root.exists():
-        root.mkdir()
-        os.chmod(root, 0o755)
-        created_dirs.append(root)
     try:
+        if not root.exists():
+            root.mkdir()
+            created_dirs.append(root)
+            os.chmod(root, 0o755)
         for name in ordered:
             path = _validated_member_path(name)
             _ensure_parent_dirs(root, path, created_dirs)
             target = root.joinpath(*path.parts)
             with open(target, "xb") as handle:
+                created_files.append(target)
                 handle.write(members[name])
-            created_files.append(target)
             os.chmod(target, FILE_MODE)
-    except OSError as exc:
+    except (InstallerError, OSError) as exc:
         for target in reversed(created_files):
             try:
                 target.unlink()
