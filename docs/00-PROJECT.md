@@ -27,7 +27,8 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 - 공개 기준은 한국어 복사형 `v1.7.1`이며 Origin `main`의 merge commit `113a6a58f9b03707fe8050b5673d3437b9895d03`에 반영되어 있습니다.
 - W-001의 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source 분리는 Origin PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에 통합됐습니다.
-- 승인된 W-002에서 `locales/en`과 locale별 skill S2 계약을 구현 중이며, exporter, packager와 installer는 아직 구현·지원 완료 상태가 아닙니다.
+- W-002의 `locales/en`·locale별 skill S2 계약과 W-003 locale/artifact 검사는 각각 Origin PR #4·#5에 통합됐습니다. `en`·`ko` source는 모두 `complete`입니다.
+- W-004에서 deterministic exporter·packager와 release manifest schema를 구현·로컬 검증했습니다. installer, 공식 release와 도구 지원 검증은 아직 완료되지 않았습니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -62,12 +63,13 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 | --------- | -------------- | ------------ | ----- |
 | root maintenance plane | 저장소 소개, 제품 결정, 변경 설계·TODO와 maintainer 도구 지침 | artifact source와 분리 | Chae Sangwon |
 | `template/common/` | 현재 언어 비의존으로 확인된 payload source | `locales/manifest.json` inventory | Chae Sangwon |
-| `locales/ko/` | `fb70176`에서 이관한 한국어 v1.7.1 payload source | common source와 합성 예정 | Chae Sangwon |
-| `locales/manifest.json` | baseline, locale 상태, common/localized output inventory | exporter·checker가 후속 사용 | Chae Sangwon |
+| `locales/en/`, `locales/ko/` | complete locale별 prose·도구 계약 source | common source와 합성 | Chae Sangwon |
+| `locales/manifest.json` | baseline, locale 상태, common/localized output inventory | checker·exporter·packager가 사용 | Chae Sangwon |
+| locale exporter·packager | 단일-locale tree와 deterministic ZIP·manifest·checksum 생성 | complete locale source, 고정 installer source | Chae Sangwon |
 
 ### Data Flow
 
-현재 W-001은 `fb70176` payload에서 저장소 소개 README를 제외하고, `README-PROJECT.md`를 artifact `README.md`로 정규화한 뒤 common과 `locales/ko` source에 보존합니다. exporter가 없는 현재 source root는 직접 배포하지 않습니다.
+exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. source root 자체는 배포하지 않으며 실제 installer를 포함한 release E2E는 W-005 이후에 수행합니다.
 
 ### External Boundaries
 
@@ -103,7 +105,9 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | Phase | Change | Preconditions | Compatibility/Rollback | Completion Evidence |
 |---|---|---|---|---|
 | W-001 | root maintainer 영역과 common/ko source 분리 | 사용자 승인, PR #2 병합 | `fb70176` payload 보존; 실패 시 source 분리 폐기 | PR #3 merge commit `2a735eb`, closed inventory와 path·byte 비교 |
-| W-002 이후 | en locale, 검사, export/package/installer | Accepted SPEC과 각 PLAN 선행조건 | v1.7.1 유지 | 변경 PLAN의 gate |
+| W-002 | en locale과 locale별 skill S2 | W-001 | v1.7.1 유지 | PR #4 merge commit `fa01b20`, 최종 번역 승인 |
+| W-003 | locale/artifact 검사 | W-002 | marker·inventory 계약 유지 | PR #5 merge commit `7657d2c`, source/stable gate |
+| W-004 이후 | deterministic export/package와 installer | W-003, complete locale | v1.7.1 유지; installer 전에는 release하지 않음 | 변경 PLAN의 gate |
 
 ## 8. Decisions
 

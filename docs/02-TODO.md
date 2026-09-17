@@ -17,7 +17,7 @@
 - **Name:** v2 다국어 템플릿 source·배포 구조
 - **Goal:** `en`·`ko` locale source에서 검증된 단일-locale artifact를 만들고 비파괴 installer로 선택 설치할 수 있는 승인된 설계와 구현
 - **Target:** 미정
-- **Status:** In Progress — SPEC Accepted, W-002 구현 중
+- **Status:** In Progress — W-001~W-003 통합 완료, W-004 구현 중
 
 ## 운영 규칙
 

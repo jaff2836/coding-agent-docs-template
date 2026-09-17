@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "coding-agent-docs-template release manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "version",
+    "source_commit",
+    "repository",
+    "locales",
+    "installer"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "version": {
+      "$ref": "#/$defs/semver"
+    },
+    "source_commit": {
+      "$ref": "#/$defs/commit"
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9_.-]*[A-Za-z0-9])?/[A-Za-z0-9](?:[A-Za-z0-9_.-]*[A-Za-z0-9])?$"
+    },
+    "locales": {
+      "type": "object",
+      "minProperties": 2,
+      "required": [
+        "en",
+        "ko"
+      ],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z]{2,3}(?:-[A-Z][a-z]{3})?(?:-(?:[A-Z]{2}|[0-9]{3}))?$": {
+          "$ref": "#/$defs/localeAsset"
+        }
+      }
+    },
+    "installer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset",
+        "sha256",
+        "bytes"
+      ],
+      "properties": {
+        "asset": {
+          "const": "installer.py"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "bytes": {
+          "$ref": "#/$defs/positiveInteger"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "nonNegativeInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "member": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "bytes",
+        "mode",
+        "timestamp"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "bytes": {
+          "$ref": "#/$defs/nonNegativeInteger"
+        },
+        "mode": {
+          "const": 420
+        },
+        "timestamp": {
+          "const": "1980-01-01T00:00:00Z"
+        }
+      }
+    },
+    "localeAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "asset",
+        "sha256",
+        "bytes",
+        "compression",
+        "members"
+      ],
+      "properties": {
+        "status": {
+          "const": "complete"
+        },
+        "asset": {
+          "type": "string",
+          "pattern": "^coding-agent-docs-template-[A-Za-z0-9-]+-v.+\\.zip$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "bytes": {
+          "$ref": "#/$defs/positiveInteger"
+        },
+        "compression": {
+          "const": "stored"
+        },
+        "members": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/member"
+          }
+        }
+      }
+    }
+  }
+}
