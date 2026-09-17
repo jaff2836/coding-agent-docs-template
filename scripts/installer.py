@@ -462,8 +462,8 @@ def _ensure_parent_dirs(root: Path, path: PurePosixPath, created: list[Path]) ->
             raise InstallerError("target directory chain contains a symlink: %s" % current)
         if not current.exists():
             current.mkdir()
-            os.chmod(current, 0o755)
             created.append(current)
+            os.chmod(current, 0o755)
         elif not current.is_dir():
             raise InstallerError("target parent exists but is not a directory: %s" % current)
 

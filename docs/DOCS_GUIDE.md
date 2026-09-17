@@ -7,7 +7,7 @@
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (미커밋 변경 포함 시 미확정)
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-09
+- **Last reviewed:** 2026-09-17
 - **Review cadence:** 문서 체계 변경 시
 
 root [README.md](../README.md)는 source 저장소 소개이며 artifact에서 제외합니다. 적용 프로젝트 README 양식은 locale source가 소유하고, 한국어판은 [locales/ko/README.md](../locales/ko/README.md)입니다. 최초 적용·기존 구조 이관은 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md)를 따릅니다. root `docs/`는 저장소 유지관리 문서이고 locale의 `docs/`가 적용 artifact 문서입니다.
@@ -123,9 +123,12 @@ root [README.md](../README.md)는 source 저장소 소개이며 artifact에서 �
 
 - [ ] TEMPLATE_GUIDE의 이관 절차로 이전 파일명·절·코드·테스트·도구 참조를 확인했다.
 - [ ] source 저장소 root가 아니라 선택 locale artifact를 적용했고, artifact root README.md의 placeholder를 실제 프로젝트 사용법으로 바꿨다.
+- [ ] release installer를 사용했다면 최종 asset URL·exact version·locale을 확인했고, source checkout exporter를 사용했다면 exact source revision과 미커밋 변경 포함 여부를 기록했다.
+- [ ] 기존 프로젝트에는 artifact를 별도 빈 디렉터리로 export해 수동 병합했으며, 기존 문서·명령·결정·라이선스를 자동 덮어쓰지 않았다.
 - [ ] 프로젝트 정보·명령·담당자·예시를 실제 값으로 교체했다. 원본 양식은 실제 작업으로 집계하지 않는다.
 - [ ] `docs/changes/_template/`의 합본형·분리형·PLAN 양식 네 파일을 모두 유지했다. 실제 변경 폴더에는 필요한 형식만 복사한다.
 - [ ] Template source·version·revision과 일부 반영 내역을 확인했다. 미확정은 미확정으로 표시했다.
+- [ ] `en`·`ko` 외 언어를 수동 적용했다면 공식 지원 locale로 표시하지 않고, 바꾼 언어 정책과 문서 범위를 기록했다.
 - [ ] `LICENSE`를 프로젝트 라이선스로 교체했거나, 아직 정하지 않았다면 삭제하고 README License 절에 미정으로 남겼다. 템플릿 자체의 MIT 고지를 프로젝트 라이선스로 두지 않았다.
 - [ ] Run·Build·Test·Lint·Typecheck를 검증하거나 N/A·미검증 이유를 기록했다.
 - [ ] PROJECT에 현재 제품 기준과 승인된 목표를 구분하고, 기존 제품·확장 설계의 정본을 연결하거나 합의된 통합을 수행했다.

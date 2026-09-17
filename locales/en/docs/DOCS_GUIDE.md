@@ -123,9 +123,12 @@ A remote repository, PR, and CI are optional. Record the adopting project's inte
 
 - [ ] Checked prior filenames, sections, code, tests, and tool references using the migration process in TEMPLATE_GUIDE.
 - [ ] Replaced placeholders in the root README.md with actual project usage instructions and did not copy the template source repository's introduction.
+- [ ] Verified the release installer's final asset URL, exact version, and locale and recorded them as Template source, version, and revision.
+- [ ] For an existing project, exported the artifact to a separate empty directory and merged it manually without automatically overwriting existing documents, commands, decisions, or the license.
 - [ ] Replaced project information, commands, owners, and examples with actual values. Did not count source templates as actual work.
 - [ ] Retained all four combined, split, and PLAN templates in `docs/changes/_template/`. Copied only the necessary format into each actual change folder.
 - [ ] Verified Template source, version, revision, and partial adoption details. Marked anything undetermined as undetermined.
+- [ ] If manually adapting a language other than `en` or `ko`, did not claim official locale support and recorded the changed language policy and document scope.
 - [ ] Replaced `LICENSE` with the project's license, or removed it and left the README License section undecided if a license has not been chosen. Did not leave the template's MIT notice as the project's license.
 - [ ] Verified Run, Build, Test, Lint, and Typecheck, or recorded `N/A` or the reason they remain unverified.
 - [ ] Distinguished the current product baseline from approved targets in PROJECT, and either linked canonical existing product and extension designs or performed an agreed integration.

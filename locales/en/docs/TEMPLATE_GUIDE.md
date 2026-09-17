@@ -67,6 +67,16 @@ The template does not include an initialization script, review prompts or automa
 
 ## 2. Applying to a New Project
 
+For an official release, use the separately published `installer.py` asset and an HTTPS release URL that serves the assets directly. The installer does not follow redirects. Do not run the commands below until every `{{...}}` value has been replaced with actual release information.
+
+```text
+python3 installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version {{VERSION}}
+python3 installer.py install --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
+python3 installer.py export --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+```
+
+Use `latest` or a full SemVer value for `{{VERSION}}`.
+
 1. Install a verified locale artifact into an empty project directory, then record its version and source commit in both guide documents as described in §5. Confirm that the artifact inventory includes the hidden `.agents/`, `.claude/`, `.cursor/`, and `.omp/` entries, `.gitignore`, and all four templates under `docs/changes/_template/`. Do not copy the source repository root directly.
 2. The root [README.md](../README.md) is already the project template in the selected locale. Fill in the project name, description, requirements, installation, execution and verification instructions, security guidance, and license.
 3. Adapt the project information and commands in [AGENTS.md](../AGENTS.md) to the actual repository. Confirm that they agree with the README's execution instructions.
@@ -81,7 +91,11 @@ The template does not include an initialization script, review prompts or automa
 12. Use the Template Adoption Checklist in the [Documentation Guide](./DOCS_GUIDE.md) to confirm adoption is complete.
 13. Repositories that use CI should connect the quality gates to their existing runner using the workflow and checklist in [CI.md](./CI.md). This template does not include product-specific pipeline files for GitHub Actions, Buildkite, or another runner. Do not create YAML until the user selects a runner. If the repository has no CI, run the same gates locally and record why CI is not used.
 
-When adopting the template in an existing project, do not overwrite same-named files. Compare and merge existing instructions, documents, and ignore rules. Preserve existing code and user changes. If merging an existing `REVIEW.md` changes section numbers, or if you remove optional sections from [00-PROJECT.md](./00-PROJECT.md), update section-number references in [REVIEW_ROUND.md](./REVIEW_ROUND.md), [01-DESIGN.md](./01-DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), and [.omp/WATCHDOG.md](../.omp/WATCHDOG.md) to match the actual headings. Repositories that already have a large design document should read [01-DESIGN.md](./01-DESIGN.md) §6 first. Preserve existing documents by default; merge them only when the user requests it, preserving their evidence and references.
+For an existing project, do not run `install` directly into its tree. Use `export` to materialize the artifact in a separate empty directory, then manually compare and merge instructions, documents, and ignore rules. The installer stops the entire installation if any target path exists and does not provide `--force`, automatic updates, or automatic locale switching. Preserve existing code, project-specific values, and user changes; record included and excluded files next to the Template revision. If something goes wrong, return to the pre-change branch or backup.
+
+The official locales are `en` and `ko`. For another language, use the English artifact as a starting point and intentionally change the Communication policy in [AGENTS.md](../AGENTS.md) and the project-owned documents. Do not present this manual adaptation as an officially supported locale or as having passed locale-parity verification.
+
+If merging an existing `REVIEW.md` changes section numbers, or if you remove optional sections from [00-PROJECT.md](./00-PROJECT.md), update section-number references in [REVIEW_ROUND.md](./REVIEW_ROUND.md), [01-DESIGN.md](./01-DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), and [.omp/WATCHDOG.md](../.omp/WATCHDOG.md) to match the actual headings. Repositories that already have a large design document should read [01-DESIGN.md](./01-DESIGN.md) §6 first. Preserve existing documents by default; merge them only when the user requests it, preserving their evidence and references.
 
 ### Migrating to the Numbered System
 
@@ -266,6 +280,13 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v2.0.0 (unreleased) — Locale Artifacts and Non-destructive Installation
+
+- Apply a verified artifact for one selected locale, `en` or `ko`, instead of copying the source repository root. Root paths and tool entry points remain stable.
+- The release installer verifies the version, locale, manifest, checksums, and member inventory and writes nothing when a target path already exists. Existing projects and locale changes use export to an empty directory followed by a manual merge.
+- Repositories already using `v1.7.1` are not migrated automatically. Preserve project-specific values and user changes, and compare the new artifact file by file before selecting updates.
+- In the adopting repository, record Template source, version, and revision from the actual artifact; record the selected locale and manual adaptations; then complete §2 and the DOCS_GUIDE checklist.
 
 ### v1.7.1 — Canonical Documentation Gates and Corrected Regression-test Scope
 

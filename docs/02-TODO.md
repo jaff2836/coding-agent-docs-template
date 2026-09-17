@@ -10,14 +10,14 @@
 - **Owner:** Chae Sangwon
 - **Last reviewed:** 2026-09-17 (UTC)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
-- **Integration target:** Origin PR #2가 반영된 이후의 `main`; 현재 설계 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
+- **Integration target:** Origin `main`; v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
 - **Name:** v2 다국어 템플릿 source·배포 구조
 - **Goal:** `en`·`ko` locale source에서 검증된 단일-locale artifact를 만들고 비파괴 installer로 선택 설치할 수 있는 승인된 설계와 구현
 - **Target:** 미정
-- **Status:** In Progress — W-001~W-004 통합 완료, W-005 구현·검증 완료
+- **Status:** In Progress — W-001~W-005 통합 완료, W-006 작업 트리 구현·검증 완료
 
 ## 운영 규칙
 

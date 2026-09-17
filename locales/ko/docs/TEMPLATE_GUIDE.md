@@ -67,6 +67,16 @@
 
 ## 2. 새 프로젝트에 적용하기
 
+공식 release에서는 별도 asset으로 받은 `installer.py`와 asset을 직접 제공하는 HTTPS release URL을 사용합니다. installer는 redirect를 따르지 않습니다. 아래 `{{...}}` 값은 실제 release 정보로 바꾸기 전에는 실행하지 마세요.
+
+```text
+python3 installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version {{VERSION}}
+python3 installer.py install --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
+python3 installer.py export --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+```
+
+`{{VERSION}}`에는 `latest` 또는 full SemVer를 넣습니다.
+
 1. 검증된 locale artifact를 빈 프로젝트 폴더에 설치하고 §5에 따라 version·source commit을 두 안내 문서에 기록합니다. 숨김 항목인 `.agents/`, `.claude/`, `.cursor/`, `.omp/`와 `.gitignore`, `docs/changes/_template/`의 네 양식도 artifact inventory에 포함되었는지 확인하세요. source 저장소 root를 직접 복사하지 마세요.
 2. 루트 [README.md](../README.md)는 이미 선택한 locale의 적용 프로젝트 양식입니다. 프로젝트 이름, 설명, 요구사항, 설치·실행·검증 방법, 보안 안내 및 라이선스를 작성합니다.
 3. [AGENTS.md](../AGENTS.md)의 프로젝트 정보와 명령을 실제 저장소에 맞게 작성합니다. README의 실행 방법과 서로 일치하도록 확인하세요.
@@ -81,7 +91,11 @@
 12. [문서 운영 안내](./DOCS_GUIDE.md)의 Template Adoption Checklist로 적용 완료 여부를 확인합니다.
 13. CI를 쓰는 저장소는 [CI.md](./CI.md)의 워크플로와 체크리스트로 기존 러너에 품질 게이트를 연결합니다. GitHub Actions·Buildkite 등 특정 제품의 pipeline 파일은 이 템플릿이 포함하지 않습니다. 사용자가 러너를 지정하기 전에는 YAML을 새로 만들지 마세요. CI가 없으면 같은 게이트를 로컬에서 실행하고 미사용 이유를 기록합니다.
 
-기존 프로젝트에 적용할 때는 같은 이름의 파일을 덮어쓰지 말고 기존 지침·문서·ignore 규칙과 비교하여 병합하세요. 기존 코드나 사용자 변경은 보존합니다. 기존 `REVIEW.md`와 병합해 절 번호가 바뀌거나 [00-PROJECT.md](./00-PROJECT.md)의 조건부 절을 삭제하면, 절 번호로 참조하는 [REVIEW_ROUND.md](./REVIEW_ROUND.md), [01-DESIGN.md](./01-DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 참조도 실제 헤딩에 맞게 고치세요. 도입 전부터 큰 설계 문서가 있는 저장소는 [01-DESIGN.md](./01-DESIGN.md) §6을 먼저 읽으세요. 기존 문서는 기본적으로 유지하고 사용자가 통합을 요청한 경우에만 근거와 참조를 보존해 병합합니다.
+기존 프로젝트에는 `install`을 바로 실행하지 말고 `export`로 별도 빈 디렉터리에 materialize한 뒤 기존 지침·문서·ignore 규칙과 비교하여 수동 병합하세요. installer는 같은 경로가 하나라도 있으면 전체 설치를 중단하며 `--force`, 자동 update, 자동 locale 전환을 제공하지 않습니다. 기존 코드, 프로젝트가 채운 값, 사용자 변경을 보존하고 적용·제외한 파일을 Template revision 기록 옆에 남깁니다. 문제가 생기면 작업 전 branch 또는 backup으로 되돌립니다.
+
+공식 locale은 `en`과 `ko`입니다. 다른 언어가 필요하면 영어 artifact를 출발점으로 사용하고 [AGENTS.md](../AGENTS.md)의 Communication 정책과 프로젝트 소유 문서를 원하는 언어로 수정할 수 있습니다. 이 수동 변경을 공식 locale 지원이나 locale parity 검증으로 표시하지 마세요.
+
+기존 `REVIEW.md`와 병합해 절 번호가 바뀌거나 [00-PROJECT.md](./00-PROJECT.md)의 조건부 절을 삭제하면, 절 번호로 참조하는 [REVIEW_ROUND.md](./REVIEW_ROUND.md), [01-DESIGN.md](./01-DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)의 참조도 실제 헤딩에 맞게 고치세요. 도입 전부터 큰 설계 문서가 있는 저장소는 [01-DESIGN.md](./01-DESIGN.md) §6을 먼저 읽으세요. 기존 문서는 기본적으로 유지하고 사용자가 통합을 요청한 경우에만 근거와 참조를 보존해 병합합니다.
 
 ### 번호 체계로 이관하기
 
@@ -266,6 +280,13 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v2.0.0 (미릴리스) — locale별 artifact와 비파괴 설치
+
+- source 저장소 root 대신 `en`·`ko` 중 하나를 선택한 검증된 artifact를 적용합니다. root 경로와 도구 진입점은 유지됩니다.
+- release installer는 version·locale·manifest·checksum·member inventory를 검증하고 기존 경로가 있으면 쓰지 않습니다. 기존 프로젝트와 locale 전환은 빈 디렉터리 export 후 수동 병합합니다.
+- `v1.7.1` 적용 저장소는 자동 migration하지 않습니다. 기존 프로젝트 값과 사용자 변경을 보존하고 새 artifact와 파일별로 비교해 선택 반영합니다.
+- 적용 저장소에서 확인할 것: Template source·version·revision을 실제 artifact 기준으로 기록하고, 선택 locale과 수동 변경 범위를 남기며, §2와 DOCS_GUIDE 체크리스트를 완료하세요.
 
 ### v1.7.1 — 문서 게이트 정본과 회귀 테스트 범위 교정
 

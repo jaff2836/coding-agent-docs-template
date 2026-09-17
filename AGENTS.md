@@ -19,7 +19,7 @@
 
 - **Install:** N/A — production dependency가 없습니다. 분석 또는 리뷰 작업에서는 자동으로 의존성을 설치하지 마세요.
 - **Run:** N/A
-- **Build:** N/A — release package는 W-005 installer 구현 후 완성됩니다.
+- **Build:** `python3 scripts/package-release.py --version {{VERSION}} --source-commit {{EXACT_COMMIT}} --repository {{OWNER/NAME}} --output {{EMPTY_OUTPUT_DIR}}`
 - **Test:** `python3 -m unittest discover -s tests -v`
 - **Lint:** N/A
 - **Typecheck:** N/A
@@ -29,11 +29,11 @@
 - **Locale source test:** `python3 -m unittest discover -s tests -p 'test_check_locales.py' -v`
 - **Export:** `python3 scripts/export-template.py --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}`
 - **Package:** `python3 scripts/package-release.py --version {{VERSION}} --source-commit {{EXACT_COMMIT}} --repository {{OWNER/NAME}} --output {{EMPTY_OUTPUT_DIR}}`
-- **Install release:** `python3 scripts/installer.py install --release-url {{RELEASE_BASE_URL}} --version {{latest|VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}`
-- **Installer export:** `python3 scripts/installer.py export --release-url {{RELEASE_BASE_URL}} --version {{latest|VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}`
-- **List locales:** `python3 scripts/installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version {{latest|VERSION}}`
+- **Install release:** `python3 scripts/installer.py install --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}`
+- **Installer export:** `python3 scripts/installer.py export --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}`
+- **List locales:** `python3 scripts/installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version {{VERSION}}`
 
-`{{...}}` 형태의 placeholder가 남아 있는 명령은 미설정으로 취급하고 실행을 시도하지 마세요. 명령이 `N/A`이거나 실행 환경이 준비되지 않았다면 성공했다고 추정하지 말고 검증하지 못한 이유를 보고하세요.
+`{{...}}` 형태의 placeholder가 남아 있는 명령은 미설정으로 취급하고 실행을 시도하지 마세요. installer의 `{{VERSION}}`에는 `latest` 또는 full SemVer를 넣습니다. 명령이 `N/A`이거나 실행 환경이 준비되지 않았다면 성공했다고 추정하지 말고 검증하지 못한 이유를 보고하세요.
 
 ## Document System
 

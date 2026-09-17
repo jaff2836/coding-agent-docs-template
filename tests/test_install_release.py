@@ -493,6 +493,30 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("left unchanged", str(context.exception))
         self.assertEqual(_tree_state(target), before)
 
+    def test_parent_directory_chmod_failure_rolls_back_created_directories(self) -> None:
+        target = self.temp_root() / "project"
+        target.mkdir()
+        before = _tree_state(target)
+        failing_directory = target / ".agents" / "skills"
+        real_chmod = os.chmod
+
+        def failing_chmod(path, mode):
+            if Path(path) == failing_directory:
+                raise OSError("simulated parent directory chmod failure")
+            return real_chmod(path, mode)
+
+        INSTALLER.os.chmod = failing_chmod
+        try:
+            with self.assertRaises(INSTALLER.InstallerError) as context:
+                INSTALLER._write_members(
+                    target,
+                    {".agents/skills/design/SKILL.md": b"test\n"},
+                )
+        finally:
+            INSTALLER.os.chmod = real_chmod
+        self.assertIn("left unchanged", str(context.exception))
+        self.assertEqual(_tree_state(target), before)
+
     def test_installer_error_mid_write_rolls_back_created_files(self) -> None:
         target = self.temp_root() / "project"
         target.mkdir()

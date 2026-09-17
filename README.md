@@ -2,7 +2,7 @@
 
 AI 코딩 에이전트와 사람이 **같은 문서 체계, 설계 절차, 리뷰 기준**을 쓰도록 만든 템플릿의 source 저장소입니다. 앱 런타임이나 프레임워크가 아니라, 프로젝트 문서와 에이전트 지침의 출발점입니다.
 
-> **v2 전환 중:** 현재 root는 저장소 유지관리 영역이므로 새 프로젝트에 직접 복사하지 마세요. 한국어 `v1.7.1` payload는 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`에서 보존됩니다. locale exporter·packager는 구현됐지만 installer와 공식 v2 release는 아직 구현 중입니다.
+> **v2 전환 중:** 현재 root는 저장소 유지관리 영역이므로 새 프로젝트에 직접 복사하지 마세요. 한국어 `v1.7.1` payload는 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`에서 보존됩니다. locale exporter·packager·installer는 구현됐지만 공식 v2 release와 release host는 아직 확정되지 않았습니다.
 
 Origin 같은 Git 호스트에는 source와 변경 이력을 보관합니다. 특정 CI 제품의 pipeline 파일은 포함하지 않습니다. 품질 게이트 절차는 [CI.md](./docs/CI.md)에 있습니다.
 
@@ -40,6 +40,7 @@ Origin 같은 Git 호스트에는 source와 변경 이력을 보관합니다. �
 | `scripts/check-locales.py` | manifest inventory와 locale별 구조·placeholder·marker·skill 계약 검사 |
 | `scripts/export-template.py` | common과 선택 locale을 검증된 단일-locale artifact로 합성 |
 | `scripts/package-release.py` | complete locale ZIP·release manifest·checksum을 결정적으로 생성 |
+| `scripts/installer.py` | 게시된 release의 manifest·checksum·locale ZIP을 검증하고 충돌 없이 설치·export |
 | `schemas/release-manifest.schema.json` | locale archive와 installer asset의 release metadata 계약 |
 | `.agents/skills/`, `.claude/skills/` | `design`·`review-round` 스킬 어댑터 |
 | `.cursor/BUGBOT.md`, `.omp/WATCHDOG.md` | 선택형 도구 전용 리뷰 연결 |
@@ -56,13 +57,15 @@ Origin 같은 Git 호스트에는 source와 변경 이력을 보관합니다. �
 
 ## 새 프로젝트에 적용하기
 
-현재 v2 source tree는 직접 복사 대상이 아닙니다. 로컬 exporter로 `template/common/`과 선택한 `locales/<tag>/`를 빈 디렉터리에 합성할 수 있지만, installer와 공식 v2 release는 아직 구현 중입니다. 게시된 안정판이 필요하면 한국어 `v1.7.1` 기준 commit `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`을 사용하세요. 새 구조의 계약과 진행 상태는 [다국어 템플릿 SPEC](./docs/changes/2026-09-09-multilingual-template/02-SPEC.md)과 [PLAN](./docs/changes/2026-09-09-multilingual-template/03-PLAN.md)에 있습니다.
+현재 v2 source tree는 직접 복사 대상이 아닙니다. 공식 v2 release 전에는 source checkout의 exporter로 `template/common/`과 선택한 `locales/<tag>/`를 빈 디렉터리에 합성할 수 있습니다. 게시된 안정판이 필요하면 한국어 `v1.7.1` 기준 commit `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`을 사용하세요. 새 구조의 계약과 진행 상태는 [다국어 템플릿 SPEC](./docs/changes/2026-09-09-multilingual-template/02-SPEC.md)과 [PLAN](./docs/changes/2026-09-09-multilingual-template/03-PLAN.md)에 있습니다.
 
 ```text
 python3 scripts/export-template.py --locale ko --output /path/to/empty-directory
 ```
 
-기존 프로젝트에 넣을 때는 같은 이름 파일을 덮어쓰지 말고 기존 지침·문서와 비교해 병합하세요. v2 installer도 기존 파일 충돌 시 쓰지 않는 방향으로 설계되어 있습니다.
+v2 release가 게시되면 별도 release asset인 `installer.py`에 최종 asset URL을 `--release-url`로 명시해 `list-locales`, `install`, `export`를 실행합니다. installer는 redirect를 따르지 않고 기존 경로가 하나라도 있으면 아무것도 쓰지 않습니다. 기존 프로젝트에는 빈 디렉터리로 export한 뒤 기존 지침·문서와 비교해 수동 병합하세요. 자동 update·locale 전환·`--force`는 제공하지 않습니다.
+
+`en`·`ko` 외 언어는 공식 지원으로 표시하지 않습니다. 영어 artifact를 출발점으로 삼아 적용 프로젝트의 `AGENTS.md` Communication 정책과 프로젝트 소유 문서를 원하는 언어로 수정할 수 있지만, 이 저장소의 locale parity와 번역 품질 보증 대상은 아닙니다.
 
 ## 이 템플릿 저장소에서 검사하기
 
