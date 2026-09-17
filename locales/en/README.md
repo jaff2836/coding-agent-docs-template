@@ -2,6 +2,8 @@
 
 {{PROJECT_DESCRIPTION}}
 
+> This is the project-root README template placed by the selected locale artifact. Do not replace it with the template source repository's introduction. Replace the placeholders and guidance below with actual project values, and record the adopted Template source, version, and revision in the [Template Guide](./docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./docs/DOCS_GUIDE.md).
+
 ## Requirements
 
 - Describe the runtimes and tools required by the project.

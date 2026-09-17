@@ -2,6 +2,8 @@
 
 {{PROJECT_DESCRIPTION}}
 
+> 이 파일은 선택한 locale artifact가 프로젝트 루트에 배치한 README 양식입니다. 템플릿 source 저장소 소개문으로 교체하지 말고, 아래 placeholder와 안내를 실제 프로젝트 값으로 바꾸세요. 적용한 Template source·version·revision은 [Template Guide](./docs/TEMPLATE_GUIDE.md)와 [Documentation Guide](./docs/DOCS_GUIDE.md)에 기록합니다.
+
 ## Requirements
 
 - 프로젝트에 필요한 런타임과 도구를 작성하세요.

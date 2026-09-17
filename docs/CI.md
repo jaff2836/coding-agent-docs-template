@@ -90,7 +90,7 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 
 ### 이 템플릿 원본과 적용 저장소
 
-- [ ] **원본 템플릿 저장소:** G-docs·G-docs-test·G-locale-source·G-locale-source-test를 상시 실행한다. G-adopt(placeholder 검색)는 넣지 않는다.
+- [ ] **원본 템플릿 저장소:** G-docs·G-docs-test·G-locale-source·G-locale-source-test와 AGENTS.md의 전체 G-test를 상시 실행한다. release 후보에서는 exact clean source commit으로 package/install E2E도 실행한다. G-adopt(placeholder 검색)는 넣지 않는다.
 - [ ] **적용 저장소:** G-docs를 유지한다. G-lint·G-type·G-test·G-build는 채운 명령만 실행한다. 적용 직후 G-adopt를 한 번 확인한다.
 - [ ] CI를 쓰지 않으면 같은 게이트를 로컬에서 실행한 기록과, CI를 안 쓰는 이유를 남긴다.
 - [ ] 사용자가 러너 제품을 지정하기 전에는 `.github/workflows/`, Buildkite pipeline 파일, 그 외 제품 전용 설정을 새로 만들지 않는다.

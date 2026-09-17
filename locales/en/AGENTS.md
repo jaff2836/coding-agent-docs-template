@@ -14,6 +14,7 @@ Follow the instructions below unless the user's current request conflicts with t
 - Write explanations, work reports, and review prose for the user in English.
 - Preserve code identifiers, file paths, configuration keys, protocol names, and code quotations in their original form.
 - Distinguish verified facts, reasonable inferences, and unverified items.
+- If this bundle is used as a fallback for an unsupported language, intentionally change this section and the project-owned documents, and do not claim official locale support or locale-parity verification.
 
 ## Commands
 

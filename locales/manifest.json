@@ -95,6 +95,27 @@
           "docs/DOCS_GUIDE.md",
           "docs/TEMPLATE_GUIDE.md"
         ]
+      },
+      {
+        "id": "installer-list-locales",
+        "value": "python3 installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version {{VERSION}}",
+        "paths": [
+          "docs/TEMPLATE_GUIDE.md"
+        ]
+      },
+      {
+        "id": "installer-install",
+        "value": "python3 installer.py install --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}",
+        "paths": [
+          "docs/TEMPLATE_GUIDE.md"
+        ]
+      },
+      {
+        "id": "installer-export",
+        "value": "python3 installer.py export --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}",
+        "paths": [
+          "docs/TEMPLATE_GUIDE.md"
+        ]
       }
     ],
     "skills": [
