@@ -1,93 +1,71 @@
 # AI Agent Docs Template
 
-AI 코딩 에이전트와 사람이 **같은 문서 체계, 설계 절차, 리뷰 기준**을 쓰도록 만든 템플릿의 source 저장소입니다. 앱 런타임이나 프레임워크가 아니라, 프로젝트 문서와 에이전트 지침의 출발점입니다.
+A documentation template that helps people and AI coding agents collaborate with the **same document structure, design process, and review criteria**. It provides project documentation and agent instructions rather than an application framework.
 
-> **v2 전환 중:** 현재 root는 저장소 유지관리 영역이므로 새 프로젝트에 직접 복사하지 마세요. 한국어 `v1.7.1` payload는 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`에서 보존됩니다. locale exporter·packager·installer는 구현됐지만 공식 v2 release와 release host는 아직 확정되지 않았습니다.
+It supports Claude, Codex, Cursor, and [Oh My Pi](https://github.com/can1357/oh-my-pi). Version 2 provides English (`en`) and Korean (`ko`) locales.
 
-Origin 같은 Git 호스트에는 source와 변경 이력을 보관합니다. 특정 CI 제품의 pipeline 파일은 포함하지 않습니다. 품질 게이트 절차는 [CI.md](./docs/CI.md)에 있습니다.
+[한국어](./README.ko.md)
 
-현재 판은 [Template Guide](./docs/TEMPLATE_GUIDE.md) Metadata의 `Template version`을 따릅니다.
+## Installation
 
-## 무엇을 풀려고 하는가
-
-에이전트에게 저장소만 주면 다음이 자주 갈립니다.
-
-- 제품 기준, 이번 변경의 설계, 실행 상태를 한 문서에 섞어 쓰거나 서로 덮어씀
-- 작은 버그 수정을 큰 설계 절차로 부풀리거나, 구조 변경을 합의 없이 구현
-- 리뷰 기준이 도구마다 달라져 같은 결함을 다르게 판정
-- 적용 저장소가 어느 템플릿 판을 복사했는지 재현할 수 없음
-
-이 템플릿은 그 경계를 파일과 절차로 고정합니다. 공통 규칙은 `AGENTS.md`, 조건부 절차는 `docs/`, 도구별 스킬은 그 절차를 가리키는 어댑터만 둡니다.
-
-## 포함되는 것
-
-| 구분 | 역할 |
-| --- | --- |
-| [AGENTS.md](./AGENTS.md) | Cursor·Codex·OMP 등이 읽는 공통 지침. Claude Code는 [CLAUDE.md](./CLAUDE.md)의 `@AGENTS.md` import로 연결 |
-| [locales/ko/README.md](./locales/ko/README.md) | 한국어 적용 프로젝트 README 양식. locale artifact의 루트 `README.md`로 배치 |
-| [docs/TEMPLATE_GUIDE.md](./docs/TEMPLATE_GUIDE.md) | 최초 적용, 기존 저장소 이관, 도구 연결, 판 이력 |
-| [docs/DOCS_GUIDE.md](./docs/DOCS_GUIDE.md) | 문서 소유권, 식별자 범위, 적용 완료 체크리스트 |
-| [docs/00-PROJECT.md](./docs/00-PROJECT.md) | 제품 기준·현재/목표 구조·결정 인덱스 |
-| [docs/01-DESIGN.md](./docs/01-DESIGN.md) | 구조·계약을 바꾸는 변경의 구현 전 설계 절차 |
-| [docs/02-TODO.md](./docs/02-TODO.md) | 전역 변경 목록·우선순위·통합 결과 |
-| [docs/10-EXTENSION.md](./docs/10-EXTENSION.md) | 선택형 장기 확장 설계 |
-| `docs/changes/_template/` | 합본형·분리형 Intent/Spec과 선택형 Plan 양식 |
-| [docs/REVIEW.md](./docs/REVIEW.md) | PR 리뷰 판정 기준 |
-| [docs/REVIEW_ROUND.md](./docs/REVIEW_ROUND.md) | 명시 호출된 리뷰 라운드와 권한 위임 |
-| [docs/PROJECT_ANALYSIS.md](./docs/PROJECT_ANALYSIS.md) | 명시 요청 시의 전체 분석 절차 |
-| [docs/CI.md](./docs/CI.md) | 러너 불문의 품질 게이트 워크플로와 연결 체크리스트 |
-| `scripts/check-docs.py` | 의존성 없는 문서 검사 (상대 링크, 스킬 사본, import, 불변조건, 절 번호, 판 번호) |
-| `scripts/check-locales.py` | manifest inventory와 locale별 구조·placeholder·marker·skill 계약 검사 |
-| `scripts/export-template.py` | common과 선택 locale을 검증된 단일-locale artifact로 합성 |
-| `scripts/package-release.py` | complete locale ZIP·release manifest·checksum을 결정적으로 생성 |
-| `scripts/installer.py` | 게시된 release의 manifest·checksum·locale ZIP을 검증하고 충돌 없이 설치·export |
-| `schemas/release-manifest.schema.json` | locale archive와 installer asset의 release metadata 계약 |
-| `.agents/skills/`, `.claude/skills/` | `design`·`review-round` 스킬 어댑터 |
-| `.cursor/BUGBOT.md`, `.omp/WATCHDOG.md` | 선택형 도구 전용 리뷰 연결 |
-
-전체 트리와 도구별 주의사항은 [Template Guide §1·§4](./docs/TEMPLATE_GUIDE.md)에 있습니다.
-
-## 포함되지 않는 것
-
-- 애플리케이션 코드, 패키지 매니저, 컨테이너, IaC
-- 저장소 초기화 스크립트나 대화형 생성기
-- GitHub Actions·Buildkite 등 특정 CI 제품의 pipeline 파일, 자동 리뷰 실행 잡, 리뷰 프롬프트. 품질 게이트 절차는 [CI.md](./docs/CI.md)에 있습니다.
-- CODEOWNERS 파일 자체 (안내만 있음)
-- 적용 프로젝트의 라이선스·보안 신고 채널 (템플릿 `LICENSE`는 이 템플릿 자체의 MIT)
-
-## 새 프로젝트에 적용하기
-
-현재 v2 source tree는 직접 복사 대상이 아닙니다. 공식 v2 release 전에는 source checkout의 exporter로 `template/common/`과 선택한 `locales/<tag>/`를 빈 디렉터리에 합성할 수 있습니다. 게시된 안정판이 필요하면 한국어 `v1.7.1` 기준 commit `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`을 사용하세요. 새 구조의 계약과 진행 상태는 [다국어 템플릿 SPEC](./docs/changes/2026-09-09-multilingual-template/02-SPEC.md)과 [PLAN](./docs/changes/2026-09-09-multilingual-template/03-PLAN.md)에 있습니다.
+Download `installer.py` from the release, list the supported locales, and install one into a new project. Replace `{{RELEASE_BASE_URL}}` with the asset base URL shown in the release instructions.
 
 ```text
-python3 scripts/export-template.py --locale ko --output /path/to/empty-directory
+python3 installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version latest
+python3 installer.py install --release-url {{RELEASE_BASE_URL}} --version latest --locale en --repo-root /path/to/new-project
 ```
 
-v2 release가 게시되면 별도 release asset인 `installer.py`에 최종 asset URL을 `--release-url`로 명시해 `list-locales`, `install`, `export`를 실행합니다. installer는 redirect를 따르지 않고 기존 경로가 하나라도 있으면 아무것도 쓰지 않습니다. 기존 프로젝트에는 빈 디렉터리로 export한 뒤 기존 지침·문서와 비교해 수동 병합하세요. 자동 update·locale 전환·`--force`는 제공하지 않습니다.
+Set `--locale` to `en` or `ko`. The target must be new or empty; if any destination file already exists, the installer writes nothing.
 
-`en`·`ko` 외 언어는 공식 지원으로 표시하지 않습니다. 영어 artifact를 출발점으로 삼아 적용 프로젝트의 `AGENTS.md` Communication 정책과 프로젝트 소유 문서를 원하는 언어로 수정할 수 있지만, 이 저장소의 locale parity와 번역 품질 보증 대상은 아닙니다.
+### Existing projects
 
-## 이 템플릿 저장소에서 검사하기
+Do not install directly into a project that already uses v1 or maintains its own documentation. Export v2 into an empty directory, compare it with the existing files, and apply only the changes you need.
 
-문서·locale source 검사와 검사 스크립트의 회귀 테스트는 Python 3 표준 라이브러리만 사용하며, 아래 명령은 `python3`을 기준으로 합니다.
+```text
+python3 installer.py export --release-url {{RELEASE_BASE_URL}} --version latest --locale en --output /path/to/empty-directory
+```
+
+The installer never overwrites existing files, follows no redirects, and does not provide automatic updates, locale switching, or `--force`. The release URL must serve the assets directly over HTTPS. For another language, you can localize the English artifact's project instructions and documents, but the result is outside the officially verified locales.
+
+## After installation
+
+1. Replace the placeholders, project information, and commands in `README.md` and `AGENTS.md`.
+2. Record the product baseline in `docs/00-PROJECT.md` and current work in `docs/02-TODO.md`.
+3. Use the `design` process for changes to architecture or public contracts.
+4. Follow `docs/REVIEW.md` for PR reviews, and invoke `review-round` explicitly only when you need an iterative fix-and-rereview cycle.
+
+Each tool reads the same contract through fixed paths in `AGENTS.md`, `CLAUDE.md`, `.agents/skills/`, `.claude/skills/`, `.cursor/`, and `.omp/`.
+
+## Verifying the template
+
+Repository development and release preparation use only the Python 3 standard library, with no production dependencies.
 
 ```text
 python3 scripts/check-docs.py
-python3 scripts/check-locales.py
 python3 scripts/check-locales.py --require-stable
 python3 -m unittest discover -s tests -v
-python3 -m unittest discover -s tests -p 'test_check_docs.py' -v
-python3 -m unittest discover -s tests -p 'test_check_locales.py' -v
 ```
 
-적용을 마친 저장소에서도 `scripts/check-docs.py`는 동작합니다. `scripts/check-locales.py`는 원본 템플릿 저장소의 source 전용 gate이며 locale artifact에는 포함되지 않습니다. 원본 템플릿의 placeholder 잔존은 문서 검사가 실패로 보지 않습니다. 같은 게이트를 원격 CI에 붙이는 순서와 체크리스트는 [CI.md](./docs/CI.md)를 따릅니다.
+To inspect a locale artifact directly from a source checkout, export it into an empty directory.
 
-## 문서와 도구
+```text
+python3 scripts/export-template.py --locale en --output /path/to/empty-directory
+```
 
-- 일상 운영과 문서별 정본은 [DOCS_GUIDE.md](./docs/DOCS_GUIDE.md)가 기준입니다. `docs/` 안에 `README.md`를 두지 않습니다.
-- `review-round`는 사용자가 명시적으로 호출한 경우에만 실행합니다. `design`은 적용 조건에 맞는 변경에서 절차를 시작할 수 있습니다.
-- Cursor Bugbot 또는 OMP advisor를 쓰지 않으면 해당 전용 파일을 삭제하고 안내 문서의 링크도 정리합니다.
+- `check-docs.py` checks links, imports, skill copies, invariants, and document version metadata.
+- `check-locales.py` checks locale inventories, placeholders, markers, and skill contracts.
+- The full test suite covers successful and failing paths for the exporter, deterministic packager, and non-destructive installer.
+
+## What's included
+
+- **Shared instructions:** `AGENTS.md`, `CLAUDE.md`, and tool-specific integration files
+- **Document system:** project baseline, design, TODO, review, analysis, and CI guidance
+- **Skills:** `design` and `review-round`
+- **Multilingual delivery:** `template/common/`, `locales/en/`, `locales/ko/`, the manifest, and the schema
+- **Tools:** documentation and locale checks, export, release packaging, and installation
+
+See the [Template Guide](./docs/TEMPLATE_GUIDE.md) for the complete structure and adoption checklist, and the [Documentation Guide](./docs/DOCS_GUIDE.md) for document ownership and operating rules. This repository does not include application code or pipelines for a specific CI product.
 
 ## License
 
-이 템플릿 자체는 MIT 라이선스([LICENSE](./LICENSE))입니다. 적용한 프로젝트는 자기 라이선스를 정해 `LICENSE`와 프로젝트 README의 License 절을 교체하세요. 템플릿의 MIT 고지를 프로젝트 라이선스로 그대로 두지 마세요.
+This template is distributed under the [MIT License](./LICENSE). Projects that adopt it should define their own license and security reporting process.

@@ -28,7 +28,8 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 - 공개 기준은 한국어 복사형 `v1.7.1`이며 Origin `main`의 merge commit `113a6a58f9b03707fe8050b5673d3437b9895d03`에 반영되어 있습니다.
 - W-001의 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source 분리는 Origin PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에 통합됐습니다.
 - W-002의 `locales/en`·locale별 skill S2 계약과 W-003 locale/artifact 검사는 각각 Origin PR #4·#5에 통합됐습니다. `en`·`ko` source는 모두 `complete`입니다.
-- W-004 exporter·packager는 Origin PR #6 merge commit `f60ae97`, W-005 비파괴 installer는 PR #7 merge commit `9d4637d`에 통합됐습니다. 공식 release와 실제 도구 지원 검증은 아직 완료되지 않았습니다.
+- W-004 exporter·packager는 Origin PR #6 merge commit `f60ae97`, W-005 비파괴 installer는 PR #7 merge commit `9d4637d`, W-006 적용 문서는 PR #8 merge commit `60638ed`에 통합됐습니다.
+- W-007은 `60638ed` exact head에서 `en`·`ko` package/install/export와 Claude·Codex·Cursor·OMP의 실제 로딩 probe를 통과했습니다. 공개 release와 원격 HTTPS host 검증은 별도 게시 작업입니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -70,11 +71,11 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Data Flow
 
-exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. installer는 같은 immutable version namespace의 asset을 검증하고 redirect·경로 충돌·부분 실패를 거부하거나 rollback합니다. source root 자체는 배포하지 않으며 실제 원격 release와 소비자 도구 E2E는 W-007에서 수행합니다.
+exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. installer는 같은 immutable version namespace의 asset을 검증하고 redirect·경로 충돌·부분 실패를 거부하거나 rollback합니다. source root 자체는 배포하지 않습니다. W-007 소비자 E2E는 로컬 immutable release namespace로 검증했으며 실제 원격 release는 별도 게시 단계입니다.
 
 ### External Boundaries
 
-- Origin은 source branch와 PR을 보관하지만 artifact release host는 아직 결정하지 않았습니다.
+- 공개 저장소 identity는 `jaff2836/coding-agent-docs-template`로 확정했습니다. 현재 Origin은 기존 source branch와 PR 이력을 보관하며, artifact release host와 bootstrap URL은 아직 결정하지 않았습니다.
 - 파일시스템과 향후 release asset 다운로드가 신뢰 경계입니다. manifest·archive·member hash를 모두 확인해야 합니다.
 
 ### Contracts and Core Design
@@ -110,7 +111,8 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | W-003 | locale/artifact 검사 | W-002 | marker·inventory 계약 유지 | PR #5 merge commit `7657d2c`, source/stable gate |
 | W-004 | deterministic export/package | W-003, complete locale | v1.7.1 유지 | PR #6 merge commit `f60ae97`, deterministic package gate |
 | W-005 | 비파괴 installer | W-004 manifest·bundle 계약 | v1.7.1 유지; 공식 v2 release 전 | PR #7 merge commit `9d4637d`, exact-head package/install E2E |
-| W-006~W-007 | 적용 문서 정렬과 소비자 E2E | W-001~W-005 | 실제 release 전에는 지원 완료로 표시하지 않음 | 변경 PLAN의 gate |
+| W-006 | 적용·마이그레이션·지원 문서 정렬 | W-001~W-005 | 실제 release 전에는 원격 설치를 완료로 표시하지 않음 | PR #8 merge commit `60638ed` |
+| W-007 | exact-head 전체 검증과 소비자 E2E | W-006 | 공개 release 없이 로컬 immutable release namespace로 검증 | `60638ed` exact-head gate와 Claude·Codex·Cursor·OMP probe |
 
 ## 8. Decisions
 
@@ -120,6 +122,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 |---|---|---|---|---|---|---|
 | D-001 | 2026-09-09 | Accepted | 저장소 root 유지관리 영역과 배포 payload source를 분리하고 W-001을 PR #3에서 구현 | [SPEC §3.1](./changes/2026-09-09-multilingual-template/02-SPEC.md), Origin PR #3 리뷰 F-001 | source root 직접 복사 중단; v1.7.1 snapshot 보존 | Chae Sangwon, 2026-09-09 대화 |
 | D-002 | 2026-09-09 | Accepted | common+locale 합성 artifact, locale별 skill S2 계약과 host-neutral installer를 포함한 v2 전체 구조 | [다국어 템플릿 SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md) | v2 breaking change; release host는 구현 중 확정 | Chae Sangwon, 2026-09-09 대화 |
+| D-003 | 2026-09-17 | Accepted | 공개 저장소 identity를 `jaff2836/coding-agent-docs-template`로 사용하고 W-007은 공개 release 없이 local exact-head·소비자 probe까지 검증 | [PLAN W-007](./changes/2026-09-09-multilingual-template/03-PLAN.md) | GitHub 게시, immutable release host와 bootstrap URL 검증은 별도 작업 | Chae Sangwon, 2026-09-17 대화 |
 
 중요한 결정이 많아지면 개별 ADR 문서로 분리하고 여기에는 링크와 요약만 남깁니다.
 
@@ -135,7 +138,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 ### Phase 2 — multilingual delivery
 
 - 승인된 순서에 따라 `en`, locale parity 검사, deterministic packaging과 installer를 구현합니다.
-- exact-head consumer E2E 후에만 지원 완료와 release를 별도로 판정합니다.
+- exact-head consumer E2E와 공개 release를 분리해 판정합니다. 로컬 consumer E2E 통과가 원격 release 게시·검증을 뜻하지 않습니다.
 
 ## 10. Risks
 
@@ -147,7 +150,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 ## 11. Open Questions
 
-- [ ] immutable release asset의 실제 host와 bootstrap URL을 구현 중 확정합니다.
+- [ ] immutable release asset의 실제 host와 bootstrap URL을 공개 release 작업에서 확정합니다.
 
 ## 12. Rejected or Deferred Ideas
 
