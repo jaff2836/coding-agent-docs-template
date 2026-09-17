@@ -9,14 +9,14 @@
 - **Global task:** [02-TODO.md](../../02-TODO.md)의 T-001
 - **Owner:** Chae Sangwon
 - **Baseline:** `fb7017624ec1ac11cbc6d00df9a8e3916ace5262` (`codex/v1.7.1-ci-doc-fixes`)
-- **Integration target:** Origin PR #2 merge commit `113a6a58f9b03707fe8050b5673d3437b9895d03` 이후의 정확한 `main`
+- **Integration target:** PR #8 merge commit `60638edfbf1e5decb9019b2a3175734b3a5e085c` 이후의 정확한 local `main`; 공개 저장소 target `jaff2836/coding-agent-docs-template`
 - **Scope:** locale/common source 분리, `en`·`ko` payload, export·package·installer, manifest/schema, 문서·locale 검사와 migration 문서. GitHub 생성·release 게시 제외
 
-아래 체크 완료는 구현 branch에서의 구현·검증 완료이며 merge·tag·GitHub release·도구 지원 검증을 뜻하지 않습니다.
+아래 체크 완료는 구현 branch에서 각 작업에 명시한 검증까지 마쳤다는 뜻입니다. W-007 외 작업의 체크는 소비자 지원 검증을 뜻하지 않으며, 어느 체크도 merge·tag·GitHub release 게시를 뜻하지 않습니다.
 
 ## 1. 구현 순서와 의존성
 
-1. 사용자가 `v2.0.0` breaking contract와 skill 현지화 S2를 승인했습니다. 실제 repository URL은 구현 중 확정할 수 있습니다.
+1. 사용자가 `v2.0.0` breaking contract와 skill 현지화 S2를 승인했고 공개 repository identity를 `jaff2836/coding-agent-docs-template`로 확정했습니다. release host와 bootstrap URL은 별도 공개 작업에서 확정합니다.
 2. `fb70176` tree에서 배포 payload inventory를 고정한 뒤 한국어 locale과 common source를 먼저 이관합니다.
 3. root를 저장소 유지관리 영역으로 전환하고 영어 locale을 작성합니다.
 4. stable marker와 locale/artifact 검사를 먼저 만든 뒤 export와 release packaging을 연결합니다.
@@ -69,12 +69,12 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
   - 검증 방법: 문서 명령과 CLI `--help` 일치, v1.7.1 rollback·기존 적용 저장소 수동 diff 절차, 미지원 locale 표현과 지원 상태 검토
   - 결과·근거: root source 저장소와 `en`·`ko` artifact 문서에 release installer의 `list-locales`·`install`·`export` 명령, redirect 없는 최종 asset URL 계약, source checkout exporter 경로를 구분했습니다. 기존 프로젝트와 `v1.7.1` 사용자는 별도 빈 디렉터리 export 후 수동 diff·merge하고 branch/backup으로 rollback하며 자동 update·locale 전환·overwrite를 하지 않도록 정렬했습니다. 미지원 언어는 영어 artifact와 명시적 언어 정책 수정만 fallback으로 안내하고 공식 지원으로 표시하지 않습니다. installer 명령을 locale manifest의 명시 계약으로 추가해 두 locale의 placeholder·command parity를 검사합니다.
 
-- [ ] **W-007 exact-head 전체 검증과 소비자 E2E**
+- [x] **W-007 exact-head 전체 검증과 소비자 E2E**
   - 범위·변경 파일: 전체 변경, 임시 소비자 저장소 fixture
   - 대응 요구사항: R-001~R-012
   - 선행조건: W-001~W-006 완료
   - 검증 방법: `en`·`ko` export별 G-docs/G-docs-test, locale·packager·installer 전체 테스트, `git diff --check`, clean rebuild, 실제 Claude·Codex·Cursor·OMP loading probe
-  - 결과·근거: 미실행. 원격 release·지원 완료는 별도 단계
+  - 결과·근거: PR #8 merge commit `60638edfbf1e5decb9019b2a3175734b3a5e085c`의 clean exact head에서 전체 unittest 99개, root docs, stable locale, Python compile, `git diff --check`가 통과했습니다. repository를 `jaff2836/coding-agent-docs-template`로 결합한 `v2.0.0` package를 두 번 clean build해 5개 asset의 byte 동일성을 확인했고, localhost immutable release namespace에서 packaged installer의 `latest`/exact-version locale 조회, `en`·`ko` 각 28-file install/export, source export 동일성, mode와 재설치 충돌 거부를 검증했습니다. 설치 artifact에서 Claude Code 2.1.273, Codex CLI 0.154.0, Cursor Agent 2026.09.10-fd3934a, OMP 18.2.1이 두 locale의 프로젝트 지침과 명시적 `design` skill 계약을 로드했습니다. OMP skill은 실제 사용자 경로인 대화형 `/skill:design`으로 확인했습니다. 공개 release·원격 HTTPS host·bootstrap URL 검증은 별도 단계입니다.
 
 ## 3. 검증 기록
 
@@ -86,8 +86,9 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
 | W-002 영어 locale | Origin PR #4 final head `3465885cc4a5085d8c897c6fb3528556734c5add`, merge commit `fa01b20ccebb81788241cc41ba5d68610a6663fe` | 24 localized+6 common inventory, placeholder·heading·link·절 참조·명령·marker parity; en/ko materialized G-docs와 G-docs-test; root G-docs; 영어 adoption `rg`·`grep`; JSON·`git diff --check`; 번역 교차·최종 검토 | 통과 — 교차 검토에서 확인한 번역·계약 drift와 lifecycle 정합성 문구를 수정했고 Chae Sangwon의 최종 검수 승인을 받아 `en=complete`로 판정 |
 | W-003 locale-aware 검사 | PR #4 merge commit `fa01b20`을 병합한 `codex/multilingual-template-w003` 전체 변경 | `python3 scripts/check-locales.py`; `python3 scripts/check-locales.py --require-stable`; negative fixture를 포함한 locale source test 41개; root G-docs와 root checker test 20개; common checker test 18개; JSON·`git diff --check` | 통과 — strict manifest·inventory·BCP 47 profile·SemVer·placeholder·marker·명령·skill fixture/status 계약과 marker·heading·token·fence/comment/blockquote decoy, example 인접성·indent, artifact 외부 경로·release history 실패 경로를 확인했고 `en`·`ko` stable gate가 통과 |
 | W-004 deterministic export/package | Origin `main` `7657d2cd8f4789dab4d64904b30e4ccc2eea169a`에서 분기한 `codex/multilingual-template-w004` 작업 트리 | en/ko 각 28-file export와 artifact test, exporter 7개·packager 7개 회귀 테스트, 두 build byte 비교, ZIP member/order/mode/timestamp/hash, manifest/SHA256SUMS, stable gate, source revision binding, JSON·Python compile·`git diff --check` | 통과 — exporter와 packager core 구현 완료. 실제 `installer.py` 구현과 이를 포함한 repository exact-head CLI package E2E는 W-005 선행조건으로 남음 |
-| W-005 installer | PR #7 merge commit `9d4637d`와 후속 수정이 포함된 `codex/multilingual-template-w006` 작업 트리 | installer 회귀 테스트 24개(fake HTTP release server fixture와 redirect·path-prefix·파일 및 중간 디렉터리 rollback negative case 포함), 전체 unittest 99개; PR #7 head `0d8e60d`의 exact-head package-release CLI E2E에서 packager 5 assets, released installer의 list-locales·install en/ko 각 28파일, export-template 동일 inventory, 재설치 전후 hash·mode 불변; `check-docs.py`, `check-locales.py --require-stable`, `git diff --check`, `py_compile` | 통과 — 사후 리뷰의 중간 디렉터리 `chmod` 실패 잔존을 재현·수정했고 tree 불변 회귀 테스트가 통과. release host는 미확정이며 실제 원격 release E2E는 W-007 단계 |
-| W-006 적용·마이그레이션·지원 문서 | Origin `main` `9d4637d`에서 분기한 `codex/multilingual-template-w006` 작업 트리 | installer/exporter/packager CLI `--help` 대조, locale source/stable gate와 회귀 테스트 41개, 전체 unittest 99개, en/ko 각 28-file export 후 G-docs·checker test 18개, root G-docs, `git diff --check` | 통과 — 공식 release 전 로컬 export와 게시 후 installer 경로, 기존 프로젝트 수동 diff·rollback, v1.7.1 보존, 미지원 언어 fallback, `en`·`ko` complete 지원 경계를 한국어·영어 문서와 manifest 명령 계약에 반영. 공식 URL·원격 release·소비자 loading은 W-007 한계 |
+| W-005 installer | PR #7 merge commit `9d4637d`와 후속 수정이 포함된 `codex/multilingual-template-w006` 작업 트리 | installer 회귀 테스트 24개(fake HTTP release server fixture와 redirect·path-prefix·파일 및 중간 디렉터리 rollback negative case 포함), 전체 unittest 99개; PR #7 head `0d8e60d`의 exact-head package-release CLI E2E에서 packager 5 assets, released installer의 list-locales·install en/ko 각 28파일, export-template 동일 inventory, 재설치 전후 hash·mode 불변; `check-docs.py`, `check-locales.py --require-stable`, `git diff --check`, `py_compile` | 통과 — 사후 리뷰의 중간 디렉터리 `chmod` 실패 잔존을 재현·수정했고 tree 불변 회귀 테스트가 통과. 당시 미확정이던 소비자 E2E는 후속 W-007에서 로컬 검증했고 원격 release는 별도 작업으로 분리 |
+| W-006 적용·마이그레이션·지원 문서 | Origin `main` `9d4637d`에서 분기한 `codex/multilingual-template-w006` 작업 트리 | installer/exporter/packager CLI `--help` 대조, locale source/stable gate와 회귀 테스트 41개, 전체 unittest 99개, en/ko 각 28-file export 후 G-docs·checker test 18개, root G-docs, `git diff --check` | 통과 — 공식 release 전 로컬 export와 게시 후 installer 경로, 기존 프로젝트 수동 diff·rollback, v1.7.1 보존, 미지원 언어 fallback, `en`·`ko` complete 지원 경계를 한국어·영어 문서와 manifest 명령 계약에 반영. 소비자 loading은 후속 W-007에서 로컬 검증했고 공식 URL·원격 release는 별도 작업으로 분리 |
+| W-007 exact-head·소비자 E2E | PR #8 merge commit `60638edfbf1e5decb9019b2a3175734b3a5e085c` clean tree | 전체 unittest 99개; root docs·stable locale·Python compile·`git diff --check`; 동일 입력 package 2회 byte 비교; localhost release에서 packaged installer `list-locales`·install·export; en/ko 각 28-file artifact 검사; Claude Code 2.1.273·Codex CLI 0.154.0·Cursor Agent 2026.09.10-fd3934a·OMP 18.2.1 실제 loading probe | 통과 — manifest repository/source commit 결합, 5 assets 재현성, source/install/export 동일성, 비파괴 충돌 거부, 두 locale의 프로젝트 지침·명시적 design skill 로딩 확인. OMP slash skill은 interactive 경로로 검증. 공개 release·원격 HTTPS·bootstrap은 사용자 요청에 따라 제외 |
 
 ## 4. 변경·재검증 기록
 
@@ -103,9 +104,11 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
 - 2026-09-17: PR #6을 merge commit `f60ae97`로 통합하고 W-005 branch에 병합했습니다. PR #7 리뷰의 blocking P2 두 건에 따라 manifest member 부모/자식 path 충돌을 쓰기 전에 거부하고 `InstallerError`를 포함한 실패 rollback을 보강했으며, 명시 release URL 밖으로 신뢰 경계가 이동하지 않도록 모든 redirect를 거부했습니다.
 - 2026-09-17: PR #7 사후 리뷰에서 중간 parent directory의 `mkdir` 뒤 `chmod`가 실패하면 rollback 등록 전이라 빈 디렉터리가 남는 결함을 재현했습니다. 생성 직후 등록하도록 고치고 회귀 테스트를 추가한 뒤 W-006 문서 정렬과 함께 전체 99개 테스트를 통과했습니다.
 - 2026-09-17: W-006에서 release 전 source exporter와 게시 후 installer 사용법, 기존 프로젝트·v1.7.1 수동 migration과 rollback, `en`·`ko` 외 언어 fallback 경계를 root 및 locale별 한국어·영어 문서에 반영했습니다. 실제 release host와 bootstrap URL은 확정하지 않았습니다.
+- 2026-09-17: PR #8을 merge commit `60638ed`로 통합했습니다. 사용자가 공개 repository identity를 `jaff2836/coding-agent-docs-template`로 확정하고 공개 release는 제외한 채 최소 실제 consumer probe까지 W-007을 진행하도록 승인했습니다.
+- 2026-09-17: `60638ed` clean exact head에서 전체 gate, deterministic package 2회 build, localhost packaged-installer E2E와 Claude·Codex·Cursor·OMP의 `en`·`ko` 프로젝트 지침·design skill loading probe를 통과했습니다. OMP 비대화형 print mode는 slash command를 확장하지 않아 실제 대화형 `/skill:design` 경로로 검증했습니다.
 
 ## 5. 인계
 
-- PR #3~#7에서 W-001~W-005가 Origin `main` merge commit `9d4637d681bdaa3ce720c4126ac11739ae3b9372`까지 통합됐습니다. W-006은 해당 main에서 분기한 `codex/multilingual-template-w006` 작업 트리에서 구현·검증했으며 PR #7 사후 리뷰의 rollback 후속 수정도 포함합니다. W-006을 Origin PR로 검토·통합한 뒤 W-007을 시작합니다.
-- 실제 repository URL은 구현 중 결정합니다.
-- 구현·통합·release는 각각 별도 완료 조건이며 tag와 release 게시 권한은 아직 위임되지 않았습니다.
+- PR #3~#8에서 W-001~W-006이 local·Origin `main` merge commit `60638edfbf1e5decb9019b2a3175734b3a5e085c`까지 통합됐습니다. W-007은 해당 clean exact head의 전체 gate와 최소 실제 consumer probe를 통과했으며, 이 검증 기록은 `codex/multilingual-template-w007` 작업 트리에 반영했습니다.
+- 공개 repository identity는 `jaff2836/coding-agent-docs-template`입니다. immutable release host와 installer bootstrap URL은 공개 release 작업에서 확정합니다.
+- 구현·통합·release는 각각 별도 완료 조건입니다. W-007 검증 기록은 `codex/multilingual-template-w007` branch의 PR로 통합하며 tag·GitHub release는 별도 위임입니다.

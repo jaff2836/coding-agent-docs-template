@@ -10,14 +10,14 @@
 - **Owner:** Chae Sangwon
 - **Last reviewed:** 2026-09-17 (UTC)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
-- **Integration target:** Origin `main`; v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
+- **Integration target:** local `main`; 공개 저장소 target `jaff2836/coding-agent-docs-template`; v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
 - **Name:** v2 다국어 템플릿 source·배포 구조
 - **Goal:** `en`·`ko` locale source에서 검증된 단일-locale artifact를 만들고 비파괴 installer로 선택 설치할 수 있는 승인된 설계와 구현
-- **Target:** 미정
-- **Status:** In Progress — W-001~W-005 통합 완료, W-006 작업 트리 구현·검증 완료
+- **Target:** `v2.0.0` 구현·로컬 지원 검증; 공개 GitHub release는 별도 작업
+- **Status:** In Progress — W-001~W-006 통합 완료, W-007 exact-head·소비자 검증 완료 및 문서 반영 중
 
 ## 운영 규칙
 
@@ -40,7 +40,7 @@
   - 선행조건: [Accepted SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md), PR #2의 `v1.7.1` 변경과 PR #3 W-001 통합 완료
   - 관련 결정·SPEC: [D-002](./00-PROJECT.md#8-decisions) — [SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md)
   - 상세 실행의 정본: [PLAN](./changes/2026-09-09-multilingual-template/03-PLAN.md)
-  - 통합 완료 조건: 승인된 구현이 정확한 `main`에 반영되고 `en`·`ko` deterministic artifact 검사와 실제 Claude·Codex·Cursor·OMP 소비자 E2E가 통과. tag·GitHub release는 별도 위임
+  - 통합 완료 조건: 승인된 구현과 W-007 검증 기록이 정확한 `main`에 반영되고 `en`·`ko` deterministic artifact 검사와 실제 Claude·Codex·Cursor·OMP 소비자 E2E가 통과. tag·GitHub release는 별도 위임
 
 ## Next
 
@@ -48,7 +48,7 @@
 
 ## Blocked
 
-없음. release host와 bootstrap URL 확정 및 실제 원격 release E2E는 W-007에서 검증합니다.
+없음. release host·bootstrap URL 확정과 실제 원격 release E2E는 W-007을 막지 않는 별도 공개 작업입니다.
 
 ## Backlog
 
