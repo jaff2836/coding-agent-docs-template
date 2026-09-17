@@ -1,6 +1,6 @@
 # Template Guide
 
-이 문서는 문서 중심 프로젝트 템플릿의 source 관리와 적용 안내입니다. 이 템플릿 저장소의 소개는 루트 [README.md](../README.md)에 있고, 한국어 적용 프로젝트의 소개·설치·실행 양식은 [locales/ko/README.md](../locales/ko/README.md)입니다.
+이 문서는 문서 중심 프로젝트 템플릿의 source 관리와 적용 안내입니다. 저장소의 영어 기본 release landing은 루트 [README.md](../README.md), 한국어 번역은 [README.ko.md](../README.ko.md)입니다. 적용 프로젝트의 소개·설치·실행 양식은 선택한 locale source가 소유하며, 한국어판은 [locales/ko/README.md](../locales/ko/README.md)입니다.
 
 v2 source root는 적용 payload가 아니므로 직접 복사하지 않습니다. locale별 exporter·packager·installer는 구현됐지만 공식 v2 release와 release host는 아직 확정되지 않았습니다. 그전까지 게시된 안정판은 `v1.7.1`이며, v2는 source checkout에서 exporter로 검증할 수 있습니다. 특정 CI 제품의 pipeline 파일은 포함하지 않으며 품질 게이트의 순서와 연결 확인은 [CI.md](./CI.md)를 따릅니다.
 
@@ -20,7 +20,8 @@ v2 source root는 적용 payload가 아니므로 직접 복사하지 않습니�
 
 ```text
 .
-├── README.md                  # source 저장소 소개, artifact 제외
+├── README.md                  # 영어 기본 release landing, artifact 제외
+├── README.ko.md               # 한국어 release landing, artifact 제외
 ├── AGENTS.md                  # source 저장소 유지관리 지침, artifact 제외
 ├── docs/                      # source 저장소 설계·TODO, artifact 제외
 ├── template/common/           # 언어 비의존 payload source

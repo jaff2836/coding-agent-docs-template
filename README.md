@@ -25,7 +25,7 @@ Do not install directly into a project that already uses v1 or maintains its own
 python3 installer.py export --release-url {{RELEASE_BASE_URL}} --version latest --locale en --output /path/to/empty-directory
 ```
 
-The installer never overwrites existing files and does not provide automatic updates, locale switching, or `--force`. For another language, you can localize the English artifact's project instructions and documents, but the result is outside the officially verified locales.
+The installer never overwrites existing files, follows no redirects, and does not provide automatic updates, locale switching, or `--force`. The release URL must serve the assets directly over HTTPS. For another language, you can localize the English artifact's project instructions and documents, but the result is outside the officially verified locales.
 
 ## After installation
 

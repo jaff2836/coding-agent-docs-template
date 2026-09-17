@@ -10,7 +10,7 @@
 - **Last reviewed:** 2026-09-17
 - **Review cadence:** 문서 체계 변경 시
 
-root [README.md](../README.md)는 source 저장소 소개이며 artifact에서 제외합니다. 적용 프로젝트 README 양식은 locale source가 소유하고, 한국어판은 [locales/ko/README.md](../locales/ko/README.md)입니다. 최초 적용·기존 구조 이관은 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md)를 따릅니다. root `docs/`는 저장소 유지관리 문서이고 locale의 `docs/`가 적용 artifact 문서입니다.
+root [README.md](../README.md)는 영어 기본 release landing, [README.ko.md](../README.ko.md)는 한국어 번역이며 둘 다 artifact에서 제외합니다. 적용 프로젝트 README 양식은 locale source가 소유하고, 한국어판은 [locales/ko/README.md](../locales/ko/README.md)입니다. 최초 적용·기존 구조 이관은 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md)를 따릅니다. root `docs/`는 저장소 유지관리 문서이고 locale의 `docs/`가 적용 artifact 문서입니다.
 
 ## 문서 지도
 

@@ -25,7 +25,7 @@ v1을 사용 중이거나 자체 문서를 이미 운영하는 프로젝트에�
 python3 installer.py export --release-url {{RELEASE_BASE_URL}} --version latest --locale ko --output /path/to/empty-directory
 ```
 
-installer는 기존 파일을 덮어쓰지 않으며 자동 update, locale 전환, `--force`를 제공하지 않습니다. 다른 언어가 필요하면 영어 artifact를 기반으로 프로젝트 지침과 문서를 직접 현지화할 수 있지만 공식 검증 대상은 아닙니다.
+installer는 기존 파일을 덮어쓰거나 redirect를 따르지 않으며 자동 update, locale 전환, `--force`를 제공하지 않습니다. release URL은 HTTPS로 asset을 직접 제공해야 합니다. 다른 언어가 필요하면 영어 artifact를 기반으로 프로젝트 지침과 문서를 직접 현지화할 수 있지만 공식 검증 대상은 아닙니다.
 
 ## 설치 후 사용하기
 
