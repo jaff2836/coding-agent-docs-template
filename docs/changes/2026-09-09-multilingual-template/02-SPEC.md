@@ -131,6 +131,7 @@ python3 installer.py list-locales --version latest
 ```
 
 - remote 설치는 mutable branch의 raw 파일을 조합하지 않고 같은 immutable release/version namespace의 manifest와 locale ZIP을 받습니다. 실제 배포 host와 bootstrap URL은 구현 중 별도 결정하며 GitHub Releases를 숨은 선행조건으로 두지 않습니다.
+- installer는 사용자가 명시한 release URL의 응답만 신뢰하며 HTTP redirect를 따르지 않습니다. 배포 host는 최종 asset URL을 직접 제공해야 합니다.
 - `--locale`는 명시 입력이며 manifest의 `complete` locale이어야 합니다.
 - 다운로드 크기와 member 크기를 제한하고 manifest·archive·각 member hash, source commit, version, locale, exact path inventory를 대조합니다.
 - 절대 경로, `..`, 중복 member, symlink·비정규 파일과 case-fold 충돌을 거부합니다.

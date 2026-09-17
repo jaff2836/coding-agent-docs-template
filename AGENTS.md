@@ -28,6 +28,10 @@
 - **Locale source:** `python3 scripts/check-locales.py`
 - **Locale source test:** `python3 -m unittest discover -s tests -p 'test_check_locales.py' -v`
 - **Export:** `python3 scripts/export-template.py --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}`
+- **Package:** `python3 scripts/package-release.py --version {{VERSION}} --source-commit {{EXACT_COMMIT}} --repository {{OWNER/NAME}} --output {{EMPTY_OUTPUT_DIR}}`
+- **Install release:** `python3 scripts/installer.py install --release-url {{RELEASE_BASE_URL}} --version {{latest|VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}`
+- **Installer export:** `python3 scripts/installer.py export --release-url {{RELEASE_BASE_URL}} --version {{latest|VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}`
+- **List locales:** `python3 scripts/installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version {{latest|VERSION}}`
 
 `{{...}}` 형태의 placeholder가 남아 있는 명령은 미설정으로 취급하고 실행을 시도하지 마세요. 명령이 `N/A`이거나 실행 환경이 준비되지 않았다면 성공했다고 추정하지 말고 검증하지 못한 이유를 보고하세요.
 
