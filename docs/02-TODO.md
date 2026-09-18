@@ -17,7 +17,7 @@
 - **Name:** v2 다국어 템플릿 source·배포 구조
 - **Goal:** `en`·`ko` locale source에서 검증된 단일-locale artifact를 만들고 비파괴 installer로 선택 설치할 수 있는 승인된 설계와 구현
 - **Target:** `v2.0.0` GitHub Release와 원격 HTTPS en/ko 검증
-- **Status:** In Progress — T-001 구현·로컬 소비자 검증 완료, T-002 GitHub Releases 공개 진행 중
+- **Status:** In Progress — T-001 구현·로컬 소비자 검증 완료, T-002 GitHub Releases 공개와 T-003 project-analysis skill 이관 진행 중
 
 ## 운영 규칙
 
@@ -42,6 +42,14 @@
   - 상세 실행의 정본: [PLAN](./changes/2026-09-18-github-releases-publication/03-PLAN.md)
   - 통합 완료 조건: Origin `main`과 GitHub `main`·`v2.0.0` tag·manifest `source_commit`이 같은 SHA이고 GitHub release의 en/ko latest·exact-version 원격 install/export가 통과
 
+- [ ] **T-003 프로젝트 전체 분석 skill 이관**
+  - 변경-ID: `2026-09-18-project-analysis-skill`
+  - 범위·우선순위: `PROJECT_ANALYSIS.md`를 locale별 self-contained `project-analysis` skill로 이관하고 README·manifest·checker 계약을 함께 갱신. T-002의 고정 v2.0.0 artifact는 변경하지 않음
+  - 선행조건: D-005 승인
+  - 관련 결정·SPEC: [D-005](./00-PROJECT.md#8-decisions) — [CHANGE](./changes/2026-09-18-project-analysis-skill/01-CHANGE.md)
+  - 상세 실행의 정본: 이 TODO 항목과 CHANGE의 완료 조건
+  - 통합 완료 조건: Origin PR merge 후 `main`에서 root/stable locale/전체 테스트와 en·ko artifact 검사가 통과하고 다음 release 대상 inventory로 기록
+
 ## Next
 
 없음. T-001의 상세 작업은 변경별 PLAN이 소유합니다.
@@ -53,6 +61,12 @@
 ## Backlog
 
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
+- [ ] **T-004 기존 저장소 adoption 계약**
+  - 변경-ID: `2026-09-18-existing-repository-adoption`
+  - 범위·우선순위: 기존 저장소를 주 흐름으로 두는 읽기 전용 staging/report 계약, path policy, README 순서와 실제 consumer E2E
+  - 선행조건: D-006 승인, T-002 공개 검증, T-003 통합
+  - 관련 결정·SPEC: [D-006 Proposed](./00-PROJECT.md#8-decisions) — [Draft CHANGE](./changes/2026-09-18-existing-repository-adoption/01-CHANGE.md)
+  - 재개 조건: `adoption-plan` 공개 schema 여부, policy 소유 위치와 agent용 prompt 포함 여부를 사용자와 확정
 
 ## Cancelled
 

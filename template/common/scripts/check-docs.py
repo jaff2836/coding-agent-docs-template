@@ -71,6 +71,10 @@ SKILL_PAIRS: List[Tuple[str, str]] = [
         ".claude/skills/design/SKILL.md",
     ),
     (
+        ".agents/skills/project-analysis/SKILL.md",
+        ".claude/skills/project-analysis/SKILL.md",
+    ),
+    (
         ".agents/skills/review-round/SKILL.md",
         ".claude/skills/review-round/SKILL.md",
     ),

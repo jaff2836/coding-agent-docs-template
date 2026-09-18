@@ -21,7 +21,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 ### Target Users
 
 - 템플릿을 관리·번역·릴리스하는 maintainer
-- AI 코딩 에이전트 협업 규칙을 새 프로젝트에 적용하는 개발자
+- AI 코딩 에이전트 협업 규칙을 기존 또는 새 프로젝트에 적용하는 개발자
 
 ### Current State
 
@@ -66,6 +66,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 | `template/common/` | 현재 언어 비의존으로 확인된 payload source | `locales/manifest.json` inventory | Chae Sangwon |
 | `locales/en/`, `locales/ko/` | complete locale별 prose·도구 계약 source | common source와 합성 | Chae Sangwon |
 | `locales/manifest.json` | baseline, locale 상태, common/localized output inventory | checker·exporter·packager가 사용 | Chae Sangwon |
+| 번들 skill | `design`, `project-analysis`, `review-round`의 조건부 절차를 tool별 고정 경로에 제공 | locale별 `.agents`·`.claude` byte-identical 사본과 skill fixture | Chae Sangwon |
 | locale exporter·packager | 단일-locale tree와 deterministic ZIP·manifest·checksum 생성 | complete locale source, 고정 installer source | Chae Sangwon |
 | 비파괴 installer | 명시한 GitHub Releases root의 manifest·checksum·locale ZIP을 검증하고 새 대상에 install하거나 빈 디렉터리로 export | GitHub asset HTTPS redirect만 제한 허용, 기존 경로 충돌 시 전체 중단 | Chae Sangwon |
 
@@ -125,6 +126,8 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | D-002 | 2026-09-09 | Accepted | common+locale 합성 artifact, locale별 skill S2 계약과 host-neutral installer를 포함한 v2 전체 구조 | [다국어 템플릿 SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md) | v2 breaking change; release host는 구현 중 확정 | Chae Sangwon, 2026-09-09 대화 |
 | D-003 | 2026-09-17 | Accepted | 공개 저장소 identity를 `jaff2836/coding-agent-docs-template`로 사용하고 W-007은 공개 release 없이 local exact-head·소비자 probe까지 검증 | [PLAN W-007](./changes/2026-09-09-multilingual-template/03-PLAN.md) | GitHub 게시, immutable release host와 bootstrap URL 검증은 별도 작업 | Chae Sangwon, 2026-09-17 대화 |
 | D-004 | 2026-09-18 | Accepted | v2 artifact를 GitHub Releases에서만 관리하고 `latest`에서 선택한 version을 exact `v<SemVer>` tag asset으로 검증 | [GitHub Releases 공개 배포 SPEC](./changes/2026-09-18-github-releases-publication/02-SPEC.md) | D-002의 host-neutral·redirect 전면 거부 transport를 대체; GitHub HTTPS asset redirect만 제한 허용 | Chae Sangwon, 2026-09-18 대화 |
+| D-005 | 2026-09-18 | Accepted | 전체 프로젝트 분석 절차를 locale별 self-contained `project-analysis` skill로 이관하고 세 번들 skill의 목적을 README에 공개 | [project-analysis skill 변경](./changes/2026-09-18-project-analysis-skill/01-CHANGE.md) | 별도 분석 문서와 skill adapter 병행 대신 단일 skill 정본; 다음 release에서 artifact inventory 변경 | Chae Sangwon, 2026-09-18 대화 |
+| D-006 | 2026-09-18 | Proposed | 기존 저장소를 주 adoption 시나리오로 두고 검증된 staging tree와 읽기 전용 adoption plan을 제공 | [기존 저장소 adoption Draft](./changes/2026-09-18-existing-repository-adoption/01-CHANGE.md) | 현재 export/manual merge 유지와 자동 overlay를 비교; CLI·report schema·policy 위치는 미승인 | 미승인 |
 
 중요한 결정이 많아지면 개별 ADR 문서로 분리하고 여기에는 링크와 요약만 남깁니다.
 
@@ -172,5 +175,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | 기본 제품 설계 | 이 문서 | 저장소 현재 상태와 승인된 결정 | root 유지관리 작업 |
 | 다국어 배포 변경 | [2026-09-09-multilingual-template SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md) | D-001을 구현하고 D-002를 제안 | 연결된 PLAN의 승인 범위 |
 | GitHub Releases 공개 배포 | [2026-09-18-github-releases-publication SPEC](./changes/2026-09-18-github-releases-publication/02-SPEC.md) | D-004가 D-002의 host-neutral transport를 대체 | v2 공개 배포와 installer transport |
+| 프로젝트 전체 분석 skill | [2026-09-18-project-analysis-skill](./changes/2026-09-18-project-analysis-skill/01-CHANGE.md) | D-005가 D-002의 locale skill bundle을 확장 | 전체 분석 명시 요청과 다음 artifact release |
+| 기존 저장소 adoption | [2026-09-18-existing-repository-adoption Draft](./changes/2026-09-18-existing-repository-adoption/01-CHANGE.md) | D-002의 수동 export/merge 계약 확장 제안 | D-006 승인 후에만 구현 |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.

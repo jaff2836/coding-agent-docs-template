@@ -1,6 +1,25 @@
-# Project Analysis Procedure
+---
+name: project-analysis
+description: Investigate repository code, configuration, tests, and operational evidence and reach an adoption decision when the user explicitly requests whole-project analysis, technical due diligence, an architecture assessment, or an adoption evaluation. Do not use for ordinary implementation, bug fixes, question answering, or PR reviews.
+argument-hint: "[analysis scope or decision question]"
+---
 
-Apply this document only when the user explicitly requests a whole-project analysis, technical due diligence, architecture assessment, or acquisition-feasibility assessment. Do not apply this entire procedure to ordinary feature implementation, bug fixes, question answering, or PR reviews.
+# Project Analysis
+
+<!-- template-skill-contract:project-analysis:v1 -->
+
+The following `[template-contract:v1]` assertions are normative. Localized prose must not contradict them.
+
+<!-- template-skill-fixture:project-analysis-explicit-only -->
+> [template-contract:v1] MUST_REQUIRE_EXPLICIT_WHOLE_PROJECT_REQUEST
+<!-- template-skill-fixture:project-analysis-read-only -->
+> [template-contract:v1] MUST_DEFAULT_TO_READ_ONLY_ANALYSIS
+<!-- template-skill-fixture:project-analysis-evidence-status -->
+> [template-contract:v1] MUST_DISTINGUISH_VERIFIED_INFERRED_UNVERIFIED
+
+The stable tokens are `scope=explicit-whole-project`, `mode=read-only`, and `evidence_status=verified|inference|unverified`.
+
+Apply this skill only when the user explicitly requests a whole-project analysis, technical due diligence, architecture assessment, or adoption-feasibility assessment. Do not apply this entire procedure to ordinary feature implementation, bug fixes, question answering, or PR reviews.
 
 ## Metadata
 
@@ -43,7 +62,7 @@ Classify analysis results as follows.
 
 - The analysis scope, exclusions, and output format specified by the user take precedence over this document.
 - If the user requests only a particular module, do not analyze the entire repository unnecessarily.
-- Items in [02-TODO.md](./02-TODO.md) do not authorize automatic expansion of the user's request.
+- Items in [02-TODO.md](../../../docs/02-TODO.md) do not authorize automatic expansion of the user's request.
 
 ### 2.4 Safe Analysis
 
@@ -60,9 +79,9 @@ When information conflicts, use the following priority order.
 1. Current code and actual configuration
 2. Automated tests and CI configuration
 3. Schemas, API specifications, migrations, and deployment configuration
-4. [00-PROJECT.md](./00-PROJECT.md), linked product and extension designs, approved INTENT and SPEC documents, and ADRs
+4. [00-PROJECT.md](../../../docs/00-PROJECT.md), linked product and extension designs, approved INTENT and SPEC documents, and ADRs
 5. README files, operations documentation, examples, and comments
-6. [02-TODO.md](./02-TODO.md), change-specific PLANs, and other planning checklists
+6. [02-TODO.md](../../../docs/02-TODO.md), change-specific PLANs, and other planning checklists
 
 When a lower-priority document differs from stronger evidence, record it as a documentation-code mismatch. Determine separately whether the code violates the document's intent or the document is outdated.
 
@@ -87,8 +106,8 @@ Check the following first.
 - The repository root and major subprojects
 - The current branch or target state for the analysis
 - Existing changes in the worktree
-- [AGENTS.md](../AGENTS.md) and instructions in subdirectories
-- [00-PROJECT.md](./00-PROJECT.md), [02-TODO.md](./02-TODO.md), linked product and extension designs, actual change-specific INTENT, SPEC, and PLAN documents, and ADRs
+- [AGENTS.md](../../../AGENTS.md) and instructions in subdirectories
+- [00-PROJECT.md](../../../docs/00-PROJECT.md), [02-TODO.md](../../../docs/02-TODO.md), linked product and extension designs, actual change-specific INTENT, SPEC, and PLAN documents, and ADRs
 - README files, the license, contribution guides, and the security policy
 
 Keep existing user changes separate from the analysis target; do not modify or revert them. Do not count copy templates in `changes/_template/` as actual designs or active work.
@@ -241,7 +260,7 @@ State when actual operating procedures are undocumented or differ from the autom
 
 ### 5.11 Check Documentation-Code Alignment
 
-When [00-PROJECT.md](./00-PROJECT.md), linked product and extension designs, approved change specifications, [02-TODO.md](./02-TODO.md), or a change-specific PLAN that owns detailed execution state exists, compare the following.
+When [00-PROJECT.md](../../../docs/00-PROJECT.md), linked product and extension designs, approved change specifications, [02-TODO.md](../../../docs/02-TODO.md), or a change-specific PLAN that owns detailed execution state exists, compare the following.
 
 - Goals and current implementation
 - The accepted architecture and actual dependency structure
@@ -354,8 +373,8 @@ Summarize severity, status, evidence, impact, and recommended actions in a table
 
 ### 10. Documentation-Code Alignment
 
-- Comparison with [00-PROJECT.md](./00-PROJECT.md)
-- Comparison with [02-TODO.md](./02-TODO.md)
+- Comparison with [00-PROJECT.md](../../../docs/00-PROJECT.md)
+- Comparison with [02-TODO.md](../../../docs/02-TODO.md)
 - Comparison with README and operations documentation
 
 ### 11. GO/NO-GO Decision
@@ -369,7 +388,7 @@ Summarize severity, status, evidence, impact, and recommended actions in a table
 - Immediate work
 - Short-term work
 - Long-term improvements
-- If necessary, proposed drafts for [00-PROJECT.md](./00-PROJECT.md) and [02-TODO.md](./02-TODO.md)
+- If necessary, proposed drafts for [00-PROJECT.md](../../../docs/00-PROJECT.md) and [02-TODO.md](../../../docs/02-TODO.md)
 
 ## 8. Completion Conditions
 

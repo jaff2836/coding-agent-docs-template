@@ -26,7 +26,7 @@
 | 변경별 `03-PLAN.md` (선택) | 구현 순서·상세 작업·검증 상태 | 해당 변경의 실행·인계 |
 | [REVIEW.md](./REVIEW.md) | 리뷰 판단 기준과 신뢰 경계 | PR·diff·commit 리뷰 |
 | [REVIEW_ROUND.md](./REVIEW_ROUND.md) | 요청된 리뷰 라운드의 수정·통합 절차 | 사용자가 라운드를 시작할 때. 이전 인계 반영은 §9만 |
-| [PROJECT_ANALYSIS.md](./PROJECT_ANALYSIS.md) | 전체 프로젝트 분석 기준 | 명시적인 전체 분석 요청 |
+| [`project-analysis`](../.agents/skills/project-analysis/SKILL.md) | 근거 기반 전체 프로젝트 분석과 도입 판단 | 명시적인 전체 분석 요청 |
 | [CI.md](./CI.md) | 러너 불문의 품질 게이트 순서·연결 확인 | CI를 붙이거나 로컬 게이트와 맞출 때 |
 
 `changes/_template/`의 [CHANGE](./changes/_template/01-CHANGE.md)·[INTENT](./changes/_template/01-INTENT.md)·[SPEC](./changes/_template/02-SPEC.md)·[PLAN](./changes/_template/03-PLAN.md)은 하나의 복사용 양식 묶음입니다. 템플릿을 프로젝트에 적용할 때는 네 파일을 모두 유지합니다. 실제 변경은 별도 변경-ID 폴더에서 관리하며, 그때는 변경 규모에 맞는 형식만 복사합니다. 양식 자체를 승인된 설계나 미완료 작업으로 집계하지 않습니다.
@@ -141,7 +141,7 @@
 - [ ] REVIEW_ROUND의 사용자 지정 임계값, 동일 head 통과, 세션 인계와 다음 작업의 문서 반영 규칙을 유지했다.
 - [ ] 외부 리뷰어 사용 시 등록 표에 게시 위치·head 식별·도착 주기·무finding 동작·재요청 방법을 실제 확인해 기록했다. 로컬 self 리뷰에는 등록이 필요 없다.
 - [ ] 사용하는 도구에서 지침과 스킬이 로드되는지 확인했다. Markdown 링크를 자동 로딩으로 간주하지 않는다.
-- [ ] 두 경로의 스킬 본문이 동일하고, Codex의 [명시 호출 설정](../.agents/skills/review-round/agents/openai.yaml)을 함께 복사했다. `policy.allow_implicit_invocation`은 boolean `false`다.
+- [ ] `design`, `project-analysis`, `review-round`의 두 경로 스킬 본문이 각각 동일하고, Codex의 [review-round 명시 호출 설정](../.agents/skills/review-round/agents/openai.yaml)을 함께 복사했다. `policy.allow_implicit_invocation`은 boolean `false`다.
 - [ ] OMP 사용 시 [WATCHDOG](../.omp/WATCHDOG.md)의 import를 사용 버전에서 확인했다.
 - [ ] 상대 파일 링크·필요한 앵커·import 경로를 확인했다. `scripts/check-docs.py`가 실패 없이 통과했다. 깨진 링크·다른 스킬 사본·누락되거나 `false`가 아닌 Codex 명시 호출 정책·잘못된 import·불변조건 목록 불일치·절 번호 참조 불일치·버전 불일치는 실패로 끝난다.
 - [ ] 전역 `D-`/`T-`와 변경 내부 ID를 구분했다. 완료·취소 변경 폴더를 삭제하지 않으며 현재 기준은 PROJECT에 둔다.

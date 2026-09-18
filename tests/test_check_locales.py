@@ -555,6 +555,21 @@ class LocaleFixtureTests(unittest.TestCase):
                 "MUST_REAPPROVE_ACCEPTED_SCOPE",
             ),
             (
+                "project-analysis",
+                "MUST_REQUIRE_EXPLICIT_WHOLE_PROJECT_REQUEST",
+                "MAY_RUN_WITHOUT_WHOLE_PROJECT_REQUEST",
+            ),
+            (
+                "project-analysis",
+                "MUST_DEFAULT_TO_READ_ONLY_ANALYSIS",
+                "MAY_MUTATE_DURING_ANALYSIS",
+            ),
+            (
+                "project-analysis",
+                "MUST_DISTINGUISH_VERIFIED_INFERRED_UNVERIFIED",
+                "MAY_MERGE_ALL_EVIDENCE_STATES",
+            ),
+            (
                 "review-round",
                 "MUST_REQUIRE_EXPLICIT_USER_INVOCATION",
                 "MAY_USE_IMPLICIT_INVOCATION",

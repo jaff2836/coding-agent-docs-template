@@ -53,12 +53,19 @@ python -m unittest discover -s tests -p 'test_check_docs.py' -v
 - 변경별 양식 묶음: 합본형 [01-CHANGE.md](./docs/changes/_template/01-CHANGE.md), 분리형 [01-INTENT.md](./docs/changes/_template/01-INTENT.md)·[02-SPEC.md](./docs/changes/_template/02-SPEC.md), 선택형 [03-PLAN.md](./docs/changes/_template/03-PLAN.md). 템플릿 적용 시 `_template/` 묶음은 모두 복사하고, 실제 변경에서는 필요한 형식만 별도 변경-ID 폴더에 복사해 사용합니다.
 - [REVIEW.md](./docs/REVIEW.md): PR 리뷰 정책
 - [REVIEW_ROUND.md](./docs/REVIEW_ROUND.md): 리뷰 라운드 절차와 권한 위임 범위
-- [PROJECT_ANALYSIS.md](./docs/PROJECT_ANALYSIS.md): 명시적으로 요청된 전체 프로젝트 분석 절차
 - [CI.md](./docs/CI.md): 러너 불문의 품질 게이트 워크플로와 연결 체크리스트
 
 ## Security
 
 취약점 신고 방식과 공개하면 안 되는 정보를 작성하세요.
+
+## 번들 스킬
+
+- **`design`:** 구조나 공개 계약을 바꾸기 전에 필요한 최소 Intent·Spec·실행 계획과 사용자 합의를 정리합니다.
+- **`project-analysis`:** 명시적으로 요청된 프로젝트 전체를 기본 읽기 전용으로 근거 중심 분석하고 GO·조건부 GO·NO-GO·근거 부족 중 하나로 판단합니다.
+- **`review-round`:** 명시적으로 시작한 PR 리뷰·수정 라운드를 exact head 기준으로 진행하고, 설정한 gate 통과와 사용자 확인 후에만 merge합니다.
+
+Codex·Cursor·OMP는 `.agents/skills/`, Claude Code는 byte-identical한 `.claude/skills/` 복제본을 읽습니다.
 
 ## License
 

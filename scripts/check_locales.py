@@ -105,6 +105,33 @@ SKILL_FIXTURE_REGISTRY: Mapping[str, Mapping[str, Any]] = {
         "skill_tokens": ("INTENT", "SPEC", "PLAN"),
         "skill_links": ("../../../docs/02-TODO.md",),
     },
+    "project-analysis-explicit-only": {
+        "skill_id": "project-analysis",
+        "assertion": (
+            "> [template-contract:v1] "
+            "MUST_REQUIRE_EXPLICIT_WHOLE_PROJECT_REQUEST"
+        ),
+        "skill_tokens": ("scope=explicit-whole-project",),
+    },
+    "project-analysis-read-only": {
+        "skill_id": "project-analysis",
+        "assertion": (
+            "> [template-contract:v1] MUST_DEFAULT_TO_READ_ONLY_ANALYSIS"
+        ),
+        "skill_tokens": ("mode=read-only",),
+    },
+    "project-analysis-evidence-status": {
+        "skill_id": "project-analysis",
+        "assertion": (
+            "> [template-contract:v1] "
+            "MUST_DISTINGUISH_VERIFIED_INFERRED_UNVERIFIED"
+        ),
+        "skill_tokens": ("evidence_status=verified|inference|unverified",),
+        "skill_links": (
+            "../../../docs/00-PROJECT.md",
+            "../../../docs/02-TODO.md",
+        ),
+    },
     "review-round-explicit-only": {
         "skill_id": "review-round",
         "assertion": (
