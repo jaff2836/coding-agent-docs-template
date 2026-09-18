@@ -8,11 +8,18 @@ Claude, Codex, Cursor와 [Oh My Pi](https://github.com/can1357/oh-my-pi)를 지�
 
 ## 설치하기
 
-release에서 `installer.py`를 내려받은 뒤 지원 locale을 확인하고 새 프로젝트에 설치합니다. `{{RELEASE_BASE_URL}}`에는 release 안내에 표시된 asset base URL을 넣으세요.
+최신 GitHub release에서 `installer.py`를 내려받은 뒤 지원 locale을 확인하고 새 프로젝트에 설치합니다.
 
-```text
-python3 installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version latest
-python3 installer.py install --release-url {{RELEASE_BASE_URL}} --version latest --locale ko --repo-root /path/to/new-project
+```sh
+(
+  set -e
+  curl --fail --location --proto '=https' --proto-redir '=https' \
+    --output installer.py.part \
+    https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
+  mv installer.py.part installer.py
+  python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
+  python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale ko --repo-root /path/to/new-project
+)
 ```
 
 `--locale`에는 `en` 또는 `ko`를 지정합니다. 설치 대상은 존재하지 않거나 비어 있어야 하며, 기존 파일이 하나라도 있으면 아무것도 쓰지 않습니다.
@@ -21,11 +28,11 @@ python3 installer.py install --release-url {{RELEASE_BASE_URL}} --version latest
 
 v1을 사용 중이거나 자체 문서를 이미 운영하는 프로젝트에는 바로 설치하지 마세요. v2를 빈 디렉터리로 export한 뒤 기존 파일과 비교하여 필요한 변경만 수동으로 반영합니다.
 
-```text
-python3 installer.py export --release-url {{RELEASE_BASE_URL}} --version latest --locale ko --output /path/to/empty-directory
+```sh
+python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale ko --output /path/to/empty-directory
 ```
 
-installer는 기존 파일을 덮어쓰거나 redirect를 따르지 않으며 자동 update, locale 전환, `--force`를 제공하지 않습니다. release URL은 HTTPS로 asset을 직접 제공해야 합니다. 다른 언어가 필요하면 영어 artifact를 기반으로 프로젝트 지침과 문서를 직접 현지화할 수 있지만 공식 검증 대상은 아닙니다.
+installer는 기존 파일을 덮어쓰지 않으며 자동 update, locale 전환, `--force`를 제공하지 않습니다. 검증된 GitHub release asset URL에서 시작한 HTTPS redirect chain만 따른 뒤 exact tag release의 manifest, checksum과 실행 중인 installer 자체를 검증합니다. 다른 언어가 필요하면 영어 artifact를 기반으로 프로젝트 지침과 문서를 직접 현지화할 수 있지만 공식 검증 대상은 아닙니다.
 
 ## 설치 후 사용하기
 

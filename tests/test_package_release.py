@@ -184,6 +184,7 @@ class PackageReleaseTests(unittest.TestCase):
     def test_rejects_invalid_release_identity_and_installer(self) -> None:
         cases = (
             ({"version": "v2.0.0"}, "SemVer"),
+            ({"version": "2.0.1"}, "does not match release version"),
             ({"source_commit": "ABC"}, "40 lowercase"),
             ({"repository": "https://example.test/repo"}, "OWNER/NAME"),
         )

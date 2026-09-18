@@ -110,5 +110,5 @@ W-001은 뒤 작업의 source boundary입니다. W-002~W-005는 같은 manifest�
 ## 5. 인계
 
 - PR #3~#8에서 W-001~W-006이 local·Origin `main` merge commit `60638edfbf1e5decb9019b2a3175734b3a5e085c`까지 통합됐습니다. W-007은 해당 clean exact head의 전체 gate와 최소 실제 consumer probe를 통과했으며, 이 검증 기록은 `codex/multilingual-template-w007` 작업 트리에 반영했습니다.
-- 공개 repository identity는 `jaff2836/coding-agent-docs-template`입니다. immutable release host와 installer bootstrap URL은 공개 release 작업에서 확정합니다.
+- 공개 repository identity는 `jaff2836/coding-agent-docs-template`입니다. release host와 installer bootstrap URL은 후속 [D-004 PLAN](../2026-09-18-github-releases-publication/03-PLAN.md)이 소유합니다.
 - 구현·통합·release는 각각 별도 완료 조건입니다. W-007 검증 기록은 `codex/multilingual-template-w007` branch의 PR로 통합하며 tag·GitHub release는 별도 위임입니다.

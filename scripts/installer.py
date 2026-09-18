@@ -55,6 +55,18 @@ LOCALE_KEY_RE = re.compile(
 )
 SHA256_RE = re.compile(r"[0-9a-f]{64}")
 LOCAL_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
+GITHUB_HOST = "github.com"
+GITHUB_RELEASE_PATH_RE = re.compile(
+    r"/(?P<repository>"
+    r"[A-Za-z0-9](?:[A-Za-z0-9_.-]*[A-Za-z0-9])?/"
+    r"[A-Za-z0-9](?:[A-Za-z0-9_.-]*[A-Za-z0-9])?"
+    r")/releases"
+)
+GITHUB_RELEASE_ASSET_PATH_RE = re.compile(
+    r"/[A-Za-z0-9](?:[A-Za-z0-9_.-]*[A-Za-z0-9])?/"
+    r"[A-Za-z0-9](?:[A-Za-z0-9_.-]*[A-Za-z0-9])?/releases/"
+    r"(?:latest/download|download/v" + SEMVER_RE.pattern + r")/[^/]+"
+)
 
 
 class InstallerError(ValueError):
@@ -62,10 +74,42 @@ class InstallerError(ValueError):
 
 
 class _RejectRedirects(urllib.request.HTTPRedirectHandler):
-    """Keep every asset fetch bound to the explicitly selected release URL."""
+    """Reject redirects for localhost fixtures and unsupported transports."""
 
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None
+
+
+class _GitHubReleaseRedirects(urllib.request.HTTPRedirectHandler):
+    """Follow only an HTTPS chain initiated by one trusted GitHub asset URL."""
+
+    max_repeats = 2
+    max_redirections = 5
+
+    def __init__(self, initial_url: str) -> None:
+        super().__init__()
+        self._trusted_sources = {initial_url}
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if req.full_url not in self._trusted_sources:
+            return None
+        target = urllib.parse.urljoin(req.full_url, newurl)
+        parsed = urllib.parse.urlsplit(target)
+        if (
+            parsed.scheme != "https"
+            or not parsed.netloc
+            or "@" in parsed.netloc
+            or parsed.username
+            or parsed.password
+            or parsed.fragment
+        ):
+            return None
+        redirected = super().redirect_request(
+            req, fp, code, msg, headers, target
+        )
+        if redirected is not None:
+            self._trusted_sources.add(redirected.full_url)
+        return redirected
 
 
 def _sha256(data: bytes) -> str:
@@ -93,10 +137,49 @@ def _validated_release_url(value: str) -> str:
     segments = [segment for segment in parsed.path.split("/") if segment]
     if any(segment in (".", "..") for segment in segments):
         raise InstallerError("release URL path must not contain . or .. segments")
-    return value.rstrip("/")
+    normalized = value.rstrip("/")
+    if parsed.hostname in LOCAL_HOSTS:
+        return normalized
+    if (
+        parsed.scheme != "https"
+        or parsed.netloc.lower() != GITHUB_HOST
+        or GITHUB_RELEASE_PATH_RE.fullmatch(parsed.path.rstrip("/")) is None
+    ):
+        raise InstallerError(
+            "release URL must be https://github.com/OWNER/NAME/releases"
+        )
+    return normalized
+
+
+def _github_repository(release_url: str) -> Optional[str]:
+    parsed = urllib.parse.urlsplit(release_url)
+    if parsed.hostname != GITHUB_HOST:
+        return None
+    match = GITHUB_RELEASE_PATH_RE.fullmatch(parsed.path.rstrip("/"))
+    if match is None:
+        return None
+    return match.group("repository")
+
+
+def _is_github_release_asset_url(url: str) -> bool:
+    parsed = urllib.parse.urlsplit(url)
+    if (
+        parsed.scheme != "https"
+        or parsed.netloc.lower() != GITHUB_HOST
+        or parsed.query
+        or parsed.fragment
+    ):
+        return False
+    return GITHUB_RELEASE_ASSET_PATH_RE.fullmatch(parsed.path) is not None
 
 
 def _asset_url(release_url: str, version: str, name: str) -> str:
+    if not name or "/" in name or "\\" in name:
+        raise InstallerError("release asset name must be a basename")
+    if _github_repository(release_url) is not None:
+        if version == LATEST_VERSION:
+            return "%s/latest/download/%s" % (release_url, name)
+        return "%s/download/v%s/%s" % (release_url, version, name)
     return "%s/%s/%s" % (release_url, version, name)
 
 
@@ -105,7 +188,12 @@ def _fetch(url: str, max_bytes: int) -> bytes:
         url, headers={"User-Agent": USER_AGENT}, method="GET"
     )
     try:
-        opener = urllib.request.build_opener(_RejectRedirects())
+        redirect_handler = (
+            _GitHubReleaseRedirects(url)
+            if _is_github_release_asset_url(url)
+            else _RejectRedirects()
+        )
+        opener = urllib.request.build_opener(redirect_handler)
         with opener.open(request, timeout=FETCH_TIMEOUT) as response:
             if response.status != 200:
                 raise InstallerError(
@@ -136,6 +224,7 @@ def _fetch(url: str, max_bytes: int) -> bytes:
                     )
                 chunks.append(chunk)
     except urllib.error.HTTPError as exc:
+        exc.close()
         raise InstallerError("release asset request failed: HTTP %s for %s" % (exc.code, url)) from exc
     except (urllib.error.URLError, OSError, TimeoutError) as exc:
         raise InstallerError("cannot fetch release asset %s: %s" % (url, exc)) from exc
@@ -300,10 +389,10 @@ def _verified_manifest(
                 "latest release pointer",
             )
         )
+        _require_matching_repository(release_url, pointer)
         version = pointer["version"]
         if SEMVER_RE.fullmatch(version) is None:
             raise InstallerError("latest release pointer declares an invalid version")
-    url_base = _asset_url(release_url, version, "")
     sums = _validated_sums(_fetch(_asset_url(release_url, version, SUMS_ASSET), SUMS_MAX_BYTES))
     manifest_data = _fetch(_asset_url(release_url, version, MANIFEST_ASSET), MANIFEST_MAX_BYTES)
     expected = sums.get(MANIFEST_ASSET)
@@ -314,6 +403,7 @@ def _verified_manifest(
     manifest = _validated_manifest(
         _parsed_json(manifest_data, "release-manifest.json")
     )
+    _require_matching_repository(release_url, manifest)
     if manifest["version"] != version:
         raise InstallerError(
             "release manifest version %s does not match the requested version %s"
@@ -326,6 +416,20 @@ def _verified_manifest(
     if sums.get(INSTALLER_ASSET) != manifest["installer"]["sha256"]:
         raise InstallerError("SHA256SUMS and the release manifest disagree about installer.py")
     return manifest
+
+
+def _require_matching_repository(
+    release_url: str, manifest: Mapping[str, Any]
+) -> None:
+    expected = _github_repository(release_url)
+    if (
+        expected is not None
+        and manifest["repository"].casefold() != expected.casefold()
+    ):
+        raise InstallerError(
+            "release manifest repository %s does not match release URL repository %s"
+            % (manifest["repository"], expected)
+        )
 
 
 def _read_verified_archive(data: bytes, tag: str, record: Mapping[str, Any]) -> dict[str, bytes]:
@@ -639,7 +743,7 @@ def _add_remote_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--release-url",
         required=True,
-        help="base URL of the immutable per-version release namespace (<base>/<version>/<asset>)",
+        help="GitHub Releases root (https://github.com/OWNER/NAME/releases)",
     )
 
 

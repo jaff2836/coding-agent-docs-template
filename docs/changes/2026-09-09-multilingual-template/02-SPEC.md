@@ -206,7 +206,7 @@ fb70176의 한국어 payload
 - `v2.0.0` tag·GitHub release 게시와 원격 checksum은 별도 명시적 위임이 있을 때만 수행합니다.
 - 실제 Claude, Codex, Cursor, OMP가 `en`, `ko` artifact의 고정 진입점과 스킬을 로드하는 소비자 저장소 E2E를 통과해야 두 locale을 지원 완료로 표시합니다.
 
-공개 repository identity는 `jaff2836/coding-agent-docs-template`로 확정했습니다. 남은 질문은 [Intent §5](./01-INTENT.md)의 immutable release host와 installer bootstrap URL입니다. skill 현지화는 S2로 확정했으며 번역 최종 승인자와 첫 안정판의 `en`·`ko` complete 포함도 합의되었습니다.
+공개 repository identity는 `jaff2836/coding-agent-docs-template`로 확정했습니다. release host와 bootstrap URL은 후속 [D-004 SPEC](../2026-09-18-github-releases-publication/02-SPEC.md)에서 GitHub Releases 전용 계약으로 확정했으며 이 문서의 host-neutral·redirect 거부 부분을 대체합니다. skill 현지화는 S2로 확정했으며 번역 최종 승인자와 첫 안정판의 `en`·`ko` complete 포함도 합의되었습니다.
 
 ## 7. 명세 변경 기록
 
@@ -215,3 +215,4 @@ fb70176의 한국어 payload
 - 2026-09-09: Origin PR #3 리뷰에 따라 WATCHDOG의 locale 소유권, 적용 README 정본과 installer의 host-neutral asset 계약을 명확히 했습니다.
 - 2026-09-09: Chae Sangwon이 전체 `v2.0.0` 계약과 구현 착수를 승인하고 skill 현지화 S2를 선택했습니다. 상태를 Accepted로 전환하고 D-002에 연결했습니다.
 - 2026-09-17: 공개 repository identity를 `jaff2836/coding-agent-docs-template`로 확정하고, 공개 release·원격 HTTPS 검증은 W-007 이후 별도 작업으로 분리했습니다.
+- 2026-09-18: 후속 D-004가 GitHub Releases 단일 host, exact tag URL과 제한된 HTTPS redirect 계약을 확정해 §3.4의 기존 transport 전제를 대체했습니다.

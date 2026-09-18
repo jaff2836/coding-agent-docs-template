@@ -98,21 +98,21 @@
       },
       {
         "id": "installer-list-locales",
-        "value": "python3 installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version {{VERSION}}",
+        "value": "python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}",
         "paths": [
           "docs/TEMPLATE_GUIDE.md"
         ]
       },
       {
         "id": "installer-install",
-        "value": "python3 installer.py install --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}",
+        "value": "python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}",
         "paths": [
           "docs/TEMPLATE_GUIDE.md"
         ]
       },
       {
         "id": "installer-export",
-        "value": "python3 installer.py export --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}",
+        "value": "python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}",
         "paths": [
           "docs/TEMPLATE_GUIDE.md"
         ]

@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.7.1
+- **Template version:** 2.0.0
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -67,15 +67,27 @@
 
 ## 2. 새 프로젝트에 적용하기
 
-공식 release에서는 별도 asset으로 받은 `installer.py`와 asset을 직접 제공하는 HTTPS release URL을 사용합니다. installer는 redirect를 따르지 않습니다. 아래 `{{...}}` 값은 실제 release 정보로 바꾸기 전에는 실행하지 마세요.
+공식 release에서는 GitHub Releases의 `installer.py`를 사용합니다. latest installer는 latest version과, exact tag의 installer는 같은 exact version과 함께 사용해야 합니다. installer는 GitHub release asset URL에서 시작한 HTTPS redirect chain만 따르고 exact tag의 checksum과 manifest를 검증합니다.
 
-```text
-python3 installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version {{VERSION}}
-python3 installer.py install --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
-python3 installer.py export --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+```sh
+(
+  set -e
+  curl --fail --location --proto '=https' --proto-redir '=https' \
+    --output installer.py.part \
+    https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
+  mv installer.py.part installer.py
+  python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}
+  python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
+)
 ```
 
 `{{VERSION}}`에는 `latest` 또는 full SemVer를 넣습니다.
+
+기존 프로젝트와 비교할 artifact가 필요하면 설치 대신 빈 디렉터리로 export합니다.
+
+```sh
+python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+```
 
 1. 검증된 locale artifact를 빈 프로젝트 폴더에 설치하고 §5에 따라 version·source commit을 두 안내 문서에 기록합니다. 숨김 항목인 `.agents/`, `.claude/`, `.cursor/`, `.omp/`와 `.gitignore`, `docs/changes/_template/`의 네 양식도 artifact inventory에 포함되었는지 확인하세요. source 저장소 root를 직접 복사하지 마세요.
 2. 루트 [README.md](../README.md)는 이미 선택한 locale의 적용 프로젝트 양식입니다. 프로젝트 이름, 설명, 요구사항, 설치·실행·검증 방법, 보안 안내 및 라이선스를 작성합니다.
@@ -281,7 +293,7 @@ git status --short --untracked-files=all
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
 
-### v2.0.0 (미릴리스) — locale별 artifact와 비파괴 설치
+### v2.0.0 — locale별 artifact와 비파괴 설치
 
 - source 저장소 root 대신 `en`·`ko` 중 하나를 선택한 검증된 artifact를 적용합니다. root 경로와 도구 진입점은 유지됩니다.
 - release installer는 version·locale·manifest·checksum·member inventory를 검증하고 기존 경로가 있으면 쓰지 않습니다. 기존 프로젝트와 locale 전환은 빈 디렉터리 export 후 수동 병합합니다.

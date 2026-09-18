@@ -8,7 +8,7 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-17 (UTC)
+- **Last reviewed:** 2026-09-18 (UTC)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
 - **Integration target:** local `main`; 공개 저장소 target `jaff2836/coding-agent-docs-template`; v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
@@ -16,8 +16,8 @@
 
 - **Name:** v2 다국어 템플릿 source·배포 구조
 - **Goal:** `en`·`ko` locale source에서 검증된 단일-locale artifact를 만들고 비파괴 installer로 선택 설치할 수 있는 승인된 설계와 구현
-- **Target:** `v2.0.0` 구현·로컬 지원 검증; 공개 GitHub release는 별도 작업
-- **Status:** In Progress — W-001~W-006 통합 완료, W-007 exact-head·소비자 검증 완료 및 문서 반영 중
+- **Target:** `v2.0.0` GitHub Release와 원격 HTTPS en/ko 검증
+- **Status:** In Progress — T-001 구현·로컬 소비자 검증 완료, T-002 GitHub Releases 공개 진행 중
 
 ## 운영 규칙
 
@@ -34,13 +34,13 @@
 
 ## In Progress
 
-- [ ] **T-001 다국어 템플릿 source와 선택형 배포 도입**
-  - 변경-ID: `2026-09-09-multilingual-template`
-  - 범위·우선순위: BCP 47 `en`·`ko` source, common payload, deterministic artifact·manifest, 비파괴 installer와 locale 회귀 검사. v2 공개 전 우선
-  - 선행조건: [Accepted SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md), PR #2의 `v1.7.1` 변경과 PR #3 W-001 통합 완료
-  - 관련 결정·SPEC: [D-002](./00-PROJECT.md#8-decisions) — [SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md)
-  - 상세 실행의 정본: [PLAN](./changes/2026-09-09-multilingual-template/03-PLAN.md)
-  - 통합 완료 조건: 승인된 구현과 W-007 검증 기록이 정확한 `main`에 반영되고 `en`·`ko` deterministic artifact 검사와 실제 Claude·Codex·Cursor·OMP 소비자 E2E가 통과. tag·GitHub release는 별도 위임
+- [ ] **T-002 GitHub Releases 기반 v2.0.0 공개**
+  - 변경-ID: `2026-09-18-github-releases-publication`
+  - 범위·우선순위: GitHub Releases 전용 installer transport, 실제 bootstrap URL, v2 metadata와 exact-head release·원격 HTTPS E2E. T-001 통합 후 공개 우선
+  - 선행조건: D-004 승인, T-001의 W-007 검증 완료
+  - 관련 결정·SPEC: [D-004](./00-PROJECT.md#8-decisions) — [SPEC](./changes/2026-09-18-github-releases-publication/02-SPEC.md)
+  - 상세 실행의 정본: [PLAN](./changes/2026-09-18-github-releases-publication/03-PLAN.md)
+  - 통합 완료 조건: Origin `main`과 GitHub `main`·`v2.0.0` tag·manifest `source_commit`이 같은 SHA이고 GitHub release의 en/ko latest·exact-version 원격 install/export가 통과
 
 ## Next
 
@@ -48,7 +48,7 @@
 
 ## Blocked
 
-없음. release host·bootstrap URL 확정과 실제 원격 release E2E는 W-007을 막지 않는 별도 공개 작업입니다.
+없음.
 
 ## Backlog
 
@@ -61,5 +61,10 @@
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-001 다국어 템플릿 source와 선택형 배포 도입**
+  - 변경-ID: `2026-09-09-multilingual-template`
+  - 통합 결과: W-001~W-006이 PR #3~#8로 `main`에 통합됐고 W-007 exact-head consumer probe와 bilingual release README가 `9cea178`에 반영됐습니다.
+  - 검증 근거: [PLAN](./changes/2026-09-09-multilingual-template/03-PLAN.md)의 W-001~W-007과 검증 기록. tag·GitHub release는 T-002가 소유합니다.
 
 완료 이력이 길어지면 기존 CHANGELOG 또는 마일스톤별 보관 문서로 연결하고 본문을 복제하지 않습니다.
