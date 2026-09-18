@@ -70,13 +70,16 @@ The template does not include an initialization script, review prompts or automa
 For an official release, use `installer.py` from GitHub Releases. Use the latest installer with the latest version, or a versioned tag's installer with that same exact version. The installer follows only an HTTPS redirect chain initiated by a GitHub release asset URL, then verifies the checksums and manifest from the exact tag.
 
 ```sh
-curl --fail --location --proto '=https' --proto-redir '=https' \
-  --output installer.py.part \
-  https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py \
-  && mv installer.py.part installer.py
-python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}
-python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
-python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+(
+  set -e
+  curl --fail --location --proto '=https' --proto-redir '=https' \
+    --output installer.py.part \
+    https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
+  mv installer.py.part installer.py
+  python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}
+  python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
+  python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+)
 ```
 
 Use `latest` or a full SemVer value for `{{VERSION}}`.

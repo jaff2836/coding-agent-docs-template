@@ -11,12 +11,15 @@ It supports Claude, Codex, Cursor, and [Oh My Pi](https://github.com/can1357/oh-
 Download `installer.py` from the latest GitHub release, list the supported locales, and install one into a new project.
 
 ```sh
-curl --fail --location --proto '=https' --proto-redir '=https' \
-  --output installer.py.part \
-  https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py \
-  && mv installer.py.part installer.py
-python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
-python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root /path/to/new-project
+(
+  set -e
+  curl --fail --location --proto '=https' --proto-redir '=https' \
+    --output installer.py.part \
+    https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
+  mv installer.py.part installer.py
+  python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
+  python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root /path/to/new-project
+)
 ```
 
 Set `--locale` to `en` or `ko`. The target must be new or empty; if any destination file already exists, the installer writes nothing.

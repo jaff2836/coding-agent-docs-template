@@ -64,7 +64,7 @@
 ## 4. 변경·재검증 기록
 
 - 2026-09-18: 기존 계획의 redirect 없는 host 전제를 GitHub Releases 전용 제한 redirect 계약으로 변경했습니다. W-001 이후 기존 redirect 거부 회귀 테스트와 문서 계약을 함께 갱신해야 합니다.
-- 2026-09-18: 리뷰 C-001·C-002·F-003 — bootstrap을 curl 7.83 미만에서도 부분 파일 없이 실패하도록 바꾸고, W-003에 Origin/GitHub `main`·tag SHA 결합을 명시했으며 PROJECT §11·§13을 D-004에 맞췄습니다.
+- 2026-09-18: 리뷰 C-001·C-002·C-003 — bootstrap을 curl 7.83 미만에서도 부분 파일 없이 실패하도록 바꾸고, W-003에 Origin/GitHub `main`·tag SHA 결합을 명시했으며 PROJECT §11·§13을 D-004에 맞췄습니다.
 
 ## 5. 인계
 
