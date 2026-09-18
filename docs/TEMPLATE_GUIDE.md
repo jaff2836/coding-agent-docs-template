@@ -45,7 +45,7 @@ python3 scripts/export-template.py --locale ko --output /path/to/empty-directory
 공식 release에서는 GitHub Releases의 `installer.py`를 사용합니다. latest installer는 latest version과, exact tag의 installer는 같은 exact version과 함께 사용해야 합니다. installer는 GitHub release asset URL에서 시작한 HTTPS redirect chain만 따르고 exact tag의 checksum과 manifest를 검증합니다.
 
 ```sh
-curl --fail --location --proto '=https' --proto-redir '=https' \
+curl --fail --location --remove-on-error --proto '=https' --proto-redir '=https' \
   --output installer.py \
   https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
 python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}

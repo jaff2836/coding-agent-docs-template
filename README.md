@@ -11,7 +11,7 @@ It supports Claude, Codex, Cursor, and [Oh My Pi](https://github.com/can1357/oh-
 Download `installer.py` from the latest GitHub release, list the supported locales, and install one into a new project.
 
 ```sh
-curl --fail --location --proto '=https' --proto-redir '=https' \
+curl --fail --location --remove-on-error --proto '=https' --proto-redir '=https' \
   --output installer.py \
   https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
 python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
