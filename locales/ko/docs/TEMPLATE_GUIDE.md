@@ -78,11 +78,16 @@
   mv installer.py.part installer.py
   python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}
   python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
-  python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
 )
 ```
 
 `{{VERSION}}`에는 `latest` 또는 full SemVer를 넣습니다.
+
+기존 프로젝트와 비교할 artifact가 필요하면 설치 대신 빈 디렉터리로 export합니다.
+
+```sh
+python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+```
 
 1. 검증된 locale artifact를 빈 프로젝트 폴더에 설치하고 §5에 따라 version·source commit을 두 안내 문서에 기록합니다. 숨김 항목인 `.agents/`, `.claude/`, `.cursor/`, `.omp/`와 `.gitignore`, `docs/changes/_template/`의 네 양식도 artifact inventory에 포함되었는지 확인하세요. source 저장소 root를 직접 복사하지 마세요.
 2. 루트 [README.md](../README.md)는 이미 선택한 locale의 적용 프로젝트 양식입니다. 프로젝트 이름, 설명, 요구사항, 설치·실행·검증 방법, 보안 안내 및 라이선스를 작성합니다.

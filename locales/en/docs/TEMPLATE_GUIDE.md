@@ -78,11 +78,16 @@ For an official release, use `installer.py` from GitHub Releases. Use the latest
   mv installer.py.part installer.py
   python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}
   python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
-  python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
 )
 ```
 
 Use `latest` or a full SemVer value for `{{VERSION}}`.
+
+To compare the artifact with an existing project, export it to an empty directory instead of installing it.
+
+```sh
+python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+```
 
 1. Install a verified locale artifact into an empty project directory, then record its version and source commit in both guide documents as described in §5. Confirm that the artifact inventory includes the hidden `.agents/`, `.claude/`, `.cursor/`, and `.omp/` entries, `.gitignore`, and all four templates under `docs/changes/_template/`. Do not copy the source repository root directly.
 2. The root [README.md](../README.md) is already the project template in the selected locale. Fill in the project name, description, requirements, installation, execution and verification instructions, security guidance, and license.

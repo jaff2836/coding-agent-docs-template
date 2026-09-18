@@ -53,11 +53,16 @@ python3 scripts/export-template.py --locale ko --output /path/to/empty-directory
   mv installer.py.part installer.py
   python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}
   python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
-  python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
 )
 ```
 
 `{{VERSION}}`에는 `latest` 또는 full SemVer를 넣습니다.
+
+기존 프로젝트와 비교할 artifact가 필요하면 설치 대신 빈 디렉터리로 export합니다.
+
+```sh
+python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+```
 
 1. source root를 복사하지 말고 exact version과 locale이 확인된 artifact만 적용합니다. 기존 `v1.7.1` 사용자는 자동 전환하지 말고 새 v2 artifact를 별도 export하여 비교합니다.
 2. locale artifact의 root `README.md`는 이미 적용 프로젝트용 양식입니다. source 저장소 소개문이나 maintainer 문서는 artifact에 포함하지 않습니다.
