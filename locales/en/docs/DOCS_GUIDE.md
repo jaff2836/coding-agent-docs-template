@@ -26,7 +26,7 @@ The root [README.md](../README.md) contains project usage instructions for the a
 | Change-specific `03-PLAN.md` (optional) | Implementation order, detailed work, and verification status | Executing or handing off that change |
 | [REVIEW.md](./REVIEW.md) | Review judgment criteria and trust boundaries | PR, diff, or commit review |
 | [REVIEW_ROUND.md](./REVIEW_ROUND.md) | Requested review round remediation and integration process | When the user starts a round. For a previous handoff, apply only §9 |
-| [PROJECT_ANALYSIS.md](./PROJECT_ANALYSIS.md) | Whole-project analysis criteria | Explicit request for whole-project analysis |
+| [`project-analysis`](../.agents/skills/project-analysis/SKILL.md) | Evidence-based whole-project analysis and adoption decision | Explicit request for whole-project analysis |
 | [CI.md](./CI.md) | Runner-agnostic quality gate order and integration verification | Connecting CI or aligning it with local gates |
 
 The [CHANGE](./changes/_template/01-CHANGE.md), [INTENT](./changes/_template/01-INTENT.md), [SPEC](./changes/_template/02-SPEC.md), and [PLAN](./changes/_template/03-PLAN.md) files in `changes/_template/` are one set of copyable templates. Keep all four files when applying the template to a project. Manage an actual change in a separate change-ID folder, and copy only the format appropriate to that change's scale. Do not count the templates themselves as approved designs or incomplete work.
@@ -141,7 +141,7 @@ A remote repository, PR, and CI are optional. Record the adopting project's inte
 - [ ] Preserved review-round user-defined thresholds, same-head pass, session handoff, and the next task's documentation update rules.
 - [ ] When using an external reviewer, recorded the verified publication location, head identification, arrival cadence, no-finding behavior, and the `Rereview request method` (parameter `rereview`) in the registry. A local self-review does not require registration.
 - [ ] Verified that instructions and skills load in the tools being used. Did not assume a Markdown link triggers automatic loading.
-- [ ] Verified identical skill contents at both paths and copied the Codex [explicit invocation setting](../.agents/skills/review-round/agents/openai.yaml). `policy.allow_implicit_invocation` is the boolean `false`.
+- [ ] Verified byte-identical copies of each `design`, `project-analysis`, and `review-round` skill and copied the Codex [review-round explicit invocation setting](../.agents/skills/review-round/agents/openai.yaml). `policy.allow_implicit_invocation` is the boolean `false`.
 - [ ] When using OMP, verified the [WATCHDOG](../.omp/WATCHDOG.md) import with the version in use.
 - [ ] Verified relative file links, required anchors, and import paths. `scripts/check-docs.py` passes without error. Broken links, divergent skill copies, missing or non-`false` Codex explicit invocation policy, invalid imports, inconsistent invariant lists, invalid section references, and version mismatches fail the check.
 - [ ] Distinguished global `D-` and `T-` IDs from change-local IDs. Did not delete completed or cancelled change folders, and kept the current baseline in PROJECT.

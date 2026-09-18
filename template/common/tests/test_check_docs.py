@@ -43,6 +43,7 @@ def write_minimal_artifact(root: Path) -> None:
         "# Documentation Guide\n\n- **Template version:** 1.0.0\n",
     )
     write(root, ".agents/skills/design/SKILL.md", "# Design\n")
+    write(root, ".agents/skills/project-analysis/SKILL.md", "# Analysis\n")
     write(root, ".agents/skills/review-round/SKILL.md", "# Review\n")
     write(
         root,

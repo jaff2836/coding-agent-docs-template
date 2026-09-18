@@ -20,8 +20,8 @@
 | R-004 | GitHub asset redirect만 제한적으로 따릅니다. | GitHub가 browser download URL에 3xx를 반환 | GitHub HTTPS release asset URL에서 시작된 HTTPS chain만 따르고 downgrade, credential URL, 비-release 시작점은 거부합니다. | redirect handler 단위·negative 테스트와 원격 E2E |
 | R-005 | release URL과 manifest repository를 결합합니다. | manifest의 `repository`가 URL의 `OWNER/NAME`과 다름 | checksum이 맞더라도 설치 전에 실패합니다. | manifest mismatch 테스트 |
 | R-006 | bootstrap과 선택 version을 일치시킵니다. | latest installer로 latest 설치 또는 versioned installer로 exact version 설치 | 실행 중 installer hash가 exact manifest와 일치합니다. 서로 다른 release installer 조합은 실패합니다. | installer hash 회귀 테스트 |
-| R-007 | 게시 전 exact source와 artifact를 확인합니다. | `v2.0.0` 후보 | tag commit, manifest `source_commit`, package 입력 commit이 같고 clean deterministic package가 통과합니다. | local gate와 GitHub release metadata 확인 |
-| R-008 | 공개 전 local gate와 공개 직후 remote gate를 분리합니다. | draft asset과 아직 공개하지 않은 release | 공개 E2E에 필요한 GitHub release가 draft asset을 제공하지 않으므로 게시 전 deterministic local gate를 통과하고, exact release 게시 직후 원격 gate를 실행합니다. 실패 시 release를 변조하지 않고 patch release로 복구합니다. | local exact-head gate, 실제 HTTPS E2E와 release 정책 기록 |
+| R-007 | 게시 전 exact source와 artifact를 확인합니다. | `v2.0.0` 후보 | tag commit, manifest `source_commit`, package 입력 commit이 같고 clean deterministic package가 통과합니다. 게시 시점의 Origin·GitHub `main`은 같은 SHA이고 tag commit을 조상으로 포함합니다. | local gate, `merge-base --is-ancestor`, GitHub release metadata 확인 |
+| R-008 | 공개 전 local gate와 공개 직후 remote gate를 분리합니다. | draft asset과 아직 공개하지 않은 release | 공개 E2E에 필요한 GitHub 다운로드 경로가 draft asset을 제공하지 않으므로 게시 전 deterministic local gate를 통과하고, 검증된 draft asset을 재패키징·교체하지 않은 채 exact release를 게시한 직후 원격 gate를 실행합니다. 실패 시 release를 변조하지 않고 patch release로 복구합니다. | local exact-head gate, draft asset hash 대조, 실제 HTTPS E2E와 release 정책 기록 |
 
 ## 2. 대안과 선택 이유
 
@@ -73,6 +73,8 @@ GitHub가 사용하는 CDN hostname은 공개 영구 계약이 아니므로 특�
 
 - public SemVer `2.0.0`은 annotated tag `v2.0.0`에 대응합니다.
 - tag가 가리키는 commit, packager의 `--source-commit`, manifest `source_commit`은 같아야 합니다.
+- 게시 시점의 Origin `main`과 GitHub `main`은 같은 commit을 가리키고, tag commit은 그 commit의 조상이어야 합니다. tag 이후 `main`의 정상적인 전진은 release provenance를 깨뜨리지 않습니다.
+- draft에 올린 검증된 asset은 게시 직전의 더 최신 `main`으로 다시 package하거나 교체하지 않습니다.
 - manifest `repository`는 release root에서 추출한 `jaff2836/coding-agent-docs-template`와 같아야 합니다.
 - mutable branch의 현재 head는 설치 시점의 version 증거로 사용하지 않습니다.
 
@@ -89,10 +91,11 @@ D-004는 D-002의 locale artifact·checksum·비파괴 설치 구조를 유지�
 
 ## 6. 완료 조건과 미해결 사항
 
-구현 완료는 installer·문서·회귀 테스트가 현재 branch에서 통과하는 상태입니다. 공개 완료는 exact main commit의 deterministic package, `v2.0.0` tag, GitHub release asset, remote HTTPS en/ko install·export와 checksum 검증까지 통과하고 그 근거가 PROJECT와 PLAN에 기록된 상태입니다.
+구현 완료는 installer·문서·회귀 테스트가 현재 branch에서 통과하는 상태입니다. 공개 완료는 deterministic package를 생성한 exact tag commit이 현재 Origin·GitHub `main`의 조상이고 tag·manifest·draft asset provenance가 일치하며, draft asset을 재패키징·교체하지 않고 게시한 GitHub release의 remote HTTPS en/ko install·export와 checksum 검증까지 통과하고 그 근거가 PROJECT와 PLAN에 기록된 상태입니다.
 
 GitHub immutable releases 설정의 실제 사용 가능 여부는 release 게시 전에 확인하며, 결과와 무관하게 asset 비변조 운영 규칙을 적용합니다.
 
 ## 7. 명세 변경 기록
 
 - 2026-09-18: 사용자 승인에 따라 GitHub Releases 단일 host, tag 기반 exact namespace와 제한된 HTTPS redirect 계약을 Accepted로 기록했습니다.
+- 2026-09-18: 후속 `main` 통합으로 tag SHA와 branch head가 달라진 상태를 반영해, tag commit의 `main` 조상 관계를 요구하고 검증된 draft asset을 재패키징 없이 게시하는 조건으로 교정했습니다.

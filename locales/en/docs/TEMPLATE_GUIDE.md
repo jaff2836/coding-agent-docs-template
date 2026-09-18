@@ -33,6 +33,8 @@ The template does not include an initialization script, review prompts or automa
 │   └── skills/
 │       ├── design/
 │       │   └── SKILL.md       # Entry point for change design: Codex, Cursor, OMP
+│       ├── project-analysis/
+│       │   └── SKILL.md       # Whole-project analysis process: Codex, Cursor, OMP
 │       └── review-round/
 │           ├── SKILL.md       # Entry point for review rounds: Codex, Cursor, OMP
 │           └── agents/openai.yaml  # Explicit-invocation-only configuration for Codex
@@ -40,6 +42,8 @@ The template does not include an initialization script, review prompts or automa
 │   └── skills/
 │       ├── design/
 │       │   └── SKILL.md       # Entry point for change design: Claude Code
+│       ├── project-analysis/
+│       │   └── SKILL.md       # Whole-project analysis process: Claude Code
 │       └── review-round/
 │           └── SKILL.md       # Entry point for review rounds: Claude Code
 ├── .cursor/
@@ -61,7 +65,6 @@ The template does not include an initialization script, review prompts or automa
     │       └── 03-PLAN.md     # Optional detailed work and verification record
     ├── REVIEW.md              # Shared PR review policy
     ├── REVIEW_ROUND.md        # Review-round process and delegated authority
-    ├── PROJECT_ANALYSIS.md    # Whole-project analysis process used on request
     └── CI.md                  # Runner-agnostic quality-gate workflow and integration checklist
 ```
 
@@ -226,14 +229,14 @@ The source of truth for shared rules is [AGENTS.md](../AGENTS.md). This layout a
 
 - [.cursor/BUGBOT.md](../.cursor/BUGBOT.md) is specific to Cursor Bugbot. Bugbot reads neither `.cursor/rules/` nor linked documents; it uses only this file for project rules. The review criteria from [REVIEW.md](./REVIEW.md) are therefore intentionally duplicated here. To produce the same blocking decision as the canonical policy, duplicate not only the decision criteria but also **the §6 invariants, §9 Accepted Deferrals, and settled decisions that must not be reverted**. Update both files whenever the review policy changes.
 - [.omp/WATCHDOG.md](../.omp/WATCHDOG.md) is specific to the OMP advisor, a second model that monitors the primary agent. OMP appends this file only to the advisor's system prompt, not to the primary agent context, and does not treat it as a context file like `AGENTS.md`. Unlike Bugbot, it expands `@path` imports, so it imports [REVIEW.md](./REVIEW.md) through `@../docs/REVIEW.md` instead of duplicating it. OMP discovers `<dir>/WATCHDOG.md` or `<dir>/.omp/WATCHDOG.md`; this template uses the latter to keep the root uncluttered. Do not place `AGENTS.md` in `.omp/` (see "Instruction Files" above). The companion `WATCHDOG.yml` (advisor list, models, and tools) is a project-specific choice involving models and cost, so the template does not include it. (Source: OMP `docs/advisor-watchdog.md`; verify `..` resolution in import paths with the version you use.)
-- Skills (`review-round`, `design`) contain the same content at two paths. Codex, Cursor, and OMP read `.agents/skills/`; Claude Code reads `.claude/skills/`. Each file is an adapter pointing to a process document in `docs/`; it does not contain the process itself. Cursor loads both paths, so slash commands may appear twice. Their identical content means there is no behavioral difference. If a repository does not use Claude Code, it may omit the `.claude/skills/` copy.
-- `review-round` is explicit-invocation-only. Claude Code, Cursor, and OMP use `disable-model-invocation: true`; Codex uses the separate configuration below. Because `design` is read-only until agreement, its automatic invocation is not blocked. A model may start that process itself for a matching change, while [01-DESIGN.md](./01-DESIGN.md) §1 determines applicability.
+- Skills (`design`, `project-analysis`, `review-round`) contain the same content at two paths. Codex, Cursor, and OMP read `.agents/skills/`; Claude Code reads `.claude/skills/`. `design` and `review-round` are adapters to canonical procedures in `docs/`, while `project-analysis` contains the full analysis process so it can load independently. Cursor loads both paths, so slash commands may appear twice. Their identical content means there is no behavioral difference. If a repository does not use Claude Code, it may omit the `.claude/skills/` copy.
+- `review-round` is explicit-invocation-only. Claude Code, Cursor, and OMP use `disable-model-invocation: true`; Codex uses the separate configuration below. Because `design` is read-only until agreement, its automatic invocation is not blocked. `project-analysis` is also not blocked from automatic selection, but its description and body require an explicit whole-project analysis request. A model may select a process for a matching request, while [01-DESIGN.md](./01-DESIGN.md) §1 determines design applicability.
 - The automatic-invocation blocking key is `disable-model-invocation` for both Cursor and Claude Code, and OMP recognizes the same spelling. For Codex, [.agents/skills/review-round/agents/openai.yaml](../.agents/skills/review-round/agents/openai.yaml) blocks implicit invocation with `policy.allow_implicit_invocation: false` while allowing explicit `$review-round` invocation ([official documentation](https://learn.chatgpt.com/docs/build-skills)). This configuration is Codex-specific, so do not copy it into `.claude/skills/`. Keep the two `SKILL.md` files identical and retain the explicit-invocation requirement in their bodies. `argument-hint` is a Claude Code-specific field and other tools ignore it.
 - Codex's GitHub review cites `AGENTS.md` line numbers in inline findings and follows that file's format for `confidence` and `blocking`. The Code Review Rules in `AGENTS.md` therefore affect the GitHub reviewer's output, not only the local agent. Do not replace the body with a link alone. It is not verified whether Codex follows the linked `docs/REVIEW.md`.
 
 ### External Methodology and Behavioral-Rules Tools
 
-Keep short rules that always apply in the root `AGENTS.md` and conditionally loaded processes in `docs/`. Skills are adapters pointing to those processes and do not contain the process body. Preserve this ownership when using external methodology or behavioral-rules tools.
+Keep short rules that always apply in the root `AGENTS.md`. A conditional process is owned either by a thin skill that points to a canonical document in `docs/`, or by one self-contained skill such as `project-analysis` when no separate document is canonical. Do not duplicate the same process across both a document and a skill when using external methodology or behavioral-rules tools.
 
 - This template owns `AGENTS.md` and `CLAUDE.md`. If external initialization or update rewrites either file, disable that feature or reconsider adoption. Follow "Instruction Files" above for additional instruction files.
 - A tool artifact may replace the role of INTENT, SPEC, or PLAN. Keep the decision index in PROJECT and the change-level plan in TODO, and keep each contract or detailed status in only one source of truth.
@@ -242,7 +245,7 @@ Keep short rules that always apply in the root `AGENTS.md` and conditionally loa
 ### Shared Guidance
 
 - Verify instruction-loading behavior directly with the tool version and local configuration you use. Do not assume that Markdown links automatically load every linked document.
-- [PROJECT_ANALYSIS.md](./PROJECT_ANALYSIS.md) is used only when whole-project analysis is explicitly requested. Do not automatically import the entire process into shared instructions.
+- [`project-analysis`](../.agents/skills/project-analysis/SKILL.md) is a self-contained skill loaded only when whole-project analysis is explicitly requested. Do not automatically import its full process into shared instructions.
 - [01-DESIGN.md](./01-DESIGN.md) is also a process document. Put only its applicability conditions and artifact locations in `AGENTS.md`; do not import the process itself. Loading design procedure into every task encourages models to inflate small requests into process work.
 
 ## 5. Post-adoption Maintenance
@@ -292,6 +295,12 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### Unreleased (Latest Tag: v2.0.0) — Move Project Analysis into a Skill
+
+- Moved the whole-project analysis process from `docs/PROJECT_ANALYSIS.md` into the locale's self-contained `.agents/skills/project-analysis/SKILL.md` and added the matching `.claude/skills/` copy for Claude Code.
+- The skill applies only to explicit whole-project analysis requests and runs read-only by default. The README, manifest, and checkers now verify that contract and both skill paths.
+- Verify in the adopting repository: remove the old `docs/PROJECT_ANALYSIS.md` and its references, then apply the selected locale's two skill copies and the related `AGENTS.md`, README, and documentation-checker changes together. This entry targets the next release and is not included in the `v2.0.0` assets.
 
 ### v2.0.0 — Locale Artifacts and Non-destructive Installation
 

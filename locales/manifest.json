@@ -26,8 +26,10 @@
     ],
     "localized_paths": [
       ".agents/skills/design/SKILL.md",
+      ".agents/skills/project-analysis/SKILL.md",
       ".agents/skills/review-round/SKILL.md",
       ".claude/skills/design/SKILL.md",
+      ".claude/skills/project-analysis/SKILL.md",
       ".claude/skills/review-round/SKILL.md",
       ".cursor/BUGBOT.md",
       ".omp/WATCHDOG.md",
@@ -39,7 +41,6 @@
       "docs/10-EXTENSION.md",
       "docs/CI.md",
       "docs/DOCS_GUIDE.md",
-      "docs/PROJECT_ANALYSIS.md",
       "docs/REVIEW.md",
       "docs/REVIEW_ROUND.md",
       "docs/TEMPLATE_GUIDE.md",
@@ -130,6 +131,19 @@
           "design-minimal-artifact",
           "design-requires-approval",
           "design-reuses-accepted-spec"
+        ]
+      },
+      {
+        "id": "project-analysis",
+        "marker": "<!-- template-skill-contract:project-analysis:v1 -->",
+        "paths": [
+          ".agents/skills/project-analysis/SKILL.md",
+          ".claude/skills/project-analysis/SKILL.md"
+        ],
+        "fixture_ids": [
+          "project-analysis-explicit-only",
+          "project-analysis-read-only",
+          "project-analysis-evidence-status"
         ]
       },
       {

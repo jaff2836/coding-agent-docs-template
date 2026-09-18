@@ -72,10 +72,10 @@ Treat commands that still contain a `{{...}}` placeholder as unconfigured and do
 - As an exception, if the handoff list from a previous round is relevant to the current implementation or documentation request, read and apply only the documentation update process in §9. This does not restart the round or delegate commit, push, or merge authority.
 - This process performs commits and merges, so apply it together with the delegation provisions in Change Rules below.
 
-### [`docs/PROJECT_ANALYSIS.md`](./docs/PROJECT_ANALYSIS.md) — Whole-Project Analysis Process
+### [`project-analysis`](./.agents/skills/project-analysis/SKILL.md) — Whole-Project Analysis Skill
 
-- Read and apply it only when the user explicitly requests whole-project analysis, technical due diligence, an architecture assessment, or an adoption decision.
-- Do not apply the full process to ordinary implementation, bug fixes, question answering, or PR reviews.
+- Use it only when the user explicitly requests whole-project analysis, technical due diligence, an architecture assessment, or an adoption decision.
+- It gathers evidence in read-only mode by default, distinguishes verified facts, inferences, and unverified items, and reaches an adoption decision. Do not apply it to ordinary implementation, bug fixes, question answering, or PR reviews.
 
 ### [`docs/CI.md`](./docs/CI.md) — Quality Gates
 

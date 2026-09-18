@@ -1,6 +1,25 @@
-# 프로젝트 분석 절차
+---
+name: project-analysis
+description: 사용자가 프로젝트 전체 분석, 기술 실사, 아키텍처 평가 또는 도입 판단을 명시적으로 요청했을 때 저장소의 코드·설정·테스트·운영 근거를 조사하고 GO 여부를 판정합니다. 일반 구현, 버그 수정, 질문 답변 또는 PR 리뷰에는 사용하지 않습니다.
+argument-hint: "[분석 범위 또는 판단 질문]"
+---
 
-이 문서는 사용자가 프로젝트 전체 분석, 기술 실사, 아키텍처 평가 또는 인수 가능성 평가를 명시적으로 요청했을 때만 적용합니다. 일반적인 기능 구현, 버그 수정, 질문 답변 또는 PR 리뷰에는 이 절차 전체를 적용하지 않습니다.
+# 프로젝트 분석
+
+<!-- template-skill-contract:project-analysis:v1 -->
+
+아래 `[template-contract:v1]` assertion은 정본 행동 계약입니다. 현지화 prose는 이 계약을 거스르면 안 됩니다.
+
+<!-- template-skill-fixture:project-analysis-explicit-only -->
+> [template-contract:v1] MUST_REQUIRE_EXPLICIT_WHOLE_PROJECT_REQUEST
+<!-- template-skill-fixture:project-analysis-read-only -->
+> [template-contract:v1] MUST_DEFAULT_TO_READ_ONLY_ANALYSIS
+<!-- template-skill-fixture:project-analysis-evidence-status -->
+> [template-contract:v1] MUST_DISTINGUISH_VERIFIED_INFERRED_UNVERIFIED
+
+안정 토큰은 `scope=explicit-whole-project`, `mode=read-only`, `evidence_status=verified|inference|unverified`입니다.
+
+이 스킬은 사용자가 프로젝트 전체 분석, 기술 실사, 아키텍처 평가 또는 도입 타당성 평가를 명시적으로 요청했을 때만 적용합니다. 일반적인 기능 구현, 버그 수정, 질문 답변 또는 PR 리뷰에는 이 절차 전체를 적용하지 않습니다.
 
 ## Metadata
 
@@ -43,7 +62,7 @@
 
 - 사용자가 지정한 분석 범위, 제외 대상 및 출력 형식이 이 문서보다 우선합니다.
 - 사용자가 특정 모듈만 요청했다면 저장소 전체를 불필요하게 분석하지 않습니다.
-- [02-TODO.md](./02-TODO.md)의 항목은 사용자 요청을 자동으로 확장하는 권한이 아닙니다.
+- [02-TODO.md](../../../docs/02-TODO.md)의 항목은 사용자 요청을 자동으로 확장하는 권한이 아닙니다.
 
 ### 2.4 안전한 분석
 
@@ -60,9 +79,9 @@
 1. 현재 코드와 실제 설정
 2. 자동화된 테스트 및 CI 구성
 3. 스키마, API 명세, 마이그레이션 및 배포 구성
-4. [00-PROJECT.md](./00-PROJECT.md), 연결된 제품·확장 설계, 승인된 INTENT·SPEC 및 ADR
+4. [00-PROJECT.md](../../../docs/00-PROJECT.md), 연결된 제품·확장 설계, 승인된 INTENT·SPEC 및 ADR
 5. README, 운영 문서, 예제 및 주석
-6. [02-TODO.md](./02-TODO.md), 변경별 PLAN과 기타 계획성 체크리스트
+6. [02-TODO.md](../../../docs/02-TODO.md), 변경별 PLAN과 기타 계획성 체크리스트
 
 하위 우선순위 문서가 상위 근거와 다르면 문서-코드 불일치로 기록합니다. 단, 코드가 문서의 의도를 위반한 것인지 문서가 오래된 것인지는 별도로 판단합니다.
 
@@ -87,8 +106,8 @@
 - 저장소 루트와 주요 하위 프로젝트
 - 현재 브랜치 또는 분석 대상 상태
 - 작업 트리의 기존 변경 여부
-- [AGENTS.md](../AGENTS.md) 및 하위 디렉터리 지침
-- [00-PROJECT.md](./00-PROJECT.md), [02-TODO.md](./02-TODO.md), 연결된 제품·확장 설계와 실제 변경별 INTENT·SPEC·PLAN, ADR
+- [AGENTS.md](../../../AGENTS.md) 및 하위 디렉터리 지침
+- [00-PROJECT.md](../../../docs/00-PROJECT.md), [02-TODO.md](../../../docs/02-TODO.md), 연결된 제품·확장 설계와 실제 변경별 INTENT·SPEC·PLAN, ADR
 - README, 라이선스, 기여 가이드 및 보안 정책
 
 기존 사용자 변경은 분석 대상과 구분하며 수정하거나 되돌리지 않습니다. `changes/_template/`의 복사용 양식은 실제 설계나 진행 중인 작업으로 집계하지 않습니다.
@@ -241,7 +260,7 @@
 
 ### 5.11 문서와 코드의 정합성 확인
 
-[00-PROJECT.md](./00-PROJECT.md), 연결된 제품·확장 설계와 승인된 변경 명세, [02-TODO.md](./02-TODO.md) 및 상세 실행 상태를 소유하는 변경별 PLAN이 있으면 다음을 비교합니다.
+[00-PROJECT.md](../../../docs/00-PROJECT.md), 연결된 제품·확장 설계와 승인된 변경 명세, [02-TODO.md](../../../docs/02-TODO.md) 및 상세 실행 상태를 소유하는 변경별 PLAN이 있으면 다음을 비교합니다.
 
 - 목표와 현재 구현
 - 결정된 아키텍처와 실제 의존성 구조
@@ -354,8 +373,8 @@
 
 ### 10. 문서-코드 정합성
 
-- [00-PROJECT.md](./00-PROJECT.md) 비교
-- [02-TODO.md](./02-TODO.md) 비교
+- [00-PROJECT.md](../../../docs/00-PROJECT.md) 비교
+- [02-TODO.md](../../../docs/02-TODO.md) 비교
 - README 및 운영 문서 비교
 
 ### 11. GO/NO-GO 판단
@@ -369,7 +388,7 @@
 - 즉시 필요한 작업
 - 단기 작업
 - 장기 개선
-- 필요할 경우 [00-PROJECT.md](./00-PROJECT.md)와 [02-TODO.md](./02-TODO.md) 초안 제안
+- 필요할 경우 [00-PROJECT.md](../../../docs/00-PROJECT.md)와 [02-TODO.md](../../../docs/02-TODO.md) 초안 제안
 
 ## 8. 완료 조건
 

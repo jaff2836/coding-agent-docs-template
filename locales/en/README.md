@@ -53,12 +53,19 @@ Run the documentation checker regression tests when changing `scripts/check-docs
 - Change template set: combined [01-CHANGE.md](./docs/changes/_template/01-CHANGE.md), split [01-INTENT.md](./docs/changes/_template/01-INTENT.md) and [02-SPEC.md](./docs/changes/_template/02-SPEC.md), and optional [03-PLAN.md](./docs/changes/_template/03-PLAN.md). When applying the template, copy the entire `_template/` set. For an actual change, copy only the necessary format into a separate change-ID folder.
 - [REVIEW.md](./docs/REVIEW.md): PR review policy
 - [REVIEW_ROUND.md](./docs/REVIEW_ROUND.md): review round process and delegated authority
-- [PROJECT_ANALYSIS.md](./docs/PROJECT_ANALYSIS.md): explicitly requested whole-project analysis process
 - [CI.md](./docs/CI.md): runner-agnostic quality gate workflow and integration checklist
 
 ## Security
 
 Describe how to report vulnerabilities and what information must not be disclosed.
+
+## Bundled Skills
+
+- **`design`:** turns structural or public-contract changes into the minimum necessary intent, specification, and execution plan before implementation.
+- **`project-analysis`:** performs an explicitly requested, evidence-based whole-project assessment in read-only mode by default and reaches a GO, conditional, no-go, or insufficient-evidence decision.
+- **`review-round`:** runs an explicitly invoked review/fix cycle against the exact PR head and merges only after the configured gate passes and the user confirms.
+
+Codex, Cursor, and OMP load the `.agents/skills/` copies; Claude Code loads the byte-identical `.claude/skills/` copies.
 
 ## License
 

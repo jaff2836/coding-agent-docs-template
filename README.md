@@ -105,12 +105,22 @@ python3 scripts/export-template.py --locale en --output /path/to/empty-directory
 ## What's included
 
 - **Shared instructions:** `AGENTS.md`, `CLAUDE.md`, and tool-specific integration files
-- **Document system:** project baseline, design, TODO, review, analysis, and CI guidance
-- **Skills:** `design` and `review-round`
+- **Document system:** project baseline, design, TODO, review, and CI guidance
+- **Skills:** `design`, `project-analysis`, and `review-round`
 - **Multilingual delivery:** `template/common/`, `locales/en/`, `locales/ko/`, the manifest, and the schema
 - **Tools:** documentation and locale checks, export, release packaging, and installation
 
 See the [Template Guide](./docs/TEMPLATE_GUIDE.md) for the complete structure and adoption checklist, and the [Documentation Guide](./docs/DOCS_GUIDE.md) for document ownership and operating rules. This repository does not include application code or pipelines for a specific CI product.
+
+## Bundled skills
+
+- **`design`:** turns structural or public-contract changes into the minimum necessary intent, specification, and execution plan before implementation.
+- **`project-analysis`:** performs an explicitly requested, evidence-based whole-project assessment in read-only mode by default and reaches a GO, conditional, no-go, or insufficient-evidence decision.
+- **`review-round`:** runs an explicitly invoked review/fix cycle against the exact PR head and merges only after the configured gate passes and the user confirms.
+
+`project-analysis` becomes a bundled skill in the release after `v2.0.0`. The `v2.0.0` artifacts provide this process as `docs/PROJECT_ANALYSIS.md` instead.
+
+Codex, Cursor, and OMP load the `.agents/skills/` copies; Claude Code loads the byte-identical `.claude/skills/` copies.
 
 ## License
 
