@@ -118,6 +118,8 @@ See the [Template Guide](./docs/TEMPLATE_GUIDE.md) for the complete structure an
 - **`project-analysis`:** performs an explicitly requested, evidence-based whole-project assessment in read-only mode by default and reaches a GO, conditional, no-go, or insufficient-evidence decision.
 - **`review-round`:** runs an explicitly invoked review/fix cycle against the exact PR head and merges only after the configured gate passes and the user confirms.
 
+`project-analysis` becomes a bundled skill in the release after `v2.0.0`. The `v2.0.0` artifacts provide this process as `docs/PROJECT_ANALYSIS.md` instead.
+
 Codex, Cursor, and OMP load the `.agents/skills/` copies; Claude Code loads the byte-identical `.claude/skills/` copies.
 
 ## License

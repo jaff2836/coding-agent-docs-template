@@ -118,6 +118,8 @@ python3 scripts/export-template.py --locale ko --output /path/to/empty-directory
 - **`project-analysis`:** 명시적으로 요청된 프로젝트 전체를 기본 읽기 전용으로 근거 중심 분석하고 GO·조건부 GO·NO-GO·근거 부족 중 하나로 판단합니다.
 - **`review-round`:** 명시적으로 시작한 PR 리뷰·수정 라운드를 exact head 기준으로 진행하고, 설정한 gate 통과와 사용자 확인 후에만 merge합니다.
 
+`project-analysis`는 `v2.0.0` 다음 release부터 번들 skill로 포함됩니다. `v2.0.0` artifact는 동일한 절차를 `docs/PROJECT_ANALYSIS.md` 문서로 제공합니다.
+
 Codex·Cursor·OMP는 `.agents/skills/`, Claude Code는 byte-identical한 `.claude/skills/` 복제본을 읽습니다.
 
 ## License
