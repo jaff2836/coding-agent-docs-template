@@ -10,16 +10,49 @@ It supports Claude, Codex, Cursor, and [Oh My Pi](https://github.com/can1357/oh-
 
 Download `installer.py` from the latest GitHub release, list the supported locales, and install one into a new project.
 
+### 1. Download the installer
+
+On Linux or macOS:
+
 ```sh
-(
-  set -e
-  curl --fail --location --proto '=https' --proto-redir '=https' \
-    --output installer.py.part \
-    https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
-  mv installer.py.part installer.py
-  python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
-  python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root /path/to/new-project
-)
+curl -fL --proto-redir '=https' -o installer.py.part \
+  https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py &&
+mv installer.py.part installer.py
+```
+
+On Windows PowerShell:
+
+```powershell
+curl.exe -fL --proto-redir "=https" -o installer.py.part `
+  https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
+if ($LASTEXITCODE -ne 0) { throw "Failed to download installer.py" }
+Move-Item -Force -ErrorAction Stop installer.py.part installer.py
+```
+
+Continue only after the download block succeeds.
+
+### 2. List the supported locales
+
+```sh
+python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
+```
+
+On Windows PowerShell:
+
+```powershell
+python installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
+```
+
+### 3. Install a locale
+
+```sh
+python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root /path/to/new-project
+```
+
+On Windows PowerShell:
+
+```powershell
+python installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root C:\path\to\new-project
 ```
 
 Set `--locale` to `en` or `ko`. The target must be new or empty; if any destination file already exists, the installer writes nothing.
@@ -30,6 +63,12 @@ Do not install directly into a project that already uses v1 or maintains its own
 
 ```sh
 python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --output /path/to/empty-directory
+```
+
+On Windows PowerShell:
+
+```powershell
+python installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --output C:\path\to\empty-directory
 ```
 
 The installer never overwrites existing files and does not provide automatic updates, locale switching, or `--force`. It follows only the HTTPS redirect chain initiated by a verified GitHub release asset URL, then validates the exact tagged release's manifest, checksums, and its own bytes. For another language, you can localize the English artifact's project instructions and documents, but the result is outside the officially verified locales.
