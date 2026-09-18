@@ -6,7 +6,7 @@
 - **Spec:** [02-SPEC.md](./02-SPEC.md)
 - **Global task:** [02-TODO.md](../../02-TODO.md) T-002
 - **Owner:** Codex 구현, Chae Sangwon 최종 검수
-- **Baseline:** `9cea17827877e4567d372a5e73ed3e1513953055` (`main`)
+- **Baseline:** `9cea17879d679dd471444b37c0af13610469c813` (`main`)
 - **Integration target:** `main` 후 `v2.0.0` GitHub Release
 - **Scope:** GitHub Releases transport, 공개 사용 문서, v2 metadata, exact package와 원격 release 검증
 
