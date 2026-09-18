@@ -15,16 +15,16 @@ Claude, Codex, Cursor와 [Oh My Pi](https://github.com/can1357/oh-my-pi)를 지�
 Linux 또는 macOS에서는 다음 명령을 사용합니다.
 
 ```sh
-curl --fail --location --proto '=https' --proto-redir '=https' \
-  --output installer.py.part \
+curl -fL --proto-redir '=https' -o installer.py.part \
   https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py &&
 mv installer.py.part installer.py
 ```
 
-Windows PowerShell에서는 예전 `curl` alias와 혼동하지 않도록 `curl.exe`를 명시합니다.
+Windows PowerShell에서는 다음 명령을 사용합니다.
 
 ```powershell
-curl.exe --fail --location --proto "=https" --proto-redir "=https" --output installer.py.part https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
+curl.exe -fL --proto-redir "=https" -o installer.py.part `
+  https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
 if ($LASTEXITCODE -ne 0) { throw "installer.py 다운로드 실패" }
 Move-Item -Force -ErrorAction Stop installer.py.part installer.py
 ```
@@ -37,10 +37,10 @@ Move-Item -Force -ErrorAction Stop installer.py.part installer.py
 python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
 ```
 
-Windows PowerShell에서는 `py -3`을 사용합니다.
+Windows PowerShell에서는 다음과 같이 실행합니다.
 
 ```powershell
-py -3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
+python installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
 ```
 
 ### 3. locale 설치
@@ -52,7 +52,7 @@ python3 installer.py install --release-url https://github.com/jaff2836/coding-ag
 Windows PowerShell에서는 다음과 같이 실행합니다.
 
 ```powershell
-py -3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale ko --repo-root C:\path\to\new-project
+python installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale ko --repo-root C:\path\to\new-project
 ```
 
 `--locale`에는 `en` 또는 `ko`를 지정합니다. 설치 대상은 존재하지 않거나 비어 있어야 하며, 기존 파일이 하나라도 있으면 아무것도 쓰지 않습니다.
@@ -68,7 +68,7 @@ python3 installer.py export --release-url https://github.com/jaff2836/coding-age
 Windows PowerShell에서는 다음과 같이 실행합니다.
 
 ```powershell
-py -3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale ko --output C:\path\to\empty-directory
+python installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale ko --output C:\path\to\empty-directory
 ```
 
 installer는 기존 파일을 덮어쓰지 않으며 자동 update, locale 전환, `--force`를 제공하지 않습니다. 검증된 GitHub release asset URL에서 시작한 HTTPS redirect chain만 따른 뒤 exact tag release의 manifest, checksum과 실행 중인 installer 자체를 검증합니다. 다른 언어가 필요하면 영어 artifact를 기반으로 프로젝트 지침과 문서를 직접 현지화할 수 있지만 공식 검증 대상은 아닙니다.
