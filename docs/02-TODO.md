@@ -40,7 +40,7 @@
   - 선행조건: D-004 승인, T-001의 W-007 검증 완료
   - 관련 결정·SPEC: [D-004](./00-PROJECT.md#8-decisions) — [SPEC](./changes/2026-09-18-github-releases-publication/02-SPEC.md)
   - 상세 실행의 정본: [PLAN](./changes/2026-09-18-github-releases-publication/03-PLAN.md)
-  - 통합 완료 조건: exact `main`과 `v2.0.0` tag·manifest source가 일치하고 GitHub release의 en/ko latest·exact-version 원격 install/export가 통과
+  - 통합 완료 조건: Origin `main`과 GitHub `main`·`v2.0.0` tag·manifest `source_commit`이 같은 SHA이고 GitHub release의 en/ko latest·exact-version 원격 install/export가 통과
 
 ## Next
 

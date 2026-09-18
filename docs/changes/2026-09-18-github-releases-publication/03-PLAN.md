@@ -7,15 +7,15 @@
 - **Global task:** [02-TODO.md](../../02-TODO.md) T-002
 - **Owner:** Codex 구현, Chae Sangwon 최종 검수
 - **Baseline:** `9cea17879d679dd471444b37c0af13610469c813` (`main`)
-- **Integration target:** `main` 후 `v2.0.0` GitHub Release
+- **Integration target:** Origin `main`과 GitHub `main`이 같은 commit인 상태에서 `v2.0.0` GitHub Release
 - **Scope:** GitHub Releases transport, 공개 사용 문서, v2 metadata, exact package와 원격 release 검증
 
 ## 1. 구현 순서와 의존성
 
 1. installer의 GitHub URL·redirect·repository binding을 구현하고 local fixture 회귀 테스트를 통과시킵니다.
 2. root·locale 문서의 release URL과 bootstrap 절차를 실제 GitHub Releases 계약으로 바꾸고 v2 source metadata를 정렬합니다.
-3. 구현을 검토 가능한 branch/PR로 통합한 뒤 exact `main`에서 전체 gate와 deterministic package를 수행합니다.
-4. exact commit에 annotated `v2.0.0` tag를 만들고 GitHub Release asset을 게시합니다.
+3. 구현을 검토 가능한 branch/PR로 Origin `main`에 통합한 뒤, GitHub `main`이 그 commit으로 fast-forward됐는지 확인하고 전체 gate와 deterministic package를 수행합니다.
+4. 그 exact commit에 annotated `v2.0.0` tag를 만들고 GitHub에 tag와 Release asset을 게시합니다.
 5. 실제 HTTPS 경로에서 latest/exact-version, en/ko install·export와 실패 불변조건을 확인합니다.
 6. 검증 근거와 공개 상태를 문서화합니다. immutable release에서 결함이 확인되면 asset이나 tag를 교체하지 않고 patch release 계획으로 전환합니다.
 
@@ -36,17 +36,22 @@
   - 결과·근거: 실제 release root와 latest bootstrap URL을 영어·한국어 landing과 locale guide에 반영하고 Template version·release history를 `2.0.0`으로 정렬했습니다. packager는 CLI release version과 두 artifact guide의 Template version이 다르면 package 생성을 거부합니다.
 
 - [ ] **W-003 exact-head release 후보 검증**
-  - 범위·변경 파일: clean exact main에서 생성한 5개 배포 asset
+  - 범위·변경 파일: Origin `main`과 GitHub `main`이 같은 clean exact commit에서 생성한 5개 배포 asset
   - 대응 요구사항·상위 완료 조건: R-006~R-008
   - 선행조건: W-001·W-002 통합, 사용자의 commit·push·tag·release 위임
-  - 검증 방법: 전체 unittest/docs/locale gate, 2회 package byte equality, tag/source/manifest SHA 일치
+  - 검증 방법:
+    1. Origin PR을 `main`에 merge한 뒤 `git push github main`이 fast-forward인지 확인
+    2. `git ls-remote origin main`, `git ls-remote github main`이 같은 SHA인지 확인
+    3. 그 SHA의 clean checkout에서 전체 unittest/docs/locale gate와 2회 package byte equality
+    4. 로컬 annotated `v2.0.0` tag 생성 후 `git push github v2.0.0`
+    5. `git ls-remote github 'v2.0.0^{}'`와 manifest `source_commit`이 위 `main` SHA와 같은지 확인
   - 결과·근거:
 
 - [ ] **W-004 GitHub Release 게시와 원격 HTTPS E2E**
   - 범위·변경 파일: GitHub `v2.0.0` release와 게시 후 검증 기록
   - 대응 요구사항·상위 완료 조건: R-001~R-008
   - 선행조건: W-003, GitHub release 설정 확인
-  - 검증 방법: latest/exact manifest, en/ko list/install/export, source export와 hash 비교, 충돌 시 tree 불변
+  - 검증 방법: GitHub `main`과 `v2.0.0` tag SHA가 같은지 확인한 뒤 `gh release create v2.0.0 --verify-tag`로 게시하고, latest/exact manifest, en/ko list/install/export, source export와 hash 비교, 충돌 시 tree 불변
   - 결과·근거:
 
 ## 3. 검증 기록
@@ -59,6 +64,7 @@
 ## 4. 변경·재검증 기록
 
 - 2026-09-18: 기존 계획의 redirect 없는 host 전제를 GitHub Releases 전용 제한 redirect 계약으로 변경했습니다. W-001 이후 기존 redirect 거부 회귀 테스트와 문서 계약을 함께 갱신해야 합니다.
+- 2026-09-18: 리뷰 C-001·C-002·F-003 — bootstrap을 curl 7.83 미만에서도 부분 파일 없이 실패하도록 바꾸고, W-003에 Origin/GitHub `main`·tag SHA 결합을 명시했으며 PROJECT §11·§13을 D-004에 맞췄습니다.
 
 ## 5. 인계
 

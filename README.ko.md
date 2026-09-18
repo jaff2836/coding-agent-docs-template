@@ -11,9 +11,10 @@ Claude, Codex, Cursor와 [Oh My Pi](https://github.com/can1357/oh-my-pi)를 지�
 최신 GitHub release에서 `installer.py`를 내려받은 뒤 지원 locale을 확인하고 새 프로젝트에 설치합니다.
 
 ```sh
-curl --fail --location --remove-on-error --proto '=https' --proto-redir '=https' \
-  --output installer.py \
-  https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
+curl --fail --location --proto '=https' --proto-redir '=https' \
+  --output installer.py.part \
+  https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py \
+  && mv installer.py.part installer.py
 python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
 python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale ko --repo-root /path/to/new-project
 ```

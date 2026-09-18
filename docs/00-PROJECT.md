@@ -158,7 +158,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 ## 11. Open Questions
 
-- [ ] immutable release asset의 실제 host와 bootstrap URL을 공개 release 작업에서 확정합니다.
+- [ ] GitHub repository에서 immutable releases 설정을 쓸 수 있는지는 `v2.0.0` 게시 전에 확인합니다. 사용할 수 없더라도 versioned asset을 교체하지 않는 운영 규칙은 유지합니다. host와 bootstrap URL은 D-004에서 확정했습니다.
 
 ## 12. Rejected or Deferred Ideas
 
@@ -171,5 +171,6 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 |---|---|---|---|
 | 기본 제품 설계 | 이 문서 | 저장소 현재 상태와 승인된 결정 | root 유지관리 작업 |
 | 다국어 배포 변경 | [2026-09-09-multilingual-template SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md) | D-001을 구현하고 D-002를 제안 | 연결된 PLAN의 승인 범위 |
+| GitHub Releases 공개 배포 | [2026-09-18-github-releases-publication SPEC](./changes/2026-09-18-github-releases-publication/02-SPEC.md) | D-004가 D-002의 host-neutral transport를 대체 | v2 공개 배포와 installer transport |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.
