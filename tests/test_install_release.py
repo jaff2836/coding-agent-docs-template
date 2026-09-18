@@ -11,6 +11,7 @@ import sys
 import tempfile
 import threading
 import unittest
+import urllib.request
 import zipfile
 from pathlib import Path
 
@@ -177,6 +178,91 @@ class InstallerTests(unittest.TestCase):
         )
 
     # -- success paths -----------------------------------------------------
+
+    def test_builds_github_latest_and_exact_release_asset_urls(self) -> None:
+        release_url = "https://github.com/jaff2836/coding-agent-docs-template/releases"
+        self.assertEqual(
+            INSTALLER._validated_release_url(release_url + "/"),
+            release_url,
+        )
+        self.assertEqual(
+            INSTALLER._asset_url(release_url, "latest", "installer.py"),
+            release_url + "/latest/download/installer.py",
+        )
+        self.assertEqual(
+            INSTALLER._asset_url(release_url, "2.0.0", "release-manifest.json"),
+            release_url + "/download/v2.0.0/release-manifest.json",
+        )
+        self.assertTrue(
+            INSTALLER._is_github_release_asset_url(
+                release_url + "/latest/download/installer.py"
+            )
+        )
+        self.assertTrue(
+            INSTALLER._is_github_release_asset_url(
+                release_url + "/download/v2.0.0/release-manifest.json"
+            )
+        )
+        self.assertFalse(
+            INSTALLER._is_github_release_asset_url(
+                release_url + "/latest/download/installer.py?unexpected=1"
+            )
+        )
+
+    def test_github_redirect_handler_allows_only_its_https_chain(self) -> None:
+        initial = (
+            "https://github.com/jaff2836/coding-agent-docs-template/"
+            "releases/latest/download/installer.py"
+        )
+        handler = INSTALLER._GitHubReleaseRedirects(initial)
+        first = handler.redirect_request(
+            urllib.request.Request(initial),
+            None,
+            302,
+            "Found",
+            {},
+            "https://release-assets.githubusercontent.com/signed?token=value",
+        )
+        self.assertIsNotNone(first)
+        second = handler.redirect_request(
+            first,
+            None,
+            302,
+            "Found",
+            {},
+            "https://objects.githubusercontent.com/final",
+        )
+        self.assertIsNotNone(second)
+        self.assertIsNone(
+            handler.redirect_request(
+                urllib.request.Request("https://example.invalid/untrusted"),
+                None,
+                302,
+                "Found",
+                {},
+                "https://objects.githubusercontent.com/final",
+            )
+        )
+        self.assertIsNone(
+            handler.redirect_request(
+                urllib.request.Request(initial),
+                None,
+                302,
+                "Found",
+                {},
+                "http://release-assets.githubusercontent.com/insecure",
+            )
+        )
+        self.assertIsNone(
+            handler.redirect_request(
+                urllib.request.Request(initial),
+                None,
+                302,
+                "Found",
+                {},
+                "https://user:secret@example.invalid/asset",
+            )
+        )
 
     def test_install_writes_the_verified_locale_into_the_target_root(self) -> None:
         base = self.publish()
@@ -455,10 +541,28 @@ class InstallerTests(unittest.TestCase):
             self.call_install("http://example.com/releases", target)
         self.assertIn("https", str(context.exception))
         with self.assertRaises(INSTALLER.InstallerError) as context:
-            self.call_install("https://example.invalid/releases", target, version="2.0")
+            self.call_install("https://example.invalid/releases", target)
+        self.assertIn("github.com", str(context.exception))
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            self.call_install(
+                "https://github.com/jaff2836/coding-agent-docs-template/releases",
+                target,
+                version="2.0",
+            )
         self.assertIn("SemVer", str(context.exception))
 
-    def test_rejects_release_asset_redirects(self) -> None:
+        invalid_release_urls = (
+            "https://github.com:443/jaff2836/coding-agent-docs-template/releases",
+            "https://github.com/jaff2836/coding-agent-docs-template",
+            "https://github.com/jaff2836/coding-agent-docs-template/releases?x=1",
+            "https://github.com/jaff2836/coding-agent-docs-template/releases#fragment",
+        )
+        for release_url in invalid_release_urls:
+            with self.subTest(release_url=release_url):
+                with self.assertRaises(INSTALLER.InstallerError):
+                    INSTALLER._validated_release_url(release_url)
+
+    def test_rejects_local_fixture_redirects(self) -> None:
         payloads = build_release_payloads()
         manifest_path = "%s/release-manifest.json" % VERSION_DIR
         redirected_path = "%s/redirected-manifest.json" % VERSION_DIR
@@ -471,6 +575,15 @@ class InstallerTests(unittest.TestCase):
         with self.assertRaises(INSTALLER.InstallerError) as context:
             INSTALLER.list_locales(server.base_url, "2.0.0")
         self.assertIn("HTTP 302", str(context.exception))
+
+    def test_rejects_a_manifest_for_another_github_repository(self) -> None:
+        release_url = "https://github.com/jaff2836/coding-agent-docs-template/releases"
+        manifest = {
+            "repository": "someone/another-template",
+        }
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            INSTALLER._require_matching_repository(release_url, manifest)
+        self.assertIn("does not match", str(context.exception))
 
     def test_mid_write_failure_rolls_back_created_files(self) -> None:
         base = self.publish()

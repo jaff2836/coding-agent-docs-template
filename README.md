@@ -8,11 +8,14 @@ It supports Claude, Codex, Cursor, and [Oh My Pi](https://github.com/can1357/oh-
 
 ## Installation
 
-Download `installer.py` from the release, list the supported locales, and install one into a new project. Replace `{{RELEASE_BASE_URL}}` with the asset base URL shown in the release instructions.
+Download `installer.py` from the latest GitHub release, list the supported locales, and install one into a new project.
 
-```text
-python3 installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version latest
-python3 installer.py install --release-url {{RELEASE_BASE_URL}} --version latest --locale en --repo-root /path/to/new-project
+```sh
+curl --fail --location --proto '=https' --proto-redir '=https' \
+  --output installer.py \
+  https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
+python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
+python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root /path/to/new-project
 ```
 
 Set `--locale` to `en` or `ko`. The target must be new or empty; if any destination file already exists, the installer writes nothing.
@@ -21,11 +24,11 @@ Set `--locale` to `en` or `ko`. The target must be new or empty; if any destinat
 
 Do not install directly into a project that already uses v1 or maintains its own documentation. Export v2 into an empty directory, compare it with the existing files, and apply only the changes you need.
 
-```text
-python3 installer.py export --release-url {{RELEASE_BASE_URL}} --version latest --locale en --output /path/to/empty-directory
+```sh
+python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --output /path/to/empty-directory
 ```
 
-The installer never overwrites existing files, follows no redirects, and does not provide automatic updates, locale switching, or `--force`. The release URL must serve the assets directly over HTTPS. For another language, you can localize the English artifact's project instructions and documents, but the result is outside the officially verified locales.
+The installer never overwrites existing files and does not provide automatic updates, locale switching, or `--force`. It follows only the HTTPS redirect chain initiated by a verified GitHub release asset URL, then validates the exact tagged release's manifest, checksums, and its own bytes. For another language, you can localize the English artifact's project instructions and documents, but the result is outside the officially verified locales.
 
 ## After installation
 

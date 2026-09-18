@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.7.1
+- **Template version:** 2.0.0
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -67,12 +67,15 @@ The template does not include an initialization script, review prompts or automa
 
 ## 2. Applying to a New Project
 
-For an official release, use the separately published `installer.py` asset and an HTTPS release URL that serves the assets directly. The installer does not follow redirects. Do not run the commands below until every `{{...}}` value has been replaced with actual release information.
+For an official release, use `installer.py` from GitHub Releases. Use the latest installer with the latest version, or a versioned tag's installer with that same exact version. The installer follows only an HTTPS redirect chain initiated by a GitHub release asset URL, then verifies the checksums and manifest from the exact tag.
 
-```text
-python3 installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version {{VERSION}}
-python3 installer.py install --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
-python3 installer.py export --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+```sh
+curl --fail --location --proto '=https' --proto-redir '=https' \
+  --output installer.py \
+  https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
+python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}
+python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
+python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
 Use `latest` or a full SemVer value for `{{VERSION}}`.
@@ -281,7 +284,7 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
 
-### v2.0.0 (unreleased) — Locale Artifacts and Non-destructive Installation
+### v2.0.0 — Locale Artifacts and Non-destructive Installation
 
 - Apply a verified artifact for one selected locale, `en` or `ko`, instead of copying the source repository root. Root paths and tool entry points remain stable.
 - The release installer verifies the version, locale, manifest, checksums, and member inventory and writes nothing when a target path already exists. Existing projects and locale changes use export to an empty directory followed by a manual merge.

@@ -35,6 +35,9 @@ REPOSITORY_RE = re.compile(
     r"[A-Za-z0-9](?:[A-Za-z0-9_.-]*[A-Za-z0-9])?/"
     r"[A-Za-z0-9](?:[A-Za-z0-9_.-]*[A-Za-z0-9])?"
 )
+TEMPLATE_VERSION_RE = re.compile(
+    r"^\s*-\s*\*\*Template version:\*\*\s*(\S+)", re.MULTILINE
+)
 
 
 class ReleaseError(ValueError):
@@ -147,6 +150,27 @@ def _artifact_members(root: Path) -> tuple[tuple[str, bytes], ...]:
     return tuple(members)
 
 
+def _verify_artifact_version(root: Path, locale: str, version: str) -> None:
+    for relative in ("docs/TEMPLATE_GUIDE.md", "docs/DOCS_GUIDE.md"):
+        path = root / relative
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise ReleaseError(
+                "%s artifact cannot read %s: %s" % (locale, relative, exc)
+            ) from exc
+        match = TEMPLATE_VERSION_RE.search(text)
+        if match is None:
+            raise ReleaseError(
+                "%s artifact has no Template version in %s" % (locale, relative)
+            )
+        if match.group(1) != version:
+            raise ReleaseError(
+                "%s artifact Template version %s does not match release version %s"
+                % (locale, match.group(1), version)
+            )
+
+
 def _zip_bytes(members: tuple[tuple[str, bytes], ...]) -> bytes:
     output = io.BytesIO()
     with zipfile.ZipFile(output, mode="w", compression=zipfile.ZIP_STORED) as archive:
@@ -205,6 +229,7 @@ def build_release_artifacts(
                 exported,
                 require_complete=True,
             )
+            _verify_artifact_version(exported, locale, version)
             members = _artifact_members(exported)
             expected = tuple(
                 path

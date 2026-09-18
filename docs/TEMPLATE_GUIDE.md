@@ -2,12 +2,12 @@
 
 이 문서는 문서 중심 프로젝트 템플릿의 source 관리와 적용 안내입니다. 저장소의 영어 기본 release landing은 루트 [README.md](../README.md), 한국어 번역은 [README.ko.md](../README.ko.md)입니다. 적용 프로젝트의 소개·설치·실행 양식은 선택한 locale source가 소유하며, 한국어판은 [locales/ko/README.md](../locales/ko/README.md)입니다.
 
-v2 source root는 적용 payload가 아니므로 직접 복사하지 않습니다. locale별 exporter·packager·installer는 구현됐지만 공식 v2 release와 release host는 아직 확정되지 않았습니다. 그전까지 게시된 안정판은 `v1.7.1`이며, v2는 source checkout에서 exporter로 검증할 수 있습니다. 특정 CI 제품의 pipeline 파일은 포함하지 않으며 품질 게이트의 순서와 연결 확인은 [CI.md](./CI.md)를 따릅니다.
+v2 source root는 적용 payload가 아니므로 직접 복사하지 않습니다. 공식 배포는 `jaff2836/coding-agent-docs-template`의 GitHub Releases에서 locale별 artifact와 installer를 제공합니다. 특정 CI 제품의 pipeline 파일은 포함하지 않으며 품질 게이트의 순서와 연결 확인은 [CI.md](./CI.md)를 따릅니다.
 
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 1.7.1
+- **Template version:** 2.0.0
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -36,23 +36,26 @@ v2 source root는 적용 payload가 아니므로 직접 복사하지 않습니�
 
 ## 2. 새 프로젝트에 적용하기
 
-source checkout에서 아직 게시되지 않은 v2 artifact를 확인할 때는 빈 디렉터리로 export합니다.
+source checkout에서 locale artifact를 확인할 때는 빈 디렉터리로 export합니다.
 
 ```text
 python3 scripts/export-template.py --locale ko --output /path/to/empty-directory
 ```
 
-공식 release가 게시된 뒤에는 release asset으로 받은 `installer.py`와 최종 asset URL을 사용합니다. 아래 `{{...}}` 값은 실제 release 정보로 바꾸기 전에는 실행하지 않습니다. installer는 redirect를 따르지 않으므로 `--release-url`은 asset을 직접 제공하는 HTTPS namespace여야 합니다.
+공식 release에서는 GitHub Releases의 `installer.py`를 사용합니다. latest installer는 latest version과, exact tag의 installer는 같은 exact version과 함께 사용해야 합니다. installer는 GitHub release asset URL에서 시작한 HTTPS redirect chain만 따르고 exact tag의 checksum과 manifest를 검증합니다.
 
-```text
-python3 installer.py list-locales --release-url {{RELEASE_BASE_URL}} --version {{VERSION}}
-python3 installer.py install --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
-python3 installer.py export --release-url {{RELEASE_BASE_URL}} --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+```sh
+curl --fail --location --proto '=https' --proto-redir '=https' \
+  --output installer.py \
+  https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
+python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}
+python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
+python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
 `{{VERSION}}`에는 `latest` 또는 full SemVer를 넣습니다.
 
-1. source root를 복사하지 말고 exact version과 locale이 확인된 artifact만 적용합니다. 공식 v2 release 전에는 위 로컬 exporter를 사용하거나, 게시된 한국어 안정판 `v1.7.1` 기준 commit `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`을 유지합니다.
+1. source root를 복사하지 말고 exact version과 locale이 확인된 artifact만 적용합니다. 기존 `v1.7.1` 사용자는 자동 전환하지 말고 새 v2 artifact를 별도 export하여 비교합니다.
 2. locale artifact의 root `README.md`는 이미 적용 프로젝트용 양식입니다. source 저장소 소개문이나 maintainer 문서는 artifact에 포함하지 않습니다.
 3. artifact의 `AGENTS.md` 프로젝트 정보와 명령을 실제 저장소에 맞게 작성합니다. README의 실행 방법과 서로 일치하도록 확인하세요.
 4. 아래 placeholder와 예시 항목을 교체합니다. [REVIEW.md](./REVIEW.md)의 예시 불변조건을 삭제하거나 실제 규칙으로 바꿀 때는 바로 위 `template-example:project-invariant` marker도 함께 삭제합니다.
@@ -258,7 +261,7 @@ git status --short --untracked-files=all
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
 
-### v2.0.0 (미릴리스) — locale별 artifact와 비파괴 설치
+### v2.0.0 — locale별 artifact와 비파괴 설치
 
 - source 저장소 root 대신 `en`·`ko` 중 하나를 선택한 검증된 artifact를 적용합니다. root 경로와 도구 진입점은 유지됩니다.
 - release installer는 version·locale·manifest·checksum·member inventory를 검증하고 기존 경로가 있으면 쓰지 않습니다. 기존 프로젝트와 locale 전환은 빈 디렉터리 export 후 수동 병합합니다.
