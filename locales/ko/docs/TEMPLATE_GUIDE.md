@@ -296,6 +296,12 @@ git status --short --untracked-files=all
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
 
+### 미릴리스 (최근 tag: v2.0.0) — `project-analysis` 스킬 이관
+
+- `docs/PROJECT_ANALYSIS.md`가 소유하던 전체 프로젝트 분석 절차를 locale별 self-contained `.agents/skills/project-analysis/SKILL.md`로 옮기고 Claude Code용 `.claude/skills/` 복제본을 함께 제공합니다.
+- 스킬은 명시적인 전체 프로젝트 분석 요청에만 적용하고 기본적으로 읽기 전용으로 실행하며, README·manifest·checker가 이 계약과 두 스킬 경로를 검증합니다.
+- 적용 저장소에서 확인할 것: 기존 `docs/PROJECT_ANALYSIS.md`와 그 참조를 제거하고, 선택 locale의 두 skill 복제본·`AGENTS.md`·README·문서 checker 변경을 함께 반영하세요. 이 항목은 `v2.0.0` asset에 포함되지 않은 다음 release 대상입니다.
+
 ### v2.0.0 — locale별 artifact와 비파괴 설치
 
 - source 저장소 root 대신 `en`·`ko` 중 하나를 선택한 검증된 artifact를 적용합니다. root 경로와 도구 진입점은 유지됩니다.

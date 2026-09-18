@@ -148,6 +148,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 ### Phase 3 — public release
 
 - GitHub Releases 전용 transport를 검증하고 exact source commit에 `v2.0.0` tag와 동일 byte asset을 게시합니다.
+- 게시 시점의 Origin·GitHub `main`은 같은 commit이어야 하며 tag commit은 그 `main`의 조상이어야 합니다. `main`이 tag 이후 전진했더라도 검증된 draft asset은 재패키징·교체하지 않습니다.
 - `latest`와 exact version의 원격 en/ko install·export를 확인하고 공개 완료 근거를 별도 기록합니다.
 
 ## 10. Risks

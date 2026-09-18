@@ -23,6 +23,7 @@
 - 전체 분석 절차의 정본은 self-contained skill 하나가 소유하고 별도 문서와 중복하지 않습니다.
 - 영어·한국어 README가 License 바로 위에서 세 skill의 용도와 호출 경계를 짧게 설명합니다.
 - locale artifact와 checker가 새 skill의 두 경로·행동 계약을 검증합니다.
+- release history가 `PROJECT_ANALYSIS.md`에서 skill로의 이관과 적용 저장소의 확인 항목을 다음 release 대상으로 기록합니다.
 
 ### 1.3 범위와 비범위
 
@@ -50,6 +51,7 @@
 | R-003 | 분석은 기본 읽기 전용이며 증거 상태를 구분합니다. | 분석 실행 | `verified`, `inference`, `unverified`를 구분하고 외부 변경은 별도 요청 없이는 수행하지 않음 | stable skill fixture, locale parity |
 | R-004 | 네 도구가 locale별 동일 계약을 찾습니다. | `en` 또는 `ko` artifact 적용 | `.agents`와 `.claude` 복제본이 동일하고 manifest에 두 경로가 존재 | `check-locales.py`, `check-docs.py` |
 | R-005 | README가 세 번들 skill을 간략히 설명합니다. | 사용자가 source 또는 적용 README 확인 | `design`, `project-analysis`, `review-round`의 목적과 호출 경계를 License 바로 위에서 확인 | root·artifact 문서 검사 |
+| R-006 | release history가 이관 경로와 release 경계를 기록합니다. | `v2.0.0` tag 이후 source 변경을 확인 | `PROJECT_ANALYSIS.md` 제거·skill 추가·checker 갱신을 미릴리스 항목으로 보이고 `v2.0.0` asset 비포함을 구분 | root·en·ko `TEMPLATE_GUIDE.md`, artifact 문서 검사 |
 
 ### 2.2 대안과 선택 이유
 
@@ -81,3 +83,4 @@ D-002의 locale별 skill S2와 고정 tool path를 확장합니다. `docs/`에 �
 ## 3. 변경 기록
 
 - 2026-09-18: 사용자 승인에 따라 `PROJECT_ANALYSIS.md`를 self-contained `project-analysis` skill로 이관하고 README의 번들 skill 설명을 같은 변경으로 묶었습니다.
+- 2026-09-18: 후속 제안을 반영해 세 locale/source guide의 미릴리스 이력에 `PROJECT_ANALYSIS.md` skill 이관과 적용 확인 항목을 추가했습니다.

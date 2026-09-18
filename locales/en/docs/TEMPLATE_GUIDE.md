@@ -296,6 +296,12 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
 
+### Unreleased (Latest Tag: v2.0.0) — Move Project Analysis into a Skill
+
+- Moved the whole-project analysis process from `docs/PROJECT_ANALYSIS.md` into the locale's self-contained `.agents/skills/project-analysis/SKILL.md` and added the matching `.claude/skills/` copy for Claude Code.
+- The skill applies only to explicit whole-project analysis requests and runs read-only by default. The README, manifest, and checkers now verify that contract and both skill paths.
+- Verify in the adopting repository: remove the old `docs/PROJECT_ANALYSIS.md` and its references, then apply the selected locale's two skill copies and the related `AGENTS.md`, README, and documentation-checker changes together. This entry targets the next release and is not included in the `v2.0.0` assets.
+
 ### v2.0.0 — Locale Artifacts and Non-destructive Installation
 
 - Apply a verified artifact for one selected locale, `en` or `ko`, instead of copying the source repository root. Root paths and tool entry points remain stable.
