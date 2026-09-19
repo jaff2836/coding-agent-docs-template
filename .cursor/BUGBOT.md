@@ -40,6 +40,7 @@ Bugbot은 `docs/REVIEW.md` §6을 읽지 못하므로 같은 목록을 여기에
 
 - **Artifact 경계:** 저장소 root의 maintainer 문서나 source landing README를 사용자 artifact에 포함하지 않습니다. 포함하면 저장소 로드맵이 적용 프로젝트 정책으로 오염되므로, 안전한 경로는 `locales/manifest.json`의 닫힌 inventory에 따라 `template/common/`과 locale 하나만 합성하는 것입니다.
 - **Locale 완전성:** 서로 다른 locale의 자연어 정책·스킬을 한 artifact에 섞거나 미완료 locale을 안정판으로 게시하지 않습니다. agent 행동과 사용자 검수가 언어별로 달라질 수 있으므로, 안전한 경로는 `en`·`ko` complete gate와 locale별 artifact 검사를 통과한 immutable asset만 게시하는 것입니다.
+- **Adoption 읽기 전용:** `installer.py adopt`는 대상 저장소에 파일을 만들거나 수정·삭제하지 않고, artifact 경로를 policy 없이 배포하지 않습니다. 대상 안에 staging을 쓰거나 충돌 파일을 덮어쓰면 사용자 문서와 라이선스 결정이 손상되므로, 안전한 경로는 `locales/manifest.json`의 닫힌 adoption policy를 release manifest에 결합하고 대상 밖의 빈 output에 검증된 artifact와 report만 원자적으로 게시하는 것입니다.
 
 ## 확정된 설계 결정과 승인된 deferral
 
@@ -47,6 +48,7 @@ Bugbot은 `docs/REVIEW.md` §6을 읽지 못하므로 같은 목록을 여기에
 
 - 승인된 deferral: 실제로 승인된 `DFR-*` 항목이 없으면 이 목록은 비워 둡니다
 - 확정된 결정: D-001 — 저장소 root 유지관리 영역과 배포 payload source를 분리하고 source root를 직접 복사하지 않습니다.
+- 확정된 결정: D-006 — 기존 저장소 adoption은 `adopt`가 대상 밖 output에 검증된 staging과 실험적 report만 만들며, 자동 적용·overwrite·3-way merge와 공개 report schema는 제공하지 않습니다.
 
 ## Finding 필수 항목
 
