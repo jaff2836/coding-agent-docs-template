@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** In Progress — 공개 v1.7.1 기준과 v2 locale source 전환을 구분
+- **Status:** Active — `v2.0.0` 공개 완료, 다음 release 변경 준비 중
 - **Owner:** Chae Sangwon
 - **Last reviewed:** 2026-09-18
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
@@ -25,11 +25,12 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Current State
 
-- 공개 기준은 한국어 복사형 `v1.7.1`이며 Origin `main`의 merge commit `113a6a58f9b03707fe8050b5673d3437b9895d03`에 반영되어 있습니다.
+- 공개 release 기준은 immutable GitHub Release `v2.0.0`이며 tag commit은 `8bc8b1b5049de1f57dead7b2a804e8bee5ce989f`입니다. `latest`와 exact version의 en·ko 원격 install/export가 통과했습니다.
 - W-001의 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source 분리는 Origin PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에 통합됐습니다.
 - W-002의 `locales/en`·locale별 skill S2 계약과 W-003 locale/artifact 검사는 각각 Origin PR #4·#5에 통합됐습니다. `en`·`ko` source는 모두 `complete`입니다.
 - W-004 exporter·packager는 Origin PR #6 merge commit `f60ae97`, W-005 비파괴 installer는 PR #7 merge commit `9d4637d`, W-006 적용 문서는 PR #8 merge commit `60638ed`에 통합됐습니다.
-- W-007은 `60638ed` exact head에서 `en`·`ko` package/install/export와 Claude·Codex·Cursor·OMP의 실제 로딩 probe를 통과했습니다. 공개 release와 원격 HTTPS host 검증은 별도 게시 작업입니다.
+- W-007은 `60638ed` exact head에서 `en`·`ko` package/install/export와 Claude·Codex·Cursor·OMP의 실제 로딩 probe를 통과했습니다. D-004 공개 gate에서는 tag commit의 102개 테스트·docs·stable locale, deterministic package와 기존 draft asset byte 동일성, 실제 GitHub HTTPS latest·exact 설치를 추가로 확인했습니다.
+- 후속 Origin PR #12 merge commit `5eefc11075652066c90734dd739cc7c650be826c`은 `project-analysis`를 locale별 skill로 이관했습니다. 이 변경은 `v2.0.0` 고정 asset에 포함되지 않으며 다음 release 대상입니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -72,12 +73,12 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Data Flow
 
-exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고 경로 충돌·부분 실패를 거부하거나 rollback합니다. source root 자체는 배포하지 않습니다. W-007 소비자 E2E는 로컬 immutable release namespace로 검증했으며 실제 원격 release는 D-004의 별도 게시 단계입니다.
+exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고 경로 충돌·부분 실패를 거부하거나 rollback합니다. source root 자체는 배포하지 않습니다. W-007의 로컬 소비자 E2E에 더해 D-004의 실제 immutable GitHub Release에서 latest·exact 원격 E2E를 검증했습니다.
 
 ### External Boundaries
 
 - 공개 저장소 identity와 release host는 `jaff2836/coding-agent-docs-template`의 GitHub Releases로 확정했습니다. bootstrap URL과 version URL 계약은 [D-004 SPEC](./changes/2026-09-18-github-releases-publication/02-SPEC.md)이 소유합니다.
-- 파일시스템과 향후 release asset 다운로드가 신뢰 경계입니다. manifest·archive·member hash를 모두 확인해야 합니다.
+- 파일시스템과 release asset 다운로드가 신뢰 경계입니다. manifest·archive·member hash를 모두 확인해야 합니다.
 
 ### Contracts and Core Design
 
@@ -114,7 +115,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | W-005 | 비파괴 installer | W-004 manifest·bundle 계약 | v1.7.1 유지; 공식 v2 release 전 | PR #7 merge commit `9d4637d`, exact-head package/install E2E |
 | W-006 | 적용·마이그레이션·지원 문서 정렬 | W-001~W-005 | 실제 release 전에는 원격 설치를 완료로 표시하지 않음 | PR #8 merge commit `60638ed` |
 | W-007 | exact-head 전체 검증과 소비자 E2E | W-006 | 공개 release 없이 로컬 immutable release namespace로 검증 | `60638ed` exact-head gate와 Claude·Codex·Cursor·OMP probe |
-| 공개 배포 | GitHub Releases transport와 v2.0.0 게시 | W-007, D-004 | 공개된 tag·asset은 교체하지 않고 결함 시 patch release | [GitHub Releases 공개 배포 PLAN](./changes/2026-09-18-github-releases-publication/03-PLAN.md) |
+| 공개 배포 | GitHub Releases transport와 v2.0.0 게시 | W-007, D-004 | 공개된 tag·asset은 교체하지 않고 결함 시 patch release | `v2.0.0` tag `8bc8b1b`, immutable release와 [W-003·W-004 검증](./changes/2026-09-18-github-releases-publication/03-PLAN.md) |
 
 ## 8. Decisions
 
@@ -162,7 +163,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 ## 11. Open Questions
 
-- [ ] GitHub repository에서 immutable releases 설정을 쓸 수 있는지는 `v2.0.0` 게시 전에 확인합니다. 사용할 수 없더라도 versioned asset을 교체하지 않는 운영 규칙은 유지합니다. host와 bootstrap URL은 D-004에서 확정했습니다.
+없음. GitHub immutable releases 설정을 확인하고 `v2.0.0` 게시 결과가 immutable 상태임을 검증했습니다.
 
 ## 12. Rejected or Deferred Ideas
 
