@@ -211,6 +211,8 @@ python -m unittest discover -s tests -p 'test_check_docs.py' -v
 
 `python`이 없으면 `python3`을 사용하세요. 파일 이동은 내용이 바뀌지 않아도 링크를 깨뜨립니다. 이 문서를 §5에 따라 삭제한 저장소에서도 검사는 그대로 동작하며, 판 기록은 [DOCS_GUIDE.md](./DOCS_GUIDE.md)에서만 확인합니다. 절 번호 검사는 문서를 지목한 참조(`REVIEW.md §6`, `PROJECT §8` 등)만 대상으로 하며, 대상이 모호한 같은 파일 안의 `§4` 같은 참조와 §6 릴리스 이력의 옛 절 번호는 제외합니다. 생성물 디렉터리(`dist`, `build`, `target`, `vendor` 등)는 검사에서 건너뜁니다. 이 검사는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니다. placeholder 검색은 위의 `rg`/`grep` 명령을 사용하세요.
 
+검사는 CommonMark 전체를 구현하지 않고 다음 범위만 해석합니다. 절 번호는 ATX heading(`## 2. 제목`)에서만 읽습니다. inline link는 링크 텍스트가 한 줄 안에 있어야 하며, destination과 title 앞에는 줄바꿈을 한 번까지 허용합니다. reference definition은 한 줄에 label·destination·선택적 title만 둡니다. fenced·indented code block, inline code span, HTML comment, 그리고 `<pre>`·`<script>`·`<style>`·`<textarea>`나 블록 수준 HTML 태그로 시작하는 HTML block 안의 텍스트는 링크나 절 참조로 보지 않습니다. scheme이 있는 URL과 `/`로 시작하는 경로는 파일 링크로 검사하지 않습니다. Setext heading, 여러 줄에 걸친 링크 텍스트나 reference definition, 그 밖의 HTML block 형식은 해석하지 않으므로 검사할 문서에서는 위 형식을 사용하세요.
+
 | Placeholder | 작성할 내용 |
 |---|---|
 | `{{PROJECT_NAME}}` | 프로젝트 이름 |
@@ -326,6 +328,8 @@ git status --short --untracked-files=all
 - `docs/PROJECT_ANALYSIS.md`가 소유하던 전체 프로젝트 분석 절차를 locale별 self-contained `.agents/skills/project-analysis/SKILL.md`로 옮기고 Claude Code용 `.claude/skills/` 복제본을 함께 제공합니다.
 - 스킬은 명시적인 전체 프로젝트 분석 요청에만 적용하고 기본적으로 읽기 전용으로 실행하며, README·manifest·checker가 이 계약과 두 스킬 경로를 검증합니다.
 - 적용 저장소에서 확인할 것: 기존 `docs/PROJECT_ANALYSIS.md`와 그 참조를 제거하고, 선택 locale의 두 skill 복제본·`AGENTS.md`·README·문서 checker 변경을 함께 반영하세요. 이 항목은 `v2.0.0` asset에 포함되지 않은 다음 release 대상입니다.
+- `scripts/check-docs.py`가 링크·HTML block·reference definition·절 번호·`Template version`·선택 파일 symlink를 더 엄격하게 해석합니다. 지원하는 Markdown 범위는 §3에 명시했습니다.
+- 적용 저장소에서 확인할 것: `scripts/check-docs.py`와 `tests/test_check_docs.py`를 함께 교체한 뒤 검사를 다시 실행하세요. 새로 드러난 깨진 링크, 모호한 문서 짧은 이름 참조, 저장소 밖을 가리키는 선택 파일은 문서에서 고칩니다.
 
 ### v2.0.0 — locale별 artifact와 비파괴 설치
 
