@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** Active — `v2.0.0` 공개 완료, `v2.1.0` 기존 저장소 adoption·checker 강화 진행 중
+- **Status:** Active — `v2.1.0` 공개와 기존 저장소 adoption 지원 검증 완료
 - **Owner:** Chae Sangwon
 - **Last reviewed:** 2026-09-19
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
@@ -25,12 +25,12 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Current State
 
-- 공개 release 기준은 immutable GitHub Release `v2.0.0`이며 tag commit은 `8bc8b1b5049de1f57dead7b2a804e8bee5ce989f`입니다. `latest`와 exact version의 en·ko 원격 install/export가 통과했습니다.
+- 공개 release 기준은 immutable GitHub Release `v2.1.0`(2026-09-19 공개, Latest)이며 tag commit은 Origin PR #18 merge commit `36a123ff3bd939a99148e0f804f9e20924f6be0b`입니다. latest·exact의 en·ko 원격 install/export/adopt가 통과했습니다. 이전 `v2.0.0`(tag commit `8bc8b1b`)은 그대로 유지되며, exact version에 맞는 자기 installer로만 설치할 수 있습니다.
 - W-001의 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source 분리는 Origin PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에 통합됐습니다.
 - W-002의 `locales/en`·locale별 skill S2 계약과 W-003 locale/artifact 검사는 각각 Origin PR #4·#5에 통합됐습니다. `en`·`ko` source는 모두 `complete`입니다.
 - W-004 exporter·packager는 Origin PR #6 merge commit `f60ae97`, W-005 비파괴 installer는 PR #7 merge commit `9d4637d`, W-006 적용 문서는 PR #8 merge commit `60638ed`에 통합됐습니다.
 - W-007은 `60638ed` exact head에서 `en`·`ko` package/install/export와 Claude·Codex·Cursor·OMP의 실제 로딩 probe를 통과했습니다. D-004 공개 gate에서는 tag commit의 102개 테스트·docs·stable locale, deterministic package와 기존 draft asset byte 동일성, 실제 GitHub HTTPS latest·exact 설치를 추가로 확인했습니다.
-- 후속 Origin PR #12 merge commit `5eefc11075652066c90734dd739cc7c650be826c`은 `project-analysis`를 locale별 skill로 이관했습니다. 이 변경은 `v2.0.0` 고정 asset에 포함되지 않으며 다음 release 대상입니다.
+- `project-analysis` locale별 skill(D-005, PR #12), 기존 저장소용 읽기 전용 `adopt`와 adoption policy·release manifest schema 2(D-006, PR #14~#16), 강화된 artifact `check-docs.py`(T-005, PR #17)가 `v2.1.0` asset에 포함됐습니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -69,11 +69,11 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 | `locales/manifest.json` | baseline, locale 상태, common/localized output inventory | checker·exporter·packager가 사용 | Chae Sangwon |
 | 번들 skill | `design`, `project-analysis`, `review-round`의 조건부 절차를 tool별 고정 경로에 제공 | locale별 `.agents`·`.claude` byte-identical 사본과 skill fixture | Chae Sangwon |
 | locale exporter·packager | 단일-locale tree와 deterministic ZIP·manifest·checksum 생성 | complete locale source, 고정 installer source | Chae Sangwon |
-| 비파괴 installer | 명시한 GitHub Releases root의 manifest·checksum·locale ZIP을 검증하고 새 대상에 install하거나 빈 디렉터리로 export | GitHub asset HTTPS redirect만 제한 허용, 기존 경로 충돌 시 전체 중단 | Chae Sangwon |
+| 비파괴 installer | 명시한 GitHub Releases root의 manifest·checksum·locale ZIP을 검증하고 새 대상에 install하거나 빈 디렉터리로 export하며, 기존 저장소에는 `adopt`로 대상 밖 output에 artifact와 경로별 plan만 게시 | GitHub asset HTTPS redirect만 제한 허용, 기존 경로 충돌 시 전체 중단, `adopt`는 대상에 쓰지 않음 | Chae Sangwon |
 
 ### Data Flow
 
-exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고 경로 충돌·부분 실패를 거부하거나 rollback합니다. source root 자체는 배포하지 않습니다. W-007의 로컬 소비자 E2E에 더해 D-004의 실제 immutable GitHub Release에서 latest·exact 원격 E2E를 검증했습니다.
+exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. packager는 `locales/manifest.json`의 adoption policy도 각 member에 materialize합니다(`schema_version` 2). installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고 경로 충돌·부분 실패를 거부하거나 rollback합니다. 기존 저장소에는 `adopt`가 같은 검증 후 artifact 경로만 list·lstat·read로 분류하고, 대상 밖의 빈 output에 `artifact/`와 실험적 `adoption-plan.json`을 원자적으로 게시합니다. source root 자체는 배포하지 않습니다. `v2.0.0`과 `v2.1.0` 모두 실제 immutable GitHub Release에서 latest·exact 원격 E2E를 검증했습니다.
 
 ### External Boundaries
 
@@ -92,13 +92,11 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 
 승인된 목표 구성은 `template/common/`과 BCP 47 tag별 `locales/<tag>/` source, 닫힌 manifest inventory, locale 검사, deterministic exporter·packager와 비파괴 installer입니다. 첫 안정판은 `en`·`ko`가 모두 `complete`일 때만 만들며 skill prose와 출력 정책은 locale별 source가 소유합니다.
 
-D-006에 따라 installer에 기존 저장소용 읽기 전용 `adopt` 명령을 추가합니다. 경로별 adoption policy(`copy`·`merge`·`decide`)는 `locales/manifest.json`이 소유하고 packager가 release manifest `schema_version` 2의 member record에 materialize합니다. 상세 계약은 [adoption SPEC](./changes/2026-09-18-existing-repository-adoption/02-SPEC.md)을 따릅니다.
+D-006의 `adopt`·adoption policy·release manifest schema 2는 `v2.1.0`으로 구현·공개되어 §5 현재 구조로 옮겼습니다. 상세 계약은 [adoption SPEC](./changes/2026-09-18-existing-repository-adoption/02-SPEC.md)을 따릅니다.
 
 ### Target Data Flow
 
 common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경로로 합성하고 검사합니다. exact source commit과 version에 결합된 locale별 archive·manifest를 만든 뒤 installer가 검증·stage·전체 충돌 검사를 거쳐 대상에 기록합니다. 상세 계약은 [SPEC §3](./changes/2026-09-09-multilingual-template/02-SPEC.md)을 따릅니다.
-
-기존 저장소에는 `adopt`가 같은 release 검증 후 대상 밖의 빈 output에 검증된 artifact tree와 경로별 status를 담은 실험적 `adoption-plan.json`을 원자적으로 게시합니다. 대상 저장소에는 쓰지 않으며 병합은 사람 또는 coding agent가 적용 가이드에 따라 수행합니다.
 
 ### Compatibility Requirements
 
@@ -120,7 +118,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | W-006 | 적용·마이그레이션·지원 문서 정렬 | W-001~W-005 | 실제 release 전에는 원격 설치를 완료로 표시하지 않음 | PR #8 merge commit `60638ed` |
 | W-007 | exact-head 전체 검증과 소비자 E2E | W-006 | 공개 release 없이 로컬 immutable release namespace로 검증 | `60638ed` exact-head gate와 Claude·Codex·Cursor·OMP probe |
 | 공개 배포 | GitHub Releases transport와 v2.0.0 게시 | W-007, D-004 | 공개된 tag·asset은 교체하지 않고 결함 시 patch release | `v2.0.0` tag `8bc8b1b`, immutable release와 [W-003·W-004 검증](./changes/2026-09-18-github-releases-publication/03-PLAN.md) |
-| 기존 저장소 adoption | adoption policy, release manifest schema 2, `adopt`, 기존 저장소 우선 문서와 `v2.1.0` 게시 | D-006, T-005 checker 강화 | `install`·`export` CLI 유지; 결함 시 `adopt`·policy를 제거한 patch release | [adoption PLAN](./changes/2026-09-18-existing-repository-adoption/03-PLAN.md) W-001~W-004 |
+| 기존 저장소 adoption | adoption policy, release manifest schema 2, `adopt`, 기존 저장소 우선 문서와 `v2.1.0` 게시 | D-006, T-005 checker 강화 | `install`·`export` CLI 유지; 결함 시 `adopt`·policy를 제거한 patch release | PR #14~#18, `v2.1.0` tag `36a123f` immutable release와 [adoption PLAN](./changes/2026-09-18-existing-repository-adoption/03-PLAN.md) W-004 원격 E2E |
 
 ## 8. Decisions
 
