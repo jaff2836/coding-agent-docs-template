@@ -7,7 +7,7 @@ v2 source root는 적용 payload가 아니므로 직접 복사하지 않습니�
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.0.0
+- **Template version:** 2.1.0
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -58,13 +58,19 @@ python3 scripts/export-template.py --locale ko --output /path/to/empty-directory
 
 `{{VERSION}}`에는 `latest` 또는 full SemVer를 넣습니다.
 
-기존 프로젝트와 비교할 artifact가 필요하면 설치 대신 빈 디렉터리로 export합니다.
+기존 저장소에는 설치 대신 `adopt`를 사용합니다. 대상 저장소에는 쓰지 않고, 대상 밖의 빈 디렉터리에 검증된 `artifact/`와 경로별 처리 계획 `adoption-plan.json`을 만듭니다. status별 처리 기준은 선택한 locale의 [적용 가이드](../locales/ko/docs/TEMPLATE_GUIDE.md) §2가 소유합니다.
+
+```sh
+python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
+```
+
+계획 없이 artifact만 비교하려면 빈 디렉터리로 export합니다.
 
 ```sh
 python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
-1. source root를 복사하지 말고 exact version과 locale이 확인된 artifact만 적용합니다. 기존 `v1.7.1` 사용자는 자동 전환하지 말고 새 v2 artifact를 별도 export하여 비교합니다.
+1. source root를 복사하지 말고 exact version과 locale이 확인된 artifact만 적용합니다. 기존 `v1.7.1` 사용자는 자동 전환하지 말고 `adopt`로 새 v2 artifact와 report를 만들어 비교합니다.
 2. locale artifact의 root `README.md`는 이미 적용 프로젝트용 양식입니다. source 저장소 소개문이나 maintainer 문서는 artifact에 포함하지 않습니다.
 3. artifact의 `AGENTS.md` 프로젝트 정보와 명령을 실제 저장소에 맞게 작성합니다. README의 실행 방법과 서로 일치하도록 확인하세요.
 4. 아래 placeholder와 예시 항목을 교체합니다. [REVIEW.md](./REVIEW.md)의 예시 불변조건을 삭제하거나 실제 규칙으로 바꿀 때는 바로 위 `template-example:project-invariant` marker도 함께 삭제합니다.
@@ -270,11 +276,15 @@ git status --short --untracked-files=all
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
 
-### 미릴리스 (최근 tag: v2.0.0) — `project-analysis` 스킬 이관
+### v2.1.0 — 기존 저장소 `adopt`, `project-analysis` 스킬과 문서 checker 강화
 
+- installer에 기존 저장소용 읽기 전용 `adopt` 명령을 추가했습니다. 대상 저장소에는 쓰지 않고, 대상 밖의 빈 디렉터리에 검증된 `artifact/`와 경로별 status를 담은 실험적 `adoption-plan.json`을 만듭니다. release manifest는 member마다 adoption policy(`copy`·`merge`·`decide`)를 담는 `schema_version` 2입니다.
+- 적용 저장소에서 확인할 것: 다음 판을 반영할 때 `adopt` report의 `merge`·`decision`·`blocked` 경로를 검토하세요. §2의 status 표가 처리 기준입니다.
 - `docs/PROJECT_ANALYSIS.md`가 소유하던 전체 프로젝트 분석 절차를 locale별 self-contained `.agents/skills/project-analysis/SKILL.md`로 옮기고 Claude Code용 `.claude/skills/` 복제본을 함께 제공합니다.
 - 스킬은 명시적인 전체 프로젝트 분석 요청에만 적용하고 기본적으로 읽기 전용으로 실행하며, README·manifest·checker가 이 계약과 두 스킬 경로를 검증합니다.
-- 적용 저장소에서 확인할 것: 기존 `docs/PROJECT_ANALYSIS.md`와 그 참조를 제거하고, 선택 locale의 두 skill 복제본·`AGENTS.md`·README·문서 checker 변경을 함께 반영하세요. 이 항목은 `v2.0.0` asset에 포함되지 않은 다음 release 대상입니다.
+- 적용 저장소에서 확인할 것: 기존 `docs/PROJECT_ANALYSIS.md`와 그 참조를 제거하고, 선택 locale의 두 skill 복제본·`AGENTS.md`·README·문서 checker 변경을 함께 반영하세요.
+- `scripts/check-docs.py`가 링크·HTML block·reference definition·절 번호·`Template version`·선택 파일 symlink를 더 엄격하게 해석합니다. 지원하는 Markdown 범위는 §3에 명시했습니다.
+- 적용 저장소에서 확인할 것: `scripts/check-docs.py`와 `tests/test_check_docs.py`를 함께 교체한 뒤 검사를 다시 실행하세요. 새로 드러난 깨진 링크, 모호한 문서 짧은 이름 참조, 저장소 밖을 가리키는 선택 파일은 문서에서 고칩니다.
 
 ### v2.0.0 — locale별 artifact와 비파괴 설치
 
