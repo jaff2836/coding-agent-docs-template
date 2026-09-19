@@ -66,6 +66,7 @@ BLOCKQUOTE_MARKER_RE = re.compile(r"[ ]{0,3}>[ \t]?")
 PROJECT_INVARIANT_EXAMPLE_PREFIXES = ("- **Example:**", "- **예시:**")
 
 ALLOWED_STATUSES = frozenset(("complete", "experimental", "stale"))
+ADOPTION_POLICIES = frozenset(("copy", "decide", "merge"))
 IGNORED_SOURCE_PARTS = frozenset(("__pycache__",))
 IGNORED_SOURCE_SUFFIXES = frozenset((".pyc", ".pyo"))
 WINDOWS_RESERVED_COMPONENTS = frozenset(
@@ -330,7 +331,14 @@ def _validate_manifest_schema(manifest: Mapping[str, Any], errors: List[str]) ->
         errors.append("artifact must be an object")
     elif _require_keys(
         artifact,
-        ("excluded_baseline_paths", "renamed_baseline_paths", "common_root", "common_paths", "localized_paths"),
+        (
+            "excluded_baseline_paths",
+            "renamed_baseline_paths",
+            "common_root",
+            "common_paths",
+            "localized_paths",
+            "adoption_policy",
+        ),
         "artifact",
         errors,
     ):
@@ -354,6 +362,7 @@ def _validate_manifest_schema(manifest: Mapping[str, Any], errors: List[str]) ->
                     errors.append(
                         "artifact.renamed_baseline_paths must map normalized relative POSIX paths"
                     )
+        _validate_adoption_policy(artifact, errors)
 
     contracts = manifest["contracts"]
     if not isinstance(contracts, dict):
@@ -388,6 +397,32 @@ def _validate_manifest_schema(manifest: Mapping[str, Any], errors: List[str]) ->
                 errors.append("%s.baseline_version must be SemVer" % label)
 
     return len(errors) == start
+
+
+def _validate_adoption_policy(artifact: Mapping[str, Any], errors: List[str]) -> None:
+    """Require exactly one known adoption policy for every artifact output path."""
+
+    policy = artifact["adoption_policy"]
+    if not isinstance(policy, dict):
+        errors.append("artifact.adoption_policy must be an object")
+        return
+    for path, value in sorted(policy.items()):
+        if not isinstance(value, str) or value not in ADOPTION_POLICIES:
+            errors.append(
+                "artifact.adoption_policy.%s must be one of %s"
+                % (path, ", ".join(sorted(ADOPTION_POLICIES)))
+            )
+    inventory = {
+        path
+        for key in ("common_paths", "localized_paths")
+        if isinstance(artifact[key], list)
+        for path in artifact[key]
+        if isinstance(path, str)
+    }
+    for path in sorted(inventory - set(policy)):
+        errors.append("artifact.adoption_policy is missing output path: %s" % path)
+    for path in sorted(set(policy) - inventory):
+        errors.append("artifact.adoption_policy has path outside the inventory: %s" % path)
 
 
 def _validate_contract_array(value: Any, label: str, errors: List[str]) -> bool:

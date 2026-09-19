@@ -30,6 +30,12 @@ DEFAULT_MEMBERS = {
     "docs/REVIEW.md": b"# review policy\n",
     ".agents/skills/design/SKILL.md": b"---\nname: design\n---\nbody\n",
 }
+DEFAULT_POLICIES = {
+    "AGENTS.md": "merge",
+    "README.md": "merge",
+    "docs/REVIEW.md": "merge",
+    ".agents/skills/design/SKILL.md": "copy",
+}
 
 
 def _sha256(data: bytes) -> str:
@@ -49,10 +55,27 @@ def _tree_state(root: Path) -> tuple[tuple[str, int], ...]:
     return tuple(state)
 
 
+def _tree_snapshot(root: Path) -> tuple[tuple[str, str, int, bytes], ...]:
+    """Capture paths, kinds, modes, file bytes and symlink targets under *root*."""
+
+    snapshot = []
+    for path in sorted(root.rglob("*")):
+        relative = path.relative_to(root).as_posix()
+        mode = stat.S_IMODE(path.lstat().st_mode)
+        if path.is_symlink():
+            snapshot.append((relative, "symlink", mode, os.readlink(path).encode()))
+        elif path.is_dir():
+            snapshot.append((relative, "dir", mode, b""))
+        else:
+            snapshot.append((relative, "file", mode, path.read_bytes()))
+    return tuple(snapshot)
+
+
 def build_release_payloads(
     *,
     locale: str = "ko",
     members: dict[str, bytes] | None = None,
+    policies: dict[str, str] | None = None,
     version: str = "2.0.0",
     source_commit: str = "a" * 40,
     archive: bytes | None = None,
@@ -63,6 +86,10 @@ def build_release_payloads(
     """Build a synthetic release asset map mirroring package-release output."""
 
     member_items = tuple(sorted((members or DEFAULT_MEMBERS).items()))
+    member_policies = {
+        path: (policies or {}).get(path, DEFAULT_POLICIES.get(path, "copy"))
+        for path, _ in member_items
+    }
     if archive is None:
         archive = PACKAGE_RELEASE._zip_bytes(member_items)
     locale_record = {
@@ -71,7 +98,7 @@ def build_release_payloads(
         "sha256": _sha256(archive),
         "bytes": len(archive),
         "compression": "stored",
-        "members": PACKAGE_RELEASE._member_records(member_items),
+        "members": PACKAGE_RELEASE._member_records(member_items, member_policies),
     }
     locale_record.update(locale_record_overrides or {})
     installer_record = {
@@ -81,7 +108,7 @@ def build_release_payloads(
     }
     installer_record.update(installer_record_overrides or {})
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "version": version,
         "source_commit": source_commit,
         "repository": "jaff2836/coding-agent-docs-template",
@@ -361,7 +388,7 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("AGENTS.md", completed.stderr)
         self.assertIn("README.md", completed.stderr)
         self.assertIn("2 conflicting path(s)", completed.stderr)
-        self.assertIn("export", completed.stderr)
+        self.assertIn("run 'adopt'", completed.stderr)
         self.assertEqual(existing.read_bytes(), b"# user document\n")
         self.assertEqual(readme.read_bytes(), b"# user readme\n")
         self.assertEqual((nested / "keep.txt").read_bytes(), b"keep\n")
@@ -400,6 +427,245 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("empty", str(context.exception))
         self.assertEqual(_tree_state(output), before)
         self.assertEqual(marker.read_bytes(), b"user content\n")
+
+    # -- adoption ------------------------------------------------------------
+
+    ADOPTION_MEMBERS = {
+        ".agents/skills/design/SKILL.md": b"skill\n",
+        ".cursor/BUGBOT.md": b"# bugbot\n",
+        ".omp/WATCHDOG.md": b"# watchdog\n",
+        "AGENTS.md": b"# agent contract\n",
+        "LICENSE": b"template license\n",
+        "README.md": b"# template readme\n",
+        "docs/01-DESIGN.md": b"# design procedure\n",
+        "docs/CI.md": b"# ci\n",
+        "docs/REVIEW.md": b"# review policy\n",
+        "scripts/check-docs.py": b"print('check')\n",
+        "tests/test_check_docs.py": b"# tests\n",
+    }
+    ADOPTION_POLICIES = {
+        ".agents/skills/design/SKILL.md": "copy",
+        ".cursor/BUGBOT.md": "decide",
+        ".omp/WATCHDOG.md": "decide",
+        "AGENTS.md": "merge",
+        "LICENSE": "decide",
+        "README.md": "merge",
+        "docs/01-DESIGN.md": "copy",
+        "docs/CI.md": "merge",
+        "docs/REVIEW.md": "merge",
+        "scripts/check-docs.py": "copy",
+        "tests/test_check_docs.py": "copy",
+    }
+
+    def publish_adoption_release(self) -> str:
+        return self.publish(members=self.ADOPTION_MEMBERS, policies=self.ADOPTION_POLICIES)
+
+    def existing_repository(self) -> Path:
+        root = self.temp_root() / "existing"
+        root.mkdir()
+        (root / "AGENTS.md").write_bytes(b"# agent contract\n")
+        (root / "README.md").write_bytes(b"# existing project\n")
+        (root / ".cursor").mkdir()
+        (root / ".cursor/BUGBOT.md").write_bytes(b"# project bugbot\n")
+        (root / "docs").mkdir()
+        (root / "docs/01-DESIGN.md").write_bytes(b"# customized design\n")
+        (root / "docs/ci.md").write_bytes(b"# lowercase ci\n")
+        outside = self.temp_root() / "outside-skills"
+        outside.mkdir()
+        (outside / "keep.md").write_bytes(b"outside\n")
+        (root / ".agents").symlink_to(outside, target_is_directory=True)
+        (root / ".omp").mkdir()
+        (root / ".omp/WATCHDOG.md").symlink_to(outside / "keep.md")
+        (root / "scripts").mkdir()
+        (root / "scripts/check-docs.py").mkdir()
+        (root / "tests").write_bytes(b"not a directory\n")
+        (root / "src.py").write_bytes(b"print('app')\n")
+        return root
+
+    def test_adopt_classifies_every_path_without_modifying_the_target(self) -> None:
+        base = self.publish_adoption_release()
+        target = self.existing_repository()
+        before = _tree_snapshot(target)
+        outside_before = _tree_snapshot(self.temp_root() / "outside-skills")
+        output = self.temp_root() / "adoption"
+        completed = self.run_cli(
+            "adopt",
+            "--release-url",
+            base,
+            "--version",
+            "2.0.0",
+            "--locale",
+            "ko",
+            "--repo-root",
+            str(target),
+            "--output",
+            str(output),
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertEqual(_tree_snapshot(target), before)
+        self.assertEqual(_tree_snapshot(self.temp_root() / "outside-skills"), outside_before)
+        self.assertIn("The target repository was not modified", completed.stdout)
+        self.assertEqual(sorted(path.name for path in output.iterdir()), ["adoption-plan.json", "artifact"])
+        for name, data in self.ADOPTION_MEMBERS.items():
+            self.assertEqual((output / "artifact" / name).read_bytes(), data)
+
+        plan = json.loads((output / "adoption-plan.json").read_text(encoding="utf-8"))
+        self.assertEqual(plan["format"], "coding-agent-docs-template/adoption-plan")
+        self.assertEqual(plan["format_version"], 1)
+        self.assertEqual(plan["stability"], "experimental")
+        self.assertEqual(
+            plan["release"],
+            {
+                "repository": "jaff2836/coding-agent-docs-template",
+                "version": "2.0.0",
+                "source_commit": "a" * 40,
+                "locale": "ko",
+            },
+        )
+        entries = {entry["path"]: entry for entry in plan["paths"]}
+        self.assertEqual([entry["path"] for entry in plan["paths"]], sorted(entries))
+        expected = {
+            ".agents/skills/design/SKILL.md": ("blocked", "parent-symlink"),
+            ".cursor/BUGBOT.md": ("decision", "file"),
+            ".omp/WATCHDOG.md": ("blocked", "symlink"),
+            "AGENTS.md": ("identical", "file"),
+            "LICENSE": ("decision", "absent"),
+            "README.md": ("merge", "file"),
+            "docs/01-DESIGN.md": ("merge", "file"),
+            "docs/CI.md": ("blocked", "case-variant"),
+            "docs/REVIEW.md": ("missing", "absent"),
+            "scripts/check-docs.py": ("blocked", "special"),
+            "tests/test_check_docs.py": ("blocked", "parent-not-directory"),
+        }
+        self.assertEqual(
+            {path: (entry["status"], entry["target"]) for path, entry in entries.items()},
+            expected,
+        )
+        self.assertEqual(
+            plan["summary"],
+            {"missing": 1, "identical": 1, "merge": 2, "decision": 2, "blocked": 5},
+        )
+        self.assertEqual(entries["README.md"]["policy"], "merge")
+        self.assertEqual(entries["README.md"]["target_sha256"], _sha256(b"# existing project\n"))
+        self.assertEqual(
+            entries["README.md"]["artifact_sha256"], _sha256(b"# template readme\n")
+        )
+        self.assertIsNone(entries["LICENSE"]["target_sha256"])
+        self.assertIn("keep the existing content", entries["README.md"]["reason"])
+        self.assertIn("start from the artifact version", entries["docs/01-DESIGN.md"]["reason"])
+        self.assertIn("explicitly decides", entries["LICENSE"]["reason"])
+        self.assertNotIn(str(target), (output / "adoption-plan.json").read_text(encoding="utf-8"))
+
+        repeated = self.temp_root() / "adoption-latest"
+        INSTALLER.adopt(base, "latest", "ko", target, repeated, installer_bytes=REAL_INSTALLER_BYTES)
+        self.assertEqual(
+            (repeated / "adoption-plan.json").read_bytes(),
+            (output / "adoption-plan.json").read_bytes(),
+        )
+        self.assertEqual(_tree_snapshot(target), before)
+
+    def test_adopt_requires_an_existing_repository_and_a_separate_output(self) -> None:
+        base = self.publish_adoption_release()
+        target = self.existing_repository()
+        before = _tree_snapshot(target)
+        for output in (target / "adoption", target / "docs" / "adoption"):
+            with self.assertRaises(INSTALLER.InstallerError) as context:
+                INSTALLER.adopt(base, "2.0.0", "ko", target, output)
+            self.assertIn("outside the repository", str(context.exception))
+        self.assertEqual(_tree_snapshot(target), before)
+
+        empty = self.temp_root() / "empty-project"
+        empty.mkdir()
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            INSTALLER.adopt(base, "2.0.0", "ko", empty, empty)
+        self.assertIn("outside the repository", str(context.exception))
+
+        missing = self.temp_root() / "missing-project"
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            INSTALLER.adopt(base, "2.0.0", "ko", missing, self.temp_root() / "out-a")
+        self.assertIn("use 'install'", str(context.exception))
+        self.assertFalse(missing.exists())
+
+        link = self.temp_root() / "linked-project"
+        link.symlink_to(target, target_is_directory=True)
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            INSTALLER.adopt(base, "2.0.0", "ko", link, self.temp_root() / "out-b")
+        self.assertIn("symlink", str(context.exception))
+        self.assertFalse((self.temp_root() / "out-a").exists())
+        self.assertFalse((self.temp_root() / "out-b").exists())
+
+    def test_adopt_verifies_the_release_before_publishing(self) -> None:
+        base = self.publish(
+            members=self.ADOPTION_MEMBERS,
+            policies=self.ADOPTION_POLICIES,
+            locale_record_overrides={"sha256": "0" * 64},
+        )
+        target = self.existing_repository()
+        before = _tree_snapshot(target)
+        output = self.temp_root() / "adoption"
+        with self.assertRaises(INSTALLER.InstallerError):
+            INSTALLER.adopt(base, "2.0.0", "ko", target, output)
+        self.assertFalse(output.exists())
+        self.assertEqual(_tree_snapshot(target), before)
+
+    def test_adopt_publish_failure_leaves_no_output_or_stage(self) -> None:
+        base = self.publish_adoption_release()
+        target = self.existing_repository()
+        before = _tree_snapshot(target)
+        output = self.temp_root() / "adoption"
+        real_replace = os.replace
+
+        def failing_replace(source, destination):
+            raise OSError("simulated publish failure")
+
+        INSTALLER.os.replace = failing_replace
+        try:
+            with self.assertRaises(INSTALLER.InstallerError) as context:
+                INSTALLER.adopt(base, "2.0.0", "ko", target, output)
+        finally:
+            INSTALLER.os.replace = real_replace
+        self.assertIn("cannot publish", str(context.exception))
+        self.assertFalse(output.exists())
+        self.assertEqual(
+            [path.name for path in self.temp_root().iterdir() if path.name.startswith(".template-install-")],
+            [],
+        )
+        self.assertEqual(_tree_snapshot(target), before)
+
+    def test_adopt_marks_unreadable_directories_as_blocked(self) -> None:
+        target = self.temp_root() / "project"
+        (target / "docs").mkdir(parents=True)
+        real_listdir = os.listdir
+
+        def failing_listdir(path):
+            if Path(path) == target / "docs":
+                raise PermissionError("simulated unreadable directory")
+            return real_listdir(path)
+
+        INSTALLER.os.listdir = failing_listdir
+        try:
+            state = INSTALLER._adoption_target(
+                target, INSTALLER.PurePosixPath("docs/REVIEW.md"), {}
+            )
+        finally:
+            INSTALLER.os.listdir = real_listdir
+        self.assertEqual(state, ("unreadable", None))
+        self.assertEqual(INSTALLER._adoption_status("merge", "unreadable", None, "a" * 64), "blocked")
+
+    def test_manifest_members_require_a_known_adoption_policy(self) -> None:
+        for policy, message in ((None, "invalid member record"), ("overwrite", "adoption policy")):
+            member = {
+                "path": "README.md",
+                "sha256": "a" * 64,
+                "bytes": 1,
+                "mode": 0o644,
+                "timestamp": "1980-01-01T00:00:00Z",
+            }
+            if policy is not None:
+                member["policy"] = policy
+            with self.assertRaises(INSTALLER.InstallerError) as context:
+                INSTALLER._validated_member_record("ko", member)
+            self.assertIn(message, str(context.exception))
 
     # -- validation and integrity failures ---------------------------------
 
