@@ -82,6 +82,7 @@ def build_release_payloads(
     locale_record_overrides: dict | None = None,
     installer_record_overrides: dict | None = None,
     sums: bytes | None = None,
+    schema_version: int = 2,
 ) -> dict[str, bytes]:
     """Build a synthetic release asset map mirroring package-release output."""
 
@@ -108,7 +109,7 @@ def build_release_payloads(
     }
     installer_record.update(installer_record_overrides or {})
     manifest = {
-        "schema_version": 2,
+        "schema_version": schema_version,
         "version": version,
         "source_commit": source_commit,
         "repository": "jaff2836/coding-agent-docs-template",
@@ -688,6 +689,22 @@ class InstallerTests(unittest.TestCase):
             self.assertIn("unsupported locale", str(context.exception))
             self.assertIn("English bundle", str(context.exception))
         self.assertFalse(target.exists())
+
+    def test_schema_mismatch_explains_how_to_pair_the_installer(self) -> None:
+        base = self.publish(schema_version=1)
+        completed = self.run_cli(
+            "list-locales",
+            "--release-url",
+            base,
+            "--version",
+            "2.0.0",
+        )
+        self.assertEqual(completed.returncode, 1)
+        self.assertIn("unsupported release manifest schema_version", completed.stderr)
+        self.assertIn(
+            "installer.py from the same release version",
+            completed.stderr,
+        )
 
     def test_rejects_a_running_installer_that_differs_from_the_manifest(self) -> None:
         base = self.publish()

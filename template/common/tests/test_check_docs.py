@@ -823,6 +823,44 @@ Translated guidance
                 CHECK_DOCS.check_versions(errors, [])
             self.assertIn("exactly once", "\n".join(errors))
 
+    def test_template_guide_is_omitted_only_when_the_path_is_absent(self) -> None:
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as outside:
+            root = Path(directory)
+            write(
+                root,
+                "docs/DOCS_GUIDE.md",
+                "# Guide\n- **Template version:** 1.0.0\n",
+            )
+
+            errors = []
+            notes = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_versions(errors, notes)
+            self.assertEqual(errors, [])
+            self.assertIn("TEMPLATE_GUIDE.md omitted (allowed)", "\n".join(notes))
+
+            external = Path(outside) / "TEMPLATE_GUIDE.md"
+            external.write_text(
+                "# Guide\n- **Template version:** 1.0.0\n",
+                encoding="utf-8",
+            )
+            (root / "docs/TEMPLATE_GUIDE.md").symlink_to(external)
+            errors = []
+            notes = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_versions(errors, notes)
+            self.assertEqual(errors, ["docs/TEMPLATE_GUIDE.md escapes artifact root"])
+            self.assertNotIn("omitted", "\n".join(notes))
+
+            (root / "docs/TEMPLATE_GUIDE.md").unlink()
+            (root / "docs/TEMPLATE_GUIDE.md").mkdir()
+            errors = []
+            notes = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_versions(errors, notes)
+            self.assertEqual(errors, ["docs/TEMPLATE_GUIDE.md is not a file"])
+            self.assertNotIn("omitted", "\n".join(notes))
+
     def test_deep_section_reference_is_not_truncated(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

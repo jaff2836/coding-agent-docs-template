@@ -1307,14 +1307,17 @@ def check_versions(errors: List[str], notes: List[str]) -> None:
         docs_guide, "docs/DOCS_GUIDE.md", errors
     )
 
-    # TEMPLATE_GUIDE.md may be deleted after adoption.
-    if not is_file_inside_root(guide):
+    # TEMPLATE_GUIDE.md may be deleted after adoption. An existing invalid
+    # entry is an error, not an allowed omission.
+    if not path_entry_exists(guide):
         notes.append(
             "TEMPLATE_GUIDE.md omitted (allowed): checking version only in "
             "DOCS_GUIDE.md"
         )
         if v2:
             notes.append("Template version: %s" % v2)
+        return
+    if not optional_file_present(guide, "docs/TEMPLATE_GUIDE.md", errors):
         return
 
     v1 = require_template_version(

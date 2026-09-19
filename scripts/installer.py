@@ -268,7 +268,10 @@ def _validated_manifest(manifest: Any) -> Mapping[str, Any]:
     }:
         raise InstallerError("release manifest has unexpected top-level keys")
     if manifest["schema_version"] != SCHEMA_VERSION:
-        raise InstallerError("unsupported release manifest schema_version")
+        raise InstallerError(
+            "unsupported release manifest schema_version; download and run "
+            "installer.py from the same release version"
+        )
     if SEMVER_RE.fullmatch(manifest["version"]) is None:
         raise InstallerError("release manifest version must be full SemVer")
     if COMMIT_RE.fullmatch(manifest["source_commit"]) is None:
