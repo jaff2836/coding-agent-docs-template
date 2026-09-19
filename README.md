@@ -55,7 +55,7 @@ On Windows PowerShell:
 python installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root C:\path\to\existing-project --output C:\path\to\empty-directory
 ```
 
-`adopt` never writes to the project. It creates `artifact/` with the verified locale files and `adoption-plan.json`, which marks each path as `missing`, `identical`, `merge`, `decision` (for example `LICENSE`), or `blocked`. Merge the files yourself or with a coding agent by following the adoption steps in `artifact/docs/TEMPLATE_GUIDE.md`. The output directory must be outside the project; delete it to cancel. The plan format is experimental and may change in a minor release. `adopt` is available in the release after `v2.0.0`; with `v2.0.0`, run `export` below and compare the files manually.
+`adopt` never writes to the project. It creates `artifact/` with the verified locale files and `adoption-plan.json`, which marks each path as `missing`, `identical`, `merge`, `decision` (for example `LICENSE`), or `blocked`. Merge the files yourself or with a coding agent by following the adoption steps in `artifact/docs/TEMPLATE_GUIDE.md`. The output directory must be outside the project; delete it to cancel. The plan format is experimental and may change in a minor release. `adopt` is available from installer `v2.1.0`.
 
 ### 4. Install into a new project
 
@@ -132,7 +132,7 @@ See the [Template Guide](./docs/TEMPLATE_GUIDE.md) for the complete structure an
 - **`project-analysis`:** performs an explicitly requested, evidence-based whole-project assessment in read-only mode by default and reaches a GO, conditional, no-go, or insufficient-evidence decision.
 - **`review-round`:** runs an explicitly invoked review/fix cycle against the exact PR head and merges only after the configured gate passes and the user confirms.
 
-`project-analysis` becomes a bundled skill in the release after `v2.0.0`. The `v2.0.0` artifacts provide this process as `docs/PROJECT_ANALYSIS.md` instead.
+`project-analysis` is a bundled skill from `v2.1.0`. The `v2.0.0` artifacts provide the same process as `docs/PROJECT_ANALYSIS.md`.
 
 Codex, Cursor, and OMP load the `.agents/skills/` copies; Claude Code loads the byte-identical `.claude/skills/` copies.
 

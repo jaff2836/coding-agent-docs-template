@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.0.0
+- **Template version:** 2.1.0
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -321,13 +321,13 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
 
-### Unreleased (Latest Tag: v2.0.0) — Move Project Analysis into a Skill and Add `adopt` for Existing Repositories
+### v2.1.0 — `adopt` for Existing Repositories, Project Analysis Skill, and Checker Hardening
 
 - Added a read-only `adopt` command to the installer for existing repositories. It never writes to the target repository; it creates the verified `artifact/` and an experimental `adoption-plan.json` with per-path statuses in an empty directory outside the target. The release manifest is now `schema_version` 2, and each member carries an adoption policy (`copy`, `merge`, or `decide`).
 - Verify in the adopting repository: when applying the next version, review the `merge`, `decision`, and `blocked` paths in the `adopt` report. The status table in §2 is the handling rule.
 - Moved the whole-project analysis process from `docs/PROJECT_ANALYSIS.md` into the locale's self-contained `.agents/skills/project-analysis/SKILL.md` and added the matching `.claude/skills/` copy for Claude Code.
 - The skill applies only to explicit whole-project analysis requests and runs read-only by default. The README, manifest, and checkers now verify that contract and both skill paths.
-- Verify in the adopting repository: remove the old `docs/PROJECT_ANALYSIS.md` and its references, then apply the selected locale's two skill copies and the related `AGENTS.md`, README, and documentation-checker changes together. This entry targets the next release and is not included in the `v2.0.0` assets.
+- Verify in the adopting repository: remove the old `docs/PROJECT_ANALYSIS.md` and its references, then apply the selected locale's two skill copies and the related `AGENTS.md`, README, and documentation-checker changes together.
 - `scripts/check-docs.py` now interprets links, HTML blocks, reference definitions, section numbers, `Template version`, and optional-file symlinks more strictly. §3 states the supported Markdown scope.
 - Verify in the adopting repository: replace `scripts/check-docs.py` and `tests/test_check_docs.py` together and rerun the checker. Fix any newly reported broken links, ambiguous short document-name references, or optional files that point outside the repository in the documents.
 

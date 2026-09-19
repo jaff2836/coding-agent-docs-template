@@ -18,6 +18,12 @@ import export_template as EXPORT_TEMPLATE  # noqa: E402
 import package_release as PACKAGE_RELEASE  # noqa: E402
 
 
+# The packager requires the release version to equal the guides' Template version.
+SOURCE_VERSION = PACKAGE_RELEASE.TEMPLATE_VERSION_RE.search(
+    (REPOSITORY_ROOT / "locales/en/docs/TEMPLATE_GUIDE.md").read_text(encoding="utf-8")
+).group(1)
+
+
 def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -48,7 +54,7 @@ class PackageReleaseTests(unittest.TestCase):
             encoding="utf-8",
         )
         self.kwargs = {
-            "version": "2.0.0",
+            "version": SOURCE_VERSION,
             "source_commit": "a" * 40,
             "repository": "jaff2836/coding-agent-docs-template",
         }
@@ -67,8 +73,8 @@ class PackageReleaseTests(unittest.TestCase):
             tuple(first.files),
             (
                 "SHA256SUMS",
-                "coding-agent-docs-template-en-v2.0.0.zip",
-                "coding-agent-docs-template-ko-v2.0.0.zip",
+                "coding-agent-docs-template-en-v%s.zip" % SOURCE_VERSION,
+                "coding-agent-docs-template-ko-v%s.zip" % SOURCE_VERSION,
                 "installer.py",
                 "release-manifest.json",
             ),
@@ -76,7 +82,7 @@ class PackageReleaseTests(unittest.TestCase):
 
         manifest = json.loads(first.files["release-manifest.json"])
         self.assertEqual(manifest["schema_version"], 2)
-        self.assertEqual(manifest["version"], "2.0.0")
+        self.assertEqual(manifest["version"], SOURCE_VERSION)
         self.assertEqual(manifest["source_commit"], "a" * 40)
         self.assertEqual(
             manifest["repository"], "jaff2836/coding-agent-docs-template"
