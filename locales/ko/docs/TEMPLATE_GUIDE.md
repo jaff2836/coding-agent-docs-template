@@ -68,7 +68,7 @@
     └── CI.md                  # 러너 불문의 품질 게이트 워크플로·연결 체크리스트
 ```
 
-## 2. 새 프로젝트에 적용하기
+## 2. 프로젝트에 적용하기
 
 공식 release에서는 GitHub Releases의 `installer.py`를 사용합니다. latest installer는 latest version과, exact tag의 installer는 같은 exact version과 함께 사용해야 합니다. installer는 GitHub release asset URL에서 시작한 HTTPS redirect chain만 따르고 exact tag의 checksum과 manifest를 검증합니다.
 
@@ -80,19 +80,42 @@
     https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
   mv installer.py.part installer.py
   python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}
-  python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
 )
 ```
 
 `{{VERSION}}`에는 `latest` 또는 full SemVer를 넣습니다.
 
-기존 프로젝트와 비교할 artifact가 필요하면 설치 대신 빈 디렉터리로 export합니다.
+기존 저장소에는 `adopt`를 사용합니다. `install`과 같은 방식으로 release를 검증한 뒤 대상 저장소에는 쓰지 않고, 대상 밖의 빈 디렉터리에 검증된 artifact(`artifact/`)와 경로별 처리 계획(`adoption-plan.json`)만 만듭니다.
+
+```sh
+python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
+```
+
+`adopt`는 파일을 적용하지 않습니다. 사람 또는 coding agent가 report의 status에 따라 병합하고 아래 1~13단계를 수행합니다.
+
+| status | 의미 | 처리 |
+|---|---|---|
+| `missing` | 대상에 없음 | `artifact/`의 파일을 추가하고 프로젝트 값을 채웁니다. |
+| `identical` | 이미 artifact와 같음 | 조치하지 않습니다. |
+| `merge` | 대상 파일이 다름 | policy가 `merge`(프로젝트 소유)면 기존 내용을 보존하고 템플릿 절을 병합합니다. `copy`(템플릿 소유)면 artifact 판에서 시작해 의도한 프로젝트 수정만 다시 적용합니다. |
+| `decision` | 채택 여부를 프로젝트가 결정 | `LICENSE`는 §3의 라이선스 규칙, `docs/10-EXTENSION.md`는 5단계, `.cursor/BUGBOT.md`·`.omp/WATCHDOG.md`는 8단계에 따라 추가·유지·삭제를 정합니다. |
+| `blocked` | symlink, 일반 파일이 아닌 항목, 대소문자만 다른 이름 등 | 사람이 대상 경로를 먼저 정리한 뒤 `adopt`를 다시 실행합니다. |
+
+`adoption-plan.json`은 `stability: experimental` 형식이며 minor release에서 필드가 바뀔 수 있습니다. 적용을 취소하려면 output 디렉터리를 삭제합니다.
+
+새 프로젝트에는 존재하지 않거나 빈 대상에 `install`을 사용합니다. 대상에 artifact 경로가 하나라도 있으면 아무것도 쓰지 않고 중단합니다.
+
+```sh
+python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
+```
+
+계획 없이 검증된 artifact만 필요하면 빈 디렉터리로 export합니다.
 
 ```sh
 python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
-1. 검증된 locale artifact를 빈 프로젝트 폴더에 설치하고 §5에 따라 version·source commit을 두 안내 문서에 기록합니다. 숨김 항목인 `.agents/`, `.claude/`, `.cursor/`, `.omp/`와 `.gitignore`, `docs/changes/_template/`의 네 양식도 artifact inventory에 포함되었는지 확인하세요. source 저장소 root를 직접 복사하지 마세요.
+1. `install`한 새 프로젝트 또는 `adopt` report에 따라 병합한 저장소에서 §5에 따라 version·source commit을 두 안내 문서에 기록합니다. 숨김 항목인 `.agents/`, `.claude/`, `.cursor/`, `.omp/`와 `.gitignore`, `docs/changes/_template/`의 네 양식도 artifact inventory에 포함되었는지 확인하세요. source 저장소 root를 직접 복사하지 마세요.
 2. 루트 [README.md](../README.md)는 이미 선택한 locale의 적용 프로젝트 양식입니다. 프로젝트 이름, 설명, 요구사항, 설치·실행·검증 방법, 보안 안내 및 라이선스를 작성합니다.
 3. [AGENTS.md](../AGENTS.md)의 프로젝트 정보와 명령을 실제 저장소에 맞게 작성합니다. README의 실행 방법과 서로 일치하도록 확인하세요.
 4. 아래 placeholder와 예시 항목을 교체합니다. [REVIEW.md](./REVIEW.md)의 예시 불변조건을 삭제하거나 실제 규칙으로 바꿀 때는 바로 위 `template-example:project-invariant` marker도 함께 삭제합니다.
@@ -106,7 +129,7 @@ python3 installer.py export --release-url https://github.com/jaff2836/coding-age
 12. [문서 운영 안내](./DOCS_GUIDE.md)의 Template Adoption Checklist로 적용 완료 여부를 확인합니다.
 13. CI를 쓰는 저장소는 [CI.md](./CI.md)의 워크플로와 체크리스트로 기존 러너에 품질 게이트를 연결합니다. GitHub Actions·Buildkite 등 특정 제품의 pipeline 파일은 이 템플릿이 포함하지 않습니다. 사용자가 러너를 지정하기 전에는 YAML을 새로 만들지 마세요. CI가 없으면 같은 게이트를 로컬에서 실행하고 미사용 이유를 기록합니다.
 
-기존 프로젝트에는 `install`을 바로 실행하지 말고 `export`로 별도 빈 디렉터리에 materialize한 뒤 기존 지침·문서·ignore 규칙과 비교하여 수동 병합하세요. installer는 같은 경로가 하나라도 있으면 전체 설치를 중단하며 `--force`, 자동 update, 자동 locale 전환을 제공하지 않습니다. 기존 코드, 프로젝트가 채운 값, 사용자 변경을 보존하고 적용·제외한 파일을 Template revision 기록 옆에 남깁니다. 문제가 생기면 작업 전 branch 또는 backup으로 되돌립니다.
+기존 프로젝트에는 `install`을 바로 실행하지 말고 위의 `adopt` report와 `artifact/`를 기존 지침·문서·ignore 규칙과 비교하여 수동 병합하세요. installer는 같은 경로가 하나라도 있으면 전체 설치를 중단하며 `--force`, 자동 update, 자동 locale 전환을 제공하지 않습니다. 기존 코드, 프로젝트가 채운 값, 사용자 변경을 보존하고 적용·제외한 파일을 Template revision 기록 옆에 남깁니다. 문제가 생기면 작업 전 branch 또는 backup으로 되돌립니다.
 
 공식 locale은 `en`과 `ko`입니다. 다른 언어가 필요하면 영어 artifact를 출발점으로 사용하고 [AGENTS.md](../AGENTS.md)의 Communication 정책과 프로젝트 소유 문서를 원하는 언어로 수정할 수 있습니다. 이 수동 변경을 공식 locale 지원이나 locale parity 검증으로 표시하지 마세요.
 
@@ -296,8 +319,10 @@ git status --short --untracked-files=all
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
 
-### 미릴리스 (최근 tag: v2.0.0) — `project-analysis` 스킬 이관
+### 미릴리스 (최근 tag: v2.0.0) — `project-analysis` 스킬 이관과 기존 저장소 `adopt`
 
+- installer에 기존 저장소용 읽기 전용 `adopt` 명령을 추가했습니다. 대상 저장소에는 쓰지 않고, 대상 밖의 빈 디렉터리에 검증된 `artifact/`와 경로별 status를 담은 실험적 `adoption-plan.json`을 만듭니다. release manifest는 member마다 adoption policy(`copy`·`merge`·`decide`)를 담는 `schema_version` 2입니다.
+- 적용 저장소에서 확인할 것: 다음 판을 반영할 때 `adopt` report의 `merge`·`decision`·`blocked` 경로를 검토하세요. §2의 status 표가 처리 기준입니다.
 - `docs/PROJECT_ANALYSIS.md`가 소유하던 전체 프로젝트 분석 절차를 locale별 self-contained `.agents/skills/project-analysis/SKILL.md`로 옮기고 Claude Code용 `.claude/skills/` 복제본을 함께 제공합니다.
 - 스킬은 명시적인 전체 프로젝트 분석 요청에만 적용하고 기본적으로 읽기 전용으로 실행하며, README·manifest·checker가 이 계약과 두 스킬 경로를 검증합니다.
 - 적용 저장소에서 확인할 것: 기존 `docs/PROJECT_ANALYSIS.md`와 그 참조를 제거하고, 선택 locale의 두 skill 복제본·`AGENTS.md`·README·문서 checker 변경을 함께 반영하세요. 이 항목은 `v2.0.0` asset에 포함되지 않은 다음 release 대상입니다.
