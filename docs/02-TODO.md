@@ -49,7 +49,7 @@
   - 선행조건: 설계 PR 통합. T-004 W-001~W-003과 파일 소유 범위가 겹치지 않아 병렬 진행
   - 완료 조건: Origin `main` 통합, 전체 unittest·root docs·stable locale checker, en·ko export의 `check-docs.py`와 `test_check_docs.py` 통과. `v2.1.0` artifact 포함은 T-004 W-004에서 확인
   - 비범위: consumer 저장소 PR #28 자체의 갱신. consumer는 `v2.1.0` 이후 `adopt`로 반영합니다.
-  - 검증 상태: 미착수
+  - 검증 상태: `claude/check-docs-hardening` 브랜치에서 구현했고 Origin `main`에는 아직 통합되지 않았습니다. `v2.0.0`을 base로, 현재 `main` checker를 ours로, PR #28 head를 theirs로 3-way merge했고 충돌은 없었습니다. 미해결 8건 중 7건(줄바꿈 inline link, root-relative URL, `<pre>`·`<script>`·`<style>`·`<textarea>`와 블록 수준 HTML block, reference definition 뒤 문장, 전체 `Template version` 값 비교, 모호한 문서 짧은 이름, WATCHDOG·BUGBOT의 저장소 밖 symlink·비파일)을 수정하고 회귀 테스트 7개를 추가했습니다. 새 테스트는 수정 전 checker에서 모두 실패합니다. Setext heading 1건은 finding 예시(`1. Existing` 다음 `---`)가 CommonMark에서 목록 항목과 thematic break이므로 결함이 아닙니다. 대신 Setext heading을 지원 범위 밖으로 명시하고 DFR-001로 기록했습니다. 전체 unittest 132개, root docs, stable locale, en·ko export의 `check-docs.py`와 checker 테스트 48개가 통과했습니다. PR #28 head에 새 checker를 실행하면 `project-analysis` skill 사본 누락(D-005 inventory)만 보고합니다.
 
 ## Next
 

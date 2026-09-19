@@ -46,7 +46,7 @@ Bugbot은 `docs/REVIEW.md` §6을 읽지 못하므로 같은 목록을 여기에
 
 `docs/REVIEW.md` §9 Accepted Deferrals와 `docs/00-PROJECT.md` §8 Decisions 중 리뷰 판정에 영향을 주는 항목을 여기에 복제합니다. 여기 있는 결정을 **되돌리라는** 지적은 새 정보가 아니므로 보고하지 않습니다. 결정의 **전제가 깨졌다는 증거**(문서가 약속한 것과 코드가 실제로 하는 것이 다름, 결정이 가정한 조건이 더 이상 성립하지 않음)는 새 정보이므로 보고합니다.
 
-- 승인된 deferral: 실제로 승인된 `DFR-*` 항목이 없으면 이 목록은 비워 둡니다
+- 승인된 deferral: DFR-001 — `check-docs.py`가 적용 가이드 §3의 지원 범위 밖 Markdown 구문(Setext heading, 여러 줄 링크 텍스트·reference definition, 지원하지 않는 HTML block 형식)을 해석하지 못하는 오탐·미탐은 non-blocking입니다. 범위 안의 결함과 범위 문서·코드 불일치는 예외가 아닙니다.
 - 확정된 결정: D-001 — 저장소 root 유지관리 영역과 배포 payload source를 분리하고 source root를 직접 복사하지 않습니다.
 - 확정된 결정: D-006 — 기존 저장소 adoption은 `adopt`가 대상 밖 output에 검증된 staging과 실험적 report만 만들며, 자동 적용·overwrite·3-way merge와 공개 report schema는 제공하지 않습니다.
 

@@ -188,6 +188,8 @@ python -m unittest discover -s tests -p 'test_check_docs.py' -v
 
 Use `python3` if `python` is unavailable. Moving a file can break links even without changing its content. The checker continues to work if this document is removed as described in §5; in that case, it checks the version record only in [DOCS_GUIDE.md](./DOCS_GUIDE.md). The section-number check only considers references that identify a document (`REVIEW.md §6`, `PROJECT §8`, and similar). It excludes ambiguous same-file references such as `§4` and old section numbers in the §6 release history. It skips generated directories such as `dist`, `build`, `target`, and `vendor`. The checker does not fail because placeholders remain in the source template; use the `rg` or `grep` command above for that.
 
+The checker does not implement all of CommonMark; it interprets only the following scope. Section numbers are read only from ATX headings (`## 2. Title`). An inline link must keep its link text on one line, and at most one line break is allowed before its destination and before its title. A reference definition keeps its label, destination, and optional title on one line. Text inside fenced or indented code blocks, inline code spans, HTML comments, and HTML blocks that start with `<pre>`, `<script>`, `<style>`, `<textarea>`, or a block-level HTML tag is not treated as a link or section reference. URLs with a scheme and paths that start with `/` are not checked as file links. Setext headings, link text or reference definitions that span lines, and other HTML block forms are not interpreted, so use the forms above in checked documents.
+
 | Placeholder | Content to Provide |
 |---|---|
 | `{{PROJECT_NAME}}` | Project name |
@@ -301,6 +303,8 @@ Use this history to identify changes that an adopted repository has not yet appl
 - Moved the whole-project analysis process from `docs/PROJECT_ANALYSIS.md` into the locale's self-contained `.agents/skills/project-analysis/SKILL.md` and added the matching `.claude/skills/` copy for Claude Code.
 - The skill applies only to explicit whole-project analysis requests and runs read-only by default. The README, manifest, and checkers now verify that contract and both skill paths.
 - Verify in the adopting repository: remove the old `docs/PROJECT_ANALYSIS.md` and its references, then apply the selected locale's two skill copies and the related `AGENTS.md`, README, and documentation-checker changes together. This entry targets the next release and is not included in the `v2.0.0` assets.
+- `scripts/check-docs.py` now interprets links, HTML blocks, reference definitions, section numbers, `Template version`, and optional-file symlinks more strictly. §3 states the supported Markdown scope.
+- Verify in the adopting repository: replace `scripts/check-docs.py` and `tests/test_check_docs.py` together and rerun the checker. Fix any newly reported broken links, ambiguous short document-name references, or optional files that point outside the repository in the documents.
 
 ### v2.0.0 — Locale Artifacts and Non-destructive Installation
 
