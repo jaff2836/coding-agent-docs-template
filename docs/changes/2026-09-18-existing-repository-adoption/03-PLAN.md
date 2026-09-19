@@ -1,0 +1,65 @@
+# 변경 실행 계획: 기존 저장소 적용을 위한 안전한 adoption 계약
+
+## Metadata
+
+- **Change ID:** `2026-09-18-existing-repository-adoption`
+- **Spec:** [02-SPEC.md](./02-SPEC.md)
+- **Global task:** [02-TODO.md](../../02-TODO.md)의 T-004
+- **Owner:** Chae Sangwon
+- **Baseline:** Origin `main` `5eefc11075652066c90734dd739cc7c650be826c`과 v2.0.0 공개 기록 PR #13
+- **Integration target:** Origin `main`, 이후 GitHub `main`과 `v2.1.0` release
+- **Scope:** `locales/manifest.json`의 adoption policy, `scripts/check_locales.py`, `scripts/package_release.py`, `schemas/release-manifest.schema.json`, `scripts/installer.py`와 관련 테스트, root·en·ko 적용 문서. `template/common/scripts/check-docs.py`와 그 테스트는 T-005가 소유합니다.
+
+아래 체크 완료는 해당 브랜치에서의 구현·검증 완료이며 병합·릴리스·지원 검증 완료를 뜻하지 않습니다.
+
+## 1. 구현 순서와 의존성
+
+1. 설계 PR: 이 문서들과 PROJECT D-006·전역 TODO·REVIEW §6 불변조건을 통합합니다.
+2. W-001·W-002를 한 구현 PR로 올립니다. policy·schema만 먼저 병합하면 소비자 없는 계약 변경이 되므로 `adopt`와 함께 검토합니다.
+3. W-003은 W-001·W-002 브랜치 위에 쌓은 별도 문서 PR입니다. CLI 동작이 확정된 뒤 en·ko 문서를 맞춥니다.
+4. T-005 checker 강화는 파일 소유 범위가 겹치지 않으므로 W-001~W-003과 병렬로 진행합니다.
+5. W-004는 W-001~W-003과 T-005가 Origin `main`에 통합되고 사용자가 tag·release 게시를 위임한 뒤에만 시작합니다.
+
+## 2. 작업 체크리스트
+
+- [ ] **W-001 adoption policy와 release manifest schema 2**
+  - 범위·변경 파일: `locales/manifest.json`, `scripts/check_locales.py`, `scripts/package_release.py`, `schemas/release-manifest.schema.json`, 관련 테스트
+  - 대응 요구사항·상위 완료 조건: R-005, R-008
+  - 선행조건: 설계 PR
+  - 검증 방법: policy 누락·잉여·잘못된 값 negative 테스트, 두 번 package byte 비교, 생성 manifest의 schema 2와 member `policy` 확인
+  - 결과·근거:
+
+- [ ] **W-002 `installer.py adopt`**
+  - 범위·변경 파일: `scripts/installer.py`, `tests/test_install_release.py`
+  - 대응 요구사항·상위 완료 조건: R-002, R-003, R-004, R-007, R-009
+  - 선행조건: W-001
+  - 검증 방법: fake release 성공 경로와 checksum·installer hash·repository 불일치, 대상 symlink·상위 symlink·비정규 파일·대소문자 변형, output 위치 거부, 게시 실패 injection에서 대상 tree snapshot 불변과 output 부재, 같은 입력의 report byte 동일성, `install`·`export` 회귀
+  - 결과·근거:
+
+- [ ] **W-003 기존 저장소 우선 적용 문서**
+  - 범위·변경 파일: `README.md`, `README.ko.md`, `locales/en/docs/TEMPLATE_GUIDE.md`, `locales/ko/docs/TEMPLATE_GUIDE.md`, 필요 시 locale `DOCS_GUIDE.md`와 `locales/manifest.json`의 required command
+  - 대응 요구사항·상위 완료 조건: R-001, R-006
+  - 선행조건: W-002
+  - 검증 방법: en/ko 명령 parity, docs·stable locale checker, en·ko export의 `check-docs.py`
+  - 결과·근거:
+
+- [ ] **W-004 `v2.1.0` 게시와 consumer E2E**
+  - 범위·변경 파일: version·release history 정렬 commit, GitHub `v2.1.0` tag·release, 검증 기록
+  - 대응 요구사항·상위 완료 조건: SPEC §6 공개 완료·지원 완료
+  - 선행조건: W-001~W-003·T-005 통합, 사용자의 commit·push·tag·release 위임
+  - 검증 방법: D-004 게시 gate, latest·exact 원격 `adopt`·`install`·`export`, `claude-review-e2e` baseline `4d9c0df` 임시 clone의 대상 불변 plan과 PR #28 결과 대조, 반영 tree의 checker와 Claude·Codex·Cursor·OMP 로딩 probe
+  - 결과·근거:
+
+## 3. 검증 기록
+
+| 대상 작업·요구사항 | 확인한 revision 또는 작업 트리 범위 | 실행한 검사 | 결과·남은 한계 |
+|---|---|---|---|
+| 설계 | PR #13 head `34e2a74` + 설계 문서 변경 | docs·stable locale checker, 전체 unittest | 구현 전. 설계 문서의 계약 정합성만 확인 |
+
+## 4. 변경·재검증 기록
+
+없음.
+
+## 5. 인계
+
+설계 PR 통합 후 W-001·W-002 구현 PR과 W-003 문서 PR을 순서대로 올립니다. W-004의 tag·release 게시는 별도 위임 없이 수행하지 않습니다.

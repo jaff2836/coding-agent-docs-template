@@ -8,16 +8,16 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-18 (UTC)
+- **Last reviewed:** 2026-09-19 (UTC)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
 - **Integration target:** local `main`; 공개 저장소 target `jaff2836/coding-agent-docs-template`; v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
-- **Name:** v2 다국어 템플릿 source·배포 구조
-- **Goal:** `en`·`ko` locale source에서 검증된 단일-locale artifact를 만들고 비파괴 installer로 선택 설치할 수 있는 승인된 설계와 구현
-- **Target:** `v2.0.0` GitHub Release와 원격 HTTPS en/ko 검증
-- **Status:** Completed — T-001 구현·소비자 검증, T-002 `v2.0.0` 공개, T-003 project-analysis skill 이관 완료
+- **Name:** `v2.1.0` 기존 저장소 adoption과 artifact checker 강화
+- **Goal:** 기존 저장소를 주 흐름으로 하는 읽기 전용 `adopt`, 경로별 adoption policy, 강화된 `check-docs.py`와 이미 통합된 `project-analysis` skill을 `v2.1.0`으로 공개
+- **Target:** `v2.1.0` GitHub Release와 `claude-review-e2e` baseline 기반 원격 adoption E2E
+- **Status:** In Progress — D-006 Accepted, T-004·T-005 진행. 이전 마일스톤 `v2.0.0`은 T-001~T-003으로 완료
 
 ## 운영 규칙
 
@@ -34,11 +34,26 @@
 
 ## In Progress
 
-없음.
+- [ ] **T-004 기존 저장소 adoption 계약**
+  - 변경-ID: `2026-09-18-existing-repository-adoption`
+  - 범위·우선순위: adoption policy와 release manifest schema 2, 읽기 전용 `installer.py adopt`, 기존 저장소 우선 적용 문서, `v2.1.0` 게시와 consumer E2E
+  - 선행조건: D-006 승인, T-002 공개 검증, T-003 통합 — 충족
+  - 관련 결정·SPEC: [D-006](./00-PROJECT.md#8-decisions) — [SPEC](./changes/2026-09-18-existing-repository-adoption/02-SPEC.md)
+  - 상세 실행의 정본: [PLAN](./changes/2026-09-18-existing-repository-adoption/03-PLAN.md)
+  - 통합 완료 조건: PLAN W-001~W-003이 Origin `main`에 통합되고, T-005와 함께 `v2.1.0` immutable release에서 원격 `adopt`와 `claude-review-e2e` baseline E2E가 SPEC §6 공개·지원 완료 조건을 충족
+
+- [ ] **T-005 artifact `check-docs.py` 강화 반영**
+  - 변경-ID: 없음 — 외부 계약을 바꾸지 않는 checker 결함 수정 묶음이며 이 항목이 상세 정본
+  - 범위·우선순위: `jaff2836/claude-review-e2e` PR #28 head `719696fa52be301db314dc276a1c666385540bdf`에서 강화된 `scripts/check-docs.py`·`tests/test_check_docs.py`를 `template/common/`에 반영합니다. PR #28의 첫 판은 `v2.0.0` checker와 byte-identical이고 강화분에 프로젝트 전용 로직은 없습니다. 같은 head의 미해결 P2 8건도 템플릿에서 처리합니다. checker가 지원하는 Markdown 구문 범위를 en·ko 적용 가이드 §3에 명시하고, 범위 밖 구문의 오탐·미탐은 [REVIEW.md](./REVIEW.md) §9 Accepted Deferral로 기록합니다. `v2.1.0` 전에 통합
+  - 구현 순서: (1) consumer head 반영과 v2 source 차이 확인 (2) 미해결 8건 수정과 회귀 테스트 (3) 지원 범위 문서와 deferral (4) root·export 검증
+  - 선행조건: 설계 PR 통합. T-004 W-001~W-003과 파일 소유 범위가 겹치지 않아 병렬 진행
+  - 완료 조건: Origin `main` 통합, 전체 unittest·root docs·stable locale checker, en·ko export의 `check-docs.py`와 `test_check_docs.py` 통과. `v2.1.0` artifact 포함은 T-004 W-004에서 확인
+  - 비범위: consumer 저장소 PR #28 자체의 갱신. consumer는 `v2.1.0` 이후 `adopt`로 반영합니다.
+  - 검증 상태: 미착수
 
 ## Next
 
-없음. T-004는 D-006 승인 전까지 Backlog에 둡니다.
+없음.
 
 ## Blocked
 
@@ -47,12 +62,6 @@
 ## Backlog
 
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
-- [ ] **T-004 기존 저장소 adoption 계약**
-  - 변경-ID: `2026-09-18-existing-repository-adoption`
-  - 범위·우선순위: 기존 저장소를 주 흐름으로 두는 읽기 전용 staging/report 계약, path policy, README 순서와 실제 consumer E2E
-  - 선행조건: D-006 승인, T-002 공개 검증, T-003 통합
-  - 관련 결정·SPEC: [D-006 Proposed](./00-PROJECT.md#8-decisions) — [Draft CHANGE](./changes/2026-09-18-existing-repository-adoption/01-CHANGE.md)
-  - 재개 조건: `adoption-plan` 공개 schema 여부, policy 소유 위치와 agent용 prompt 포함 여부를 사용자와 확정
 
 ## Cancelled
 

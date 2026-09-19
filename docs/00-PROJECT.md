@@ -7,9 +7,9 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** Active — `v2.0.0` 공개 완료, 다음 release 변경 준비 중
+- **Status:** Active — `v2.0.0` 공개 완료, `v2.1.0` 기존 저장소 adoption·checker 강화 진행 중
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-18
+- **Last reviewed:** 2026-09-19
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
 
 ## 1. Context
@@ -92,9 +92,13 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 
 승인된 목표 구성은 `template/common/`과 BCP 47 tag별 `locales/<tag>/` source, 닫힌 manifest inventory, locale 검사, deterministic exporter·packager와 비파괴 installer입니다. 첫 안정판은 `en`·`ko`가 모두 `complete`일 때만 만들며 skill prose와 출력 정책은 locale별 source가 소유합니다.
 
+D-006에 따라 installer에 기존 저장소용 읽기 전용 `adopt` 명령을 추가합니다. 경로별 adoption policy(`copy`·`merge`·`decide`)는 `locales/manifest.json`이 소유하고 packager가 release manifest `schema_version` 2의 member record에 materialize합니다. 상세 계약은 [adoption SPEC](./changes/2026-09-18-existing-repository-adoption/02-SPEC.md)을 따릅니다.
+
 ### Target Data Flow
 
 common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경로로 합성하고 검사합니다. exact source commit과 version에 결합된 locale별 archive·manifest를 만든 뒤 installer가 검증·stage·전체 충돌 검사를 거쳐 대상에 기록합니다. 상세 계약은 [SPEC §3](./changes/2026-09-09-multilingual-template/02-SPEC.md)을 따릅니다.
+
+기존 저장소에는 `adopt`가 같은 release 검증 후 대상 밖의 빈 output에 검증된 artifact tree와 경로별 status를 담은 실험적 `adoption-plan.json`을 원자적으로 게시합니다. 대상 저장소에는 쓰지 않으며 병합은 사람 또는 coding agent가 적용 가이드에 따라 수행합니다.
 
 ### Compatibility Requirements
 
@@ -116,6 +120,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | W-006 | 적용·마이그레이션·지원 문서 정렬 | W-001~W-005 | 실제 release 전에는 원격 설치를 완료로 표시하지 않음 | PR #8 merge commit `60638ed` |
 | W-007 | exact-head 전체 검증과 소비자 E2E | W-006 | 공개 release 없이 로컬 immutable release namespace로 검증 | `60638ed` exact-head gate와 Claude·Codex·Cursor·OMP probe |
 | 공개 배포 | GitHub Releases transport와 v2.0.0 게시 | W-007, D-004 | 공개된 tag·asset은 교체하지 않고 결함 시 patch release | `v2.0.0` tag `8bc8b1b`, immutable release와 [W-003·W-004 검증](./changes/2026-09-18-github-releases-publication/03-PLAN.md) |
+| 기존 저장소 adoption | adoption policy, release manifest schema 2, `adopt`, 기존 저장소 우선 문서와 `v2.1.0` 게시 | D-006, T-005 checker 강화 | `install`·`export` CLI 유지; 결함 시 `adopt`·policy를 제거한 patch release | [adoption PLAN](./changes/2026-09-18-existing-repository-adoption/03-PLAN.md) W-001~W-004 |
 
 ## 8. Decisions
 
@@ -128,7 +133,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | D-003 | 2026-09-17 | Accepted | 공개 저장소 identity를 `jaff2836/coding-agent-docs-template`로 사용하고 W-007은 공개 release 없이 local exact-head·소비자 probe까지 검증 | [PLAN W-007](./changes/2026-09-09-multilingual-template/03-PLAN.md) | GitHub 게시, immutable release host와 bootstrap URL 검증은 별도 작업 | Chae Sangwon, 2026-09-17 대화 |
 | D-004 | 2026-09-18 | Accepted | v2 artifact를 GitHub Releases에서만 관리하고 `latest`에서 선택한 version을 exact `v<SemVer>` tag asset으로 검증 | [GitHub Releases 공개 배포 SPEC](./changes/2026-09-18-github-releases-publication/02-SPEC.md) | D-002의 host-neutral·redirect 전면 거부 transport를 대체; GitHub HTTPS asset redirect만 제한 허용 | Chae Sangwon, 2026-09-18 대화 |
 | D-005 | 2026-09-18 | Accepted | 전체 프로젝트 분석 절차를 locale별 self-contained `project-analysis` skill로 이관하고 세 번들 skill의 목적을 README에 공개 | [project-analysis skill 변경](./changes/2026-09-18-project-analysis-skill/01-CHANGE.md) | 별도 분석 문서와 skill adapter 병행 대신 단일 skill 정본; 다음 release에서 artifact inventory 변경 | Chae Sangwon, 2026-09-18 대화 |
-| D-006 | 2026-09-18 | Proposed | 기존 저장소를 주 adoption 시나리오로 두고 검증된 staging tree와 읽기 전용 adoption plan을 제공 | [기존 저장소 adoption Draft](./changes/2026-09-18-existing-repository-adoption/01-CHANGE.md) | 현재 export/manual merge 유지와 자동 overlay를 비교; CLI·report schema·policy 위치는 미승인 | 미승인 |
+| D-006 | 2026-09-19 | Accepted | 기존 저장소를 주 adoption 시나리오로 두고 `installer.py adopt`로 검증된 staging tree와 읽기 전용 실험적 adoption report를 제공. 경로별 policy는 `locales/manifest.json`이 소유하고 release manifest `schema_version` 2에 materialize | [기존 저장소 adoption SPEC](./changes/2026-09-18-existing-repository-adoption/02-SPEC.md) | 문서만 보강, 자동 추가·overwrite, installer 내장 policy, 공개 report schema, agent prompt를 기각. D-002의 수동 merge 계약을 확장하고 D-004 transport는 유지; `v2.1.0` minor release | Chae Sangwon, 2026-09-19 대화 — 결정 1~7 권고안 승인 |
 
 중요한 결정이 많아지면 개별 ADR 문서로 분리하고 여기에는 링크와 요약만 남깁니다.
 
@@ -160,6 +165,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | locale 번역의 행동 계약 drift | Medium | High | stable marker·fixture·사람의 최종 검수 | locale parity 또는 소비자 E2E 실패 |
 | installer가 기존 문서를 덮어씀 | Low | High | 충돌 시 전체 중단, `--force` 미제공 | before/after tree hash 차이 |
 | release asset redirect가 신뢰 경계를 넓힘 | Low | High | 검증된 GitHub asset URL에서 시작한 HTTPS chain만 허용하고 exact tag checksum 검증 | HTTP downgrade, 비-release 시작점 또는 checksum 불일치 |
+| `adopt` report를 자동 병합 승인으로 오해하거나 대상에 기록 | Medium | High | 대상 밖 output 강제, `decision` 분류, 실험적 report 표시와 대상 tree 불변 테스트 | 대상 before/after snapshot 차이 또는 `LICENSE` 무단 추가 |
 
 ## 11. Open Questions
 
@@ -178,6 +184,6 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | 다국어 배포 변경 | [2026-09-09-multilingual-template SPEC](./changes/2026-09-09-multilingual-template/02-SPEC.md) | D-001을 구현하고 D-002를 제안 | 연결된 PLAN의 승인 범위 |
 | GitHub Releases 공개 배포 | [2026-09-18-github-releases-publication SPEC](./changes/2026-09-18-github-releases-publication/02-SPEC.md) | D-004가 D-002의 host-neutral transport를 대체 | v2 공개 배포와 installer transport |
 | 프로젝트 전체 분석 skill | [2026-09-18-project-analysis-skill](./changes/2026-09-18-project-analysis-skill/01-CHANGE.md) | D-005가 D-002의 locale skill bundle을 확장 | 전체 분석 명시 요청과 다음 artifact release |
-| 기존 저장소 adoption | [2026-09-18-existing-repository-adoption Draft](./changes/2026-09-18-existing-repository-adoption/01-CHANGE.md) | D-002의 수동 export/merge 계약 확장 제안 | D-006 승인 후에만 구현 |
+| 기존 저장소 adoption | [2026-09-18-existing-repository-adoption SPEC](./changes/2026-09-18-existing-repository-adoption/02-SPEC.md) | D-006이 D-002의 수동 export/merge 계약을 확장하고 release manifest를 schema 2로 갱신 | 기존 저장소 적용, installer·packager·locale manifest 변경 |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.
