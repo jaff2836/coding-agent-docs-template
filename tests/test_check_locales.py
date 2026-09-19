@@ -63,6 +63,28 @@ class LocaleFixtureTests(unittest.TestCase):
     def test_repository_locale_sources_are_consistent(self) -> None:
         self.assertEqual(self.errors(), [])
 
+    def test_adoption_policy_covers_exactly_the_artifact_inventory(self) -> None:
+        manifest = self.load_manifest()
+        policy = manifest["artifact"]["adoption_policy"]
+        self.assertEqual(policy["LICENSE"], "decide")
+        self.assertEqual(policy["README.md"], "merge")
+        self.assertEqual(policy["scripts/check-docs.py"], "copy")
+        del policy["LICENSE"]
+        policy["docs/UNLISTED.md"] = "copy"
+        policy["README.md"] = "overwrite"
+        self.write_manifest(manifest)
+        errors = self.errors()
+        self.assert_error("adoption_policy is missing output path: LICENSE", errors)
+        self.assert_error(
+            "adoption_policy has path outside the inventory: docs/UNLISTED.md", errors
+        )
+        self.assert_error("adoption_policy.README.md must be one of copy, decide, merge", errors)
+
+        manifest = self.load_manifest()
+        manifest["artifact"]["adoption_policy"] = ["copy"]
+        self.write_manifest(manifest)
+        self.assert_error("artifact.adoption_policy must be an object")
+
     def test_manifest_requires_its_minimum_structure_and_unique_keys(self) -> None:
         manifest = self.load_manifest()
         del manifest["contracts"]

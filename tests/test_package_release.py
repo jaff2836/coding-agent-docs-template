@@ -75,7 +75,7 @@ class PackageReleaseTests(unittest.TestCase):
         )
 
         manifest = json.loads(first.files["release-manifest.json"])
-        self.assertEqual(manifest["schema_version"], 1)
+        self.assertEqual(manifest["schema_version"], 2)
         self.assertEqual(manifest["version"], "2.0.0")
         self.assertEqual(manifest["source_commit"], "a" * 40)
         self.assertEqual(
@@ -96,6 +96,9 @@ class PackageReleaseTests(unittest.TestCase):
     def test_archives_have_exact_members_hashes_modes_and_timestamps(self) -> None:
         artifacts = self.build()
         manifest = artifacts.manifest
+        policies = json.loads(
+            (self.repository / "locales/manifest.json").read_text(encoding="utf-8")
+        )["artifact"]["adoption_policy"]
         for locale, record in manifest["locales"].items():
             archive_data = artifacts.files[record["asset"]]
             self.assertEqual(record["sha256"], _sha256(archive_data))
@@ -118,6 +121,19 @@ class PackageReleaseTests(unittest.TestCase):
                     self.assertEqual(
                         member["timestamp"], PACKAGE_RELEASE.ARCHIVE_TIMESTAMP_TEXT
                     )
+                    self.assertEqual(member["policy"], policies[member["path"]])
+                self.assertEqual(
+                    {member["path"] for member in record["members"]}, set(policies)
+                )
+
+    def test_member_records_require_an_adoption_policy_for_every_path(self) -> None:
+        members = (("LICENSE", b"license\n"), ("README.md", b"readme\n"))
+        records = PACKAGE_RELEASE._member_records(
+            members, {"LICENSE": "decide", "README.md": "merge"}
+        )
+        self.assertEqual([record["policy"] for record in records], ["decide", "merge"])
+        with self.assertRaisesRegex(PACKAGE_RELEASE.ReleaseError, "no adoption policy: README.md"):
+            PACKAGE_RELEASE._member_records(members, {"LICENSE": "decide"})
 
     def test_publishes_only_to_an_empty_directory(self) -> None:
         artifacts = self.build()
@@ -239,7 +255,12 @@ class PackageReleaseTests(unittest.TestCase):
             )
         )
         self.assertEqual(schema["$schema"], "https://json-schema.org/draft/2020-12/schema")
-        self.assertEqual(schema["properties"]["schema_version"]["const"], 1)
+        self.assertEqual(schema["properties"]["schema_version"]["const"], 2)
+        self.assertIn("policy", schema["$defs"]["member"]["required"])
+        self.assertEqual(
+            schema["$defs"]["member"]["properties"]["policy"]["enum"],
+            ["copy", "decide", "merge"],
+        )
         self.assertEqual(
             schema["properties"]["installer"]["properties"]["bytes"]["$ref"],
             "#/$defs/positiveInteger",

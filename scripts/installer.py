@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install verified locale artifacts from an immutable release namespace.
+"""Install, export, or stage verified locale artifacts from an immutable release.
 
 This file is published as a release asset. It must stay self-contained:
 it may only use the Python standard library and never import sibling
@@ -25,7 +25,7 @@ import zipfile
 from pathlib import Path, PurePosixPath
 from typing import Any, Mapping, Optional, Sequence
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 INSTALLER_ASSET = "installer.py"
 MANIFEST_ASSET = "release-manifest.json"
 SUMS_ASSET = "SHA256SUMS"
@@ -39,6 +39,23 @@ ARCHIVE_TIMESTAMP_TEXT = "1980-01-01T00:00:00Z"
 FETCH_TIMEOUT = 60.0
 LATEST_VERSION = "latest"
 USER_AGENT = "coding-agent-docs-template-installer"
+ADOPTION_POLICIES = frozenset(("copy", "decide", "merge"))
+ADOPTION_STATUSES = ("missing", "identical", "merge", "decision", "blocked")
+ADOPTION_PLAN_NAME = "adoption-plan.json"
+ADOPTION_ARTIFACT_DIR = "artifact"
+ADOPTION_FORMAT = "coding-agent-docs-template/adoption-plan"
+ADOPTION_FORMAT_VERSION = 1
+ADOPTION_GUIDE = "artifact/docs/TEMPLATE_GUIDE.md §2"
+ADOPTION_REASONS = {
+    ("missing", "copy"): "The target has no file here; add the artifact file.",
+    ("missing", "merge"): "The target has no file here; add the artifact file and fill in the project values.",
+    ("identical", "copy"): "The target file already matches the artifact.",
+    ("identical", "merge"): "The target file already matches the artifact.",
+    ("merge", "copy"): "Template-owned file differs; start from the artifact version and reapply intentional project edits.",
+    ("merge", "merge"): "Project-owned file differs; keep the existing content and merge in the template sections.",
+    ("decision", "absent"): "Adopt this file only if the project explicitly decides to use it.",
+    ("decision", "file"): "The project must decide whether to keep its file, adopt the artifact version, or remove it.",
+}
 SEMVER_RE = re.compile(
     r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)"
     r"(?:-(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)"
@@ -330,8 +347,17 @@ def _validated_locale_record(tag: str, record: Any, version: str) -> None:
 
 
 def _validated_member_record(tag: str, member: Any) -> None:
-    if not isinstance(member, dict) or set(member) != {"path", "sha256", "bytes", "mode", "timestamp"}:
+    if not isinstance(member, dict) or set(member) != {
+        "path",
+        "sha256",
+        "bytes",
+        "mode",
+        "timestamp",
+        "policy",
+    }:
         raise InstallerError("locale %s has an invalid member record" % tag)
+    if not isinstance(member["policy"], str) or member["policy"] not in ADOPTION_POLICIES:
+        raise InstallerError("locale %s has an invalid member adoption policy" % tag)
     if not isinstance(member["path"], str) or SHA256_RE.fullmatch(member["sha256"]) is None:
         raise InstallerError("locale %s has an invalid member hash" % tag)
     if (
@@ -522,8 +548,8 @@ def _write_members(root: Path, members: Mapping[str, bytes]) -> tuple[str, ...]:
     if conflicts:
         raise InstallerError(
             "target tree already contains %d conflicting path(s); refusing to overwrite: %s. "
-            "Install into an empty directory or run 'export' to materialize the artifact "
-            "for a manual diff and merge instead."
+            "For an existing repository, run 'adopt' to stage the verified artifact with a "
+            "per-path adoption plan, or install into an empty directory."
             % (len(conflicts), ", ".join(conflicts))
         )
     created_dirs: list[Path] = []
@@ -635,26 +661,239 @@ def export_artifact(
     manifest = _verified_manifest(release_url, version, _running_installer_bytes(installer_bytes))
     record = _selected_locale_record(manifest, locale)
     members = _verified_members(release_url, manifest, locale)
-    output = _validated_export_output(Path(output))
+    _publish_directory(Path(output), members)
+    return tuple(sorted(members))
+
+
+def _publish_directory(output: Path, files: Mapping[str, bytes]) -> None:
+    """Stage *files* next to an empty output directory and publish them atomically."""
+
+    output = _validated_export_output(output)
     stage = Path(tempfile.mkdtemp(prefix=".template-install-", dir=output.parent))
     published = False
     try:
-        for name in sorted(members):
+        for name in sorted(files):
             path = _validated_member_path(name)
             target = stage.joinpath(*path.parts)
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(members[name])
+            target.write_bytes(files[name])
             os.chmod(target, FILE_MODE)
         if output.exists():
             output.rmdir()
         os.replace(stage, output)
         published = True
     except OSError as exc:
-        raise InstallerError("cannot publish the exported artifact: %s" % exc) from exc
+        raise InstallerError("cannot publish the output directory: %s" % exc) from exc
     finally:
         if not published:
             shutil.rmtree(stage, ignore_errors=True)
-    return tuple(sorted(members))
+
+
+def adopt(
+    release_url: str,
+    version: str,
+    locale: str,
+    repo_root: Path,
+    output: Path,
+    *,
+    installer_bytes: Optional[bytes] = None,
+) -> Mapping[str, Any]:
+    """Verify a release and stage it with a read-only plan for an existing repository.
+
+    The target repository is only listed, stat-ed and read. The verified artifact
+    and the plan are published together into an empty output directory that must
+    be outside the repository.
+    """
+
+    release_url = _validated_release_url(release_url)
+    version = _validated_version_selection(version)
+    root = _validated_adoption_root(Path(repo_root))
+    output = _validated_export_output(Path(output))
+    _require_separate_trees(root, output)
+    manifest = _verified_manifest(release_url, version, _running_installer_bytes(installer_bytes))
+    record = _selected_locale_record(manifest, locale)
+    members = _verified_members(release_url, manifest, locale)
+    plan = adoption_plan(root, manifest, locale, record, members)
+    files = {
+        "%s/%s" % (ADOPTION_ARTIFACT_DIR, name): data for name, data in members.items()
+    }
+    files[ADOPTION_PLAN_NAME] = _plan_bytes(plan)
+    _publish_directory(output, files)
+    return plan
+
+
+def _validated_adoption_root(path: Path) -> Path:
+    root = path.absolute()
+    if root.is_symlink() or not root.is_dir():
+        raise InstallerError(
+            "repo root must be an existing directory, not a symlink; "
+            "use 'install' for a new project"
+        )
+    return root
+
+
+def _require_separate_trees(root: Path, output: Path) -> None:
+    real_root = root.resolve()
+    real_output = output.resolve(strict=False)
+    if (
+        real_output == real_root
+        or real_root in real_output.parents
+        or real_output in real_root.parents
+    ):
+        raise InstallerError(
+            "adoption output must be outside the repository root and must not contain it"
+        )
+
+
+def adoption_plan(
+    root: Path,
+    manifest: Mapping[str, Any],
+    locale: str,
+    record: Mapping[str, Any],
+    members: Mapping[str, bytes],
+) -> dict[str, Any]:
+    """Classify every artifact path against the target without modifying it."""
+
+    listings: dict[Path, Optional[tuple[str, ...]]] = {}
+    entries = []
+    for member in sorted(record["members"], key=lambda item: item["path"]):
+        name = member["path"]
+        policy = member["policy"]
+        state, target_sha256 = _adoption_target(
+            root, _validated_member_path(name), listings
+        )
+        artifact_sha256 = _sha256(members[name])
+        status = _adoption_status(policy, state, target_sha256, artifact_sha256)
+        entries.append(
+            {
+                "path": name,
+                "policy": policy,
+                "status": status,
+                "target": state,
+                "artifact_sha256": artifact_sha256,
+                "target_sha256": target_sha256,
+                "reason": _adoption_reason(status, policy, state),
+            }
+        )
+    summary = {status: 0 for status in ADOPTION_STATUSES}
+    for entry in entries:
+        summary[entry["status"]] += 1
+    return {
+        "format": ADOPTION_FORMAT,
+        "format_version": ADOPTION_FORMAT_VERSION,
+        "stability": "experimental",
+        "release": {
+            "repository": manifest["repository"],
+            "version": manifest["version"],
+            "source_commit": manifest["source_commit"],
+            "locale": locale,
+        },
+        "guide": ADOPTION_GUIDE,
+        "summary": summary,
+        "paths": entries,
+    }
+
+
+def _adoption_target(
+    root: Path,
+    path: PurePosixPath,
+    listings: dict[Path, Optional[tuple[str, ...]]],
+) -> tuple[str, Optional[str]]:
+    """Return the target state and file hash using only list, lstat and read calls."""
+
+    current = root
+    parts = path.parts
+    for index, segment in enumerate(parts):
+        last = index == len(parts) - 1
+        if current not in listings:
+            try:
+                listings[current] = tuple(os.listdir(current))
+            except OSError:
+                listings[current] = None
+        names = listings[current]
+        if names is None:
+            return "unreadable", None
+        if segment not in names:
+            folded = segment.casefold()
+            if any(name.casefold() == folded for name in names):
+                return "case-variant", None
+            return "absent", None
+        current = current / segment
+        try:
+            mode = current.lstat().st_mode
+        except OSError:
+            return "unreadable", None
+        if stat.S_ISLNK(mode):
+            return ("symlink" if last else "parent-symlink"), None
+        if not last:
+            if not stat.S_ISDIR(mode):
+                return "parent-not-directory", None
+            continue
+        if not stat.S_ISREG(mode):
+            return "special", None
+        digest = hashlib.sha256()
+        try:
+            with open(current, "rb") as handle:
+                for chunk in iter(lambda: handle.read(65536), b""):
+                    digest.update(chunk)
+        except OSError:
+            return "unreadable", None
+        return "file", digest.hexdigest()
+    raise InstallerError("artifact member path is empty")
+
+
+def _adoption_status(
+    policy: str, state: str, target_sha256: Optional[str], artifact_sha256: str
+) -> str:
+    if state not in ("absent", "file"):
+        return "blocked"
+    if policy == "decide":
+        return "decision"
+    if state == "absent":
+        return "missing"
+    return "identical" if target_sha256 == artifact_sha256 else "merge"
+
+
+def _adoption_reason(status: str, policy: str, state: str) -> str:
+    if status == "blocked":
+        return "Resolve the %s target path by hand before adopting this file." % state
+    if status == "decision":
+        return ADOPTION_REASONS[(status, state)]
+    return ADOPTION_REASONS[(status, policy)]
+
+
+def _plan_bytes(plan: Mapping[str, Any]) -> bytes:
+    return (
+        json.dumps(plan, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False)
+        + "\n"
+    ).encode("utf-8")
+
+
+def _print_adoption_summary(plan: Mapping[str, Any], output: Path) -> None:
+    release = plan["release"]
+    summary = plan["summary"]
+    print(
+        "Adoption plan for %s %s: %d paths (%s)"
+        % (
+            release["locale"],
+            release["version"],
+            len(plan["paths"]),
+            ", ".join("%s %d" % (status, summary[status]) for status in ADOPTION_STATUSES),
+        )
+    )
+    for status in ADOPTION_STATUSES:
+        if status == "identical":
+            continue
+        paths = [entry["path"] for entry in plan["paths"] if entry["status"] == status]
+        if paths:
+            print("%s:" % status)
+            for path in paths:
+                print("  %s" % path)
+    print(
+        "Wrote %s and %s/ in %s. The target repository was not modified; "
+        "follow %s to merge."
+        % (ADOPTION_PLAN_NAME, ADOPTION_ARTIFACT_DIR, output, plan["guide"])
+    )
 
 
 def list_locales(
@@ -714,6 +953,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     export_parser.add_argument("--locale", required=True, help="complete locale tag from the release manifest")
     export_parser.add_argument("--version", default=LATEST_VERSION, help="release version, or 'latest'")
 
+    adopt_parser = subparsers.add_parser(
+        "adopt",
+        help="stage one verified locale with a read-only adoption plan for an existing repository",
+    )
+    _add_remote_arguments(adopt_parser)
+    adopt_parser.add_argument("--repo-root", required=True, type=Path, help="existing project root; never modified")
+    adopt_parser.add_argument("--output", required=True, type=Path, help="empty output directory outside the project")
+    adopt_parser.add_argument("--locale", required=True, help="complete locale tag from the release manifest")
+    adopt_parser.add_argument("--version", default=LATEST_VERSION, help="release version, or 'latest'")
+
     list_parser = subparsers.add_parser("list-locales", help="list verified locales of a release")
     _add_remote_arguments(list_parser)
     list_parser.add_argument("--version", default=LATEST_VERSION, help="release version, or 'latest'")
@@ -726,6 +975,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         elif args.command == "export":
             written = export_artifact(args.release_url, args.version, args.locale, args.output)
             print("Exported %s locale with %d files to %s" % (args.locale, len(written), args.output))
+        elif args.command == "adopt":
+            plan = adopt(args.release_url, args.version, args.locale, args.repo_root, args.output)
+            _print_adoption_summary(plan, args.output)
         else:
             manifest = list_locales(args.release_url, args.version)
             print("Release %s (source commit %s, repository %s)" % (

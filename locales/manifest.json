@@ -48,7 +48,38 @@
       "docs/changes/_template/01-INTENT.md",
       "docs/changes/_template/02-SPEC.md",
       "docs/changes/_template/03-PLAN.md"
-    ]
+    ],
+    "adoption_policy": {
+      ".agents/skills/design/SKILL.md": "copy",
+      ".agents/skills/project-analysis/SKILL.md": "copy",
+      ".agents/skills/review-round/SKILL.md": "copy",
+      ".agents/skills/review-round/agents/openai.yaml": "copy",
+      ".claude/skills/design/SKILL.md": "copy",
+      ".claude/skills/project-analysis/SKILL.md": "copy",
+      ".claude/skills/review-round/SKILL.md": "copy",
+      ".cursor/BUGBOT.md": "decide",
+      ".gitignore": "merge",
+      ".omp/WATCHDOG.md": "decide",
+      "AGENTS.md": "merge",
+      "CLAUDE.md": "merge",
+      "LICENSE": "decide",
+      "README.md": "merge",
+      "docs/00-PROJECT.md": "merge",
+      "docs/01-DESIGN.md": "copy",
+      "docs/02-TODO.md": "merge",
+      "docs/10-EXTENSION.md": "decide",
+      "docs/CI.md": "merge",
+      "docs/DOCS_GUIDE.md": "copy",
+      "docs/REVIEW.md": "merge",
+      "docs/REVIEW_ROUND.md": "merge",
+      "docs/TEMPLATE_GUIDE.md": "copy",
+      "docs/changes/_template/01-CHANGE.md": "copy",
+      "docs/changes/_template/01-INTENT.md": "copy",
+      "docs/changes/_template/02-SPEC.md": "copy",
+      "docs/changes/_template/03-PLAN.md": "copy",
+      "scripts/check-docs.py": "copy",
+      "tests/test_check_docs.py": "copy"
+    }
   },
   "contracts": {
     "section_markers": [

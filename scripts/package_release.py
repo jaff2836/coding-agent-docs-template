@@ -25,7 +25,7 @@ import export_template
 
 ROOT = Path(__file__).resolve().parent.parent
 INSTALLER_PATH = Path("scripts/installer.py")
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 ARCHIVE_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
 ARCHIVE_TIMESTAMP_TEXT = "1980-01-01T00:00:00Z"
 FILE_MODE = 0o644
@@ -184,8 +184,11 @@ def _zip_bytes(members: tuple[tuple[str, bytes], ...]) -> bytes:
 
 
 def _member_records(
-    members: tuple[tuple[str, bytes], ...]
+    members: tuple[tuple[str, bytes], ...], policies: Mapping[str, str]
 ) -> list[dict[str, Any]]:
+    missing = sorted(path for path, _ in members if path not in policies)
+    if missing:
+        raise ReleaseError("artifact paths have no adoption policy: %s" % ", ".join(missing))
     return [
         {
             "path": path,
@@ -193,6 +196,7 @@ def _member_records(
             "bytes": len(data),
             "mode": FILE_MODE,
             "timestamp": ARCHIVE_TIMESTAMP_TEXT,
+            "policy": policies[path],
         }
         for path, data in members
     ]
@@ -215,6 +219,7 @@ def build_release_artifacts(
         repository_root, require_stable=True
     )
     complete = check_locales.complete_locales(manifest_source)
+    policies = manifest_source["artifact"]["adoption_policy"]
     installer_data = _installer_bytes(repository_root)
 
     files: dict[str, bytes] = {}
@@ -251,7 +256,7 @@ def build_release_artifacts(
                 "sha256": _sha256(archive),
                 "bytes": len(archive),
                 "compression": COMPRESSION,
-                "members": _member_records(members),
+                "members": _member_records(members, policies),
             }
 
     files["installer.py"] = installer_data
