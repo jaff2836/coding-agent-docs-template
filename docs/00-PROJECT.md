@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** Active — `v2.1.0` 공개 완료, 기존 저장소 adoption 지원 검증 중 Codex 로딩 probe만 남음
+- **Status:** Active — `v2.1.0` 공개와 기존 저장소 adoption 지원 검증 완료
 - **Owner:** Chae Sangwon
 - **Last reviewed:** 2026-09-19
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시

@@ -17,7 +17,7 @@
 - **Name:** `v2.1.0` 기존 저장소 adoption과 artifact checker 강화
 - **Goal:** 기존 저장소를 주 흐름으로 하는 읽기 전용 `adopt`, 경로별 adoption policy, 강화된 `check-docs.py`와 이미 통합된 `project-analysis` skill을 `v2.1.0`으로 공개
 - **Target:** `v2.1.0` GitHub Release와 `claude-review-e2e` baseline 기반 원격 adoption E2E
-- **Status:** In Progress — `v2.1.0` 공개 완료(2026-09-19, immutable Latest). T-005 완료, T-004는 지원 완료 조건 중 Codex 로딩 probe만 남음. 이전 마일스톤 `v2.0.0`은 T-001~T-003으로 완료
+- **Status:** Completed — `v2.1.0` 공개(2026-09-19, immutable Latest)와 T-004·T-005 완료. 이전 마일스톤 `v2.0.0`은 T-001~T-003으로 완료
 
 ## 운영 규칙
 
@@ -34,14 +34,7 @@
 
 ## In Progress
 
-- [ ] **T-004 기존 저장소 adoption 계약**
-  - 변경-ID: `2026-09-18-existing-repository-adoption`
-  - 범위·우선순위: adoption policy와 release manifest schema 2, 읽기 전용 `installer.py adopt`, 기존 저장소 우선 적용 문서, `v2.1.0` 게시와 consumer E2E
-  - 선행조건: D-006 승인, T-002 공개 검증, T-003 통합 — 충족
-  - 관련 결정·SPEC: [D-006](./00-PROJECT.md#8-decisions) — [SPEC](./changes/2026-09-18-existing-repository-adoption/02-SPEC.md)
-  - 상세 실행의 정본: [PLAN](./changes/2026-09-18-existing-repository-adoption/03-PLAN.md)
-  - 통합 완료 조건: PLAN W-001~W-003이 Origin `main`에 통합되고, T-005와 함께 `v2.1.0` immutable release에서 원격 `adopt`와 `claude-review-e2e` baseline E2E가 SPEC §6 공개·지원 완료 조건을 충족
-  - 현재 상태: W-001~W-003은 PR #15·#16으로 통합됐고, `v2.1.0`(tag commit `36a123f`)을 공개해 원격 install·export·adopt와 consumer E2E를 통과했습니다. 남은 조건은 반영 tree의 Codex CLI 로딩 probe 하나입니다(2026-09-19 사용량 한도로 미실행). 상세는 PLAN W-004가 소유합니다.
+없음.
 
 ## Next
 
@@ -77,6 +70,11 @@
   - 변경-ID: `2026-09-18-project-analysis-skill`
   - 통합 결과: locale별 self-contained `project-analysis` skill과 README·manifest·checker 계약이 Origin PR #12 merge commit `5eefc11`에 통합됐습니다. 고정된 `v2.0.0` artifact는 변경하지 않았고 이 skill은 다음 release inventory에 포함됩니다.
   - 검증 근거: PR #12 exact-head 리뷰와 `main`의 root docs, stable locale, 전체 unittest 및 en·ko artifact 검사.
+
+- [x] **T-004 기존 저장소 adoption 계약**
+  - 변경-ID: `2026-09-18-existing-repository-adoption`
+  - 통합 결과: 설계는 PR #14, adoption policy·release manifest schema 2·`adopt`는 PR #15, 기존 저장소 우선 문서는 PR #16, release 준비는 PR #18로 Origin `main`에 통합됐습니다. tag commit `36a123ff3bd939a99148e0f804f9e20924f6be0b`의 immutable GitHub Release `v2.1.0`으로 공개했습니다.
+  - 검증 근거: [PLAN](./changes/2026-09-18-existing-repository-adoption/03-PLAN.md) W-004와 검증 기록. 원격 latest·exact의 install·export·adopt가 통과했습니다. `claude-review-e2e` baseline에서 대상 불변, PR #28과 같은 분류, report 반영 후 checker 통과를 확인했고, Claude·Codex·Cursor·OMP 로딩 probe가 통과했습니다.
 
 - [x] **T-005 artifact `check-docs.py` 강화 반영**
   - 변경-ID: 없음 — 외부 계약을 바꾸지 않는 checker 결함 수정 묶음
