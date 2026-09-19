@@ -8,7 +8,7 @@ It supports Claude, Codex, Cursor, and [Oh My Pi](https://github.com/can1357/oh-
 
 ## Installation
 
-Download `installer.py` from the latest GitHub release, list the supported locales, and install one into a new project.
+Download `installer.py` from the latest GitHub release and list the supported locales. For an existing repository, run `adopt` to get the verified files and a per-path plan without touching the repository. For a new project, run `install`.
 
 ### 1. Download the installer
 
@@ -43,7 +43,21 @@ On Windows PowerShell:
 python installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
 ```
 
-### 3. Install a locale
+### 3. Adopt into an existing project
+
+```sh
+python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root /path/to/existing-project --output /path/to/empty-directory
+```
+
+On Windows PowerShell:
+
+```powershell
+python installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root C:\path\to\existing-project --output C:\path\to\empty-directory
+```
+
+`adopt` never writes to the project. It creates `artifact/` with the verified locale files and `adoption-plan.json`, which marks each path as `missing`, `identical`, `merge`, `decision` (for example `LICENSE`), or `blocked`. Merge the files yourself or with a coding agent by following the adoption steps in `artifact/docs/TEMPLATE_GUIDE.md`. The output directory must be outside the project; delete it to cancel. The plan format is experimental and may change in a minor release. `adopt` is available in the release after `v2.0.0`; with `v2.0.0`, run `export` below and compare the files manually.
+
+### 4. Install into a new project
 
 ```sh
 python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root /path/to/new-project
@@ -57,9 +71,9 @@ python installer.py install --release-url https://github.com/jaff2836/coding-age
 
 Set `--locale` to `en` or `ko`. The target must be new or empty; if any destination file already exists, the installer writes nothing.
 
-### Existing projects
+### Export the artifact only
 
-Do not install directly into a project that already uses v1 or maintains its own documentation. Export v2 into an empty directory, compare it with the existing files, and apply only the changes you need.
+To inspect the verified files without a plan, export them into an empty directory.
 
 ```sh
 python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --output /path/to/empty-directory
@@ -100,7 +114,7 @@ python3 scripts/export-template.py --locale en --output /path/to/empty-directory
 
 - `check-docs.py` checks links, imports, skill copies, invariants, and document version metadata.
 - `check-locales.py` checks locale inventories, placeholders, markers, and skill contracts.
-- The full test suite covers successful and failing paths for the exporter, deterministic packager, and non-destructive installer.
+- The full test suite covers successful and failing paths for the exporter, deterministic packager, and the non-destructive installer's `install`, `export`, and read-only `adopt`.
 
 ## What's included
 

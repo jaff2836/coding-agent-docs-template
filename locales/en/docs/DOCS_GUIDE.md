@@ -124,7 +124,7 @@ A remote repository, PR, and CI are optional. Record the adopting project's inte
 - [ ] Checked prior filenames, sections, code, tests, and tool references using the migration process in TEMPLATE_GUIDE.
 - [ ] Replaced placeholders in the root README.md with actual project usage instructions and did not copy the template source repository's introduction.
 - [ ] If using the release installer, verified the final asset URL, exact version, and locale; if using the source checkout exporter, recorded the exact source revision and whether uncommitted changes were included.
-- [ ] For an existing project, exported the artifact to a separate empty directory and merged it manually without automatically overwriting existing documents, commands, decisions, or the license.
+- [ ] For an existing project, used `adopt` to create the artifact and report in an empty directory outside the target, resolved every `merge`, `decision`, and `blocked` path, and merged manually without automatically overwriting existing documents, commands, decisions, or the license.
 - [ ] Replaced project information, commands, owners, and examples with actual values. Did not count source templates as actual work.
 - [ ] Retained all four combined, split, and PLAN templates in `docs/changes/_template/`. Copied only the necessary format into each actual change folder.
 - [ ] Verified Template source, version, revision, and partial adoption details. Marked anything undetermined as undetermined.

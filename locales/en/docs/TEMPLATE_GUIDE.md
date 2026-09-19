@@ -68,7 +68,7 @@ The template does not include an initialization script, review prompts or automa
     └── CI.md                  # Runner-agnostic quality-gate workflow and integration checklist
 ```
 
-## 2. Applying to a New Project
+## 2. Applying to a Project
 
 For an official release, use `installer.py` from GitHub Releases. Use the latest installer with the latest version, or a versioned tag's installer with that same exact version. The installer follows only an HTTPS redirect chain initiated by a GitHub release asset URL, then verifies the checksums and manifest from the exact tag.
 
@@ -80,19 +80,42 @@ For an official release, use `installer.py` from GitHub Releases. Use the latest
     https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
   mv installer.py.part installer.py
   python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}
-  python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
 )
 ```
 
 Use `latest` or a full SemVer value for `{{VERSION}}`.
 
-To compare the artifact with an existing project, export it to an empty directory instead of installing it.
+For an existing repository, use `adopt`. It verifies the release the same way as `install`, never writes to the target repository, and creates only the verified artifact (`artifact/`) and a per-path plan (`adoption-plan.json`) in an empty directory outside the target.
+
+```sh
+python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
+```
+
+`adopt` does not apply any file. A person or coding agent merges according to each report status and then completes steps 1-13 below.
+
+| Status | Meaning | Action |
+|---|---|---|
+| `missing` | Not present in the target | Add the file from `artifact/` and fill in the project values. |
+| `identical` | Already matches the artifact | No action. |
+| `merge` | The target file differs | For policy `merge` (project-owned), keep the existing content and merge in the template sections. For `copy` (template-owned), start from the artifact version and reapply only intentional project edits. |
+| `decision` | The project decides whether to adopt it | Decide whether to add, keep, or remove `LICENSE` under the license rule in §3, `docs/10-EXTENSION.md` under step 5, and `.cursor/BUGBOT.md` and `.omp/WATCHDOG.md` under step 8. |
+| `blocked` | A symlink, non-regular entry, case-only name variant, or similar | Clean up the target path by hand, then run `adopt` again. |
+
+`adoption-plan.json` uses the `stability: experimental` format; its fields may change in a minor release. To cancel an adoption, delete the output directory.
+
+For a new project, use `install` with a new or empty target. If any artifact path already exists in the target, it writes nothing and stops.
+
+```sh
+python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
+```
+
+To obtain only the verified artifact without a plan, export it to an empty directory.
 
 ```sh
 python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
-1. Install a verified locale artifact into an empty project directory, then record its version and source commit in both guide documents as described in §5. Confirm that the artifact inventory includes the hidden `.agents/`, `.claude/`, `.cursor/`, and `.omp/` entries, `.gitignore`, and all four templates under `docs/changes/_template/`. Do not copy the source repository root directly.
+1. In a new project created with `install`, or in a repository merged according to the `adopt` report, record its version and source commit in both guide documents as described in §5. Confirm that the artifact inventory includes the hidden `.agents/`, `.claude/`, `.cursor/`, and `.omp/` entries, `.gitignore`, and all four templates under `docs/changes/_template/`. Do not copy the source repository root directly.
 2. The root [README.md](../README.md) is already the project template in the selected locale. Fill in the project name, description, requirements, installation, execution and verification instructions, security guidance, and license.
 3. Adapt the project information and commands in [AGENTS.md](../AGENTS.md) to the actual repository. Confirm that they agree with the README's execution instructions.
 4. Replace the placeholders and example items listed below. When deleting the example invariant in [REVIEW.md](./REVIEW.md) or turning it into a real rule, also delete the `template-example:project-invariant` marker immediately above it.
@@ -106,7 +129,7 @@ python3 installer.py export --release-url https://github.com/jaff2836/coding-age
 12. Use the Template Adoption Checklist in the [Documentation Guide](./DOCS_GUIDE.md) to confirm adoption is complete.
 13. Repositories that use CI should connect the quality gates to their existing runner using the workflow and checklist in [CI.md](./CI.md). This template does not include product-specific pipeline files for GitHub Actions, Buildkite, or another runner. Do not create YAML until the user selects a runner. If the repository has no CI, run the same gates locally and record why CI is not used.
 
-For an existing project, do not run `install` directly into its tree. Use `export` to materialize the artifact in a separate empty directory, then manually compare and merge instructions, documents, and ignore rules. The installer stops the entire installation if any target path exists and does not provide `--force`, automatic updates, or automatic locale switching. Preserve existing code, project-specific values, and user changes; record included and excluded files next to the Template revision. If something goes wrong, return to the pre-change branch or backup.
+For an existing project, do not run `install` directly into its tree. Compare the `adopt` report and `artifact/` above with the existing instructions, documents, and ignore rules, then merge them manually. The installer stops the entire installation if any target path exists and does not provide `--force`, automatic updates, or automatic locale switching. Preserve existing code, project-specific values, and user changes; record included and excluded files next to the Template revision. If something goes wrong, return to the pre-change branch or backup.
 
 The official locales are `en` and `ko`. For another language, use the English artifact as a starting point and intentionally change the Communication policy in [AGENTS.md](../AGENTS.md) and the project-owned documents. Do not present this manual adaptation as an officially supported locale or as having passed locale-parity verification.
 
@@ -296,8 +319,10 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
 
-### Unreleased (Latest Tag: v2.0.0) — Move Project Analysis into a Skill
+### Unreleased (Latest Tag: v2.0.0) — Move Project Analysis into a Skill and Add `adopt` for Existing Repositories
 
+- Added a read-only `adopt` command to the installer for existing repositories. It never writes to the target repository; it creates the verified `artifact/` and an experimental `adoption-plan.json` with per-path statuses in an empty directory outside the target. The release manifest is now `schema_version` 2, and each member carries an adoption policy (`copy`, `merge`, or `decide`).
+- Verify in the adopting repository: when applying the next version, review the `merge`, `decision`, and `blocked` paths in the `adopt` report. The status table in §2 is the handling rule.
 - Moved the whole-project analysis process from `docs/PROJECT_ANALYSIS.md` into the locale's self-contained `.agents/skills/project-analysis/SKILL.md` and added the matching `.claude/skills/` copy for Claude Code.
 - The skill applies only to explicit whole-project analysis requests and runs read-only by default. The README, manifest, and checkers now verify that contract and both skill paths.
 - Verify in the adopting repository: remove the old `docs/PROJECT_ANALYSIS.md` and its references, then apply the selected locale's two skill copies and the related `AGENTS.md`, README, and documentation-checker changes together. This entry targets the next release and is not included in the `v2.0.0` assets.

@@ -30,6 +30,7 @@
 - **Export:** `python3 scripts/export-template.py --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}`
 - **Package:** `python3 scripts/package-release.py --version {{VERSION}} --source-commit {{EXACT_COMMIT}} --repository {{OWNER/NAME}} --output {{EMPTY_OUTPUT_DIR}}`
 - **Install release:** `python3 scripts/installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}`
+- **Adopt release:** `python3 scripts/installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}`
 - **Installer export:** `python3 scripts/installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}`
 - **List locales:** `python3 scripts/installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}`
 
