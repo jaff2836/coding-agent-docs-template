@@ -17,7 +17,7 @@
 - **Name:** v2 다국어 템플릿 source·배포 구조
 - **Goal:** `en`·`ko` locale source에서 검증된 단일-locale artifact를 만들고 비파괴 installer로 선택 설치할 수 있는 승인된 설계와 구현
 - **Target:** `v2.0.0` GitHub Release와 원격 HTTPS en/ko 검증
-- **Status:** In Progress — T-001 구현·로컬 소비자 검증 완료, T-002 GitHub Releases 공개와 T-003 project-analysis skill 이관 진행 중
+- **Status:** Completed — T-001 구현·소비자 검증, T-002 `v2.0.0` 공개, T-003 project-analysis skill 이관 완료
 
 ## 운영 규칙
 
@@ -34,25 +34,11 @@
 
 ## In Progress
 
-- [ ] **T-002 GitHub Releases 기반 v2.0.0 공개**
-  - 변경-ID: `2026-09-18-github-releases-publication`
-  - 범위·우선순위: GitHub Releases 전용 installer transport, 실제 bootstrap URL, v2 metadata와 exact-head release·원격 HTTPS E2E. T-001 통합 후 공개 우선
-  - 선행조건: D-004 승인, T-001의 W-007 검증 완료
-  - 관련 결정·SPEC: [D-004](./00-PROJECT.md#8-decisions) — [SPEC](./changes/2026-09-18-github-releases-publication/02-SPEC.md)
-  - 상세 실행의 정본: [PLAN](./changes/2026-09-18-github-releases-publication/03-PLAN.md)
-  - 통합 완료 조건: Origin `main`과 GitHub `main`이 같은 SHA이고 `v2.0.0` tag commit이 현재 `main`의 조상이며, tag commit·manifest `source_commit`·draft asset의 package 입력 commit이 같음. draft asset을 재패키징·교체하지 않고 게시한 뒤 GitHub release의 en/ko latest·exact-version 원격 install/export가 통과
-
-- [ ] **T-003 프로젝트 전체 분석 skill 이관**
-  - 변경-ID: `2026-09-18-project-analysis-skill`
-  - 범위·우선순위: `PROJECT_ANALYSIS.md`를 locale별 self-contained `project-analysis` skill로 이관하고 README·manifest·checker 계약을 함께 갱신. T-002의 고정 v2.0.0 artifact는 변경하지 않음
-  - 선행조건: D-005 승인
-  - 관련 결정·SPEC: [D-005](./00-PROJECT.md#8-decisions) — [CHANGE](./changes/2026-09-18-project-analysis-skill/01-CHANGE.md)
-  - 상세 실행의 정본: 이 TODO 항목과 CHANGE의 완료 조건
-  - 통합 완료 조건: Origin PR merge 후 `main`에서 root/stable locale/전체 테스트와 en·ko artifact 검사가 통과하고 다음 release 대상 inventory로 기록
+없음.
 
 ## Next
 
-없음. T-001의 상세 작업은 변경별 PLAN이 소유합니다.
+없음. T-004는 D-006 승인 전까지 Backlog에 둡니다.
 
 ## Blocked
 
@@ -80,5 +66,15 @@
   - 변경-ID: `2026-09-09-multilingual-template`
   - 통합 결과: W-001~W-006이 PR #3~#8로 `main`에 통합됐고 W-007 exact-head consumer probe와 bilingual release README가 `9cea178`에 반영됐습니다.
   - 검증 근거: [PLAN](./changes/2026-09-09-multilingual-template/03-PLAN.md)의 W-001~W-007과 검증 기록. tag·GitHub release는 T-002가 소유합니다.
+
+- [x] **T-002 GitHub Releases 기반 v2.0.0 공개**
+  - 변경-ID: `2026-09-18-github-releases-publication`
+  - 통합 결과: `v2.0.0` tag commit `8bc8b1b`에서 생성한 기존 5개 draft asset을 재패키징·교체하지 않고 [immutable GitHub Release](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.0.0)로 공개했습니다. 게시 시 Origin·GitHub `main`은 `5eefc11`로 같았고 tag commit은 그 조상이었습니다.
+  - 검증 근거: [PLAN](./changes/2026-09-18-github-releases-publication/03-PLAN.md)의 W-003·W-004 및 검증 기록. latest·exact-version의 en·ko install/export와 충돌 tree 불변 검증이 통과했습니다.
+
+- [x] **T-003 프로젝트 전체 분석 skill 이관**
+  - 변경-ID: `2026-09-18-project-analysis-skill`
+  - 통합 결과: locale별 self-contained `project-analysis` skill과 README·manifest·checker 계약이 Origin PR #12 merge commit `5eefc11`에 통합됐습니다. 고정된 `v2.0.0` artifact는 변경하지 않았고 이 skill은 다음 release inventory에 포함됩니다.
+  - 검증 근거: PR #12 exact-head 리뷰와 `main`의 root docs, stable locale, 전체 unittest 및 en·ko artifact 검사.
 
 완료 이력이 길어지면 기존 CHANGELOG 또는 마일스톤별 보관 문서로 연결하고 본문을 복제하지 않습니다.
