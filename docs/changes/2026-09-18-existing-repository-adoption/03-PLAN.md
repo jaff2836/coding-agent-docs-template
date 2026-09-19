@@ -48,7 +48,15 @@
   - 대응 요구사항·상위 완료 조건: SPEC §6 공개 완료·지원 완료
   - 선행조건: W-001~W-003·T-005 통합, 사용자의 commit·push·tag·release 위임
   - 검증 방법: D-004 게시 gate, latest·exact 원격 `adopt`·`install`·`export`, `claude-review-e2e` baseline `4d9c0df` 임시 clone의 대상 불변 plan과 PR #28 결과 대조, 반영 tree의 checker와 Claude·Codex·Cursor·OMP 로딩 probe
-  - 결과·근거:
+  - 결과·근거: 공개 완료 조건을 충족했고, 지원 완료 조건은 Codex 로딩 probe만 남았습니다.
+    - **release 준비:** Origin PR #18(merge commit `36a123ff3bd939a99148e0f804f9e20924f6be0b`)에서 `Template version`을 2.1.0으로 정렬했습니다.
+    - **게시 gate:** 이 commit의 clean clone에서 unittest 140개, docs·stable locale 검사, `git diff --check`가 통과했습니다. 두 번 만든 5개 asset이 byte-identical이었습니다. manifest는 `schema_version` 2, version `2.1.0`, `source_commit`이 tag commit이고, locale별 29개 member(`copy` 16, `merge` 9, `decide` 4)입니다.
+    - **게시:** GitHub `main`을 같은 commit으로 fast-forward한 뒤 annotated tag `v2.1.0`을 push했습니다. draft asset은 다시 내려받아 byte 동일성을 확인했습니다. Origin·GitHub `main`과 tag가 같은 SHA임을 재확인한 뒤 2026-09-19T04:41:23Z에 immutable Latest release로 공개했습니다.
+    - **원격 E2E:** GitHub latest·exact의 installer와 manifest가 게시 전 package와 byte-identical이었습니다. `list-locales`와 en·ko `install`·`export`(각 29 files)가 tag source export와 일치했고, 설치 tree의 checker와 테스트가 통과했습니다. 기존 `AGENTS.md` 충돌은 대상을 바꾸지 않고 `adopt`를 안내했습니다.
+    - **consumer E2E:** `claude-review-e2e` `4d9c0df` clone에 `adopt`를 실행했습니다. 대상 파일은 전후가 같았고, latest와 exact plan이 byte-identical이었습니다. 결과는 PR #28과 같은 `missing` 23, `merge` 2, `decision` 4였습니다.
+    - **report 반영:** 23개 추가, README·`.gitignore` 병합, `LICENSE`·`docs/10-EXTENSION.md` 미채택, BUGBOT·WATCHDOG 채택으로 반영했습니다. 적용 가이드 5단계에 따라 확장 문서로 들어오는 링크 4개를 정리하자 checker와 checker 테스트가 통과했습니다.
+    - **로딩 probe:** 반영 tree의 `AGENTS.md`에만 둔 probe 값과 한국어 응답 지침을, 도구를 끈 Claude Code 2.1.277과 OMP 18.2.1, 그리고 Cursor Agent 2026.09.15가 답했습니다. 명시적 `design` skill은 Claude(`/design`, 도구 없음), Cursor(도구 호출 0회), OMP(pty 대화형 `/skill:design`)에서 skill 본문의 `docs/01-DESIGN.md §1`을 답했습니다. OMP print mode는 `/skill:design`을 펼치지 않았습니다.
+    - **남은 것:** Codex CLI 0.155.0 probe는 사용량 한도로 실행하지 못했습니다.
 
 ## 3. 검증 기록
 
@@ -57,12 +65,16 @@
 | 설계 | PR #13 head `34e2a74` + 설계 문서 변경 | docs·stable locale checker, 전체 unittest | 구현 전. 설계 문서의 계약 정합성만 확인 |
 | W-001·W-002 | 설계 PR #14 head `9378fdd` + 이 브랜치 변경 | 전체 unittest 110개, root docs, stable locale, `git diff --check` | 통과 |
 | W-003 | W-001·W-002 PR head + 이 브랜치 변경 | 전체 unittest 110개, root docs, stable locale(`installer-adopt` 명령 계약 포함), en·ko export의 `check-docs.py`와 `test_check_docs.py`, `git diff --check` | 통과 |
+| W-004 게시 gate | PR #18 merge commit `36a123f` clean clone | unittest 140개, docs, stable locale, `git diff --check`; package 2회 byte 비교; draft 5개 asset 재다운로드 비교; 게시 직전 Origin·GitHub `main`·tag SHA 대조 | 통과 — immutable Latest `v2.1.0` 공개 |
+| W-004 원격 E2E | GitHub `v2.1.0` release | latest·exact installer·manifest byte 비교, `list-locales`, en·ko `install`·`export`와 tag source export 비교, 설치 tree checker·테스트, 충돌 불변, `v2.0.0` installer·version 호환 | 통과 — `v2.0.0` installer는 `2.0.0`만, `v2.1.0` installer는 `2.1.0`만 설치하고 다른 조합은 schema 오류로 fail-closed |
+| W-004 consumer | `claude-review-e2e` `4d9c0df` clone, GitHub latest·exact `adopt` | 대상 전후 hash, plan byte 비교, report 반영 후 checker·테스트, Claude·Cursor·OMP 로딩 probe | 통과 — Codex probe는 사용량 한도로 미실행 |
 | W-001·W-002 로컬 consumer | 위 작업 트리를 in-memory package해 localhost release로 제공, `claude-review-e2e` `4d9c0df` clone | `adopt --version latest`·`2.0.0`, 대상 파일 hash 전후 비교, 같은 release의 `export`와 `artifact/` 비교, 대상 안 output 거부 | 통과 — 29개 중 `missing` 23, `merge` 2(`.gitignore`, `README.md`), `decision` 4(`LICENSE`, `docs/10-EXTENSION.md`, `.cursor/BUGBOT.md`, `.omp/WATCHDOG.md`), `blocked` 0. PR #28 수동 병합의 추가·병합·제외 결과와 일치. 원격 release와 병합 후 로딩 probe는 W-004 |
 
 ## 4. 변경·재검증 기록
 
-없음.
+- 2026-09-19: Origin의 stacked PR은 부모 PR이 병합된 뒤에도 base가 자동으로 바뀌지 않았습니다. #14·#15·#16·#17의 base를 `main`으로 바꾼 뒤 번호 순서대로 병합했습니다.
+- 2026-09-19: release 준비에서 `tests/test_package_release.py`가 version `2.0.0`에 고정돼 있어 버전 정렬 후 실패했습니다. source guide의 `Template version`을 읽도록 고친 뒤 PR #18에 포함했습니다.
 
 ## 5. 인계
 
-설계 PR 통합 후 W-001·W-002 구현 PR과 W-003 문서 PR을 순서대로 올립니다. W-004의 tag·release 게시는 별도 위임 없이 수행하지 않습니다.
+W-001~W-003은 PR #15·#16, release 준비는 PR #18로 통합됐고 `v2.1.0`이 공개됐습니다. 남은 작업은 반영 tree에서 Codex CLI 로딩 probe 하나입니다. 공개 asset·tag는 교체하지 않으며, 결함이 발견되면 patch release로 복구합니다.

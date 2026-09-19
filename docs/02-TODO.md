@@ -17,7 +17,7 @@
 - **Name:** `v2.1.0` 기존 저장소 adoption과 artifact checker 강화
 - **Goal:** 기존 저장소를 주 흐름으로 하는 읽기 전용 `adopt`, 경로별 adoption policy, 강화된 `check-docs.py`와 이미 통합된 `project-analysis` skill을 `v2.1.0`으로 공개
 - **Target:** `v2.1.0` GitHub Release와 `claude-review-e2e` baseline 기반 원격 adoption E2E
-- **Status:** In Progress — D-006 Accepted, T-004·T-005 진행. 이전 마일스톤 `v2.0.0`은 T-001~T-003으로 완료
+- **Status:** In Progress — `v2.1.0` 공개 완료(2026-09-19, immutable Latest). T-005 완료, T-004는 지원 완료 조건 중 Codex 로딩 probe만 남음. 이전 마일스톤 `v2.0.0`은 T-001~T-003으로 완료
 
 ## 운영 규칙
 
@@ -41,15 +41,7 @@
   - 관련 결정·SPEC: [D-006](./00-PROJECT.md#8-decisions) — [SPEC](./changes/2026-09-18-existing-repository-adoption/02-SPEC.md)
   - 상세 실행의 정본: [PLAN](./changes/2026-09-18-existing-repository-adoption/03-PLAN.md)
   - 통합 완료 조건: PLAN W-001~W-003이 Origin `main`에 통합되고, T-005와 함께 `v2.1.0` immutable release에서 원격 `adopt`와 `claude-review-e2e` baseline E2E가 SPEC §6 공개·지원 완료 조건을 충족
-
-- [ ] **T-005 artifact `check-docs.py` 강화 반영**
-  - 변경-ID: 없음 — 외부 계약을 바꾸지 않는 checker 결함 수정 묶음이며 이 항목이 상세 정본
-  - 범위·우선순위: `jaff2836/claude-review-e2e` PR #28 head `719696fa52be301db314dc276a1c666385540bdf`에서 강화된 `scripts/check-docs.py`·`tests/test_check_docs.py`를 `template/common/`에 반영합니다. PR #28의 첫 판은 `v2.0.0` checker와 byte-identical이고 강화분에 프로젝트 전용 로직은 없습니다. 같은 head의 미해결 P2 8건도 템플릿에서 처리합니다. checker가 지원하는 Markdown 구문 범위를 en·ko 적용 가이드 §3에 명시하고, 범위 밖 구문의 오탐·미탐은 [REVIEW.md](./REVIEW.md) §9 Accepted Deferral로 기록합니다. `v2.1.0` 전에 통합
-  - 구현 순서: (1) consumer head 반영과 v2 source 차이 확인 (2) 미해결 8건 수정과 회귀 테스트 (3) 지원 범위 문서와 deferral (4) root·export 검증
-  - 선행조건: 설계 PR 통합. T-004 W-001~W-003과 파일 소유 범위가 겹치지 않아 병렬 진행
-  - 완료 조건: Origin `main` 통합, 전체 unittest·root docs·stable locale checker, en·ko export의 `check-docs.py`와 `test_check_docs.py` 통과. `v2.1.0` artifact 포함은 T-004 W-004에서 확인
-  - 비범위: consumer 저장소 PR #28 자체의 갱신. consumer는 `v2.1.0` 이후 `adopt`로 반영합니다.
-  - 검증 상태: `claude/check-docs-hardening` 브랜치에서 구현했고 Origin `main`에는 아직 통합되지 않았습니다. `v2.0.0`을 base로, 현재 `main` checker를 ours로, PR #28 head를 theirs로 3-way merge했고 충돌은 없었습니다. 미해결 8건 중 7건(줄바꿈 inline link, root-relative URL, `<pre>`·`<script>`·`<style>`·`<textarea>`와 블록 수준 HTML block, reference definition 뒤 문장, 전체 `Template version` 값 비교, 모호한 문서 짧은 이름, WATCHDOG·BUGBOT의 저장소 밖 symlink·비파일)을 수정하고 회귀 테스트 7개를 추가했습니다. 새 테스트는 수정 전 checker에서 모두 실패합니다. Setext heading 1건은 finding 예시(`1. Existing` 다음 `---`)가 CommonMark에서 목록 항목과 thematic break이므로 결함이 아닙니다. 대신 Setext heading을 지원 범위 밖으로 명시하고 DFR-001로 기록했습니다. 전체 unittest 132개, root docs, stable locale, en·ko export의 `check-docs.py`와 checker 테스트 48개가 통과했습니다. PR #28 head에 새 checker를 실행하면 `project-analysis` skill 사본 누락(D-005 inventory)만 보고합니다.
+  - 현재 상태: W-001~W-003은 PR #15·#16으로 통합됐고, `v2.1.0`(tag commit `36a123f`)을 공개해 원격 install·export·adopt와 consumer E2E를 통과했습니다. 남은 조건은 반영 tree의 Codex CLI 로딩 probe 하나입니다(2026-09-19 사용량 한도로 미실행). 상세는 PLAN W-004가 소유합니다.
 
 ## Next
 
@@ -85,5 +77,10 @@
   - 변경-ID: `2026-09-18-project-analysis-skill`
   - 통합 결과: locale별 self-contained `project-analysis` skill과 README·manifest·checker 계약이 Origin PR #12 merge commit `5eefc11`에 통합됐습니다. 고정된 `v2.0.0` artifact는 변경하지 않았고 이 skill은 다음 release inventory에 포함됩니다.
   - 검증 근거: PR #12 exact-head 리뷰와 `main`의 root docs, stable locale, 전체 unittest 및 en·ko artifact 검사.
+
+- [x] **T-005 artifact `check-docs.py` 강화 반영**
+  - 변경-ID: 없음 — 외부 계약을 바꾸지 않는 checker 결함 수정 묶음
+  - 통합 결과: `claude-review-e2e` PR #28 head `719696f`의 강화분을 `template/common/`에 3-way merge로 반영했습니다. 미해결 P2 8건 중 7건을 수정하고 회귀 테스트 7개를 추가했습니다. Setext heading은 지원 범위 밖으로 명시하고 DFR-001로 기록했습니다. Origin PR #17 merge commit `6e664c374f87d26002124fa155c8345a121ba51f`에 통합됐습니다.
+  - 검증 근거: 통합 후 `main`에서 전체 unittest 140개와 root docs·stable locale 검사가 통과했습니다. 공개된 `v2.1.0` ko artifact의 `scripts/check-docs.py`·`tests/test_check_docs.py`는 tag commit의 `template/common/` 파일과 byte-identical이고, 설치 tree에서 checker와 테스트 48개가 통과했습니다.
 
 완료 이력이 길어지면 기존 CHANGELOG 또는 마일스톤별 보관 문서로 연결하고 본문을 복제하지 않습니다.
