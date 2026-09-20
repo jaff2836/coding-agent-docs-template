@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** `v2.1.0` 기존 저장소 adoption과 artifact checker 강화
-- **Goal:** 기존 저장소를 주 흐름으로 하는 읽기 전용 `adopt`, 경로별 adoption policy, 강화된 `check-docs.py`와 이미 통합된 `project-analysis` skill을 `v2.1.0`으로 공개
-- **Target:** `v2.1.0` GitHub Release와 `claude-review-e2e` baseline 기반 원격 adoption E2E
-- **Status:** Completed — `v2.1.0` 공개(2026-09-19, immutable Latest)와 T-004·T-005 완료. 이전 마일스톤 `v2.0.0`은 T-001~T-003으로 완료
-- **다음 마일스톤:** `v2.1.1` patch 후보. T-008과 확정 결함만 분리한 T-009를 현재 작업 트리에서 구현·검증하고, 정책 결정 T-010과 기능 변경 T-007은 별도 후보로 유지합니다.
+- **Name:** `v2.1.1` checker·installer 진단 수정과 release 검증 운영
+- **Goal:** Origin `main`에 통합된 T-008·T-009를 patch release로 준비하고, 실제 draft와 immutable release에서 candidate·published 검증 경로를 확인
+- **Target:** `v2.1.1` GitHub Release와 T-008 candidate·published 운영 기록
+- **Status:** In Progress — T-008·T-009 구현은 Origin `main`에 통합됐고, release 준비 PR과 draft 운영 검증이 남았습니다. 이전 마일스톤 `v2.1.0`은 2026-09-19 공개와 T-004·T-005 완료로 종료했습니다.
+- **다음 마일스톤:** `v2.1.1` 공개 뒤 consumer PR #28을 마무리하고, 정책 결정 T-010과 기능 변경 T-007은 별도 후보로 유지합니다.
 
 ## 운영 규칙
 
