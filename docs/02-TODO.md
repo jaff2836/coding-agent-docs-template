@@ -8,7 +8,7 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-19 (UTC)
+- **Last reviewed:** 2026-09-20 (UTC)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
 - **Integration target:** local `main`; 공개 저장소 target `jaff2836/coding-agent-docs-template`; v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
@@ -18,6 +18,7 @@
 - **Goal:** 기존 저장소를 주 흐름으로 하는 읽기 전용 `adopt`, 경로별 adoption policy, 강화된 `check-docs.py`와 이미 통합된 `project-analysis` skill을 `v2.1.0`으로 공개
 - **Target:** `v2.1.0` GitHub Release와 `claude-review-e2e` baseline 기반 원격 adoption E2E
 - **Status:** Completed — `v2.1.0` 공개(2026-09-19, immutable Latest)와 T-004·T-005 완료. 이전 마일스톤 `v2.0.0`은 T-001~T-003으로 완료
+- **다음 마일스톤:** `v2.1.1` patch 후보. T-008과 확정 결함만 분리한 T-009를 현재 작업 트리에서 구현·검증하고, 정책 결정 T-010과 기능 변경 T-007은 별도 후보로 유지합니다.
 
 ## 운영 규칙
 
@@ -34,11 +35,38 @@
 
 ## In Progress
 
-없음.
+- [ ] **T-008 release 검증 절차 스크립트화** — 현재 작업 트리 구현 완료, 통합 대기
+  - 변경-ID: `2026-09-20-release-verification`
+  - 결정: [PROJECT D-007](./00-PROJECT.md#8-decisions)과 [변경 문서](./changes/2026-09-20-release-verification/01-CHANGE.md)에 따라 tag·release mutation은 사람이 유지하고 candidate·published 검증만 자동화합니다.
+  - 구현 범위: clean exact-source gate, package 2회 byte 대조, Origin·GitHub `main`·annotated tag 대조, draft·published asset 대조, 공개 latest·exact의 모든 공식 locale `list-locales`·`install`·`export`·`adopt`와 source export 비교
+  - 현재 근거: unit test 12개, 현재 작업 트리의 전체 unittest 154개, root docs, stable locale, Python compile과 `git diff --check`가 통과했고, immutable Latest `v2.1.0`의 exact checkout에서 package의 installer를 실행하는 실환경 `published` 검증이 통과했습니다.
+  - 남은 한계: 현재 draft release가 없고 이를 임의로 만드는 것은 범위 밖이므로 candidate 성공 경로의 실환경 검증은 다음 release의 기존 draft에서 publish 전에 수행합니다.
+  - 완료 조건: 현재 작업 트리의 전체 gate 통과 후 지정된 local `main`에 통합하고, 다음 release 운영 기록에서 candidate 성공 경로를 확인합니다. commit·push·merge는 별도 사용자 위임이 필요합니다.
+
+- [ ] **T-009 checker·installer 확정 결함 수정** — `v2.1.1` patch 후보, 현재 작업 트리 구현 완료
+  - 범위: `check_versions()`가 `docs/TEMPLATE_GUIDE.md`의 실제 부재만 허용하고 외부 symlink·비파일 entry를 오류로 보고합니다. manifest schema가 실행 중인 installer와 다르면 같은 release version의 `installer.py`를 사용하라는 복구 안내를 제공합니다.
+  - 근거: consumer PR #28의 pr-bot P3를 현재 checker에서 재현했고, `v2.0.0` installer와 `schema_version` 2 release를 조합하면 원인만 있고 복구 방법이 없는 오류를 확인했습니다.
+  - 현재 검증: checker test 51개, installer test 34개와 전체 unittest 154개가 통과했습니다. 외부 symlink·directory·실제 부재와 schema mismatch CLI 오류를 고정하는 회귀 테스트를 각각 추가했고, root docs·stable locale·en/ko export artifact checker와 각 artifact test 49개·Python compile·`git diff --check`가 통과했습니다.
+  - 비범위: skill metadata와 maintainer 가이드 동기화 정책은 T-010, `--base-version`과 adoption report 확장은 T-007이 소유합니다. version bump·package·draft·공개 release는 이 구현 단계에서 수행하지 않습니다.
+  - 완료 조건: 전체 gate와 en·ko artifact 검증 통과 후 지정된 local `main`에 통합하고, `v2.1.1` release를 별도 승인·검증합니다.
 
 ## Next
 
-없음.
+- [ ] **T-006 consumer PR #28 마무리 (외부 저장소 `jaff2836/claude-review-e2e`)**
+  - 변경-ID: 없음 — 이 저장소 코드가 아니라 T-004 지원 검증에 쓴 consumer 저장소의 후속이며 이 항목이 상세 정본
+  - 범위: PR #28(`codex/adopt-docs-template-v2`)을 `v2.1.0` 기준으로 마무리하고 consumer `main`에 통합할지 결정합니다. consumer 쪽 작업이므로 commit·push·댓글·스레드 해소·merge는 매번 사용자 위임이 필요합니다.
+  - 현재 상태(2026-09-19 확인): `v2.1.0` `adopt` report(추가 2, 동일 10, 병합 13, 결정 4, blocked 0)에 따라 갱신해 head `4b3987d`를 push했습니다. 리뷰 결과는 다음과 같습니다.
+    - Claude workflow #8: Approve, 네 job 통과
+    - jaff2836-pr-reviewer: approve
+    - pr-bot: comment, P3 1건 — T-009에 기록
+    - Copilot·Codex: 새 head에서는 재요청하지 않아 리뷰 없음
+  - 미해결 스레드: 7개입니다. 6개는 `v2.1.0` checker로 수정됐지만 해소 표시하지 않았습니다. Setext 1개에는 CommonMark상 결함이 아니라는 답글을 달았습니다.
+  - 남은 작업:
+    1. 필요 시 Copilot·Codex 재리뷰 요청
+    2. 수정된 스레드 해소 표시
+    3. consumer `main` 병합 여부 결정. consumer TODO의 T-002 완료 조건입니다.
+    4. 병합 전 `.env` 위험 해소: consumer `main`의 `.gitignore`에는 `.env`가 없습니다. PR #28 병합 전 로컬 작업본을 `main`으로 전환하면 `/srv/dev/claude-review-e2e/.env`가 commit 후보로 보입니다.
+  - 완료 조건: PR #28이 consumer `main`에 통합되거나 닫히고, 그 결과를 이 항목에 기록
 
 ## Blocked
 
@@ -46,6 +74,17 @@
 
 ## Backlog
 
+아래 T-007·T-010은 `v2.1.0` 작업에서 드러난 미승인 후보입니다. T-009의 실행 결함과 분리했으며 결정이 필요한 질문은 [PROJECT §11](./00-PROJECT.md#11-open-questions)에 있습니다.
+
+- [ ] **T-007 이미 적용한 저장소의 업그레이드를 위한 `adopt` 분류 개선** — 설계 필요
+  - 근거: 2026-09-19 consumer PR #28을 `v2.0.0`에서 `v2.1.0`으로 갱신할 때 `adopt`의 2-way report가 병합 13개를 보고했습니다. 실제로 템플릿이 바뀐 파일은 6개였고, 나머지 7개는 프로젝트 값만 달랐습니다. 이를 가리기 위해 `v2.0.0` artifact를 따로 export해 base로 수동 비교했습니다.
+  - 제안: `--base-version <SemVer>`로 이전 release artifact를 같은 검증 절차로 받아, 경로마다 "템플릿만 변경 / 프로젝트만 변경 / 양쪽 변경"을 report에 추가합니다. 대상 무변경, 자동 병합 없음, 실험적 report 원칙은 유지합니다.
+  - 선행조건: D-006 SPEC이 비범위로 둔 "3-way merge·자동 upgrade"와의 경계를 새 결정으로 확정([01-DESIGN.md](./01-DESIGN.md) 절차)
+- [ ] **T-010 skill metadata·maintainer 가이드 정책 정리** — 설계 결정 필요
+  - `project-analysis` skill의 `Owner`·`Last reviewed` placeholder를 템플릿 소유 skill에서 제거할지, 적용 시 두 skill 사본을 함께 채우는 현재 계약을 유지할지 정합니다.
+  - root `docs/TEMPLATE_GUIDE.md`·`docs/DOCS_GUIDE.md`를 locale 가이드의 복제본으로 계속 동기화할지, locale 가이드 링크와 maintainer 전용 내용만 남길지 정합니다.
+  - 이 단위는 확정 결함 T-009의 `v2.1.1` patch를 지연시키지 않으며, artifact 계약이 바뀌면 별도 SemVer 범위를 결정합니다.
+- [ ] `v2.2.0` 준비 시 [REVIEW.md](./REVIEW.md) §9 DFR-001(checker Markdown 지원 범위 밖 구문) 재검토
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
 
 ## Cancelled

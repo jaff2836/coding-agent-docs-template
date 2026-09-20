@@ -116,13 +116,20 @@ python3 scripts/export-template.py --locale en --output /path/to/empty-directory
 - `check-locales.py` checks locale inventories, placeholders, markers, and skill contracts.
 - The full test suite covers successful and failing paths for the exporter, deterministic packager, and the non-destructive installer's `install`, `export`, and read-only `adopt`.
 
+From a clean exact-source checkout, maintainers can verify a human-prepared draft before publication and then verify the immutable Latest release and public installer paths. Both commands are read-only with respect to remotes and require `git` and `gh`.
+
+```text
+python3 scripts/verify-release.py candidate --version {{VERSION}} --source-commit {{EXACT_COMMIT}} --repository {{OWNER/NAME}}
+python3 scripts/verify-release.py published --version {{VERSION}} --source-commit {{EXACT_COMMIT}} --repository {{OWNER/NAME}} --release-url https://github.com/{{OWNER/NAME}}/releases
+```
+
 ## What's included
 
 - **Shared instructions:** `AGENTS.md`, `CLAUDE.md`, and tool-specific integration files
 - **Document system:** project baseline, design, TODO, review, and CI guidance
 - **Skills:** `design`, `project-analysis`, and `review-round`
 - **Multilingual delivery:** `template/common/`, `locales/en/`, `locales/ko/`, the manifest, and the schema
-- **Tools:** documentation and locale checks, export, release packaging, and installation
+- **Tools:** documentation and locale checks, export, release packaging and verification, and installation
 
 See the [Template Guide](./docs/TEMPLATE_GUIDE.md) for the complete structure and adoption checklist, and the [Documentation Guide](./docs/DOCS_GUIDE.md) for document ownership and operating rules. This repository does not include application code or pipelines for a specific CI product.
 

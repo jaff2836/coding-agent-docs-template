@@ -116,13 +116,20 @@ python3 scripts/export-template.py --locale ko --output /path/to/empty-directory
 - `check-locales.py`: locale inventory, placeholder, marker와 skill 계약 검사
 - 전체 테스트: exporter, deterministic package와 비파괴 installer의 `install`·`export`·읽기 전용 `adopt` 성공·실패 경로 검사
 
+maintainer는 clean exact-source checkout에서 사람이 준비한 draft를 게시 전에 검사하고, 게시 후 immutable Latest와 공개 installer 경로를 다시 검사할 수 있습니다. 두 명령 모두 remote를 변경하지 않으며 `git`과 `gh`가 필요합니다.
+
+```text
+python3 scripts/verify-release.py candidate --version {{VERSION}} --source-commit {{EXACT_COMMIT}} --repository {{OWNER/NAME}}
+python3 scripts/verify-release.py published --version {{VERSION}} --source-commit {{EXACT_COMMIT}} --repository {{OWNER/NAME}} --release-url https://github.com/{{OWNER/NAME}}/releases
+```
+
 ## 포함된 것
 
 - **공통 지침:** `AGENTS.md`, `CLAUDE.md`와 도구별 연결 파일
 - **문서 체계:** 프로젝트 기준, 설계, TODO, 리뷰 및 CI 가이드
 - **스킬:** `design`, `project-analysis`, `review-round`
 - **다국어 배포:** `template/common/`, `locales/en/`, `locales/ko/`, manifest와 schema
-- **도구:** 문서·locale 검사, export, release package, installer
+- **도구:** 문서·locale 검사, export, release package·검증, installer
 
 전체 구조와 적용 체크리스트는 [Template Guide](./docs/TEMPLATE_GUIDE.md), 문서별 역할과 운영 규칙은 [Documentation Guide](./docs/DOCS_GUIDE.md)를 참고하세요. 이 저장소에는 애플리케이션 코드나 특정 CI 제품의 pipeline이 포함되지 않습니다.
 

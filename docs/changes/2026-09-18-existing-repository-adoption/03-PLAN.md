@@ -68,14 +68,32 @@
 | W-004 게시 gate | PR #18 merge commit `36a123f` clean clone | unittest 140개, docs, stable locale, `git diff --check`; package 2회 byte 비교; draft 5개 asset 재다운로드 비교; 게시 직전 Origin·GitHub `main`·tag SHA 대조 | 통과 — immutable Latest `v2.1.0` 공개 |
 | W-004 원격 E2E | GitHub `v2.1.0` release | latest·exact installer·manifest byte 비교, `list-locales`, en·ko `install`·`export`와 tag source export 비교, 설치 tree checker·테스트, 충돌 불변, `v2.0.0` installer·version 호환 | 통과 — `v2.0.0` installer는 `2.0.0`만, `v2.1.0` installer는 `2.1.0`만 설치하고 다른 조합은 schema 오류로 fail-closed |
 | W-004 consumer | `claude-review-e2e` `4d9c0df` clone, GitHub latest·exact `adopt` | 대상 전후 hash, plan byte 비교, report 반영 후 checker·테스트, Claude·Cursor·OMP 로딩 probe | 통과 — Codex는 API key 로그인으로 재실행해 통과 |
+| 완료 후 관찰: 기존 적용 저장소 업그레이드 | `claude-review-e2e` PR #28 head `719696f`(`v2.0.0` 수동 적용), GitHub `v2.1.0` | `adopt --version 2.1.0 --locale ko`, 대상 전후 무변경, `v2.0.0` export를 base로 한 경로별 3-way 비교와 병합, consumer checker·테스트 48개·`py_compile`·placeholder 검색, `.github/`·`src/` 불변 | 통과 — 결과는 추가 2, 동일 10, 병합 13, 결정 4였고 병합 13개 중 템플릿이 바뀐 것은 6개뿐. 갱신 head `4b3987d`에서 Claude workflow·jaff2836-pr-reviewer Approve, pr-bot P3 1건. 2-way report의 한계는 TODO T-007로 이관 |
 | W-001·W-002 로컬 consumer | 위 작업 트리를 in-memory package해 localhost release로 제공, `claude-review-e2e` `4d9c0df` clone | `adopt --version latest`·`2.0.0`, 대상 파일 hash 전후 비교, 같은 release의 `export`와 `artifact/` 비교, 대상 안 output 거부 | 통과 — 29개 중 `missing` 23, `merge` 2(`.gitignore`, `README.md`), `decision` 4(`LICENSE`, `docs/10-EXTENSION.md`, `.cursor/BUGBOT.md`, `.omp/WATCHDOG.md`), `blocked` 0. PR #28 수동 병합의 추가·병합·제외 결과와 일치. 원격 release와 병합 후 로딩 probe는 W-004 |
 
 ## 4. 변경·재검증 기록
 
+- 2026-09-19 (완료 후): 사용자 요청으로 consumer PR #28을 `v2.1.0` `adopt`로 갱신했습니다. 기존 결정 4개(`LICENSE`·`docs/10-EXTENSION.md` 제외, BUGBOT·WATCHDOG 유지)를 유지했습니다. PR이 보강한 checker는 이를 포함한 `v2.1.0` 판으로 교체했고, `docs/PROJECT_ANALYSIS.md`는 skill 두 사본으로 대체했습니다. skill Metadata placeholder는 두 사본에 같은 값으로 채웠습니다. Setext finding에는 CommonMark상 결함이 아니라는 답글을 남겼습니다.
 - 2026-09-19: Origin의 stacked PR은 부모 PR이 병합된 뒤에도 base가 자동으로 바뀌지 않았습니다. #14·#15·#16·#17의 base를 `main`으로 바꾼 뒤 번호 순서대로 병합했습니다.
 - 2026-09-19: Codex probe는 ChatGPT 계정 한도로 실패했습니다. 사용자 승인에 따라 API key 로그인으로 바꿔 다시 실행했습니다. 첫 시도는 `codex exec`가 stdin을 기다려 시간 초과됐고, stdin을 닫은 뒤 통과했습니다.
 - 2026-09-19: release 준비에서 `tests/test_package_release.py`가 version `2.0.0`에 고정돼 있어 버전 정렬 후 실패했습니다. source guide의 `Template version`을 읽도록 고친 뒤 PR #18에 포함했습니다.
 
 ## 5. 인계
 
-W-001~W-003은 PR #15·#16, release 준비는 PR #18로 통합됐고 `v2.1.0`이 공개됐습니다. 네 도구의 로딩 probe까지 완료해 남은 작업은 없습니다. 공개 asset·tag는 교체하지 않으며, 결함이 발견되면 patch release로 복구합니다.
+W-001~W-003은 PR #15·#16, release 준비는 PR #18, 완료 기록은 PR #19로 통합됐고 `v2.1.0`이 공개됐습니다. 네 도구의 로딩 probe까지 완료해 이 변경의 남은 작업은 없습니다. 공개 asset·tag는 교체하지 않으며, 결함이 발견되면 patch release로 복구합니다.
+
+후속 작업은 전역 TODO가 소유합니다.
+
+- T-006: consumer PR #28 마무리 — 외부 저장소, 사용자 위임 필요
+- T-007: 업그레이드용 `adopt` 분류 개선 — 설계 필요
+- T-008: release 검증 스크립트화 — 현재 작업 트리 구현 완료, 통합 대기
+- T-009: checker·installer 확정 결함 수정 — `v2.1.1` patch 후보
+- T-010: skill metadata·maintainer 가이드 정책 정리 — 설계 결정 필요
+
+미결정 사항은 PROJECT §11에 있습니다.
+
+이 저장소의 작업은 아니지만, 이번 검증 중 다른 저장소에서 관찰한 사항입니다.
+
+- `jaff2836/claude-code-pr-review`의 Claude review는 PR #28에서 8회 중 2회 결과 형식 오류(`CR-OUT-002`)로 끝났습니다(#1 `3accf16`, #5 `93043d4`). 같은 head를 재실행하면 정상 판정이 나왔습니다.
+- jaff2836-pr-reviewer는 PR #28 checkout에서 `.omp/` 디렉터리를 받지 못해 `.omp/WATCHDOG.md` 누락을 두 번 잘못 보고했습니다. 실제 head tree에는 파일이 있습니다.
+- consumer `main`의 `.gitignore`에는 `.env`가 없습니다. 로컬 작업본의 API key 파일은 PR #28 브랜치에서만 ignore됩니다(T-006).
