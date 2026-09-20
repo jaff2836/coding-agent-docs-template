@@ -24,6 +24,13 @@ import package_release
 ROOT = Path(__file__).resolve().parent.parent
 REMOTE_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
 FILE_MODE = 0o644
+ADOPTION_SUMMARY_STATUSES = (
+    "missing",
+    "identical",
+    "merge",
+    "decision",
+    "blocked",
+)
 
 
 class VerificationError(ValueError):
@@ -344,10 +351,12 @@ def _validated_adoption_summary(plan: Any) -> Mapping[str, int]:
     summary = plan.get("summary")
     if not isinstance(summary, dict):
         raise VerificationError("adoption plan summary must be an object")
-    expected_statuses = set(installer.ADOPTION_STATUSES)
+    # This validates the published adoption-plan contract. Do not derive it from
+    # the verifier checkout's installer, which may differ from the release source.
+    expected_statuses = set(ADOPTION_SUMMARY_STATUSES)
     if set(summary) != expected_statuses:
         raise VerificationError("adoption plan summary has invalid statuses")
-    for status in installer.ADOPTION_STATUSES:
+    for status in ADOPTION_SUMMARY_STATUSES:
         value = summary[status]
         if isinstance(value, bool) or not isinstance(value, int) or value < 0:
             raise VerificationError(

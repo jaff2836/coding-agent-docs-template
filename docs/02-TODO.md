@@ -52,8 +52,8 @@
 
 - [ ] **T-011 release verifier adoption plan 진단 강화** — 구현·검증 중
   - 근거: Origin PR #20 C20-002에서 `published` E2E가 문법상 유효하지만 `summary` 구조가 잘못된 `adoption-plan.json`을 읽으면 `VerificationError` 대신 `KeyError` traceback을 내는 경로를 재현했습니다.
-  - 구현 범위: plan 최상위와 `summary`를 object로 제한하고, 정확한 adoption status 집합과 non-negative integer 값을 검증한 뒤 합계를 계산합니다.
-  - 현재 검증: malformed plan의 누락·추가 status, `bool`, 음수와 비-object 구조를 `VerificationError`로 고정하는 회귀 테스트를 추가했습니다. verifier test 13개와 전체 unittest 155개, root docs, stable locale, Python compile과 `git diff --check`가 통과했습니다.
+  - 구현 범위: plan 최상위와 `summary`를 object로 제한하고, 공개 plan v1의 고정 adoption status 집합과 non-negative integer 값을 검증한 뒤 합계를 계산합니다. status 집합은 verifier checkout의 `installer` 상수에 의존하지 않습니다.
+  - 현재 검증: malformed plan의 누락·추가 status, `bool`, 음수와 비-object 구조를 `VerificationError`로 고정하고 다른 checkout의 installer status와 분리하는 회귀 테스트를 추가했습니다. verifier test 14개와 전체 unittest 156개, root docs, stable locale, Python compile과 `git diff --check`가 통과했습니다.
   - 완료 조건: 전체 gate 통과 후 Origin `main`에 통합하고 `v2.1.1` candidate 검증에 반영합니다.
 
 ## Next

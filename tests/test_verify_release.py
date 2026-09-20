@@ -428,6 +428,24 @@ class VerifyReleaseTests(unittest.TestCase):
                 ):
                     VERIFY_RELEASE._validated_adoption_summary(plan)
 
+    def test_adoption_summary_does_not_use_local_installer_statuses(self) -> None:
+        valid = {
+            "missing": 1,
+            "identical": 0,
+            "merge": 1,
+            "decision": 0,
+            "blocked": 0,
+        }
+        with patch.object(
+            VERIFY_RELEASE.installer,
+            "ADOPTION_STATUSES",
+            ("different-verifier-checkout",),
+        ):
+            self.assertEqual(
+                VERIFY_RELEASE._validated_adoption_summary({"summary": valid}),
+                valid,
+            )
+
     def test_remote_names_reject_option_or_url_injection(self) -> None:
         for value in ("--upload-pack=bad", "https://example.test/repo", "bad name"):
             with self.subTest(value=value):
