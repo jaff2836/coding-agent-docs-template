@@ -74,16 +74,19 @@
 
 ## Backlog
 
-아래 T-007·T-010은 `v2.1.0` 작업에서 드러난 미승인 후보이고 T-011은 PR #20에서 명시적으로 이관한 P3입니다. T-009의 실행 결함과 분리했으며 결정이 필요한 질문은 [PROJECT §11](./00-PROJECT.md#11-open-questions)에 있습니다.
+아래 T-007은 계약 승인 뒤 구현을 시작하지 않은 기능 변경이고, T-010은 `v2.1.0` 작업에서 드러난 미승인 후보이며, T-011은 PR #20에서 명시적으로 이관한 P3입니다. T-009의 실행 결함과 분리했고 남은 결정 질문은 [PROJECT §11](./00-PROJECT.md#11-open-questions)에 있습니다.
 
 - [ ] **T-011 release verifier adoption plan 진단 강화** — PR #20 후속 P3
   - 근거: Origin PR #20 C20-002에서 `published` E2E가 문법상 유효하지만 `summary` 구조가 잘못된 `adoption-plan.json`을 읽으면 `VerificationError` 대신 `KeyError` traceback을 내는 경로를 재현했습니다.
   - 이관 결정: remote 변경 없이 fail-closed하고 기본 merge gate를 막지 않는 P3이므로 Chae Sangwon의 2026-09-20 사용자 확인에 따라 PR #20 merge 뒤 후속으로 남깁니다.
   - 완료 조건: plan 최상위·`summary` 구조와 정수 값을 검증하고 malformed plan 회귀 테스트에서 일관된 `VerificationError`를 확인합니다.
-- [ ] **T-007 이미 적용한 저장소의 업그레이드를 위한 `adopt` 분류 개선** — 설계 필요
-  - 근거: 2026-09-19 consumer PR #28을 `v2.0.0`에서 `v2.1.0`으로 갱신할 때 `adopt`의 2-way report가 병합 13개를 보고했습니다. 실제로 템플릿이 바뀐 파일은 6개였고, 나머지 7개는 프로젝트 값만 달랐습니다. 이를 가리기 위해 `v2.0.0` artifact를 따로 export해 base로 수동 비교했습니다.
-  - 제안: `--base-version <SemVer>`로 이전 release artifact를 같은 검증 절차로 받아, 경로마다 "템플릿만 변경 / 프로젝트만 변경 / 양쪽 변경"을 report에 추가합니다. 대상 무변경, 자동 병합 없음, 실험적 report 원칙은 유지합니다.
-  - 선행조건: D-006 SPEC이 비범위로 둔 "3-way merge·자동 upgrade"와의 경계를 새 결정으로 확정([01-DESIGN.md](./01-DESIGN.md) 절차)
+- [ ] **T-007 이미 적용한 저장소의 업그레이드를 위한 `adopt` 분류 개선** — 계약 승인, 구현 미착수
+  - 변경-ID: `2026-09-20-adopt-upgrade-classification`
+  - 결정·계획: [PROJECT D-008](./00-PROJECT.md#8-decisions), [승인된 계약](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md), [미착수 PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md)
+  - 계약: `adopt --base-version <older-exact-semver>`은 과거 installer를 실행하지 않고 exact base의 schema 1·2 asset을 읽기 전용으로 검증합니다. `base ∪ current` 경로를 target과 비교해 여섯 upgrade status를 format 2에 기록하되 base 없는 format 1, 대상 무변경, 자동 merge·삭제 없음은 유지합니다.
+  - 현재 상태: 사용자가 2026-09-20 권고 계약과 계약 PR만 승인했습니다. Origin PR #23은 문서 범위이며 installer·테스트·사용자 가이드 구현은 시작하지 않았습니다.
+  - 구현 선행조건: 별도 사용자 시작 요청, T-011 통합 뒤 최신 Origin `main`. T-006 consumer 작업은 회귀 fixture 근거이지만 미완료 기능 선행조건은 아닙니다.
+  - 완료 조건: PLAN W-001~W-004가 Origin `main`에 통합되고 format 1 호환·base verifier·3-way 분류·format 2·en/ko 문서를 검증합니다. 별도 release 위임 뒤 W-005에서 `v2.2.0` candidate·published gate, 과거 v2.0→v2.1 회귀 fixture와 v2.1→v2.2 consumer 원격 E2E를 완료합니다.
 - [ ] **T-010 skill metadata·maintainer 가이드 정책 정리** — 설계 결정 필요
   - `project-analysis` skill의 `Owner`·`Last reviewed` placeholder를 템플릿 소유 skill에서 제거할지, 적용 시 두 skill 사본을 함께 채우는 현재 계약을 유지할지 정합니다.
   - root `docs/TEMPLATE_GUIDE.md`·`docs/DOCS_GUIDE.md`를 locale 가이드의 복제본으로 계속 동기화할지, locale 가이드 링크와 maintainer 전용 내용만 남길지 정합니다.

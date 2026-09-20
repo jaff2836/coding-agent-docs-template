@@ -3,13 +3,13 @@
 ## Metadata
 
 - **Change ID:** `2026-09-20-adopt-upgrade-classification`
-- **Status:** Draft
+- **Status:** Accepted
 - **Originator:** Chae Sangwon
 - **Source:** 2026-09-20 사용자 대화 — T-006·T-011 뒤 T-007 진행 요청
 - **Parent:** [제품 기준](../../00-PROJECT.md) D-006과 [기존 저장소 adoption SPEC](../2026-09-18-existing-repository-adoption/02-SPEC.md)
-- **Decision:** 미발급 — 승인 시 PROJECT §8에 등록
-- **Approval:** 미승인 — 아래 CLI·base 검증·report v2 계약 합의 필요
-- **Execution:** [전역 TODO](../../02-TODO.md)의 T-007
+- **Decision:** [PROJECT D-008](../../00-PROJECT.md#8-decisions)
+- **Approval:** Chae Sangwon, 2026-09-20 사용자 대화 — 권고 계약 승인, 계약 PR만 진행하고 구현은 별도 시작 요청 전까지 보류
+- **Execution:** [03-PLAN.md](./03-PLAN.md)와 [전역 TODO](../../02-TODO.md)의 T-007
 
 ## 1. Intent
 
@@ -29,7 +29,7 @@
 
 ### 1.3 범위와 비범위
 
-범위는 `installer.py adopt --base-version`, 과거 release의 읽기 전용 검증, 3-way 분류, experimental adoption plan format 2, en·ko 적용 문서와 회귀 테스트입니다.
+범위는 `installer.py adopt --base-version`, 과거 release의 읽기 전용 검증, base와 current release inventory 합집합의 3-way 분류, experimental adoption plan format 2, en·ko 적용 문서와 회귀 테스트입니다.
 
 자동 3-way merge, 파일 추가·수정·삭제, patch 생성, commit·PR 생성, 임의 로컬 directory를 신뢰하는 `--base-path`, release manifest schema 변경은 포함하지 않습니다. base 없는 최초 adoption은 기존 2-way 경로를 그대로 사용합니다.
 
@@ -39,12 +39,13 @@
 - current release는 지금처럼 실행 중인 installer byte와 manifest가 일치해야 합니다.
 - base는 `latest`가 아닌 full SemVer이고, resolved current version보다 SemVer precedence가 낮아야 합니다.
 - base artifact를 얻기 위해 과거 `installer.py`를 subprocess로 실행하지 않습니다.
-- base release는 immutable GitHub Releases namespace와 `SHA256SUMS`·manifest·installer·archive hash를 모두 통과해야 합니다.
+- base release는 exact `v<SemVer>` namespace에서 `SHA256SUMS`·manifest·installer·archive의 내부 일관성을 모두 통과해야 합니다. GitHub release의 immutable 상태는 installer가 증명하지 않으며 공식 release 게시·검증 절차가 확인합니다.
+- base asset fetch는 current 경로의 release URL 검증, exact asset URL, HTTPS·GitHub redirect 정책, timeout과 다운로드 크기 상한을 그대로 사용합니다.
 - 지원하지 않는 과거 manifest schema는 추정해서 읽지 않고 fail-closed합니다.
 
 ### 1.5 미해결 질문
 
-아래 권고 설계의 승인 여부만 남았습니다. 구현 중 새 report 소비자가 발견되면 format 2 호환 범위를 다시 확인합니다.
+계약의 미해결 질문은 없습니다. 구현 시작은 이번 승인에 포함되지 않으며 별도 사용자 요청 뒤 [03-PLAN.md](./03-PLAN.md)에 따라 진행합니다. 구현 중 새 report 소비자가 발견되면 experimental format 2의 영향을 확인하되 이 계약을 임의로 넓히지 않습니다.
 
 ## 2. Spec
 
@@ -53,15 +54,15 @@
 | 요구사항 ID | 요구사항 | 상황·입력 | 관찰 가능한 결과 | 검증 방법 |
 |---|---|---|---|---|
 | R-001 | base 없는 기존 `adopt`가 유지됩니다. | `--base-version` 생략 | CLI 인자, format 1 plan, stdout과 artifact byte가 기존 fixture와 같습니다. | 기존 fixture·golden byte 회귀 |
-| R-002 | base는 exact immutable release로 검증됩니다. | schema 1 또는 2의 이전 release | checksum·manifest identity·installer byte·locale archive와 member hash가 모두 맞아야 base tree를 읽습니다. 과거 installer는 실행하지 않습니다. | schema별 fake release, tamper negative test |
+| R-002 | base는 exact release asset으로 검증됩니다. | schema 1 또는 2의 이전 release | exact namespace, checksum, manifest identity, installer byte, locale archive와 member hash가 모두 맞아야 base tree를 읽습니다. 과거 installer는 opaque byte로만 검증하고 실행·import하지 않습니다. | schema별 fake release, tamper negative test |
 | R-003 | base version 입력을 fail-closed합니다. | `latest`, current와 같거나 더 높은 version, 미지원 schema·locale | output 없이 명확한 `InstallerError`로 실패하고 대상 tree가 같습니다. | CLI·tree snapshot negative test |
-| R-004 | base·current·target의 union 경로를 분류합니다. | release 사이의 수정·추가·삭제와 프로젝트 수정 | 모든 union 경로가 `unchanged`·`template-only`·`project-only`·`converged`·`diverged`·`blocked` 중 하나입니다. | equality truth table·inventory 변화 fixture |
-| R-005 | 기존 adoption policy 판단을 보존합니다. | current artifact에 존재하는 경로 | `status`, `policy`, 대상 상태와 기존 `summary`는 현재 release와 대상의 2-way 판단을 유지하고, upgrade 분류는 별도 필드입니다. | format 1/2 대조 fixture |
+| R-004 | base와 current inventory의 합집합 경로를 분류합니다. | release 사이의 수정·추가·삭제와 프로젝트 수정 | `base ∪ current`의 각 경로에서 target 값을 조회해 `unchanged`·`template-only`·`project-only`·`converged`·`diverged`·`blocked` 중 하나로 분류합니다. target-only 비템플릿 경로는 순회하지 않습니다. | equality truth table·inventory 변화 fixture |
+| R-005 | 기존 adoption policy 판단을 보존합니다. | current artifact에 존재하는 경로 | `status`, `policy`, 대상 상태와 기존 `summary`는 현재 release와 대상의 2-way 판단 및 blocked 우선순위를 유지하고, upgrade 분류는 별도 필드입니다. | format 1/2 대조 fixture |
 | R-006 | 제거된 template 경로를 숨기지 않습니다. | base에는 있고 current에는 없는 경로 | union `paths`에 `artifact_sha256: null`, `policy: null`, `status: null`로 기록하고 자동 삭제를 제안하지 않습니다. | base-only path fixture |
 | R-007 | 대상과 output 안전성을 유지합니다. | 성공·검증 실패·게시 실패·blocked path | 대상 before/after가 같고 output은 전부 원자적으로 게시되거나 남지 않습니다. | failure injection·snapshot 비교 |
 | R-008 | report가 결정적이고 provenance를 드러냅니다. | 같은 base/current/target 재실행 | plan byte가 같고 exact `base_release`와 `release`, `upgrade_summary`를 포함합니다. | 두 번 실행 byte 비교 |
 | R-009 | 공개 문서가 upgrade와 최초 adoption을 구분합니다. | 기존 적용 저장소와 처음 적용하는 저장소 | en·ko 가이드가 `--base-version` 사용 조건, 여섯 분류와 자동 병합 없음·제거 경로 검토를 같은 계약으로 설명합니다. | docs·locale parity, export artifact 검사 |
-| R-010 | 공개 release에서 실제 upgrade 경로를 확인합니다. | 다음 minor release와 이전 immutable release | 원격 HTTPS에서 base-aware adopt가 대상 불변으로 성공하고 manual 3-way 결과와 일치합니다. | published E2E consumer fixture |
+| R-010 | 회귀 fixture와 공개 release에서 upgrade 경로를 확인합니다. | 과거 v2.0→v2.1 fixture 및 다음 minor release와 이전 immutable release | 과거 consumer exact head에서 수동 3-way 판정을 재현하고, 원격 HTTPS에서 `v2.1.0` base→`v2.2.0` current의 base-aware adopt가 대상 불변으로 성공하며 독립 대조와 일치합니다. | historical fixture와 published E2E consumer 검증 |
 
 ### 2.2 대안과 선택 이유
 
@@ -92,17 +93,17 @@ python3 installer.py adopt \
 current release는 기존 `_verified_manifest()`와 실행 중인 installer self-binding을 유지합니다. base 전용 검증기는 다음 순서로 읽습니다.
 
 1. exact base version의 `SHA256SUMS`, `release-manifest.json`, `installer.py`, locale archive를 다운로드합니다.
-2. checksum 파일 형식과 manifest·installer·locale archive의 digest 결합을 확인합니다.
-3. manifest top-level identity와 repository·version·source commit을 검사합니다.
-4. schema 1은 member의 공통 5개 필드, schema 2는 공통 필드와 `policy`를 각각 정확히 검사합니다. 다른 schema는 거부합니다.
-5. manifest installer record가 다운로드한 base installer byte와 맞는지 확인하되 실행하지 않습니다.
+2. checksum 파일 형식과 manifest가 선언한 installer·모든 locale archive를 포함한 exact asset-name 집합을 확인하고, manifest·installer·선택 locale archive의 다운로드 byte가 해당 digest·manifest record와 일치하는지 검사합니다.
+3. manifest top-level identity와 repository·version·source commit을 검사합니다. base와 current의 repository·locale는 같아야 합니다.
+4. schema 1·2의 top-level, installer, locale, member object에서 필수 key와 허용 key의 정확한 집합을 검사해 누락·추가 key를 모두 거부합니다. schema 1 member는 `path`, `sha256`, `bytes`, `mode`, `timestamp`, schema 2 member는 여기에 `policy`만 추가합니다. 정수 위치의 boolean, 범위 밖 크기, 중복·case-fold·부모/자식 충돌 경로도 current verifier와 같은 기준으로 거부합니다. 다른 schema는 거부합니다.
+5. manifest installer record가 다운로드한 base installer byte의 길이·SHA-256과 맞는지 확인합니다. 이 byte는 opaque data로만 다루며 import, evaluation, execution 또는 subprocess 호출을 하지 않습니다.
 6. locale archive inventory·mode·timestamp·size·hash를 manifest와 대조해 base member byte를 얻습니다.
 
-이 호환 parser는 base 비교에만 쓰며 primary `--version` 검증이나 `install`·`export`에 연결하지 않습니다.
+base asset fetch는 current 경로와 같은 release URL·exact asset URL 구성, HTTPS·GitHub redirect 제한, timeout과 크기 상한을 사용하며 fallback host나 임의 redirect를 허용하지 않습니다. 이 호환 parser는 base 비교에만 쓰며 primary `--version` 검증이나 `install`·`export`에 연결하지 않습니다. GitHub release의 immutable 상태 확인은 installer transport 계약이 아니라 `verify-release.py published`와 release 운영 gate의 책임입니다.
 
 #### 3-way 분류
 
-비교 값은 base artifact `B`, current artifact `C`, target `T`의 file byte이며 부재도 하나의 값으로 취급합니다. symlink·특수 파일·읽기 실패·상위 경로 충돌은 equality 비교 전에 `blocked`입니다.
+경로 집합은 base와 current release inventory의 합집합이며 target tree 전체를 순회하지 않습니다. 각 경로의 비교 값은 base artifact `B`, current artifact `C`, target `T`의 file byte이고 부재도 하나의 값으로 취급합니다. symlink·특수 파일·읽기 실패·상위 경로 충돌은 equality 비교 전에 `blocked`입니다.
 
 | `upgrade_status` | 조건 | 의미 |
 |---|---|---|
@@ -113,7 +114,7 @@ current release는 기존 `_verified_manifest()`와 실행 중인 installer self
 | `diverged` | 위 equality 어느 것도 아니고 세 값을 비교 가능 | template과 project가 서로 다른 결과로 바뀜 |
 | `blocked` | target을 안전하게 비교할 수 없음 | 수동 경로 판단 필요 |
 
-policy `decide`는 기존 `status: decision`을 유지하지만 `upgrade_status`는 독립적으로 계산합니다. 분류는 자동 적용 권한이나 권고가 아닙니다.
+current 경로의 기존 2-way precedence를 그대로 유지합니다. unsafe target은 policy보다 우선해 current 경로에서는 `status`와 `upgrade_status`가 모두 `blocked`이고, base-only 경로에서는 `status: null`을 유지하며 `upgrade_status`만 `blocked`입니다. 비교 가능한 target에서 policy `decide`는 기존 `status: decision`을 유지하면서 `upgrade_status`를 독립적으로 계산합니다. 분류는 자동 적용 권한이나 권고가 아닙니다.
 
 #### Adoption plan format 2
 
@@ -126,6 +127,7 @@ base를 지정한 실행만 `format_version: 2`를 냅니다.
   "stability": "experimental",
   "base_release": {"repository": "OWNER/NAME", "version": "2.0.0", "source_commit": "<sha>", "locale": "ko"},
   "release": {"repository": "OWNER/NAME", "version": "2.1.0", "source_commit": "<sha>", "locale": "ko"},
+  "guide": "artifact/docs/TEMPLATE_GUIDE.md §2",
   "summary": {"missing": 0, "identical": 0, "merge": 0, "decision": 0, "blocked": 0},
   "upgrade_summary": {"unchanged": 0, "template-only": 0, "project-only": 0, "converged": 0, "diverged": 0, "blocked": 0},
   "paths": [
@@ -144,11 +146,23 @@ base를 지정한 실행만 `format_version: 2`를 냅니다.
 }
 ```
 
-`paths`는 base와 current inventory의 union입니다. current에 있는 경로는 기존 `policy`·`status`·`summary` 계약을 유지합니다. base에만 있는 경로는 `policy`, `status`, `artifact_sha256`이 `null`이고 `summary`에는 포함하지 않으며, `upgrade_summary`에는 포함합니다. 제거는 report에만 드러내고 대상 파일을 삭제하거나 삭제를 안전하다고 판정하지 않습니다.
+`paths`는 base와 current inventory의 union이며 POSIX path lexical order로 정렬합니다. current에 있는 경로는 기존 `policy`·`status`·`summary` 계약을 유지합니다. base에만 있는 경로는 `policy`, `status`, `artifact_sha256`이 `null`이고 `summary`에는 포함하지 않으며, `upgrade_summary`에는 포함합니다. 제거는 report에만 드러내고 대상 파일을 삭제하거나 삭제를 안전하다고 판정하지 않습니다. 비교 가능한 base-only 경로의 `reason`은 `This path is absent from the current release; review whether to keep or remove it by hand.`로 고정하고 unsafe target에는 기존 blocked reason이 우선합니다.
+
+다음 report 불변식을 지킵니다.
+
+- `len(paths) == |base ∪ current|`, `sum(summary.values()) == |current|`, `sum(upgrade_summary.values()) == |base ∪ current|`입니다.
+- current 경로의 `policy`·`status`는 null이 아니고 base-only 경로에서는 null입니다. `base_sha256`은 base에 없을 때, `artifact_sha256`은 current에 없을 때 null이며 `target_sha256`은 target이 읽을 수 있는 일반 파일일 때만 값을 가집니다.
+- JSON key 정렬·UTF-8·LF·마지막 개행과 같은 직렬화 규칙, 기존 `guide`, 절대 경로·실행 시각·사용자 이름을 기록하지 않는 규칙은 format 1과 같습니다.
+- output의 `artifact/`는 current release tree만 담습니다. base member byte는 비교에만 쓰며 게시하지 않습니다.
+- base 모드 stdout의 기존 `Adoption plan` 줄은 `|current|` 경로와 기존 2-way summary를 세고, non-`identical` current 경로만 기존 status 제목 아래 출력합니다. 이어 `Upgrade classification: <|base ∪ current|> paths (...)`와 `upgrade <status>:` 제목 아래 non-`unchanged` 경로를 추가합니다. base-only 경로는 upgrade 목록에만 나타납니다.
+
+#### Maintainer release verification
+
+`verify-release.py published`에는 선택형 `--base-version <older-exact-semver>`을 추가합니다. 생략하면 D-007의 기존 published E2E와 CLI 동작을 유지합니다. 지정하면 candidate 단계에는 새 network 요구를 만들지 않고, published 단계가 모든 공식 locale에서 `latest`와 exact current selector로 base-aware `adopt`를 실행해 format 2의 두 provenance, cardinality·null 불변식과 target 불변을 확인합니다. 이 임시 fixture 검증은 실제 consumer 검증을 대체하지 않으며 W-005가 별도 consumer에서 결과를 독립 대조합니다.
 
 ### 2.4 상위 설계에 미치는 영향
 
-D-006의 대상 무변경, 검증된 staging, 자동 merge·overwrite 제외, experimental report 원칙은 유지합니다. D-006 §3.1 CLI와 §3.3 분류, §3.4 report를 선택형 upgrade 모드로 확장합니다. release manifest schema 2와 D-004 transport는 바꾸지 않습니다. 승인 시 새 결정을 PROJECT §8에 등록하고 §11 T-007 질문을 닫습니다.
+D-006의 대상 무변경, 검증된 staging, 자동 merge·overwrite 제외, experimental report 원칙은 유지합니다. D-006 §3.1 CLI와 §3.3 분류, §3.4 report를 선택형 upgrade 모드로 확장합니다. D-007의 `published`에 선택형 base-aware E2E를 추가하지만 candidate·remote mutation 경계는 유지합니다. release manifest schema 2와 D-004 transport는 바꾸지 않습니다. D-008로 결정하고 PROJECT §11의 T-007 질문을 닫았습니다.
 
 ### 2.5 위험·호환성·rollback
 
@@ -168,10 +182,12 @@ D-006의 대상 무변경, 검증된 staging, 자동 merge·overwrite 제외, ex
 - **설계 완료:** 이 문서가 승인되고 PROJECT 결정·T-007과 함께 Origin `main`에 통합됩니다.
 - **구현 완료:** schema 1·2 base 검증, equality truth table, format 1 호환, format 2 union report, 대상·output 불변 테스트와 전체 gate가 통과하고 Origin `main`에 통합됩니다.
 - **공개 완료:** `v2.2.0` immutable release에서 이전 exact release를 base로 한 en·ko 원격 E2E가 통과합니다.
-- **지원 검증:** `claude-review-e2e`의 `v2.1.0` 적용 상태를 대상으로 새 report가 기존 수동 3-way 판정과 일치합니다.
+- **회귀 검증:** 업그레이드 전 `claude-review-e2e` exact head와 `v2.0.0` base·`v2.1.0` current byte fixture에서 기존 수동 3-way 판정을 재현합니다.
+- **지원 검증:** `v2.1.0`을 적용한 consumer를 target으로 두고 `v2.1.0` base·공개 `v2.2.0` current의 새 report를 사람이 독립적으로 대조합니다.
 
-미해결 사항은 §1.5의 설계 승인입니다. 승인 전에는 installer·report 구현을 시작하지 않습니다.
+계약은 승인됐지만 구현은 시작하지 않았습니다. 구현은 별도 사용자 요청 뒤 [03-PLAN.md](./03-PLAN.md)의 미착수 작업부터 진행합니다.
 
 ## 3. 변경 기록
 
 - 2026-09-20: T-007 근거와 실제 `v2.0.0` schema 1·`v2.1.0` schema 2 경계를 확인하고 Draft를 작성했습니다. base installer 자동 실행 대신 base 전용 read-only compatibility parser를 권고합니다.
+- 2026-09-20: 사용자가 권고 계약을 승인했습니다. 독립적인 보안·report·실행 검토에서 경로 집합, format 2 호환, legacy validator, release·consumer 검증 경계를 보완했고 구현은 별도 시작 요청까지 보류했습니다.
