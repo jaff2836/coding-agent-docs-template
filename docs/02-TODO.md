@@ -66,7 +66,7 @@
 
 ## Backlog
 
-아래 T-007·T-010은 `v2.1.0` 작업에서 드러난 미승인 후보입니다. T-009의 실행 결함과 분리했으며 결정이 필요한 질문은 [PROJECT §11](./00-PROJECT.md#11-open-questions)에 있습니다.
+아래 T-007·T-010은 `v2.1.0` 작업에서 드러난 미승인 후보이고, T-012는 T-011 리뷰에서 분리한 기존 진단 결함입니다. T-009의 실행 결함과 분리했으며 결정이 필요한 질문은 [PROJECT §11](./00-PROJECT.md#11-open-questions)에 있습니다.
 - [ ] **T-007 이미 적용한 저장소의 업그레이드를 위한 `adopt` 분류 개선** — 설계 필요
   - 근거: 2026-09-19 consumer PR #28을 `v2.0.0`에서 `v2.1.0`으로 갱신할 때 `adopt`의 2-way report가 병합 13개를 보고했습니다. 실제로 템플릿이 바뀐 파일은 6개였고, 나머지 7개는 프로젝트 값만 달랐습니다. 이를 가리기 위해 `v2.0.0` artifact를 따로 export해 base로 수동 비교했습니다.
   - 제안: `--base-version <SemVer>`로 이전 release artifact를 같은 검증 절차로 받아, 경로마다 "템플릿만 변경 / 프로젝트만 변경 / 양쪽 변경"을 report에 추가합니다. 대상 무변경, 자동 병합 없음, 실험적 report 원칙은 유지합니다.
@@ -75,6 +75,10 @@
   - `project-analysis` skill의 `Owner`·`Last reviewed` placeholder를 템플릿 소유 skill에서 제거할지, 적용 시 두 skill 사본을 함께 채우는 현재 계약을 유지할지 정합니다.
   - root `docs/TEMPLATE_GUIDE.md`·`docs/DOCS_GUIDE.md`를 locale 가이드의 복제본으로 계속 동기화할지, locale 가이드 링크와 maintainer 전용 내용만 남길지 정합니다.
   - 이 단위는 확정 결함 T-009의 `v2.1.1` patch를 지연시키지 않으며, artifact 계약이 바뀌면 별도 SemVer 범위를 결정합니다.
+- [ ] **T-012 release verifier의 remote `main` 객체 부재 진단** — PR #22 후속 P2
+  - 근거: Origin PR #22 C22-002에서 `ls-remote`로 확인한 synchronized `main` commit 객체가 source checkout에 없을 때 `git merge-base --is-ancestor` exit 128을 실제 비조상 관계로 잘못 보고하는 경로를 재현했습니다.
+  - 범위: ancestry 검사 전에 remote `main` commit 객체의 로컬 존재를 확인하고, 없으면 자동 fetch나 remote mutation 없이 fetch가 필요하다는 별도 `VerificationError`를 냅니다. 객체가 존재하는 실제 비조상 관계의 기존 오류는 유지합니다.
+  - 완료 조건: 객체 부재와 실제 비조상 fixture가 서로 다른 안정된 진단을 내고 candidate·published 성공 경로가 유지됩니다.
 - [ ] `v2.2.0` 준비 시 [REVIEW.md](./REVIEW.md) §9 DFR-001(checker Markdown 지원 범위 밖 구문) 재검토
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
 
