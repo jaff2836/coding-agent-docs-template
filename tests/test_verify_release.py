@@ -400,6 +400,34 @@ class VerifyReleaseTests(unittest.TestCase):
         self.assertEqual(set(invoked_installer_bytes), {b"installer"})
         self.assertEqual(artifact_check.call_count, 1)
 
+    def test_adoption_plan_summary_rejects_malformed_structure(self) -> None:
+        valid = {
+            "missing": 1,
+            "identical": 0,
+            "merge": 1,
+            "decision": 0,
+            "blocked": 0,
+        }
+        self.assertEqual(
+            VERIFY_RELEASE._validated_adoption_summary({"summary": valid}),
+            valid,
+        )
+        malformed = (
+            [],
+            {},
+            {"summary": []},
+            {"summary": {key: value for key, value in valid.items() if key != "blocked"}},
+            {"summary": dict(valid, unexpected=0)},
+            {"summary": dict(valid, missing=True)},
+            {"summary": dict(valid, missing=-1)},
+        )
+        for plan in malformed:
+            with self.subTest(plan=plan):
+                with self.assertRaisesRegex(
+                    VERIFY_RELEASE.VerificationError, "adoption plan"
+                ):
+                    VERIFY_RELEASE._validated_adoption_summary(plan)
+
     def test_remote_names_reject_option_or_url_injection(self) -> None:
         for value in ("--upload-pack=bad", "https://example.test/repo", "bad name"):
             with self.subTest(value=value):

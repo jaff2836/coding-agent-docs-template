@@ -18,7 +18,7 @@
 - **Goal:** Origin `main`에 통합된 T-008·T-009를 patch release로 준비하고, 실제 draft와 immutable release에서 candidate·published 검증 경로를 확인
 - **Target:** `v2.1.1` GitHub Release와 T-008 candidate·published 운영 기록
 - **Status:** In Progress — T-008·T-009 구현은 Origin `main`에 통합됐고, release 준비 PR과 draft 운영 검증이 남았습니다. 이전 마일스톤 `v2.1.0`은 2026-09-19 공개와 T-004·T-005 완료로 종료했습니다.
-- **다음 마일스톤:** `v2.1.1` 공개 뒤 consumer PR #28을 마무리하고, 정책 결정 T-010과 기능 변경 T-007은 별도 후보로 유지합니다.
+- **다음 마일스톤:** `v2.1.1` 공개 뒤 업그레이드용 `adopt` 분류 T-007을 설계하고, 정책 결정 T-010은 별도 후보로 유지합니다.
 
 ## 운영 규칙
 
@@ -50,23 +50,15 @@
   - 비범위: skill metadata와 maintainer 가이드 동기화 정책은 T-010, `--base-version`과 adoption report 확장은 T-007이 소유합니다. version bump·package·draft·공개 release는 이 구현 단계에서 수행하지 않습니다.
   - 완료 조건: `v2.1.1` release 준비 commit을 Origin·GitHub `main`에 통합하고, T-008 candidate·published gate로 tag·draft·immutable release를 검증합니다.
 
+- [ ] **T-011 release verifier adoption plan 진단 강화** — 구현·검증 중
+  - 근거: Origin PR #20 C20-002에서 `published` E2E가 문법상 유효하지만 `summary` 구조가 잘못된 `adoption-plan.json`을 읽으면 `VerificationError` 대신 `KeyError` traceback을 내는 경로를 재현했습니다.
+  - 구현 범위: plan 최상위와 `summary`를 object로 제한하고, 정확한 adoption status 집합과 non-negative integer 값을 검증한 뒤 합계를 계산합니다.
+  - 현재 검증: malformed plan의 누락·추가 status, `bool`, 음수와 비-object 구조를 `VerificationError`로 고정하는 회귀 테스트를 추가했습니다. verifier test 13개와 전체 unittest 155개, root docs, stable locale, Python compile과 `git diff --check`가 통과했습니다.
+  - 완료 조건: 전체 gate 통과 후 Origin `main`에 통합하고 `v2.1.1` candidate 검증에 반영합니다.
+
 ## Next
 
-- [ ] **T-006 consumer PR #28 마무리 (외부 저장소 `jaff2836/claude-review-e2e`)**
-  - 변경-ID: 없음 — 이 저장소 코드가 아니라 T-004 지원 검증에 쓴 consumer 저장소의 후속이며 이 항목이 상세 정본
-  - 범위: PR #28(`codex/adopt-docs-template-v2`)을 `v2.1.0` 기준으로 마무리하고 consumer `main`에 통합할지 결정합니다. consumer 쪽 작업이므로 commit·push·댓글·스레드 해소·merge는 매번 사용자 위임이 필요합니다.
-  - 현재 상태(2026-09-19 확인): `v2.1.0` `adopt` report(추가 2, 동일 10, 병합 13, 결정 4, blocked 0)에 따라 갱신해 head `4b3987d`를 push했습니다. 리뷰 결과는 다음과 같습니다.
-    - Claude workflow #8: Approve, 네 job 통과
-    - jaff2836-pr-reviewer: approve
-    - pr-bot: comment, P3 1건 — T-009에 기록
-    - Copilot·Codex: 새 head에서는 재요청하지 않아 리뷰 없음
-  - 미해결 스레드: 7개입니다. 6개는 `v2.1.0` checker로 수정됐지만 해소 표시하지 않았습니다. Setext 1개에는 CommonMark상 결함이 아니라는 답글을 달았습니다.
-  - 남은 작업:
-    1. 필요 시 Copilot·Codex 재리뷰 요청
-    2. 수정된 스레드 해소 표시
-    3. consumer `main` 병합 여부 결정. consumer TODO의 T-002 완료 조건입니다.
-    4. 병합 전 `.env` 위험 해소: consumer `main`의 `.gitignore`에는 `.env`가 없습니다. PR #28 병합 전 로컬 작업본을 `main`으로 전환하면 `/srv/dev/claude-review-e2e/.env`가 commit 후보로 보입니다.
-  - 완료 조건: PR #28이 consumer `main`에 통합되거나 닫히고, 그 결과를 이 항목에 기록
+없음.
 
 ## Blocked
 
@@ -74,12 +66,7 @@
 
 ## Backlog
 
-아래 T-007·T-010은 `v2.1.0` 작업에서 드러난 미승인 후보이고 T-011은 PR #20에서 명시적으로 이관한 P3입니다. T-009의 실행 결함과 분리했으며 결정이 필요한 질문은 [PROJECT §11](./00-PROJECT.md#11-open-questions)에 있습니다.
-
-- [ ] **T-011 release verifier adoption plan 진단 강화** — PR #20 후속 P3
-  - 근거: Origin PR #20 C20-002에서 `published` E2E가 문법상 유효하지만 `summary` 구조가 잘못된 `adoption-plan.json`을 읽으면 `VerificationError` 대신 `KeyError` traceback을 내는 경로를 재현했습니다.
-  - 이관 결정: remote 변경 없이 fail-closed하고 기본 merge gate를 막지 않는 P3이므로 Chae Sangwon의 2026-09-20 사용자 확인에 따라 PR #20 merge 뒤 후속으로 남깁니다.
-  - 완료 조건: plan 최상위·`summary` 구조와 정수 값을 검증하고 malformed plan 회귀 테스트에서 일관된 `VerificationError`를 확인합니다.
+아래 T-007·T-010은 `v2.1.0` 작업에서 드러난 미승인 후보입니다. T-009의 실행 결함과 분리했으며 결정이 필요한 질문은 [PROJECT §11](./00-PROJECT.md#11-open-questions)에 있습니다.
 - [ ] **T-007 이미 적용한 저장소의 업그레이드를 위한 `adopt` 분류 개선** — 설계 필요
   - 근거: 2026-09-19 consumer PR #28을 `v2.0.0`에서 `v2.1.0`으로 갱신할 때 `adopt`의 2-way report가 병합 13개를 보고했습니다. 실제로 템플릿이 바뀐 파일은 6개였고, 나머지 7개는 프로젝트 값만 달랐습니다. 이를 가리기 위해 `v2.0.0` artifact를 따로 export해 base로 수동 비교했습니다.
   - 제안: `--base-version <SemVer>`로 이전 release artifact를 같은 검증 절차로 받아, 경로마다 "템플릿만 변경 / 프로젝트만 변경 / 양쪽 변경"을 report에 추가합니다. 대상 무변경, 자동 병합 없음, 실험적 report 원칙은 유지합니다.
@@ -123,5 +110,9 @@
   - 변경-ID: 없음 — 외부 계약을 바꾸지 않는 checker 결함 수정 묶음
   - 통합 결과: `claude-review-e2e` PR #28 head `719696f`의 강화분을 `template/common/`에 3-way merge로 반영했습니다. 미해결 P2 8건 중 7건을 수정하고 회귀 테스트 7개를 추가했습니다. Setext heading은 지원 범위 밖으로 명시하고 DFR-001로 기록했습니다. Origin PR #17 merge commit `6e664c374f87d26002124fa155c8345a121ba51f`에 통합됐습니다.
   - 검증 근거: 통합 후 `main`에서 전체 unittest 140개와 root docs·stable locale 검사가 통과했습니다. 공개된 `v2.1.0` ko artifact의 `scripts/check-docs.py`·`tests/test_check_docs.py`는 tag commit의 `template/common/` 파일과 byte-identical이고, 설치 tree에서 checker와 테스트 48개가 통과했습니다.
+
+- [x] **T-006 consumer PR #28 마무리 (외부 저장소 `jaff2836/claude-review-e2e`)**
+  - 통합 결과: `v2.1.0` `adopt` report를 반영한 PR #28 exact head `4b3987dad933142a192ebee08aea7c525a7681da`를 GitHub `main` merge commit `26c531beb65eaef8f524a00bcf8f06c52445c3d8`에 통합했습니다. 처리된 7개 review thread를 모두 해소했고 template 저장소로 이관한 P3는 T-009에 반영했습니다.
+  - 검증 근거: exact head에서 Claude workflow #8과 jaff2836-pr-reviewer가 approve했고 네 job이 통과했습니다. 통합 `main`에서 checker test 48개, docs checker, Python compile과 `git diff --check`가 통과했으며 기존 `.github/`·`src/`는 PR에서 변경되지 않았습니다. 로컬 `.env`는 존재하지 않았고 통합된 `.gitignore`가 `.env`를 제외합니다.
 
 완료 이력이 길어지면 기존 CHANGELOG 또는 마일스톤별 보관 문서로 연결하고 본문을 복제하지 않습니다.

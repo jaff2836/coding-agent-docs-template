@@ -336,6 +336,27 @@ def _tree_snapshot(root: Path) -> tuple[tuple[str, str, int, bytes], ...]:
     return tuple(snapshot)
 
 
+def _validated_adoption_summary(plan: Any) -> Mapping[str, int]:
+    """Return a complete adoption summary or fail with a stable diagnostic."""
+
+    if not isinstance(plan, dict):
+        raise VerificationError("adoption plan must be an object")
+    summary = plan.get("summary")
+    if not isinstance(summary, dict):
+        raise VerificationError("adoption plan summary must be an object")
+    expected_statuses = set(installer.ADOPTION_STATUSES)
+    if set(summary) != expected_statuses:
+        raise VerificationError("adoption plan summary has invalid statuses")
+    for status in installer.ADOPTION_STATUSES:
+        value = summary[status]
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise VerificationError(
+                "adoption plan summary value must be a non-negative integer: %s"
+                % status
+            )
+    return summary
+
+
 def _archive_members(
     artifacts: package_release.ReleaseArtifacts, locale: str
 ) -> dict[str, bytes]:
@@ -487,7 +508,8 @@ def _verify_published_e2e(
                     )
                 except (OSError, UnicodeError, json.JSONDecodeError) as exc:
                     raise VerificationError("adopt did not write a valid plan") from exc
-                if sum(plan["summary"].values()) != len(expected):
+                summary = _validated_adoption_summary(plan)
+                if sum(summary.values()) != len(expected):
                     raise VerificationError("adoption plan does not cover every artifact path")
                 _compare_assets(expected, _tree_files(install_root), prefix + " install")
                 _compare_assets(expected, _tree_files(exported), prefix + " export")
