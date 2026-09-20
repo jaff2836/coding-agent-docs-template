@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.1.0
+- **Template version:** 2.1.1
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -320,6 +320,12 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v2.1.1 — Documentation Checker and Installer Diagnostic Fixes
+
+- `scripts/check-docs.py` now treats `docs/TEMPLATE_GUIDE.md` as an allowed omission only when the path is absent; an external symlink or directory at that path is an error.
+- A release-manifest schema mismatch now tells users to download and run `installer.py` from the same release version.
+- Verify in the adopting repository: replace `scripts/check-docs.py` and `tests/test_check_docs.py` together and rerun the checker. If a schema mismatch occurs, use the installer from the selected release version.
 
 ### v2.1.0 — `adopt` for Existing Repositories, Project Analysis Skill, and Checker Hardening
 
