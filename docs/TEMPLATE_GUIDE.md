@@ -7,7 +7,7 @@ v2 source root는 적용 payload가 아니므로 직접 복사하지 않습니�
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.1.0
+- **Template version:** 2.1.1
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -275,6 +275,12 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v2.1.1 — 문서 checker와 installer 진단 수정
+
+- `scripts/check-docs.py`는 `docs/TEMPLATE_GUIDE.md` 경로가 실제로 없을 때만 선택적 생략으로 인정하고, 저장소 밖 symlink나 디렉터리이면 오류로 보고합니다.
+- release manifest schema와 실행 중인 installer가 맞지 않으면 같은 release version의 `installer.py`를 내려받아 실행하라는 복구 방법을 안내합니다.
+- 적용 저장소에서 확인할 것: `scripts/check-docs.py`와 `tests/test_check_docs.py`를 함께 교체해 검사를 다시 실행하고, schema mismatch가 나면 선택한 release와 같은 version의 installer를 사용하세요.
 
 ### v2.1.0 — 기존 저장소 `adopt`, `project-analysis` 스킬과 문서 checker 강화
 

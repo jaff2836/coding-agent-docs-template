@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** `v2.1.0` 기존 저장소 adoption과 artifact checker 강화
-- **Goal:** 기존 저장소를 주 흐름으로 하는 읽기 전용 `adopt`, 경로별 adoption policy, 강화된 `check-docs.py`와 이미 통합된 `project-analysis` skill을 `v2.1.0`으로 공개
-- **Target:** `v2.1.0` GitHub Release와 `claude-review-e2e` baseline 기반 원격 adoption E2E
-- **Status:** Completed — `v2.1.0` 공개(2026-09-19, immutable Latest)와 T-004·T-005 완료. 이전 마일스톤 `v2.0.0`은 T-001~T-003으로 완료
-- **다음 마일스톤:** `v2.1.1` patch 후보. T-008과 확정 결함만 분리한 T-009를 현재 작업 트리에서 구현·검증하고, 정책 결정 T-010과 기능 변경 T-007은 별도 후보로 유지합니다.
+- **Name:** `v2.1.1` checker·installer 진단 수정과 release 검증 운영
+- **Goal:** Origin `main`에 통합된 T-008·T-009를 patch release로 준비하고, 실제 draft와 immutable release에서 candidate·published 검증 경로를 확인
+- **Target:** `v2.1.1` GitHub Release와 T-008 candidate·published 운영 기록
+- **Status:** In Progress — T-008·T-009 구현은 Origin `main`에 통합됐고, release 준비 PR과 draft 운영 검증이 남았습니다. 이전 마일스톤 `v2.1.0`은 2026-09-19 공개와 T-004·T-005 완료로 종료했습니다.
+- **다음 마일스톤:** `v2.1.1` 공개 뒤 consumer PR #28을 마무리하고, 정책 결정 T-010과 기능 변경 T-007은 별도 후보로 유지합니다.
 
 ## 운영 규칙
 
@@ -35,20 +35,20 @@
 
 ## In Progress
 
-- [ ] **T-008 release 검증 절차 스크립트화** — 현재 작업 트리 구현 완료, 통합 대기
+- [ ] **T-008 release 검증 절차 스크립트화** — Origin `main` 통합, 다음 draft 운영 검증 대기
   - 변경-ID: `2026-09-20-release-verification`
   - 결정: [PROJECT D-007](./00-PROJECT.md#8-decisions)과 [변경 문서](./changes/2026-09-20-release-verification/01-CHANGE.md)에 따라 tag·release mutation은 사람이 유지하고 candidate·published 검증만 자동화합니다.
   - 구현 범위: clean exact-source gate, package 2회 byte 대조, Origin·GitHub `main`·annotated tag 대조, draft·published asset 대조, 공개 latest·exact의 모든 공식 locale `list-locales`·`install`·`export`·`adopt`와 source export 비교
-  - 현재 근거: unit test 12개, 현재 작업 트리의 전체 unittest 154개, root docs, stable locale, Python compile과 `git diff --check`가 통과했고, immutable Latest `v2.1.0`의 exact checkout에서 package의 installer를 실행하는 실환경 `published` 검증이 통과했습니다.
+  - 현재 근거: Origin PR #20 merge commit `40306b65fe211402090d7a11b5c3ffafcb3689eb`에 통합됐습니다. 통합 `main`에서 unit test 12개를 포함한 전체 unittest 154개, root docs, stable locale, Python compile과 `git diff --check`가 통과했고, immutable Latest `v2.1.0`의 exact checkout에서 package의 installer를 실행하는 실환경 `published` 검증이 통과했습니다.
   - 남은 한계: 현재 draft release가 없고 이를 임의로 만드는 것은 범위 밖이므로 candidate 성공 경로의 실환경 검증은 다음 release의 기존 draft에서 publish 전에 수행합니다.
-  - 완료 조건: 현재 작업 트리의 전체 gate 통과 후 지정된 local `main`에 통합하고, 다음 release 운영 기록에서 candidate 성공 경로를 확인합니다. commit·push·merge는 별도 사용자 위임이 필요합니다.
+  - 완료 조건: 다음 release 운영 기록에서 실제 draft의 candidate 성공 경로와 게시 후 published 경로를 확인합니다.
 
-- [ ] **T-009 checker·installer 확정 결함 수정** — `v2.1.1` patch 후보, 현재 작업 트리 구현 완료
+- [ ] **T-009 checker·installer 확정 결함 수정** — Origin `main` 통합, `v2.1.1` release 준비 중
   - 범위: `check_versions()`가 `docs/TEMPLATE_GUIDE.md`의 실제 부재만 허용하고 외부 symlink·비파일 entry를 오류로 보고합니다. manifest schema가 실행 중인 installer와 다르면 같은 release version의 `installer.py`를 사용하라는 복구 안내를 제공합니다.
   - 근거: consumer PR #28의 pr-bot P3를 현재 checker에서 재현했고, `v2.0.0` installer와 `schema_version` 2 release를 조합하면 원인만 있고 복구 방법이 없는 오류를 확인했습니다.
   - 현재 검증: checker test 51개, installer test 34개와 전체 unittest 154개가 통과했습니다. 외부 symlink·directory·실제 부재와 schema mismatch CLI 오류를 고정하는 회귀 테스트를 각각 추가했고, root docs·stable locale·en/ko export artifact checker와 각 artifact test 49개·Python compile·`git diff --check`가 통과했습니다.
   - 비범위: skill metadata와 maintainer 가이드 동기화 정책은 T-010, `--base-version`과 adoption report 확장은 T-007이 소유합니다. version bump·package·draft·공개 release는 이 구현 단계에서 수행하지 않습니다.
-  - 완료 조건: 전체 gate와 en·ko artifact 검증 통과 후 지정된 local `main`에 통합하고, `v2.1.1` release를 별도 승인·검증합니다.
+  - 완료 조건: `v2.1.1` release 준비 commit을 Origin·GitHub `main`에 통합하고, T-008 candidate·published gate로 tag·draft·immutable release를 검증합니다.
 
 ## Next
 
@@ -74,8 +74,12 @@
 
 ## Backlog
 
-아래 T-007·T-010은 `v2.1.0` 작업에서 드러난 미승인 후보입니다. T-009의 실행 결함과 분리했으며 결정이 필요한 질문은 [PROJECT §11](./00-PROJECT.md#11-open-questions)에 있습니다.
+아래 T-007·T-010은 `v2.1.0` 작업에서 드러난 미승인 후보이고 T-011은 PR #20에서 명시적으로 이관한 P3입니다. T-009의 실행 결함과 분리했으며 결정이 필요한 질문은 [PROJECT §11](./00-PROJECT.md#11-open-questions)에 있습니다.
 
+- [ ] **T-011 release verifier adoption plan 진단 강화** — PR #20 후속 P3
+  - 근거: Origin PR #20 C20-002에서 `published` E2E가 문법상 유효하지만 `summary` 구조가 잘못된 `adoption-plan.json`을 읽으면 `VerificationError` 대신 `KeyError` traceback을 내는 경로를 재현했습니다.
+  - 이관 결정: remote 변경 없이 fail-closed하고 기본 merge gate를 막지 않는 P3이므로 Chae Sangwon의 2026-09-20 사용자 확인에 따라 PR #20 merge 뒤 후속으로 남깁니다.
+  - 완료 조건: plan 최상위·`summary` 구조와 정수 값을 검증하고 malformed plan 회귀 테스트에서 일관된 `VerificationError`를 확인합니다.
 - [ ] **T-007 이미 적용한 저장소의 업그레이드를 위한 `adopt` 분류 개선** — 설계 필요
   - 근거: 2026-09-19 consumer PR #28을 `v2.0.0`에서 `v2.1.0`으로 갱신할 때 `adopt`의 2-way report가 병합 13개를 보고했습니다. 실제로 템플릿이 바뀐 파일은 6개였고, 나머지 7개는 프로젝트 값만 달랐습니다. 이를 가리기 위해 `v2.0.0` artifact를 따로 export해 base로 수동 비교했습니다.
   - 제안: `--base-version <SemVer>`로 이전 release artifact를 같은 검증 절차로 받아, 경로마다 "템플릿만 변경 / 프로젝트만 변경 / 양쪽 변경"을 report에 추가합니다. 대상 무변경, 자동 병합 없음, 실험적 report 원칙은 유지합니다.
