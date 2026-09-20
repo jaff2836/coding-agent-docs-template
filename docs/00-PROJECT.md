@@ -167,7 +167,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | installer가 기존 문서를 덮어씀 | Low | High | 충돌 시 전체 중단, `--force` 미제공 | before/after tree hash 차이 |
 | release asset redirect가 신뢰 경계를 넓힘 | Low | High | 검증된 GitHub asset URL에서 시작한 HTTPS chain만 허용하고 exact tag checksum 검증 | HTTP downgrade, 비-release 시작점 또는 checksum 불일치 |
 | `adopt` report를 자동 병합 승인으로 오해하거나 대상에 기록 | Medium | High | 대상 밖 output 강제, `decision` 분류, 실험적 report 표시와 대상 tree 불변 테스트 | 대상 before/after snapshot 차이 또는 `LICENSE` 무단 추가 |
-| 수동 release gate에서 source·asset·remote 근거가 어긋남 | Medium | High | candidate·published 검증이 exact source, 두 remote, asset byte와 공개 E2E를 한 실행에 결합 | 단계별 검증 대상 SHA·version 불일치 또는 일부 locale 누락 |
+| 수동 release gate에서 source·asset·remote 근거가 어긋남 | Medium | High | candidate는 exact source·두 remote·draft asset byte를, published는 immutable Latest asset과 package의 installer를 통한 공개 E2E를 각각 한 실행에 결합 | 단계별 검증 대상 SHA·version 불일치 또는 일부 locale 누락 |
 
 ## 11. Open Questions
 

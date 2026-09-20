@@ -5,14 +5,13 @@ import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
-from unittest.mock import call, patch
+from unittest.mock import patch
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 import sys
 
 sys.path.insert(0, str(REPOSITORY_ROOT / "scripts"))
-import installer as INSTALLER  # noqa: E402
 import package_release as PACKAGE_RELEASE  # noqa: E402
 import verify_release as VERIFY_RELEASE  # noqa: E402
 
@@ -174,6 +173,40 @@ class VerifyReleaseTests(unittest.TestCase):
                 immutable=True,
             )
 
+    def test_draft_metadata_uses_draft_aware_release_view(self) -> None:
+        tag = "v%s" % VERSION
+        output = (
+            b'{"databaseId":42,"tagName":"v2.1.0","isDraft":true,'
+            b'"isImmutable":false,"isPrerelease":false}'
+        )
+        with patch.object(VERIFY_RELEASE, "_command", return_value=output) as command:
+            metadata = VERIFY_RELEASE._draft_release_metadata(
+                self.root, REPOSITORY, tag
+            )
+        command.assert_called_once_with(
+            [
+                "gh",
+                "release",
+                "view",
+                tag,
+                "--repo",
+                REPOSITORY,
+                "--json",
+                "databaseId,tagName,isDraft,isImmutable,isPrerelease",
+            ],
+            cwd=self.root,
+        )
+        self.assertEqual(
+            metadata,
+            {
+                "id": 42,
+                "tag_name": tag,
+                "draft": True,
+                "immutable": False,
+                "prerelease": False,
+            },
+        )
+
     def test_download_release_assets_reads_only_regular_files(self) -> None:
         expected = {"asset-one": b"one", "asset-two": b"two"}
 
@@ -206,7 +239,7 @@ class VerifyReleaseTests(unittest.TestCase):
         ) as build, patch.object(
             VERIFY_RELEASE, "_verify_remote_refs", return_value=MAIN_COMMIT
         ) as refs, patch.object(
-            VERIFY_RELEASE, "_release_metadata", return_value=metadata
+            VERIFY_RELEASE, "_draft_release_metadata", return_value=metadata
         ) as release, patch.object(
             VERIFY_RELEASE, "_download_release_assets", return_value=dict(artifacts.files)
         ) as download:
@@ -317,45 +350,45 @@ class VerifyReleaseTests(unittest.TestCase):
                 target.write_bytes(data)
                 target.chmod(0o644)
 
-        def install(_url, _selector, _locale, root, **_kwargs):
-            root = Path(root)
-            if (root / "AGENTS.md").exists():
-                raise INSTALLER.InstallerError("conflict")
-            write_members(root)
-            return tuple(sorted(members))
-
-        def export_artifact(_url, _selector, _locale, output, **_kwargs):
-            write_members(Path(output))
-            return tuple(sorted(members))
-
-        def adopt(_url, _selector, _locale, root, output, **_kwargs):
-            write_members(Path(output) / INSTALLER.ADOPTION_ARTIFACT_DIR)
-            return {
-                "summary": {
-                    "missing": 1,
-                    "identical": 0,
-                    "merge": 1,
-                    "decision": 0,
-                    "blocked": 0,
-                }
-            }
-
         def source_export(_root, _locale, output, **_kwargs):
             write_members(Path(output))
             return tuple(sorted(members))
 
+        invoked_installer_bytes = []
+
+        def command(arguments, *, cwd):
+            self.assertGreaterEqual(len(arguments), 4)
+            installer_path = Path(arguments[2])
+            invoked_installer_bytes.append(installer_path.read_bytes())
+            command_name = arguments[3]
+            if command_name == "list-locales":
+                return ("Release %s (source commit fixture)\n" % VERSION).encode()
+            if command_name == "install":
+                root = Path(arguments[arguments.index("--repo-root") + 1])
+                if (root / "AGENTS.md").exists():
+                    raise VERIFY_RELEASE.VerificationError(
+                        "verification command failed: 1 conflicting path(s)"
+                    )
+                write_members(root)
+                return b""
+            if command_name == "export":
+                write_members(Path(arguments[arguments.index("--output") + 1]))
+                return b""
+            if command_name == "adopt":
+                output = Path(arguments[arguments.index("--output") + 1])
+                write_members(output / "artifact")
+                (output / "adoption-plan.json").write_text(
+                    '{"summary":{"missing":1,"identical":0,"merge":1,'
+                    '"decision":0,"blocked":0}}',
+                    encoding="utf-8",
+                )
+                return b""
+            self.fail("unexpected command: %r" % (arguments,))
+
         with patch.object(
             VERIFY_RELEASE.export_template, "export_locale", side_effect=source_export
         ), patch.object(
-            VERIFY_RELEASE.installer,
-            "list_locales",
-            return_value={"version": VERSION},
-        ) as listed, patch.object(
-            VERIFY_RELEASE.installer, "install", side_effect=install
-        ), patch.object(
-            VERIFY_RELEASE.installer, "export_artifact", side_effect=export_artifact
-        ), patch.object(
-            VERIFY_RELEASE.installer, "adopt", side_effect=adopt
+            VERIFY_RELEASE, "_command", side_effect=command
         ), patch.object(VERIFY_RELEASE, "_check_artifact") as artifact_check:
             VERIFY_RELEASE._verify_published_e2e(
                 self.root,
@@ -363,21 +396,8 @@ class VerifyReleaseTests(unittest.TestCase):
                 version=VERSION,
                 artifacts=artifacts,
             )
-        self.assertEqual(
-            listed.call_args_list,
-            [
-                call(
-                    "https://example.test/releases",
-                    "latest",
-                    installer_bytes=b"installer",
-                ),
-                call(
-                    "https://example.test/releases",
-                    VERSION,
-                    installer_bytes=b"installer",
-                ),
-            ],
-        )
+        self.assertTrue(invoked_installer_bytes)
+        self.assertEqual(set(invoked_installer_bytes), {b"installer"})
         self.assertEqual(artifact_check.call_count, 1)
 
     def test_remote_names_reject_option_or_url_injection(self) -> None:

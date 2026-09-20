@@ -212,6 +212,37 @@ def _release_metadata(repository_root: Path, repository: str, tag: str) -> Mappi
     return value
 
 
+def _draft_release_metadata(
+    repository_root: Path, repository: str, tag: str
+) -> Mapping[str, Any]:
+    output = _command(
+        [
+            "gh",
+            "release",
+            "view",
+            tag,
+            "--repo",
+            repository,
+            "--json",
+            "databaseId,tagName,isDraft,isImmutable,isPrerelease",
+        ],
+        cwd=repository_root,
+    )
+    try:
+        value = json.loads(output.decode("utf-8"))
+    except (UnicodeError, json.JSONDecodeError) as exc:
+        raise VerificationError("GitHub draft release metadata is not valid JSON") from exc
+    if not isinstance(value, dict):
+        raise VerificationError("GitHub draft release metadata must be an object")
+    return {
+        "id": value.get("databaseId"),
+        "tag_name": value.get("tagName"),
+        "draft": value.get("isDraft"),
+        "immutable": value.get("isImmutable"),
+        "prerelease": value.get("isPrerelease"),
+    }
+
+
 def _latest_release_metadata(
     repository_root: Path, repository: str
 ) -> Mapping[str, Any]:
@@ -359,6 +390,8 @@ def _verify_published_e2e(
     }
     with tempfile.TemporaryDirectory(prefix="published-release-e2e-") as temporary:
         base = Path(temporary)
+        installer_path = base / "installer.py"
+        installer_path.write_bytes(installer_bytes)
         for locale, expected in expected_by_locale.items():
             source_export = base / ("source-%s" % locale)
             export_template.export_locale(
@@ -367,15 +400,24 @@ def _verify_published_e2e(
             _compare_assets(expected, _tree_files(source_export), "%s source export" % locale)
 
         for selector in ("latest", version):
-            manifest = installer.list_locales(
-                release_url,
-                selector,
-                installer_bytes=installer_bytes,
+            listing = _command(
+                [
+                    sys.executable,
+                    "-B",
+                    str(installer_path),
+                    "list-locales",
+                    "--release-url",
+                    release_url,
+                    "--version",
+                    selector,
+                ],
+                cwd=base,
             )
-            if manifest["version"] != version:
+            if not listing.decode("utf-8", errors="replace").startswith(
+                "Release %s " % version
+            ):
                 raise VerificationError(
-                    "%s selector resolved to %s instead of %s"
-                    % (selector, manifest["version"], version)
+                    "%s selector did not resolve to release %s" % (selector, version)
                 )
             for locale, expected in expected_by_locale.items():
                 prefix = "%s-%s" % (selector, locale)
@@ -389,37 +431,69 @@ def _verify_published_e2e(
                 )
                 before = _tree_snapshot(adoption_root)
 
-                installer.install(
+                remote_arguments = [
+                    "--release-url",
                     release_url,
+                    "--version",
                     selector,
+                    "--locale",
                     locale,
-                    install_root,
-                    installer_bytes=installer_bytes,
+                ]
+                _command(
+                    [
+                        sys.executable,
+                        "-B",
+                        str(installer_path),
+                        "install",
+                        *remote_arguments,
+                        "--repo-root",
+                        str(install_root),
+                    ],
+                    cwd=base,
                 )
-                installer.export_artifact(
-                    release_url,
-                    selector,
-                    locale,
-                    exported,
-                    installer_bytes=installer_bytes,
+                _command(
+                    [
+                        sys.executable,
+                        "-B",
+                        str(installer_path),
+                        "export",
+                        *remote_arguments,
+                        "--output",
+                        str(exported),
+                    ],
+                    cwd=base,
                 )
-                plan = installer.adopt(
-                    release_url,
-                    selector,
-                    locale,
-                    adoption_root,
-                    adoption_output,
-                    installer_bytes=installer_bytes,
+                _command(
+                    [
+                        sys.executable,
+                        "-B",
+                        str(installer_path),
+                        "adopt",
+                        *remote_arguments,
+                        "--repo-root",
+                        str(adoption_root),
+                        "--output",
+                        str(adoption_output),
+                    ],
+                    cwd=base,
                 )
                 if _tree_snapshot(adoption_root) != before:
                     raise VerificationError("adopt modified the target repository")
+                try:
+                    plan = json.loads(
+                        (adoption_output / "adoption-plan.json").read_text(
+                            encoding="utf-8"
+                        )
+                    )
+                except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+                    raise VerificationError("adopt did not write a valid plan") from exc
                 if sum(plan["summary"].values()) != len(expected):
                     raise VerificationError("adoption plan does not cover every artifact path")
                 _compare_assets(expected, _tree_files(install_root), prefix + " install")
                 _compare_assets(expected, _tree_files(exported), prefix + " export")
                 _compare_assets(
                     expected,
-                    _tree_files(adoption_output / installer.ADOPTION_ARTIFACT_DIR),
+                    _tree_files(adoption_output / "artifact"),
                     prefix + " adopt artifact",
                 )
                 if selector == version:
@@ -432,15 +506,21 @@ def _verify_published_e2e(
                 )
                 conflict_before = _tree_snapshot(conflict_root)
                 try:
-                    installer.install(
-                        release_url,
-                        selector,
-                        locale,
-                        conflict_root,
-                        installer_bytes=installer_bytes,
+                    _command(
+                        [
+                            sys.executable,
+                            "-B",
+                            str(installer_path),
+                            "install",
+                            *remote_arguments,
+                            "--repo-root",
+                            str(conflict_root),
+                        ],
+                        cwd=base,
                     )
-                except installer.InstallerError:
-                    pass
+                except VerificationError as exc:
+                    if "conflicting path(s)" not in str(exc):
+                        raise
                 else:
                     raise VerificationError("install accepted an existing conflicting path")
                 if _tree_snapshot(conflict_root) != conflict_before:
@@ -477,7 +557,7 @@ def verify_candidate(
         github_remote=github_remote,
     )
     tag = "v%s" % version
-    metadata = _release_metadata(repository_root, repository, tag)
+    metadata = _draft_release_metadata(repository_root, repository, tag)
     _require_release_shape(metadata, tag=tag, draft=True, immutable=False)
     draft_assets = _download_release_assets(repository_root, repository, tag)
     _compare_assets(artifacts.files, draft_assets, "GitHub draft")

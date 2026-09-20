@@ -39,14 +39,14 @@
   - 변경-ID: `2026-09-20-release-verification`
   - 결정: [PROJECT D-007](./00-PROJECT.md#8-decisions)과 [변경 문서](./changes/2026-09-20-release-verification/01-CHANGE.md)에 따라 tag·release mutation은 사람이 유지하고 candidate·published 검증만 자동화합니다.
   - 구현 범위: clean exact-source gate, package 2회 byte 대조, Origin·GitHub `main`·annotated tag 대조, draft·published asset 대조, 공개 latest·exact의 모든 공식 locale `list-locales`·`install`·`export`·`adopt`와 source export 비교
-  - 현재 근거: 새 unit test 11개, 현재 작업 트리의 전체 unittest 153개, root docs, stable locale, Python compile과 `git diff --check`가 통과했고, immutable Latest `v2.1.0`의 exact checkout에서 실환경 `published` 검증이 통과했습니다.
+  - 현재 근거: unit test 12개, 현재 작업 트리의 전체 unittest 154개, root docs, stable locale, Python compile과 `git diff --check`가 통과했고, immutable Latest `v2.1.0`의 exact checkout에서 package의 installer를 실행하는 실환경 `published` 검증이 통과했습니다.
   - 남은 한계: 현재 draft release가 없고 이를 임의로 만드는 것은 범위 밖이므로 candidate 성공 경로의 실환경 검증은 다음 release의 기존 draft에서 publish 전에 수행합니다.
   - 완료 조건: 현재 작업 트리의 전체 gate 통과 후 지정된 local `main`에 통합하고, 다음 release 운영 기록에서 candidate 성공 경로를 확인합니다. commit·push·merge는 별도 사용자 위임이 필요합니다.
 
 - [ ] **T-009 checker·installer 확정 결함 수정** — `v2.1.1` patch 후보, 현재 작업 트리 구현 완료
   - 범위: `check_versions()`가 `docs/TEMPLATE_GUIDE.md`의 실제 부재만 허용하고 외부 symlink·비파일 entry를 오류로 보고합니다. manifest schema가 실행 중인 installer와 다르면 같은 release version의 `installer.py`를 사용하라는 복구 안내를 제공합니다.
   - 근거: consumer PR #28의 pr-bot P3를 현재 checker에서 재현했고, `v2.0.0` installer와 `schema_version` 2 release를 조합하면 원인만 있고 복구 방법이 없는 오류를 확인했습니다.
-  - 현재 검증: checker test 51개, installer test 34개와 전체 unittest 153개가 통과했습니다. 외부 symlink·directory·실제 부재와 schema mismatch CLI 오류를 고정하는 회귀 테스트를 각각 추가했고, root docs·stable locale·en/ko export artifact checker와 각 artifact test 49개·Python compile·`git diff --check`가 통과했습니다.
+  - 현재 검증: checker test 51개, installer test 34개와 전체 unittest 154개가 통과했습니다. 외부 symlink·directory·실제 부재와 schema mismatch CLI 오류를 고정하는 회귀 테스트를 각각 추가했고, root docs·stable locale·en/ko export artifact checker와 각 artifact test 49개·Python compile·`git diff --check`가 통과했습니다.
   - 비범위: skill metadata와 maintainer 가이드 동기화 정책은 T-010, `--base-version`과 adoption report 확장은 T-007이 소유합니다. version bump·package·draft·공개 release는 이 구현 단계에서 수행하지 않습니다.
   - 완료 조건: 전체 gate와 en·ko artifact 검증 통과 후 지정된 local `main`에 통합하고, `v2.1.1` release를 별도 승인·검증합니다.
 
