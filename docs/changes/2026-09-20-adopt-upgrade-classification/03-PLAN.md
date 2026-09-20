@@ -30,14 +30,14 @@ T-006 consumer 작업은 과거 v2.0→v2.1 회귀 fixture의 근거이며 T-007
   - 범위·변경 파일: `scripts/installer.py`, `tests/test_install_release.py`
   - 대응 요구사항·상위 완료 조건: R-002, R-003, R-007
   - 선행조건: 계약 PR 통합, 별도 구현 시작 요청, T-011 통합 뒤 최신 `main`
-  - 검증 방법: schema별 exact-key fixture, checksum·identity·installer/archive tamper, redirect·크기 상한, `latest`·base>=current·미지원 schema, prerelease·build metadata truth table, 과거 installer 비실행 감시, 대상/output snapshot
+  - 검증 방법: schema별 모든 object의 exact-key fixture, checksum 이름 집합 equality와 비선택 archive 미다운로드, identity·installer/archive tamper, redirect·크기 상한, `latest`·leading `v`·불완전 SemVer·base>=current·repository/locale 불일치·미지원 schema failure matrix, prerelease·build metadata truth table, 과거 installer 비실행 감시, `install`·`export`·`list-locales`·base 없는 `adopt`가 legacy parser·importlib·subprocess를 호출하지 않는 격리 회귀, 대상/output snapshot
   - 결과·근거: 미착수
 
 - [ ] **W-002 union 분류와 adoption plan format 2**
   - 범위·변경 파일: `scripts/installer.py`, `tests/test_install_release.py`
   - 대응 요구사항·상위 완료 조건: R-001, R-004~R-008
   - 선행조건: W-001
-  - 검증 방법: 다섯 equality partition과 current 추가·제거·unsafe target의 truth table, report cardinality·null·정렬 불변식, base-only reason, format 1 plan·artifact·stdout byte 회귀, format 2 stdout, atomic publish와 대상 불변
+  - 검증 방법: 다섯 equality partition과 current 추가·제거·unsafe target의 truth table, report cardinality·null·정렬 불변식, base-only reason, format 1 plan·artifact·stdout byte 회귀, base provenance 주의와 고정 status/path 순서의 format 2 stdout, atomic publish와 대상 불변
   - 결과·근거: 미착수
 
 - [ ] **W-003 release verifier의 format 2 진단과 원격 E2E**
@@ -51,7 +51,7 @@ T-006 consumer 작업은 과거 v2.0→v2.1 회귀 fixture의 근거이며 T-007
   - 범위·변경 파일: `README.md`, `README.ko.md`, `locales/en/docs/TEMPLATE_GUIDE.md`, `locales/ko/docs/TEMPLATE_GUIDE.md`, 필요 시 required command 계약과 release history
   - 대응 요구사항·상위 완료 조건: R-009
   - 선행조건: W-001~W-003 CLI·출력 계약 확정
-  - 검증 방법: root docs, stable locale, en·ko export artifact checker·명령 parity, 최초 adoption과 upgrade 예시, 자동 merge·삭제 없음과 base-only 제거 검토 문구 대조
+  - 검증 방법: root docs, stable locale, en·ko export artifact checker·명령 parity, exact base에서 유래한 target 전제와 최초 adoption 구분, 두 summary 분모, 자동 merge·삭제 없음과 base-only 제거 예시 대조
   - 결과·근거: 미착수
 
 - [ ] **W-005 `v2.2.0` 공개와 consumer 검증**
@@ -77,3 +77,5 @@ T-006 consumer 작업은 과거 v2.0→v2.1 회귀 fixture의 근거이며 T-007
 계약 PR의 완료 범위는 승인된 문서와 실행 계획을 Origin에 올리는 것까지입니다. PR 통합 뒤에도 T-007은 `계약 승인, 구현 미착수` 상태이며, 다음 세션은 사용자에게서 구현 시작 요청을 받은 뒤 T-011 통합 상태와 최신 `main`을 먼저 확인합니다.
 
 구현 중 공개 계약을 바꿔야 하는 사실이 발견되면 이 변경의 승인 범위를 임의로 넓히지 않고 설계 변경으로 돌아옵니다. `v2.2.0` tag·release 게시와 GitHub fast-forward는 별도 위임이 필요합니다.
+
+`01-CHANGE.md` §2.5의 Deferred 후보는 W-001~W-005의 미착수 작업이 아닙니다. 지원 검증에서 재검토 조건이 충족돼도 별도 사용자 승인 전에는 PLAN에 추가하지 않습니다.

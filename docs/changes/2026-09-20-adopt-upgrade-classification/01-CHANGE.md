@@ -8,7 +8,7 @@
 - **Source:** 2026-09-20 사용자 대화 — T-006·T-011 뒤 T-007 진행 요청
 - **Parent:** [제품 기준](../../00-PROJECT.md) D-006과 [기존 저장소 adoption SPEC](../2026-09-18-existing-repository-adoption/02-SPEC.md)
 - **Decision:** [PROJECT D-008](../../00-PROJECT.md#8-decisions)
-- **Approval:** Chae Sangwon, 2026-09-20 사용자 대화 — 권고 계약 승인, 계약 PR만 진행하고 구현은 별도 시작 요청 전까지 보류
+- **Approval:** Chae Sangwon, 2026-09-20 사용자 대화 — 권고 계약 승인, 계약 PR만 진행하고 구현은 별도 시작 요청 전까지 보류. 2026-09-21 사용자 대화 — PR #23 계약 보강 승인, 세 후속 아이디어는 Deferred 후보로만 기록
 - **Execution:** [03-PLAN.md](./03-PLAN.md)와 [전역 TODO](../../02-TODO.md)의 T-007
 
 ## 1. Intent
@@ -55,13 +55,13 @@
 |---|---|---|---|---|
 | R-001 | base 없는 기존 `adopt`가 유지됩니다. | `--base-version` 생략 | CLI 인자, format 1 plan, stdout과 artifact byte가 기존 fixture와 같습니다. | 기존 fixture·golden byte 회귀 |
 | R-002 | base는 exact release asset으로 검증됩니다. | schema 1 또는 2의 이전 release | exact namespace, checksum, manifest identity, installer byte, locale archive와 member hash가 모두 맞아야 base tree를 읽습니다. 과거 installer는 opaque byte로만 검증하고 실행·import하지 않습니다. | schema별 fake release, tamper negative test |
-| R-003 | base version 입력을 fail-closed합니다. | `latest`, current와 같거나 더 높은 version, 미지원 schema·locale | output 없이 명확한 `InstallerError`로 실패하고 대상 tree가 같습니다. | CLI·tree snapshot negative test |
+| R-003 | base 입력과 검증 실패를 fail-closed합니다. | `latest`, leading `v`·불완전 SemVer, base가 current보다 낮지 않음, repository·locale 불일치, 미지원 schema, checksum·redirect·asset tamper | output 없이 원인 범주를 드러내는 `InstallerError`로 실패하고 대상 tree가 같습니다. 개별 오류 문장 전체는 공개 호환 계약으로 고정하지 않습니다. | CLI failure matrix·tree snapshot negative test |
 | R-004 | base와 current inventory의 합집합 경로를 분류합니다. | release 사이의 수정·추가·삭제와 프로젝트 수정 | `base ∪ current`의 각 경로에서 target 값을 조회해 `unchanged`·`template-only`·`project-only`·`converged`·`diverged`·`blocked` 중 하나로 분류합니다. target-only 비템플릿 경로는 순회하지 않습니다. | equality truth table·inventory 변화 fixture |
 | R-005 | 기존 adoption policy 판단을 보존합니다. | current artifact에 존재하는 경로 | `status`, `policy`, 대상 상태와 기존 `summary`는 현재 release와 대상의 2-way 판단 및 blocked 우선순위를 유지하고, upgrade 분류는 별도 필드입니다. | format 1/2 대조 fixture |
 | R-006 | 제거된 template 경로를 숨기지 않습니다. | base에는 있고 current에는 없는 경로 | union `paths`에 `artifact_sha256: null`, `policy: null`, `status: null`로 기록하고 자동 삭제를 제안하지 않습니다. | base-only path fixture |
 | R-007 | 대상과 output 안전성을 유지합니다. | 성공·검증 실패·게시 실패·blocked path | 대상 before/after가 같고 output은 전부 원자적으로 게시되거나 남지 않습니다. | failure injection·snapshot 비교 |
 | R-008 | report가 결정적이고 provenance를 드러냅니다. | 같은 base/current/target 재실행 | plan byte가 같고 exact `base_release`와 `release`, `upgrade_summary`를 포함합니다. | 두 번 실행 byte 비교 |
-| R-009 | 공개 문서가 upgrade와 최초 adoption을 구분합니다. | 기존 적용 저장소와 처음 적용하는 저장소 | en·ko 가이드가 `--base-version` 사용 조건, 여섯 분류와 자동 병합 없음·제거 경로 검토를 같은 계약으로 설명합니다. | docs·locale parity, export artifact 검사 |
+| R-009 | 공개 문서가 upgrade와 최초 adoption을 구분합니다. | exact base에서 적용·관리한 저장소와 처음 적용하는 저장소 | en·ko 가이드가 base mode는 target이 exact base에서 유래했다는 전제를 설명하고, 최초 adoption에서는 base를 생략합니다. 여섯 분류, 자동 병합 없음, 제거 예시, `summary`는 current inventory만 세고 `upgrade_summary`는 `base ∪ current`를 세며 base-only 경로는 upgrade 표에만 나타나는 점을 같은 계약으로 설명합니다. | docs·locale parity, export artifact 검사 |
 | R-010 | 회귀 fixture와 공개 release에서 upgrade 경로를 확인합니다. | 과거 v2.0→v2.1 fixture 및 다음 minor release와 이전 immutable release | 과거 consumer exact head에서 수동 3-way 판정을 재현하고, 원격 HTTPS에서 `v2.1.0` base→`v2.2.0` current의 base-aware adopt가 대상 불변으로 성공하며 독립 대조와 일치합니다. | historical fixture와 published E2E consumer 검증 |
 
 ### 2.2 대안과 선택 이유
@@ -92,18 +92,25 @@ python3 installer.py adopt \
 
 current release는 기존 `_verified_manifest()`와 실행 중인 installer self-binding을 유지합니다. base 전용 검증기는 다음 순서로 읽습니다.
 
-1. exact base version의 `SHA256SUMS`, `release-manifest.json`, `installer.py`, locale archive를 다운로드합니다.
-2. checksum 파일 형식과 manifest가 선언한 installer·모든 locale archive를 포함한 exact asset-name 집합을 확인하고, manifest·installer·선택 locale archive의 다운로드 byte가 해당 digest·manifest record와 일치하는지 검사합니다.
-3. manifest top-level identity와 repository·version·source commit을 검사합니다. base와 current의 repository·locale는 같아야 합니다.
-4. schema 1·2의 top-level, installer, locale, member object에서 필수 key와 허용 key의 정확한 집합을 검사해 누락·추가 key를 모두 거부합니다. schema 1 member는 `path`, `sha256`, `bytes`, `mode`, `timestamp`, schema 2 member는 여기에 `policy`만 추가합니다. 정수 위치의 boolean, 범위 밖 크기, 중복·case-fold·부모/자식 충돌 경로도 current verifier와 같은 기준으로 거부합니다. 다른 schema는 거부합니다.
-5. manifest installer record가 다운로드한 base installer byte의 길이·SHA-256과 맞는지 확인합니다. 이 byte는 opaque data로만 다루며 import, evaluation, execution 또는 subprocess 호출을 하지 않습니다.
-6. locale archive inventory·mode·timestamp·size·hash를 manifest와 대조해 base member byte를 얻습니다.
+1. exact base version의 `SHA256SUMS`와 `release-manifest.json`을 다운로드하고 manifest byte가 checksum과 맞는지 확인합니다.
+2. manifest identity의 repository·version·source commit과 요청한 exact base를 검사합니다. base와 current의 repository·locale는 같아야 합니다.
+3. schema 1·2의 모든 object는 아래 exact key 집합을 사용하며 누락·추가 key를 모두 거부합니다. 두 schema의 구조 차이는 `schema_version` 값과 member의 `policy` 유무뿐입니다.
+   - top-level: `schema_version`, `version`, `source_commit`, `repository`, `locales`, `installer`
+   - installer: `asset`, `sha256`, `bytes`
+   - locale record: `status`, `asset`, `sha256`, `bytes`, `compression`, `members`
+   - schema 1 member: `path`, `sha256`, `bytes`, `mode`, `timestamp`
+   - schema 2 member: schema 1 member key와 `policy`
+4. `SHA256SUMS`의 이름 집합은 `{release-manifest.json, installer.py} ∪ {manifest의 모든 locale record가 선언한 asset}`과 정확히 같아야 합니다. 모든 locale archive의 checksum은 manifest record와 대조하지만, 이 단계에서 비선택 locale archive byte를 다운로드하지 않습니다.
+5. `installer.py`와 선택 locale archive만 다운로드해 선언된 길이·SHA-256과 대조합니다. base installer byte는 opaque data로만 다루며 import, evaluation, execution 또는 subprocess 호출을 하지 않습니다.
+6. 선택 locale archive inventory·mode·timestamp·size·hash를 manifest와 대조해 base member byte를 얻습니다. 정수 위치의 boolean, 범위 밖 크기, 중복·case-fold·부모/자식 충돌 경로도 current verifier와 같은 기준으로 거부합니다.
 
 base asset fetch는 current 경로와 같은 release URL·exact asset URL 구성, HTTPS·GitHub redirect 제한, timeout과 크기 상한을 사용하며 fallback host나 임의 redirect를 허용하지 않습니다. 이 호환 parser는 base 비교에만 쓰며 primary `--version` 검증이나 `install`·`export`에 연결하지 않습니다. GitHub release의 immutable 상태 확인은 installer transport 계약이 아니라 `verify-release.py published`와 release 운영 gate의 책임입니다.
 
 #### 3-way 분류
 
 경로 집합은 base와 current release inventory의 합집합이며 target tree 전체를 순회하지 않습니다. 각 경로의 비교 값은 base artifact `B`, current artifact `C`, target `T`의 file byte이고 부재도 하나의 값으로 취급합니다. symlink·특수 파일·읽기 실패·상위 경로 충돌은 equality 비교 전에 `blocked`입니다.
+
+base mode는 target이 지정한 exact base release에서 적용·관리됐다는 사용자의 선언을 전제로 합니다. byte 비교만으로 “프로젝트가 base 파일을 삭제함”과 “그 파일을 처음부터 적용하지 않음”을 구분할 수 없으므로, 이 provenance를 자동 추론하지 않습니다.
 
 | `upgrade_status` | 조건 | 의미 |
 |---|---|---|
@@ -154,7 +161,8 @@ base를 지정한 실행만 `format_version: 2`를 냅니다.
 - current 경로의 `policy`·`status`는 null이 아니고 base-only 경로에서는 null입니다. `base_sha256`은 base에 없을 때, `artifact_sha256`은 current에 없을 때 null이며 `target_sha256`은 target이 읽을 수 있는 일반 파일일 때만 값을 가집니다.
 - JSON key 정렬·UTF-8·LF·마지막 개행과 같은 직렬화 규칙, 기존 `guide`, 절대 경로·실행 시각·사용자 이름을 기록하지 않는 규칙은 format 1과 같습니다.
 - output의 `artifact/`는 current release tree만 담습니다. base member byte는 비교에만 쓰며 게시하지 않습니다.
-- base 모드 stdout의 기존 `Adoption plan` 줄은 `|current|` 경로와 기존 2-way summary를 세고, non-`identical` current 경로만 기존 status 제목 아래 출력합니다. 이어 `Upgrade classification: <|base ∪ current|> paths (...)`와 `upgrade <status>:` 제목 아래 non-`unchanged` 경로를 추가합니다. base-only 경로는 upgrade 목록에만 나타납니다.
+- base 모드 stdout은 먼저 `Upgrade classification assumes the target was derived from base <version>; absence alone cannot prove a project deletion.`을 출력합니다. 기존 `Adoption plan` 줄은 `|current|` 경로와 기존 2-way summary를 세고, non-`identical` current 경로만 기존 status 제목 아래 출력합니다.
+- 이어 `Upgrade classification: <|base ∪ current|> paths (...)`를 출력합니다. summary와 경로 section은 `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, `blocked` 순서이고, `upgrade <status>:` section은 `unchanged`를 생략하며 각 section 안의 경로는 POSIX lexical order입니다. base-only 경로는 upgrade 목록에만 나타납니다.
 
 #### Maintainer release verification
 
@@ -175,6 +183,14 @@ D-006의 대상 무변경, 검증된 staging, 자동 merge·overwrite 제외, ex
 | SemVer 비교 오류 | 잘못된 base 허용 | prerelease·build metadata truth table과 base >= current negative test |
 | 구현 결함 | upgrade 분류 사용 불가 | `--base-version` 생략으로 기존 D-006 경로 사용; target은 항상 불변 |
 
+#### Deferred implementation candidates
+
+아래 항목은 D-008의 승인된 계약과 [03-PLAN.md](./03-PLAN.md) W-001~W-005에 포함되지 않습니다. `v2.2.0` 지원 검증에서 실제 필요가 확인되고 별도 설계 승인을 받은 경우에만 구현 후보로 전환합니다.
+
+- **target metadata의 base version hint:** target의 `docs/DOCS_GUIDE.md` 등에서 기록된 template version을 display-only 참고로 보여 주는 방안입니다. 사용자 편집 값을 base 선택이나 신뢰 판정에 사용하지 않으며, 잘못된 base 선택 사례가 지원 검증에서 확인될 때 재검토합니다.
+- **선택형 base source commit pin:** 기계 실행자가 exact base version 외 별도 provenance pin을 요구하는 다중 저장소 자동화가 생길 때 `--base-source-commit`을 재검토합니다. 현재 immutable release·manifest source commit 검증을 중복하는 인자는 추가하지 않습니다.
+- **잘못된 upgrade 사용 진단:** `missing` 비율 threshold 경고는 부분 적용 저장소에서 오탐을 만들므로 채택하지 않습니다. target이 base에서 유래했는지 판정할 신뢰 가능한 provenance 신호가 생길 때만 결정적 진단을 다시 설계합니다. 현재는 §2.3의 명시적 전제와 unconditional stdout 주의를 사용합니다.
+
 공개 CLI와 report가 늘어나므로 SemVer는 다음 minor `v2.2.0`을 권고합니다.
 
 ### 2.6 완료 조건과 미해결 사항
@@ -191,3 +207,4 @@ D-006의 대상 무변경, 검증된 staging, 자동 merge·overwrite 제외, ex
 
 - 2026-09-20: T-007 근거와 실제 `v2.0.0` schema 1·`v2.1.0` schema 2 경계를 확인하고 Draft를 작성했습니다. base installer 자동 실행 대신 base 전용 read-only compatibility parser를 권고합니다.
 - 2026-09-20: 사용자가 권고 계약을 승인했습니다. 독립적인 보안·report·실행 검토에서 경로 집합, format 2 호환, legacy validator, release·consumer 검증 경계를 보완했고 구현은 별도 시작 요청까지 보류했습니다.
+- 2026-09-21: PR #23 리뷰의 checksum 닫힌 집합, schema exact key, base 사용 전제, 두 summary 분모, stdout 순서와 격리 회귀 조건을 보강했습니다. 세 UX·provenance 아이디어는 현재 구현 범위와 분리한 Deferred 후보로 기록했습니다.
