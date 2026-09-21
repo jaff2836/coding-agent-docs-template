@@ -37,7 +37,7 @@
 
 ### 1.5 미해결 질문
 
-없습니다. candidate의 실제 draft 성공 경로는 다음 release의 draft가 존재할 때 최초 운영 검증합니다. 이 작업을 위해 임의의 draft를 만들지는 않습니다.
+없습니다. candidate의 실제 draft 성공 경로는 `v2.1.1`과 `v2.2.0`에서 운영 검증했습니다.
 
 ## 2. Spec
 
@@ -83,7 +83,7 @@ D-004의 transport·source identity·게시 순서는 유지합니다. D-004가 
 
 ### 2.6 완료 조건과 미해결 사항
 
-브랜치 구현 완료는 새 unit test, 전체 unittest, root docs, stable locale, Python compile과 `git diff --check` 통과입니다. 공개 경로는 immutable `v2.1.0`의 exact checkout에서 실환경 `published` 검증으로 확인합니다. 실제 `candidate` 성공 경로는 다음 release draft에서 publish 전에 확인해야 하며, 그 실행 전에는 운영 검증 완료로 간주하지 않습니다. Origin 통합은 별도 commit·push·merge 후 확인합니다.
+브랜치 구현 완료는 새 unit test, 전체 unittest, root docs, stable locale, Python compile과 `git diff --check` 통과입니다. 공개 경로는 immutable `v2.1.0`의 exact checkout에서 최초 실환경 `published` 검증으로 확인했고, 실제 `candidate`와 `published` 성공 경로는 `v2.1.1`과 `v2.2.0`에서 반복 검증했습니다. `v2.2.0`에서는 선택형 `--base-version 2.1.0`까지 포함해 모든 공식 locale의 base-aware 공개 E2E를 확인했습니다. Origin 통합과 공개는 각각 실제 remote 상태로 확인합니다.
 
 ## 3. 변경 기록
 
@@ -91,3 +91,4 @@ D-004의 transport·source identity·게시 순서는 유지합니다. D-004가 
 - 2026-09-20: unit test와 공개된 immutable `v2.1.0` 기준 실환경 `published` 검증을 수행했습니다.
 - 2026-09-20: PR #20 리뷰에 따라 candidate의 draft-aware 조회를 고정하고 published E2E가 package의 installer를 직접 실행하도록 수정했습니다.
 - 2026-09-21: `v2.1.1` exact source `0cfcc896ee92ec018d12c88f3f2638a154b35720`과 synchronized `main` `d821dec23b0e34295b96f9af0690ba15f2d33edb`에서 실제 draft candidate와 immutable published 검증이 통과했습니다. 검증된 5개 asset은 게시 전후 교체하지 않았습니다.
+- 2026-09-21: synchronized Origin·GitHub `main`과 annotated tag가 가리키는 `v2.2.0` exact source `70a5a7a9e97fa5a89609a120ad69bced7e8ae1ac`에서 candidate와 immutable published `--base-version 2.1.0` 검증이 통과했습니다. 검증된 5개 asset은 게시 전후 교체하지 않았습니다.

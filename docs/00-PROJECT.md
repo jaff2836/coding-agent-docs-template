@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** Active — `v2.1.1` 공개 완료, `v2.2.0` base-aware adoption release 준비 중
+- **Status:** Active — `v2.2.0` base-aware adoption 공개·consumer 검증 완료, 다음 마일스톤 미선정
 - **Owner:** Chae Sangwon
 - **Last reviewed:** 2026-09-21
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
@@ -25,13 +25,13 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Current State
 
-- 공개 release 기준은 immutable GitHub Release `v2.1.1`(2026-09-21 공개, Latest)이며 tag commit은 `0cfcc896ee92ec018d12c88f3f2638a154b35720`입니다. T-008 candidate·published gate에서 5개 asset, latest·exact의 en·ko install/export/adopt와 양쪽 `main` `d821dec23b0e34295b96f9af0690ba15f2d33edb`의 provenance를 확인했습니다. 이전 release는 그대로 유지되며 exact version에 맞는 자기 installer로만 설치할 수 있습니다.
+- 공개 release 기준은 [immutable GitHub Release `v2.2.0`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.2.0)(2026-09-21 공개, Latest)이며 tag와 양쪽 `main`의 commit은 `70a5a7a9e97fa5a89609a120ad69bced7e8ae1ac`입니다. T-008 candidate·published gate에서 교체하지 않은 5개 asset, latest·exact의 en·ko install/export/adopt와 `v2.1.0` base-aware upgrade 경로를 확인했습니다. 이전 release는 그대로 유지되며 exact version에 맞는 자기 installer로만 설치할 수 있습니다.
 - W-001의 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source 분리는 Origin PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에 통합됐습니다.
 - W-002의 `locales/en`·locale별 skill S2 계약과 W-003 locale/artifact 검사는 각각 Origin PR #4·#5에 통합됐습니다. `en`·`ko` source는 모두 `complete`입니다.
 - W-004 exporter·packager는 Origin PR #6 merge commit `f60ae97`, W-005 비파괴 installer는 PR #7 merge commit `9d4637d`, W-006 적용 문서는 PR #8 merge commit `60638ed`에 통합됐습니다.
 - W-007은 `60638ed` exact head에서 `en`·`ko` package/install/export와 Claude·Codex·Cursor·OMP의 실제 로딩 probe를 통과했습니다. D-004 공개 gate에서는 tag commit의 102개 테스트·docs·stable locale, deterministic package와 기존 draft asset byte 동일성, 실제 GitHub HTTPS latest·exact 설치를 추가로 확인했습니다.
 - `project-analysis` locale별 skill(D-005, PR #12), 기존 저장소용 읽기 전용 `adopt`와 adoption policy·release manifest schema 2(D-006, PR #14~#16), 강화된 artifact `check-docs.py`(T-005, PR #17)가 `v2.1.0` asset에 포함됐습니다.
-- D-008의 base-aware `adopt`와 release verifier 후속은 Origin PR #24·#25로 `main`에 통합됐습니다. source version과 release notes를 `v2.2.0`으로 정렬한 뒤 공개 en·ko upgrade E2E와 consumer 독립 대조를 수행합니다.
+- D-008의 base-aware `adopt`와 release verifier 후속은 Origin PR #24·#25, release 준비는 PR #26 merge `70a5a7a9e97fa5a89609a120ad69bced7e8ae1ac`로 통합됐습니다. 공개 en·ko upgrade E2E와 `claude-review-e2e@26c531beb65eaef8f524a00bcf8f06c52445c3d8`의 v2.1→v2.2 report 독립 대조를 통과했고 consumer tree는 바뀌지 않았습니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -70,12 +70,12 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 | `locales/manifest.json` | baseline, locale 상태, common/localized output inventory | checker·exporter·packager가 사용 | Chae Sangwon |
 | 번들 skill | `design`, `project-analysis`, `review-round`의 조건부 절차를 tool별 고정 경로에 제공 | locale별 `.agents`·`.claude` byte-identical 사본과 skill fixture | Chae Sangwon |
 | locale exporter·packager | 단일-locale tree와 deterministic ZIP·manifest·checksum 생성 | complete locale source, 고정 installer source | Chae Sangwon |
-| 비파괴 installer | 명시한 GitHub Releases root의 manifest·checksum·locale ZIP을 검증하고 새 대상에 install하거나 빈 디렉터리로 export하며, 기존 저장소에는 `adopt`로 대상 밖 output에 artifact와 경로별 plan만 게시 | GitHub asset HTTPS redirect만 제한 허용, 기존 경로 충돌 시 전체 중단, `adopt`는 대상에 쓰지 않음 | Chae Sangwon |
-| release 검증 도구 | 게시 후보의 local gate·재현 package·draft asset과 공개된 immutable Latest release의 모든 locale 경로를 읽기 전용으로 검증 | clean exact-source checkout, `git`, `gh`, GitHub Releases | Chae Sangwon |
+| 비파괴 installer | 명시한 GitHub Releases root의 manifest·checksum·locale ZIP을 검증하고 새 대상에 install하거나 빈 디렉터리로 export하며, 기존 저장소에는 `adopt`로 대상 밖 output에 artifact와 경로별 plan을 게시합니다. 선택형 exact base가 있으면 과거 코드를 실행하지 않고 base·current·target의 3-way upgrade 상태를 함께 분류합니다. | GitHub asset HTTPS redirect만 제한 허용, 기존 경로 충돌 시 전체 중단, `adopt`는 대상에 쓰거나 자동 병합·삭제하지 않음 | Chae Sangwon |
+| release 검증 도구 | 게시 후보의 local gate·재현 package·draft asset과 공개된 immutable Latest release의 모든 locale 경로를 읽기 전용으로 검증하며, 선택형 base-aware 공개 upgrade E2E도 검사 | clean exact-source checkout, `git`, `gh`, GitHub Releases | Chae Sangwon |
 
 ### Data Flow
 
-exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. packager는 `locales/manifest.json`의 adoption policy도 각 member에 materialize합니다(`schema_version` 2). installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고 경로 충돌·부분 실패를 거부하거나 rollback합니다. 기존 저장소에는 `adopt`가 같은 검증 후 artifact 경로만 list·lstat·read로 분류하고, 대상 밖의 빈 output에 `artifact/`와 실험적 `adoption-plan.json`을 원자적으로 게시합니다. release 검증 도구는 사람이 만든 draft와 공개된 immutable release를 package byte·ref·공개 installer 경로와 대조할 뿐 tag나 release를 변경하지 않습니다. source root 자체는 배포하지 않습니다. `v2.0.0`과 `v2.1.0` 모두 실제 immutable GitHub Release에서 latest·exact 원격 E2E를 검증했습니다.
+exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. packager는 `locales/manifest.json`의 adoption policy도 각 member에 materialize합니다(`schema_version` 2). installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고 경로 충돌·부분 실패를 거부하거나 rollback합니다. 기존 저장소에는 `adopt`가 같은 검증 후 artifact 경로만 list·lstat·read로 분류하고, 대상 밖의 빈 output에 `artifact/`와 실험적 `adoption-plan.json`을 원자적으로 게시합니다. 선택형 base-aware 경로는 더 낮은 exact SemVer의 schema 1·2 release를 과거 코드 실행 없이 별도 검증하고 `base ∪ current` 경로를 target과 비교한 format 2 report를 만듭니다. release 검증 도구는 사람이 만든 draft와 공개된 immutable release를 package byte·ref·공개 installer 경로와 대조할 뿐 tag나 release를 변경하지 않습니다. source root 자체는 배포하지 않습니다. `v2.0.0`·`v2.1.0`·`v2.1.1`·`v2.2.0`은 실제 immutable GitHub Release에서 각 계약에 맞는 원격 E2E를 검증했습니다.
 
 ### External Boundaries
 
@@ -96,13 +96,11 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 
 D-006의 `adopt`·adoption policy·release manifest schema 2는 `v2.1.0`으로 구현·공개되어 §5 현재 구조로 옮겼습니다. 상세 계약은 [adoption SPEC](./changes/2026-09-18-existing-repository-adoption/02-SPEC.md)을 따릅니다.
 
-D-008은 선택형 `adopt --base-version <older-exact-semver>`으로 base와 current release inventory의 합집합을 target과 3-way 비교하는 읽기 전용 upgrade 분류를 승인했습니다. 과거 installer는 실행하지 않고 base 입력에 한정한 schema 1·2 validator로 검증하며, base 없는 format 1·대상 무변경·자동 병합 없음은 유지합니다. 구현은 아직 시작하지 않았고 상세 계약과 순서는 [base-aware adoption 변경](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md)과 [PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md)을 따릅니다.
+D-008의 선택형 `adopt --base-version <older-exact-semver>`과 format 2 report는 `v2.2.0`으로 구현·공개되어 §5 현재 구조로 옮겼습니다. 상세 계약과 완료 근거는 [base-aware adoption 변경](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md)과 [PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md)을 따릅니다.
 
 ### Target Data Flow
 
 common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경로로 합성하고 검사합니다. exact source commit과 version에 결합된 locale별 archive·manifest를 만든 뒤 installer가 검증·stage·전체 충돌 검사를 거쳐 대상에 기록합니다. 상세 계약은 [SPEC §3](./changes/2026-09-09-multilingual-template/02-SPEC.md)을 따릅니다.
-
-base-aware `adopt`는 current release의 self-binding 검증을 그대로 수행하고, 더 낮은 exact SemVer의 base release를 read-only schema 1·2 parser로 별도 검증합니다. `base ∪ current` 경로마다 target byte 또는 부재를 비교해 upgrade 분류를 format 2 report에 추가하지만 target과 base artifact를 output에 쓰지 않습니다.
 
 ### Compatibility Requirements
 
@@ -125,7 +123,7 @@ base-aware `adopt`는 current release의 self-binding 검증을 그대로 수행
 | W-007 | exact-head 전체 검증과 소비자 E2E | W-006 | 공개 release 없이 로컬 immutable release namespace로 검증 | `60638ed` exact-head gate와 Claude·Codex·Cursor·OMP probe |
 | 공개 배포 | GitHub Releases transport와 v2.0.0 게시 | W-007, D-004 | 공개된 tag·asset은 교체하지 않고 결함 시 patch release | `v2.0.0` tag `8bc8b1b`, immutable release와 [W-003·W-004 검증](./changes/2026-09-18-github-releases-publication/03-PLAN.md) |
 | 기존 저장소 adoption | adoption policy, release manifest schema 2, `adopt`, 기존 저장소 우선 문서와 `v2.1.0` 게시 | D-006, T-005 checker 강화 | `install`·`export` CLI 유지; 결함 시 `adopt`·policy를 제거한 patch release | PR #14~#18, `v2.1.0` tag `36a123f` immutable release와 [adoption PLAN](./changes/2026-09-18-existing-repository-adoption/03-PLAN.md) W-004 원격 E2E |
-| base-aware adoption 분류 | exact base 검증, 3-way 분류, format 2 report와 `v2.2.0` 지원 검증 | D-008, T-011 뒤 구현·review 후속 통합 | base 없는 format 1 유지; 과거 installer 비실행; 자동 merge·삭제 없음; `--base-version` 생략으로 rollback | [base-aware adoption PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md) W-001~W-005 |
+| base-aware adoption 분류 | exact base 검증, 3-way 분류, format 2 report와 `v2.2.0` 지원 검증 | D-008, T-011 뒤 구현·review 후속 통합 | base 없는 format 1 유지; 과거 installer 비실행; 자동 merge·삭제 없음; `--base-version` 생략으로 rollback | Origin PR #24~#26, `v2.2.0` tag `70a5a7a`, [base-aware adoption PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md) W-001~W-005 |
 
 ## 8. Decisions
 
@@ -167,8 +165,8 @@ base-aware `adopt`는 current release의 self-binding 검증을 그대로 수행
 
 ### Phase 4 — base-aware existing-repository upgrade report
 
-- 더 낮은 exact SemVer의 base release를 과거 코드 실행 없이 검증하고 `base ∪ current` 경로의 3-way 분류만 추가합니다.
-- base 없는 format 1과 target 불변을 회귀로 고정하고, `v2.2.0` 공개 뒤 v2.1 적용 consumer에서 base-aware report를 독립 대조합니다.
+- 더 낮은 exact SemVer의 base release를 과거 코드 실행 없이 검증하고 `base ∪ current` 경로의 3-way 분류를 추가했습니다.
+- base 없는 format 1과 target 불변을 회귀로 고정하고, 공개 `v2.2.0`과 v2.1 적용 consumer에서 base-aware report를 독립 대조했습니다.
 
 ## 10. Risks
 
@@ -184,7 +182,7 @@ base-aware `adopt`는 current release의 self-binding 검증을 그대로 수행
 
 ## 11. Open Questions
 
-`v2.1.0` 작업에서 드러난 미결정 사항입니다. 실행 후보는 [02-TODO.md](./02-TODO.md)의 T-010이 소유합니다. T-007의 upgrade 분류 경계는 D-008로, T-009의 확정 checker·installer 결함은 `v2.1.1` patch 후보로, release 검증 자동화 경계는 D-007로 분리했습니다. GitHub immutable releases 설정 여부는 `v2.0.0` 게시에서 확인해 닫혔습니다.
+남은 미결정 사항은 [02-TODO.md](./02-TODO.md)의 T-010이 소유합니다. T-007의 upgrade 분류는 D-008과 `v2.2.0` 공개로, T-009의 확정 checker·installer 결함은 `v2.1.1` 공개로, release 검증 자동화 경계는 D-007로 닫혔습니다. GitHub immutable releases 설정 여부는 `v2.0.0` 게시에서 확인했습니다.
 
 - [ ] **skill 파일의 프로젝트 metadata:** `project-analysis` SKILL.md의 Metadata에 `Owner`·`Last reviewed` placeholder가 있습니다. 적용 저장소는 `.agents/`·`.claude/` 두 사본을 똑같이 고쳐야 하고, placeholder 검색에도 걸립니다. 템플릿 소유 skill에서 프로젝트 metadata를 없앨지, 현재 계약을 유지할지 정해야 합니다. (T-010)
 - [ ] **maintainer 안내 문서의 동기화 방식:** root `docs/TEMPLATE_GUIDE.md`·`docs/DOCS_GUIDE.md`는 locale 가이드의 일부를 따로 복제해 두고, `v2.1.0` 준비 때 수동으로 맞췄습니다. 계속 복제본으로 유지할지, locale 가이드 링크와 maintainer 전용 내용으로 줄일지 정해야 합니다. (T-010)
