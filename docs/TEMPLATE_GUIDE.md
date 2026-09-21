@@ -64,6 +64,12 @@ python3 scripts/export-template.py --locale ko --output /path/to/empty-directory
 python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
+이미 exact release에서 적용한 저장소를 업그레이드할 때는 이전 full SemVer를 base로 지정합니다. 대상이 그 exact base에서 유래한 경우에만 사용하고 최초 adoption에서는 생략합니다. format 2의 분류 기준은 선택한 locale의 적용 가이드 §2를 따릅니다.
+
+```sh
+python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --base-version {{OLDER_EXACT_VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
+```
+
 계획 없이 artifact만 비교하려면 빈 디렉터리로 export합니다.
 
 ```sh

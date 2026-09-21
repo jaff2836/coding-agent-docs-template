@@ -219,6 +219,16 @@ def _verify_remote_refs(
         raise VerificationError("local annotated tag does not match the declared source commit")
     try:
         _command(
+            ["git", "cat-file", "-e", "%s^{commit}" % github_main],
+            cwd=repository_root,
+        )
+    except VerificationError as exc:
+        raise VerificationError(
+            "synchronized main commit %s is not available locally; "
+            "fetch it before release verification" % github_main
+        ) from exc
+    try:
+        _command(
             ["git", "merge-base", "--is-ancestor", source_commit, github_main],
             cwd=repository_root,
         )
@@ -394,12 +404,18 @@ def _validated_upgrade_plan(
     plan: Any,
     *,
     expected_current: Mapping[str, bytes],
+    expected_target: Mapping[str, bytes],
     repository: str,
     current_version: str,
     base_version: str,
     locale: str,
 ) -> None:
-    """Validate the public format 2 contract independently of installer output."""
+    """Validate format 2 against current bytes and the controlled E2E target.
+
+    Base hashes are checked for shape, nullability, and classification
+    consistency. The verifier does not duplicate the installer's historical
+    release parser; independent base-byte comparison remains a consumer step.
+    """
 
     if not isinstance(plan, dict) or set(plan) != {
         "format",
@@ -509,6 +525,16 @@ def _validated_upgrade_plan(
         base_sha256 = entry["base_sha256"]
         artifact_sha256 = entry["artifact_sha256"]
         target_sha256 = entry["target_sha256"]
+        expected_target_sha256 = (
+            hashlib.sha256(expected_target[path]).hexdigest()
+            if path in expected_target
+            else None
+        )
+        expected_target_state = "file" if path in expected_target else "absent"
+        if target != expected_target_state or target_sha256 != expected_target_sha256:
+            raise VerificationError(
+                "upgrade adoption plan target does not match the verification fixture"
+            )
         if target not in ("absent", "file"):
             expected_upgrade_status = "blocked"
         elif base_sha256 == artifact_sha256 == target_sha256:
@@ -667,8 +693,9 @@ def _verify_published_e2e(
                 adoption_root = base / (prefix + "-existing")
                 adoption_output = base / (prefix + "-adopt")
                 adoption_root.mkdir()
-                (adoption_root / "README.md").write_text(
-                    "# Existing project\n", encoding="utf-8"
+                expected_target = {"README.md": b"# Existing project\n"}
+                (adoption_root / "README.md").write_bytes(
+                    expected_target["README.md"]
                 )
                 before = _tree_snapshot(adoption_root)
 
@@ -773,6 +800,7 @@ def _verify_published_e2e(
                     _validated_upgrade_plan(
                         upgrade_plan,
                         expected_current=expected,
+                        expected_target=expected_target,
                         repository=artifacts.manifest["repository"],
                         current_version=version,
                         base_version=base_version,

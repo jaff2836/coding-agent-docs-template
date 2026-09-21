@@ -68,6 +68,8 @@ class VerifyReleaseTests(unittest.TestCase):
             self.assertEqual(cwd, self.root)
             if arguments[:3] == ["git", "cat-file", "-t"]:
                 return b"tag\n"
+            if arguments[:3] == ["git", "cat-file", "-e"]:
+                return b""
             if arguments[:2] == ["git", "rev-parse"]:
                 return (SOURCE_COMMIT + "\n").encode("ascii")
             if arguments[:3] == ["git", "merge-base", "--is-ancestor"]:
@@ -96,6 +98,71 @@ class VerifyReleaseTests(unittest.TestCase):
                 ),
                 MAIN_COMMIT,
             )
+
+    def test_remote_refs_distinguish_missing_main_object_from_non_ancestor(self) -> None:
+        tag_ref = "refs/tags/v%s" % VERSION
+        remote_refs = (
+            {"refs/heads/main": MAIN_COMMIT},
+            {
+                "refs/heads/main": MAIN_COMMIT,
+                tag_ref: "c" * 40,
+                tag_ref + "^{}": SOURCE_COMMIT,
+            },
+        )
+
+        def command(arguments, *, cwd):
+            self.assertEqual(cwd, self.root)
+            if arguments[:3] == ["git", "cat-file", "-t"]:
+                return b"tag\n"
+            if arguments[:2] == ["git", "rev-parse"]:
+                return (SOURCE_COMMIT + "\n").encode("ascii")
+            if arguments[:3] == ["git", "cat-file", "-e"]:
+                raise VERIFY_RELEASE.VerificationError("missing object")
+            self.fail("unexpected command: %r" % (arguments,))
+
+        with patch.object(
+            VERIFY_RELEASE, "_ls_remote", side_effect=remote_refs
+        ), patch.object(VERIFY_RELEASE, "_command", side_effect=command):
+            with self.assertRaisesRegex(
+                VERIFY_RELEASE.VerificationError,
+                "not available locally; fetch it",
+            ):
+                VERIFY_RELEASE._verify_remote_refs(
+                    self.root,
+                    version=VERSION,
+                    source_commit=SOURCE_COMMIT,
+                    origin_remote="origin",
+                    github_remote="github",
+                )
+
+        def non_ancestor_command(arguments, *, cwd):
+            self.assertEqual(cwd, self.root)
+            if arguments[:3] == ["git", "cat-file", "-t"]:
+                return b"tag\n"
+            if arguments[:2] == ["git", "rev-parse"]:
+                return (SOURCE_COMMIT + "\n").encode("ascii")
+            if arguments[:3] == ["git", "cat-file", "-e"]:
+                return b""
+            if arguments[:3] == ["git", "merge-base", "--is-ancestor"]:
+                raise VERIFY_RELEASE.VerificationError("not an ancestor")
+            self.fail("unexpected command: %r" % (arguments,))
+
+        with patch.object(
+            VERIFY_RELEASE, "_ls_remote", side_effect=remote_refs
+        ), patch.object(
+            VERIFY_RELEASE, "_command", side_effect=non_ancestor_command
+        ):
+            with self.assertRaisesRegex(
+                VERIFY_RELEASE.VerificationError,
+                "release source commit is not an ancestor",
+            ):
+                VERIFY_RELEASE._verify_remote_refs(
+                    self.root,
+                    version=VERSION,
+                    source_commit=SOURCE_COMMIT,
+                    origin_remote="origin",
+                    github_remote="github",
+                )
 
     def test_remote_refs_reject_main_drift_and_lightweight_tag(self) -> None:
         with patch.object(
@@ -600,6 +667,7 @@ class VerifyReleaseTests(unittest.TestCase):
         VERIFY_RELEASE._validated_upgrade_plan(
             plan,
             expected_current=expected,
+            expected_target={},
             repository=REPOSITORY,
             current_version=VERSION,
             base_version="2.0.0",
@@ -618,6 +686,20 @@ class VerifyReleaseTests(unittest.TestCase):
         unhashable_policy = json.loads(json.dumps(plan))
         unhashable_policy["paths"][0]["policy"] = {"merge": True}
         malformed.append(unhashable_policy)
+        invented_target = json.loads(json.dumps(plan))
+        invented_target["paths"][0].update(
+            {
+                "status": "merge",
+                "upgrade_status": "diverged",
+                "target": "file",
+                "target_sha256": "d" * 64,
+            }
+        )
+        invented_target["summary"].update({"missing": 1, "merge": 1})
+        invented_target["upgrade_summary"].update(
+            {"template-only": 1, "diverged": 1}
+        )
+        malformed.append(invented_target)
         unsorted = json.loads(json.dumps(plan))
         unsorted["paths"].reverse()
         malformed.append(unsorted)
@@ -627,6 +709,7 @@ class VerifyReleaseTests(unittest.TestCase):
                     VERIFY_RELEASE._validated_upgrade_plan(
                         candidate,
                         expected_current=expected,
+                        expected_target={},
                         repository=REPOSITORY,
                         current_version=VERSION,
                         base_version="2.0.0",
