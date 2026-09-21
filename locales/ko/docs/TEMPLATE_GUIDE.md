@@ -345,6 +345,7 @@ git status --short --untracked-files=all
 - `adopt --base-version <older-exact-semver>`은 과거 installer를 실행하지 않고 이전 exact release를 검증해 base release, current release와 target tree를 비교합니다.
 - 선택형 format 2 report는 `base ∪ current` 경로를 `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, `blocked`로 분류하며 대상 파일을 자동 병합하거나 삭제하지 않습니다.
 - release verifier는 공개 `en`·`ko` upgrade 경로와 format 2 불변식을 검사합니다.
+- 이번 판의 artifact에서 적용 저장소에 반영할 변경은 `docs/TEMPLATE_GUIDE.md`와 `docs/DOCS_GUIDE.md` 두 문서이며, `--base-version` 기능은 선택한 release의 `installer.py`가 제공합니다.
 - 적용 저장소에서 확인할 것: 대상이 지정한 exact base에서 유래했을 때만 `--base-version`을 사용하고 `diverged`·`blocked`·base-only 경로를 직접 검토하세요.
 
 ### v2.1.1 — 문서 checker와 installer 진단 수정

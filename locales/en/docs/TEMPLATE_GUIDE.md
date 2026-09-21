@@ -345,6 +345,7 @@ Use this history to identify changes that an adopted repository has not yet appl
 - `adopt --base-version <older-exact-semver>` verifies an older exact release without running its installer and compares the base release, current release, and target tree.
 - The opt-in format 2 report classifies `base ∪ current` paths as `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, or `blocked`; it never merges or deletes target files automatically.
 - The release verifier checks the public `en` and `ko` upgrade paths and format 2 invariants.
+- The artifact changes to apply in an adopted repository are limited to `docs/TEMPLATE_GUIDE.md` and `docs/DOCS_GUIDE.md`; the selected release's `installer.py` provides the `--base-version` functionality.
 - Verify in the adopting repository: use `--base-version` only when the target was derived from that exact base, and review `diverged`, `blocked`, and base-only paths manually.
 
 ### v2.1.1 — Documentation Checker and Installer Diagnostic Fixes
