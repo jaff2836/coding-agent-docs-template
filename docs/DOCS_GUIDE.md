@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.1.1
+- **Template version:** 2.2.0
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (미커밋 변경 포함 시 미확정)
 - **Owner:** Chae Sangwon

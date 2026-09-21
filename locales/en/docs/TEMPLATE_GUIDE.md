@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.1.1
+- **Template version:** 2.2.0
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -339,6 +339,13 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v2.2.0 — Base-aware Adoption Reports
+
+- `adopt --base-version <older-exact-semver>` verifies an older exact release without running its installer and compares the base release, current release, and target tree.
+- The opt-in format 2 report classifies `base ∪ current` paths as `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, or `blocked`; it never merges or deletes target files automatically.
+- The release verifier checks the public `en` and `ko` upgrade paths and format 2 invariants.
+- Verify in the adopting repository: use `--base-version` only when the target was derived from that exact base, and review `diverged`, `blocked`, and base-only paths manually.
 
 ### v2.1.1 — Documentation Checker and Installer Diagnostic Fixes
 
