@@ -4,7 +4,7 @@
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
 
-## v2.2.0 — Base-aware adoption reports
+## [v2.2.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.2.0) — Base-aware adoption reports
 
 - `adopt --base-version <older-exact-semver>` verifies an older exact release without running its installer and compares the base release, current release, and target tree.
 - The opt-in format 2 report classifies `base ∪ current` paths as `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, or `blocked`. It remains read-only and does not merge or delete files.

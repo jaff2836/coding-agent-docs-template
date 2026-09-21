@@ -4,7 +4,7 @@
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
 
-## v2.2.0 — base-aware adoption report
+## [v2.2.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.2.0) — base-aware adoption report
 
 - `adopt --base-version <older-exact-semver>`은 과거 installer를 실행하지 않고 이전 exact release를 검증해 base release, current release와 target tree를 비교합니다.
 - 선택형 format 2 report는 `base ∪ current` 경로를 `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, `blocked`로 분류합니다. 대상은 계속 읽기 전용이며 파일을 병합하거나 삭제하지 않습니다.
