@@ -40,7 +40,7 @@
   - 결정: [PROJECT D-007](./00-PROJECT.md#8-decisions)과 [변경 문서](./changes/2026-09-20-release-verification/01-CHANGE.md)에 따라 tag·release mutation은 사람이 유지하고 candidate·published 검증만 자동화합니다.
   - 구현 범위: clean exact-source gate, package 2회 byte 대조, Origin·GitHub `main`·annotated tag 대조, draft·published asset 대조, 공개 latest·exact의 모든 공식 locale `list-locales`·`install`·`export`·`adopt`와 source export 비교
   - 현재 근거: Origin PR #20 merge commit `40306b65fe211402090d7a11b5c3ffafcb3689eb`에 통합됐습니다. 통합 `main`에서 unit test 12개를 포함한 전체 unittest 154개, root docs, stable locale, Python compile과 `git diff --check`가 통과했고, immutable Latest `v2.1.0`의 exact checkout에서 package의 installer를 실행하는 실환경 `published` 검증이 통과했습니다.
-  - 남은 한계: 현재 draft release가 없고 이를 임의로 만드는 것은 범위 밖이므로 candidate 성공 경로의 실환경 검증은 다음 release의 기존 draft에서 publish 전에 수행합니다. PR #24가 T-007 구현을 Origin `main`에 먼저 통합했으므로 `v2.1.1`은 기능 구현 전 exact source를 선택하고 두 remote `main` 동기화 뒤 그 조상 관계를 확인해야 합니다.
+  - 남은 한계: 현재 draft release가 없고 이를 임의로 만드는 것은 범위 밖이므로 candidate 성공 경로의 실환경 검증은 다음 release의 기존 draft에서 publish 전에 수행합니다. PR #24가 T-007 구현을 Origin `main`에 먼저 통합했으므로 `v2.1.1`은 기능 구현 전 exact source를 선택하고 두 remote `main` 동기화 뒤 그 조상 관계를 확인해야 합니다. 그동안 release source와 T-007이 통합된 `main`은 서로 다른 artifact를 같은 `2.1.1` version으로 표시하므로, `v2.1.1` 공개 직후 W-005에서 source version을 `2.2.0`으로 정렬합니다.
   - 완료 조건: 다음 release 운영 기록에서 실제 draft의 candidate 성공 경로와 게시 후 published 경로를 확인합니다.
 
 - [ ] **T-009 checker·installer 확정 결함 수정** — Origin `main` 통합, `v2.1.1` release 준비 중
@@ -58,10 +58,10 @@
   - 구현 선행조건: 충족. T-006 consumer 작업은 회귀 fixture 근거이며 기능 선행조건은 아닙니다.
   - 완료 조건: review 후속을 통합하고, 별도 release 위임 뒤 W-005에서 `v2.2.0` candidate·published gate, 과거 v2.0→v2.1 회귀 fixture와 v2.1→v2.2 consumer 원격 E2E를 완료합니다.
 
-- [ ] **T-012 release verifier의 remote `main` 객체 부재 진단** — 로컬 구현·검증 완료, Origin 통합 전
+- [ ] **T-012 release verifier의 remote `main` 객체·history 진단** — 로컬 구현·검증 완료, Origin 통합 전
   - 근거: Origin PR #22 C22-002에서 `ls-remote`로 확인한 synchronized `main` commit 객체가 source checkout에 없을 때 `git merge-base --is-ancestor` exit 128을 실제 비조상 관계로 잘못 보고하는 경로를 재현했습니다.
-  - 범위: ancestry 검사 전에 `git cat-file -e <main>^{commit}`으로 remote `main` commit 객체의 로컬 존재를 확인합니다. 없으면 자동 fetch나 remote mutation 없이 fetch가 필요하다는 별도 `VerificationError`를 내고, 객체가 존재하는 실제 비조상 관계의 기존 오류는 유지합니다.
-  - 현재 검증: `codex/t007-review-followups` 작업 트리에서 object 부재와 실제 비조상 fixture를 분리했고 verifier test 16개, 전체 unittest 166개, root docs, stable locale, Python compile과 `git diff --check`가 통과했습니다.
+  - 범위: ancestry 검사 전에 `git cat-file -e <main>^{commit}`으로 remote `main` commit 객체의 로컬 존재를 확인합니다. 없으면 자동 fetch나 remote mutation 없이 fetch가 필요하다는 별도 `VerificationError`를 냅니다. ancestry 검사가 실패한 shallow repository는 history 부족 진단으로 구분하되, 필요한 history가 있어 검사가 성공하는 shallow repository는 허용하고 실제 비조상 관계의 기존 오류는 유지합니다.
+  - 현재 검증: `codex/t007-review-followups` 작업 트리에서 object 부재, history가 부족한 shallow repository, 충분한 history가 있는 성공 경로와 실제 비조상 fixture를 분리했습니다. verifier test 16개, 전체 unittest 166개, root docs, stable locale, Python compile과 `git diff --check`가 통과했습니다.
   - 완료 조건: 이 후속이 Origin `main`에 통합되고 candidate·published 성공 경로가 유지됩니다.
 
 ## Next

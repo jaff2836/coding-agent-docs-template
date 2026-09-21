@@ -233,6 +233,16 @@ def _verify_remote_refs(
             cwd=repository_root,
         )
     except VerificationError as exc:
+        shallow = _command(
+            ["git", "rev-parse", "--is-shallow-repository"],
+            cwd=repository_root,
+        ).decode("ascii").strip()
+        if shallow == "true":
+            raise VerificationError(
+                "release source ancestry cannot be verified because the local "
+                "repository is shallow; fetch complete history before release "
+                "verification"
+            ) from exc
         raise VerificationError(
             "release source commit is not an ancestor of the synchronized main"
         ) from exc

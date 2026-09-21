@@ -55,7 +55,7 @@ T-006 consumer 작업은 과거 v2.0→v2.1 회귀 fixture의 근거이며 T-007
   - 결과·근거: root README와 en·ko 적용 가이드에 exact-base 전제, 최초 adoption 구분, 여섯 status, summary 분모, 제거 예시와 자동 merge·삭제 금지를 반영했습니다. required command manifest와 root `AGENTS.md`·`docs/TEMPLATE_GUIDE.md`의 maintainer 명령을 맞췄고 두 locale export artifact의 checker와 각 49개 테스트가 통과했습니다.
 
 - [ ] **W-005 `v2.2.0` 공개와 consumer 검증**
-  - 범위·변경 파일: version·release history 정렬 commit, GitHub `v2.2.0` tag·release, 이 PLAN의 검증 기록
+  - 범위·변경 파일: `v2.1.1` 공개 직후 source version을 `2.2.0`으로 올리는 version·release history 정렬 commit, GitHub `v2.2.0` tag·release, 이 PLAN의 검증 기록
   - 대응 요구사항·상위 완료 조건: `01-CHANGE.md` §2.6 공개·회귀·지원 완료
   - 선행조건: W-001~W-004와 review 후속 Origin `main` 통합, `v2.1.1` 공개, 사용자 tag·release 위임
   - 검증 방법: T-008 candidate·published gate, v2.0→v2.1 historical fixture의 기존 수동 판정 재현, v2.1 적용 consumer에서 base v2.1→current v2.2 원격 report의 독립 3-way 대조, 대상 tree 불변
@@ -67,7 +67,7 @@ T-006 consumer 작업은 과거 v2.0→v2.1 회귀 fixture의 근거이며 T-007
 |---|---|---|---|
 | 계약 | Origin `main` `62d1de45d9eb9c8c0387b3f2c4007fcc17480a21` + 계약 문서 변경 | root docs와 REVIEW/BUGBOT invariant 대조, stable locale, docs unittest 51개, `git diff --check` | 통과. Origin PR #23 merge `1423060d6943d31764729396523222e863de612d`와 같은 GitHub `main` 확인 |
 | W-001~W-004 | Origin PR #24 head `09c51fe6cb582235955117477b1d2255f45a4da1`, merge `564c1bf5ca36115020fea0b346f95f13931171dd` | installer 42개, verifier 15개, 전체 unittest 165개, root docs, stable locale, Python compile, `git diff --check`, en·ko export artifact checker와 각 49개 test | 통과·Origin 통합. 실제 remote `v2.2.0`·consumer 검증은 미완료 |
-| PR #24 C24-001·C24-002 | `564c1bf5ca36115020fea0b346f95f13931171dd` 기준 `codex/t007-review-followups` 작업 트리 | verifier 16개, 전체 unittest 166개, root docs, stable locale, Python compile, `git diff --check` | 통과. target fixture ground truth와 root maintainer 명령 parity를 보강했습니다. 같은 브랜치의 별도 T-012 fixture를 포함하며 Origin 통합 전 |
+| PR #24 C24-001·C24-002와 PR #25 C25-001 | `564c1bf5ca36115020fea0b346f95f13931171dd` 기준 `codex/t007-review-followups` 작업 트리 | verifier 16개, 전체 unittest 166개, root docs, stable locale, Python compile, `git diff --check` | 통과. target fixture ground truth와 root maintainer 명령 parity를 보강하고, T-012의 object 부재·shallow history 부족·실제 비조상 진단을 분리했습니다. Origin 통합 전 |
 | W-005 | 미착수 | 미실행 | review 후속 통합, `v2.1.1` 공개와 별도 release 위임 필요 |
 
 ## 4. 변경·재검증 기록
@@ -75,6 +75,7 @@ T-006 consumer 작업은 과거 v2.0→v2.1 회귀 fixture의 근거이며 T-007
 - 2026-09-20: 사용자 승인 뒤 보안·report·실행 관점의 독립 검토를 반영해 경로 집합, format 2 호환, legacy validator와 release·consumer 검증 경계를 닫았습니다. 구현 작업은 시작하지 않았습니다.
 - 2026-09-21: Origin·GitHub `main`을 `1423060d6943d31764729396523222e863de612d`로 동기화한 뒤 사용자 요청에 따라 W-001~W-004를 구현하고 로컬 gate를 통과했습니다. PR #23 C23-005는 strict checksum 집합과 release asset fixture의 동시 갱신 규칙으로 채택했고, Deferred 세 항목은 구현하지 않았습니다.
 - 2026-09-21: 사용자 지시에 따라 `v2.1.1` 공개 전 Origin PR #24를 merge commit `564c1bf5ca36115020fea0b346f95f13931171dd`로 통합했습니다. `v2.1.1` exact source는 T-007 구현 전 commit을 사용하고 remote `main`의 조상인지 T-008로 확인합니다. 두 P3는 별도 후속 브랜치로 넘겼습니다.
+- 2026-09-21: PR #25 C25-001의 shallow history 오진은 같은 후속 브랜치에서 수정합니다. C25-002의 같은 `2.1.1` version 아래 release source와 현재 artifact 차이는 T-008에 기록하고, `v2.1.1` 공개 직후 W-005의 `2.2.0` source version 정렬로 해소합니다.
 
 ## 5. 인계
 

@@ -99,7 +99,7 @@ class VerifyReleaseTests(unittest.TestCase):
                 MAIN_COMMIT,
             )
 
-    def test_remote_refs_distinguish_missing_main_object_from_non_ancestor(self) -> None:
+    def test_remote_refs_distinguish_missing_object_shallow_and_non_ancestor(self) -> None:
         tag_ref = "refs/tags/v%s" % VERSION
         remote_refs = (
             {"refs/heads/main": MAIN_COMMIT},
@@ -139,6 +139,8 @@ class VerifyReleaseTests(unittest.TestCase):
             self.assertEqual(cwd, self.root)
             if arguments[:3] == ["git", "cat-file", "-t"]:
                 return b"tag\n"
+            if arguments == ["git", "rev-parse", "--is-shallow-repository"]:
+                return b"false\n"
             if arguments[:2] == ["git", "rev-parse"]:
                 return (SOURCE_COMMIT + "\n").encode("ascii")
             if arguments[:3] == ["git", "cat-file", "-e"]:
@@ -155,6 +157,35 @@ class VerifyReleaseTests(unittest.TestCase):
             with self.assertRaisesRegex(
                 VERIFY_RELEASE.VerificationError,
                 "release source commit is not an ancestor",
+            ):
+                VERIFY_RELEASE._verify_remote_refs(
+                    self.root,
+                    version=VERSION,
+                    source_commit=SOURCE_COMMIT,
+                    origin_remote="origin",
+                    github_remote="github",
+                )
+
+        def shallow_command(arguments, *, cwd):
+            self.assertEqual(cwd, self.root)
+            if arguments[:3] == ["git", "cat-file", "-t"]:
+                return b"tag\n"
+            if arguments == ["git", "rev-parse", "--is-shallow-repository"]:
+                return b"true\n"
+            if arguments[:2] == ["git", "rev-parse"]:
+                return (SOURCE_COMMIT + "\n").encode("ascii")
+            if arguments[:3] == ["git", "cat-file", "-e"]:
+                return b""
+            if arguments[:3] == ["git", "merge-base", "--is-ancestor"]:
+                raise VERIFY_RELEASE.VerificationError("history is incomplete")
+            self.fail("unexpected command: %r" % (arguments,))
+
+        with patch.object(
+            VERIFY_RELEASE, "_ls_remote", side_effect=remote_refs
+        ), patch.object(VERIFY_RELEASE, "_command", side_effect=shallow_command):
+            with self.assertRaisesRegex(
+                VERIFY_RELEASE.VerificationError,
+                "local repository is shallow; fetch complete history",
             ):
                 VERIFY_RELEASE._verify_remote_refs(
                     self.root,
