@@ -103,6 +103,25 @@ python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agen
 
 `adoption-plan.json` uses the `stability: experimental` format; its fields may change in a minor release. To cancel an adoption, delete the output directory.
 
+To upgrade a repository that was previously derived from an exact release, pass that older full SemVer as the base. Do not use `latest` for the base, and omit `--base-version` for a first adoption.
+
+```sh
+python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --base-version {{OLDER_EXACT_VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
+```
+
+Base mode validates the historical release without importing or running its installer. It assumes the target was derived from that exact base; file bytes alone cannot distinguish a project deletion from a file that was never applied.
+
+| Upgrade status | Meaning |
+|---|---|
+| `unchanged` | The base, current artifact, and target agree. |
+| `template-only` | The template changed while the target still matches the base, including template additions and removals. |
+| `project-only` | Only the target differs from the unchanged template path. |
+| `converged` | The target already matches the changed current artifact. |
+| `diverged` | The template and target changed to different results. |
+| `blocked` | The target path cannot be compared safely and needs manual cleanup. |
+
+In format 2, `summary` still counts only current artifact paths, while `upgrade_summary` counts the `base ∪ current` union. A path removed from the current release appears only in the upgrade list with null `policy`, `status`, and `artifact_sha256`; review it by hand rather than treating it as an automatic deletion. The staged `artifact/` contains only the current release, and no classification authorizes an automatic merge, overwrite, or removal.
+
 For a new project, use `install` with a new or empty target. If any artifact path already exists in the target, it writes nothing and stops.
 
 ```sh

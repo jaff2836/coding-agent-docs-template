@@ -57,6 +57,8 @@ python installer.py adopt --release-url https://github.com/jaff2836/coding-agent
 
 `adopt` never writes to the project. It creates `artifact/` with the verified locale files and `adoption-plan.json`, which marks each path as `missing`, `identical`, `merge`, `decision` (for example `LICENSE`), or `blocked`. Merge the files yourself or with a coding agent by following the adoption steps in `artifact/docs/TEMPLATE_GUIDE.md`. The output directory must be outside the project; delete it to cancel. The plan format is experimental and may change in a minor release. `adopt` is available from installer `v2.1.0`.
 
+Beginning with installer `v2.2.0`, an already adopted project can compare an older exact release, the current release, and its working tree by adding `--base-version <older-exact-semver>`. Use this only when the target was derived from that exact base; omit it for a first adoption. The format 2 report classifies the `base ∪ current` paths as `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, or `blocked`. It remains read-only and never merges or deletes files automatically.
+
 ### 4. Install into a new project
 
 ```sh

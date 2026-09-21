@@ -143,6 +143,13 @@
         ]
       },
       {
+        "id": "installer-adopt-upgrade",
+        "value": "python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --base-version {{OLDER_EXACT_VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}",
+        "paths": [
+          "docs/TEMPLATE_GUIDE.md"
+        ]
+      },
+      {
         "id": "installer-install",
         "value": "python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}",
         "paths": [

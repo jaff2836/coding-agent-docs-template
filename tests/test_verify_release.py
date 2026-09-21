@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import json
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -295,6 +296,7 @@ class VerifyReleaseTests(unittest.TestCase):
                     release_url=release_url,
                     origin_remote="origin",
                     github_remote="github",
+                    base_version="2.0.0",
                 )
         self.assertEqual(source.call_count, 2)
         e2e.assert_called_once_with(
@@ -302,6 +304,7 @@ class VerifyReleaseTests(unittest.TestCase):
             release_url=release_url,
             version=VERSION,
             artifacts=artifacts,
+            base_version="2.0.0",
         )
 
         stale = dict(metadata, id=99, tag_name="v2.0.0")
@@ -338,6 +341,7 @@ class VerifyReleaseTests(unittest.TestCase):
             files={"installer.py": b"installer", "locale.zip": archive},
             manifest={
                 "version": VERSION,
+                "repository": REPOSITORY,
                 "locales": {"ko": {"asset": "locale.zip"}},
             },
         )
@@ -355,6 +359,7 @@ class VerifyReleaseTests(unittest.TestCase):
             return tuple(sorted(members))
 
         invoked_installer_bytes = []
+        base_aware_invocations = []
 
         def command(arguments, *, cwd):
             self.assertGreaterEqual(len(arguments), 4)
@@ -377,11 +382,82 @@ class VerifyReleaseTests(unittest.TestCase):
             if command_name == "adopt":
                 output = Path(arguments[arguments.index("--output") + 1])
                 write_members(output / "artifact")
-                (output / "adoption-plan.json").write_text(
-                    '{"summary":{"missing":1,"identical":0,"merge":1,'
-                    '"decision":0,"blocked":0}}',
-                    encoding="utf-8",
-                )
+                if "--base-version" in arguments:
+                    base_aware_invocations.append(tuple(arguments))
+                    plan = {
+                        "format": "coding-agent-docs-template/adoption-plan",
+                        "format_version": 2,
+                        "stability": "experimental",
+                        "base_release": {
+                            "repository": REPOSITORY,
+                            "version": "2.0.0",
+                            "source_commit": "b" * 40,
+                            "locale": "ko",
+                        },
+                        "release": {
+                            "repository": REPOSITORY,
+                            "version": VERSION,
+                            "source_commit": SOURCE_COMMIT,
+                            "locale": "ko",
+                        },
+                        "guide": "artifact/docs/TEMPLATE_GUIDE.md §2",
+                        "summary": {
+                            "missing": 1,
+                            "identical": 0,
+                            "merge": 1,
+                            "decision": 0,
+                            "blocked": 0,
+                        },
+                        "upgrade_summary": {
+                            "unchanged": 0,
+                            "template-only": 1,
+                            "project-only": 1,
+                            "converged": 0,
+                            "diverged": 0,
+                            "blocked": 0,
+                        },
+                        "paths": [
+                            {
+                                "path": "AGENTS.md",
+                                "policy": "merge",
+                                "status": "missing",
+                                "upgrade_status": "template-only",
+                                "base_sha256": None,
+                                "artifact_sha256": VERIFY_RELEASE.hashlib.sha256(
+                                    members["AGENTS.md"]
+                                ).hexdigest(),
+                                "target_sha256": None,
+                                "target": "absent",
+                                "reason": "add it",
+                            },
+                            {
+                                "path": "README.md",
+                                "policy": "merge",
+                                "status": "merge",
+                                "upgrade_status": "project-only",
+                                "base_sha256": VERIFY_RELEASE.hashlib.sha256(
+                                    members["README.md"]
+                                ).hexdigest(),
+                                "artifact_sha256": VERIFY_RELEASE.hashlib.sha256(
+                                    members["README.md"]
+                                ).hexdigest(),
+                                "target_sha256": VERIFY_RELEASE.hashlib.sha256(
+                                    b"# Existing project\n"
+                                ).hexdigest(),
+                                "target": "file",
+                                "reason": "merge it",
+                            },
+                        ],
+                    }
+                    (output / "adoption-plan.json").write_text(
+                        json.dumps(plan), encoding="utf-8"
+                    )
+                else:
+                    (output / "adoption-plan.json").write_text(
+                        '{"summary":{"missing":1,"identical":0,"merge":1,'
+                        '"decision":0,"blocked":0}}',
+                        encoding="utf-8",
+                    )
                 return b""
             self.fail("unexpected command: %r" % (arguments,))
 
@@ -395,10 +471,12 @@ class VerifyReleaseTests(unittest.TestCase):
                 release_url="https://example.test/releases",
                 version=VERSION,
                 artifacts=artifacts,
+                base_version="2.0.0",
             )
         self.assertTrue(invoked_installer_bytes)
         self.assertEqual(set(invoked_installer_bytes), {b"installer"})
         self.assertEqual(artifact_check.call_count, 1)
+        self.assertEqual(len(base_aware_invocations), 2)
 
     def test_adoption_plan_summary_rejects_malformed_structure(self) -> None:
         valid = {
@@ -446,6 +524,115 @@ class VerifyReleaseTests(unittest.TestCase):
                 valid,
             )
 
+    def test_upgrade_plan_validates_provenance_cardinality_and_null_contracts(self) -> None:
+        expected = {"AGENTS.md": b"agents\n", "README.md": b"readme\n"}
+        plan = {
+            "format": "coding-agent-docs-template/adoption-plan",
+            "format_version": 2,
+            "stability": "experimental",
+            "base_release": {
+                "repository": REPOSITORY,
+                "version": "2.0.0",
+                "source_commit": "b" * 40,
+                "locale": "ko",
+            },
+            "release": {
+                "repository": REPOSITORY,
+                "version": VERSION,
+                "source_commit": SOURCE_COMMIT,
+                "locale": "ko",
+            },
+            "guide": "artifact/docs/TEMPLATE_GUIDE.md §2",
+            "summary": {
+                "missing": 2,
+                "identical": 0,
+                "merge": 0,
+                "decision": 0,
+                "blocked": 0,
+            },
+            "upgrade_summary": {
+                "unchanged": 0,
+                "template-only": 2,
+                "project-only": 0,
+                "converged": 1,
+                "diverged": 0,
+                "blocked": 0,
+            },
+            "paths": [
+                {
+                    "path": "AGENTS.md",
+                    "policy": "merge",
+                    "status": "missing",
+                    "upgrade_status": "template-only",
+                    "base_sha256": None,
+                    "artifact_sha256": VERIFY_RELEASE.installer._sha256(expected["AGENTS.md"]),
+                    "target_sha256": None,
+                    "target": "absent",
+                    "reason": "add it",
+                },
+                {
+                    "path": "OLD.md",
+                    "policy": None,
+                    "status": None,
+                    "upgrade_status": "converged",
+                    "base_sha256": "c" * 64,
+                    "artifact_sha256": None,
+                    "target_sha256": None,
+                    "target": "absent",
+                    "reason": (
+                        "This path is absent from the current release; review whether "
+                        "to keep or remove it by hand."
+                    ),
+                },
+                {
+                    "path": "README.md",
+                    "policy": "merge",
+                    "status": "missing",
+                    "upgrade_status": "template-only",
+                    "base_sha256": None,
+                    "artifact_sha256": VERIFY_RELEASE.installer._sha256(expected["README.md"]),
+                    "target_sha256": None,
+                    "target": "absent",
+                    "reason": "add it",
+                },
+            ],
+        }
+        VERIFY_RELEASE._validated_upgrade_plan(
+            plan,
+            expected_current=expected,
+            repository=REPOSITORY,
+            current_version=VERSION,
+            base_version="2.0.0",
+            locale="ko",
+        )
+        malformed = []
+        extra = json.loads(json.dumps(plan))
+        extra["unexpected"] = True
+        malformed.append(extra)
+        wrong_summary = json.loads(json.dumps(plan))
+        wrong_summary["summary"]["missing"] = 1
+        malformed.append(wrong_summary)
+        bad_base_only = json.loads(json.dumps(plan))
+        bad_base_only["paths"][1]["policy"] = "merge"
+        malformed.append(bad_base_only)
+        unhashable_policy = json.loads(json.dumps(plan))
+        unhashable_policy["paths"][0]["policy"] = {"merge": True}
+        malformed.append(unhashable_policy)
+        unsorted = json.loads(json.dumps(plan))
+        unsorted["paths"].reverse()
+        malformed.append(unsorted)
+        for candidate in malformed:
+            with self.subTest(candidate=candidate):
+                with self.assertRaises(VERIFY_RELEASE.VerificationError):
+                    VERIFY_RELEASE._validated_upgrade_plan(
+                        candidate,
+                        expected_current=expected,
+                        repository=REPOSITORY,
+                        current_version=VERSION,
+                        base_version="2.0.0",
+                        locale="ko",
+                    )
+
     def test_remote_names_reject_option_or_url_injection(self) -> None:
         for value in ("--upload-pack=bad", "https://example.test/repo", "bad name"):
             with self.subTest(value=value):
@@ -467,6 +654,37 @@ class VerifyReleaseTests(unittest.TestCase):
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn("{candidate,published}", completed.stdout)
+
+        published = __import__("subprocess").run(
+            [
+                sys.executable,
+                str(REPOSITORY_ROOT / "scripts/verify-release.py"),
+                "published",
+                "--help",
+            ],
+            stdout=__import__("subprocess").PIPE,
+            stderr=__import__("subprocess").PIPE,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+        candidate = __import__("subprocess").run(
+            [
+                sys.executable,
+                str(REPOSITORY_ROOT / "scripts/verify-release.py"),
+                "candidate",
+                "--help",
+            ],
+            stdout=__import__("subprocess").PIPE,
+            stderr=__import__("subprocess").PIPE,
+            text=True,
+            encoding="utf-8",
+            check=False,
+        )
+        self.assertEqual(published.returncode, 0, published.stderr)
+        self.assertEqual(candidate.returncode, 0, candidate.stderr)
+        self.assertIn("--base-version", published.stdout)
+        self.assertNotIn("--base-version", candidate.stdout)
 
 
 if __name__ == "__main__":

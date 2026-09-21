@@ -83,6 +83,9 @@ def build_release_payloads(
     installer_record_overrides: dict | None = None,
     sums: bytes | None = None,
     schema_version: int = 2,
+    repository: str = "jaff2836/coding-agent-docs-template",
+    installer_bytes: bytes = REAL_INSTALLER_BYTES,
+    publish_latest: bool = True,
 ) -> dict[str, bytes]:
     """Build a synthetic release asset map mirroring package-release output."""
 
@@ -93,26 +96,32 @@ def build_release_payloads(
     }
     if archive is None:
         archive = PACKAGE_RELEASE._zip_bytes(member_items)
+    member_records = PACKAGE_RELEASE._member_records(member_items, member_policies)
+    if schema_version == 1:
+        member_records = [
+            {key: value for key, value in member.items() if key != "policy"}
+            for member in member_records
+        ]
     locale_record = {
         "status": "complete",
         "asset": "coding-agent-docs-template-%s-v%s.zip" % (locale, version),
         "sha256": _sha256(archive),
         "bytes": len(archive),
         "compression": "stored",
-        "members": PACKAGE_RELEASE._member_records(member_items, member_policies),
+        "members": member_records,
     }
     locale_record.update(locale_record_overrides or {})
     installer_record = {
         "asset": "installer.py",
-        "sha256": _sha256(REAL_INSTALLER_BYTES),
-        "bytes": len(REAL_INSTALLER_BYTES),
+        "sha256": _sha256(installer_bytes),
+        "bytes": len(installer_bytes),
     }
     installer_record.update(installer_record_overrides or {})
     manifest = {
         "schema_version": schema_version,
         "version": version,
         "source_commit": source_commit,
-        "repository": "jaff2836/coding-agent-docs-template",
+        "repository": repository,
         "locales": {locale: locale_record},
         "installer": installer_record,
     }
@@ -124,17 +133,20 @@ def build_release_payloads(
         names = sorted(["release-manifest.json", "installer.py", locale_record["asset"]])
         digests = {
             "release-manifest.json": _sha256(manifest_data),
-            "installer.py": _sha256(REAL_INSTALLER_BYTES),
+            "installer.py": _sha256(installer_bytes),
             locale_record["asset"]: _sha256(archive),
         }
         sums = "".join("%s  %s\n" % (digests[name], name) for name in names).encode("ascii")
-    return {
-        "%s/release-manifest.json" % VERSION_DIR: manifest_data,
-        "%s/SHA256SUMS" % VERSION_DIR: sums,
-        "%s/%s" % (VERSION_DIR, locale_record["asset"]): archive,
-        "%s/installer.py" % VERSION_DIR: REAL_INSTALLER_BYTES,
-        "/releases/latest/release-manifest.json": manifest_data,
+    version_dir = "/releases/%s" % version
+    payloads = {
+        "%s/release-manifest.json" % version_dir: manifest_data,
+        "%s/SHA256SUMS" % version_dir: sums,
+        "%s/%s" % (version_dir, locale_record["asset"]): archive,
+        "%s/installer.py" % version_dir: installer_bytes,
     }
+    if publish_latest:
+        payloads["/releases/latest/release-manifest.json"] = manifest_data
+    return payloads
 
 
 class FakeReleaseServer:
@@ -147,9 +159,12 @@ class FakeReleaseServer:
     ) -> None:
         served = payloads
         redirected = redirects or {}
+        self.requests: list[str] = []
+        requests = self.requests
 
         class Handler(http.server.BaseHTTPRequestHandler):
             def do_GET(self) -> None:  # noqa: N802
+                requests.append(self.path)
                 location = redirected.get(self.path)
                 if location is not None:
                     self.send_response(302)
@@ -506,6 +521,13 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(_tree_snapshot(target), before)
         self.assertEqual(_tree_snapshot(self.temp_root() / "outside-skills"), outside_before)
         self.assertIn("The target repository was not modified", completed.stdout)
+        self.assertTrue(
+            completed.stdout.startswith(
+                "Adoption plan for ko 2.0.0: 11 paths "
+                "(missing 1, identical 1, merge 2, decision 2, blocked 5)\n"
+            )
+        )
+        self.assertNotIn("Upgrade classification", completed.stdout)
         self.assertEqual(sorted(path.name for path in output.iterdir()), ["adoption-plan.json", "artifact"])
         for name, data in self.ADOPTION_MEMBERS.items():
             self.assertEqual((output / "artifact" / name).read_bytes(), data)
@@ -652,6 +674,391 @@ class InstallerTests(unittest.TestCase):
             INSTALLER.os.listdir = real_listdir
         self.assertEqual(state, ("unreadable", None))
         self.assertEqual(INSTALLER._adoption_status("merge", "unreadable", None, "a" * 64), "blocked")
+
+    def test_adopt_base_version_classifies_the_inventory_union(self) -> None:
+        base_members = {
+            "unchanged.md": b"same\n",
+            "template.md": b"base\n",
+            "project.md": b"same\n",
+            "converged.md": b"base\n",
+            "diverged.md": b"base\n",
+            "removed-kept.md": b"old\n",
+            "removed-deleted.md": b"old\n",
+            "blocked.md": b"same\n",
+        }
+        current_members = {
+            "unchanged.md": b"same\n",
+            "template.md": b"current\n",
+            "project.md": b"same\n",
+            "converged.md": b"current\n",
+            "diverged.md": b"current\n",
+            "added.md": b"current\n",
+            "blocked.md": b"same\n",
+        }
+        payloads = build_release_payloads(
+            version="2.0.0",
+            members=base_members,
+            schema_version=1,
+            installer_bytes=b"this is historical data, not Python\n",
+            source_commit="b" * 40,
+            publish_latest=False,
+        )
+        payloads.update(
+            build_release_payloads(
+                version="2.1.0",
+                members=current_members,
+                policies={name: "merge" for name in current_members},
+                source_commit="c" * 40,
+            )
+        )
+        server = FakeReleaseServer(payloads)
+        self.addCleanup(server.close)
+
+        target = self.temp_root() / "upgrade-target"
+        target.mkdir()
+        target_values = {
+            "unchanged.md": b"same\n",
+            "template.md": b"base\n",
+            "project.md": b"project\n",
+            "converged.md": b"current\n",
+            "diverged.md": b"project\n",
+            "removed-kept.md": b"old\n",
+        }
+        for name, data in target_values.items():
+            (target / name).write_bytes(data)
+        outside = self.temp_root() / "outside-blocked"
+        outside.write_bytes(b"outside\n")
+        (target / "blocked.md").symlink_to(outside)
+        before = _tree_snapshot(target)
+        output = self.temp_root() / "upgrade-output"
+
+        completed = self.run_cli(
+            "adopt",
+            "--release-url",
+            server.base_url,
+            "--version",
+            "2.1.0",
+            "--base-version",
+            "2.0.0",
+            "--locale",
+            "ko",
+            "--repo-root",
+            str(target),
+            "--output",
+            str(output),
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertEqual(_tree_snapshot(target), before)
+        plan = json.loads((output / "adoption-plan.json").read_text(encoding="utf-8"))
+        self.assertEqual(plan["format_version"], 2)
+        self.assertEqual(plan["base_release"]["version"], "2.0.0")
+        self.assertEqual(plan["release"]["version"], "2.1.0")
+        entries = {entry["path"]: entry for entry in plan["paths"]}
+        self.assertEqual([entry["path"] for entry in plan["paths"]], sorted(entries))
+        self.assertEqual(
+            {name: entry["upgrade_status"] for name, entry in entries.items()},
+            {
+                "added.md": "template-only",
+                "blocked.md": "blocked",
+                "converged.md": "converged",
+                "diverged.md": "diverged",
+                "project.md": "project-only",
+                "removed-deleted.md": "converged",
+                "removed-kept.md": "template-only",
+                "template.md": "template-only",
+                "unchanged.md": "unchanged",
+            },
+        )
+        self.assertEqual(
+            plan["summary"],
+            {"missing": 1, "identical": 2, "merge": 3, "decision": 0, "blocked": 1},
+        )
+        self.assertEqual(
+            plan["upgrade_summary"],
+            {
+                "unchanged": 1,
+                "template-only": 3,
+                "project-only": 1,
+                "converged": 2,
+                "diverged": 1,
+                "blocked": 1,
+            },
+        )
+        for name in ("removed-kept.md", "removed-deleted.md"):
+            self.assertIsNone(entries[name]["policy"])
+            self.assertIsNone(entries[name]["status"])
+            self.assertIsNone(entries[name]["artifact_sha256"])
+            self.assertIn("absent from the current release", entries[name]["reason"])
+        self.assertEqual(
+            sorted(path.relative_to(output / "artifact").as_posix() for path in (output / "artifact").rglob("*") if path.is_file()),
+            sorted(current_members),
+        )
+        lines = completed.stdout.splitlines()
+        self.assertTrue(lines[0].startswith("Upgrade classification assumes"))
+        self.assertIn("Adoption plan for ko 2.1.0: 7 paths", completed.stdout)
+        self.assertIn("Upgrade classification: 9 paths", completed.stdout)
+        headings = [
+            line
+            for line in lines
+            if line.startswith("upgrade ") and line.endswith(":")
+        ]
+        self.assertEqual(
+            headings,
+            [
+                "upgrade template-only:",
+                "upgrade project-only:",
+                "upgrade converged:",
+                "upgrade diverged:",
+                "upgrade blocked:",
+            ],
+        )
+
+    def test_base_version_uses_semver_precedence(self) -> None:
+        ordered = (
+            "1.0.0-alpha",
+            "1.0.0-alpha.1",
+            "1.0.0-alpha.beta",
+            "1.0.0-beta",
+            "1.0.0-beta.2",
+            "1.0.0-beta.11",
+            "1.0.0-rc.1",
+            "1.0.0",
+        )
+        for lower, higher in zip(ordered, ordered[1:]):
+            with self.subTest(lower=lower, higher=higher):
+                self.assertLess(INSTALLER._compare_semver_precedence(lower, higher), 0)
+                self.assertGreater(INSTALLER._compare_semver_precedence(higher, lower), 0)
+        self.assertEqual(
+            INSTALLER._compare_semver_precedence("1.0.0+build.1", "1.0.0+build.2"),
+            0,
+        )
+        for value in ("latest", "v1.0.0", "1.0"):
+            with self.subTest(value=value):
+                with self.assertRaises(INSTALLER.InstallerError):
+                    INSTALLER._validated_base_version(value)
+        for base, current in (("2.1.0", "2.1.0"), ("2.2.0", "2.1.0"), ("2.1.0+old", "2.1.0+new")):
+            with self.subTest(base=base, current=current):
+                with self.assertRaises(INSTALLER.InstallerError):
+                    INSTALLER._require_older_base_version(base, current)
+
+    def test_invalid_base_versions_leave_target_and_output_unchanged(self) -> None:
+        payloads = build_release_payloads(
+            version="2.1.0",
+            members={"AGENTS.md": b"current\n"},
+            policies={"AGENTS.md": "merge"},
+        )
+        server = FakeReleaseServer(payloads)
+        self.addCleanup(server.close)
+        target = self.temp_root() / "invalid-base-target"
+        target.mkdir()
+        (target / "keep.txt").write_bytes(b"keep\n")
+        before = _tree_snapshot(target)
+        for index, base_version in enumerate(
+            ("latest", "v2.0.0", "2.0", "2.1.0", "2.2.0")
+        ):
+            output = self.temp_root() / ("invalid-base-output-%d" % index)
+            with self.subTest(base_version=base_version):
+                with self.assertRaises(INSTALLER.InstallerError):
+                    INSTALLER.adopt(
+                        server.base_url,
+                        "2.1.0",
+                        "ko",
+                        target,
+                        output,
+                        installer_bytes=REAL_INSTALLER_BYTES,
+                        base_version=base_version,
+                    )
+                self.assertFalse(output.exists())
+                self.assertEqual(_tree_snapshot(target), before)
+
+    def test_base_release_requires_exact_assets_and_keeps_failures_read_only(self) -> None:
+        base_payloads = build_release_payloads(
+            version="2.0.0",
+            members={"AGENTS.md": b"base\n"},
+            schema_version=1,
+            installer_bytes=b"historical installer bytes\n",
+            publish_latest=False,
+        )
+        sums_path = "/releases/2.0.0/SHA256SUMS"
+        base_payloads[sums_path] += ("0" * 64 + "  unexpected.sig\n").encode("ascii")
+        base_payloads.update(
+            build_release_payloads(
+                version="2.1.0",
+                members={"AGENTS.md": b"current\n"},
+                policies={"AGENTS.md": "merge"},
+            )
+        )
+        server = FakeReleaseServer(base_payloads)
+        self.addCleanup(server.close)
+        target = self.temp_root() / "strict-base-target"
+        target.mkdir()
+        (target / "keep.txt").write_bytes(b"keep\n")
+        before = _tree_snapshot(target)
+        output = self.temp_root() / "strict-base-output"
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            INSTALLER.adopt(
+                server.base_url,
+                "2.1.0",
+                "ko",
+                target,
+                output,
+                installer_bytes=REAL_INSTALLER_BYTES,
+                base_version="2.0.0",
+            )
+        self.assertIn("asset inventory", str(context.exception))
+        self.assertEqual(_tree_snapshot(target), before)
+        self.assertFalse(output.exists())
+
+    def test_base_schema_two_checks_all_locale_digests_without_downloading_them(self) -> None:
+        payloads = build_release_payloads(
+            version="2.1.0",
+            members={"AGENTS.md": b"base\n"},
+            policies={"AGENTS.md": "merge"},
+            publish_latest=False,
+        )
+        manifest_path = "/releases/2.1.0/release-manifest.json"
+        manifest = json.loads(payloads[manifest_path].decode("utf-8"))
+        ko_record = manifest["locales"]["ko"]
+        en_record = json.loads(json.dumps(ko_record))
+        en_record["asset"] = "coding-agent-docs-template-en-v2.1.0.zip"
+        manifest["locales"]["en"] = en_record
+        manifest_data = (
+            json.dumps(manifest, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False)
+            + "\n"
+        ).encode("utf-8")
+        payloads[manifest_path] = manifest_data
+        ko_archive = payloads["/releases/2.1.0/%s" % ko_record["asset"]]
+        en_path = "/releases/2.1.0/%s" % en_record["asset"]
+        payloads[en_path] = ko_archive
+        digests = {
+            "release-manifest.json": _sha256(manifest_data),
+            "installer.py": _sha256(payloads["/releases/2.1.0/installer.py"]),
+            ko_record["asset"]: _sha256(ko_archive),
+            en_record["asset"]: _sha256(ko_archive),
+        }
+        payloads["/releases/2.1.0/SHA256SUMS"] = "".join(
+            "%s  %s\n" % (digests[name], name) for name in sorted(digests)
+        ).encode("ascii")
+        payloads.update(
+            build_release_payloads(
+                version="2.2.0",
+                members={"AGENTS.md": b"current\n"},
+                policies={"AGENTS.md": "merge"},
+            )
+        )
+        server = FakeReleaseServer(payloads)
+        self.addCleanup(server.close)
+        target = self.temp_root() / "schema-two-target"
+        target.mkdir()
+        output = self.temp_root() / "schema-two-output"
+        INSTALLER.adopt(
+            server.base_url,
+            "2.2.0",
+            "ko",
+            target,
+            output,
+            installer_bytes=REAL_INSTALLER_BYTES,
+            base_version="2.1.0",
+        )
+        self.assertTrue(output.is_dir())
+        self.assertNotIn(en_path, server.requests)
+
+    def test_base_manifest_rejects_unknown_keys_at_every_schema_layer(self) -> None:
+        payloads = build_release_payloads(
+            version="2.0.0",
+            members={"AGENTS.md": b"base\n"},
+            schema_version=1,
+            publish_latest=False,
+        )
+        manifest = json.loads(
+            payloads["/releases/2.0.0/release-manifest.json"].decode("utf-8")
+        )
+        mutations = (
+            lambda value: value.update({"unexpected": True}),
+            lambda value: value["installer"].update({"unexpected": True}),
+            lambda value: value["locales"]["ko"].update({"unexpected": True}),
+            lambda value: value["locales"]["ko"]["members"][0].update(
+                {"unexpected": True}
+            ),
+        )
+        for mutate in mutations:
+            candidate = json.loads(json.dumps(manifest))
+            mutate(candidate)
+            with self.assertRaises(INSTALLER.InstallerError):
+                INSTALLER._validated_base_manifest(candidate)
+
+    def test_base_installer_tamper_fails_without_publishing(self) -> None:
+        payloads = build_release_payloads(
+            version="2.0.0",
+            members={"AGENTS.md": b"base\n"},
+            schema_version=1,
+            installer_bytes=b"historical installer\n",
+            publish_latest=False,
+        )
+        payloads["/releases/2.0.0/installer.py"] += b"tampered\n"
+        payloads.update(
+            build_release_payloads(
+                version="2.1.0",
+                members={"AGENTS.md": b"current\n"},
+                policies={"AGENTS.md": "merge"},
+            )
+        )
+        server = FakeReleaseServer(payloads)
+        self.addCleanup(server.close)
+        target = self.temp_root() / "tampered-base-target"
+        target.mkdir()
+        before = _tree_snapshot(target)
+        output = self.temp_root() / "tampered-base-output"
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            INSTALLER.adopt(
+                server.base_url,
+                "2.1.0",
+                "ko",
+                target,
+                output,
+                installer_bytes=REAL_INSTALLER_BYTES,
+                base_version="2.0.0",
+            )
+        self.assertIn("base installer.py", str(context.exception))
+        self.assertEqual(_tree_snapshot(target), before)
+        self.assertFalse(output.exists())
+
+    def test_non_base_commands_do_not_enter_the_legacy_parser(self) -> None:
+        base = self.publish()
+        original = INSTALLER._verified_base_release
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("legacy parser was called")
+
+        INSTALLER._verified_base_release = forbidden
+        try:
+            INSTALLER.list_locales(base, "2.0.0", installer_bytes=REAL_INSTALLER_BYTES)
+            INSTALLER.install(
+                base,
+                "2.0.0",
+                "ko",
+                self.temp_root() / "isolated-install",
+                installer_bytes=REAL_INSTALLER_BYTES,
+            )
+            INSTALLER.export_artifact(
+                base,
+                "2.0.0",
+                "ko",
+                self.temp_root() / "isolated-export",
+                installer_bytes=REAL_INSTALLER_BYTES,
+            )
+            target = self.temp_root() / "isolated-adopt-target"
+            target.mkdir()
+            INSTALLER.adopt(
+                base,
+                "2.0.0",
+                "ko",
+                target,
+                self.temp_root() / "isolated-adopt-output",
+                installer_bytes=REAL_INSTALLER_BYTES,
+            )
+        finally:
+            INSTALLER._verified_base_release = original
 
     def test_manifest_members_require_a_known_adoption_policy(self) -> None:
         for policy, message in ((None, "invalid member record"), ("overwrite", "adoption policy")):
