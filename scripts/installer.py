@@ -45,7 +45,20 @@ ADOPTION_PLAN_NAME = "adoption-plan.json"
 ADOPTION_ARTIFACT_DIR = "artifact"
 ADOPTION_FORMAT = "coding-agent-docs-template/adoption-plan"
 ADOPTION_FORMAT_VERSION = 1
+ADOPTION_UPGRADE_FORMAT_VERSION = 2
 ADOPTION_GUIDE = "artifact/docs/TEMPLATE_GUIDE.md §2"
+UPGRADE_STATUSES = (
+    "unchanged",
+    "template-only",
+    "project-only",
+    "converged",
+    "diverged",
+    "blocked",
+)
+UPGRADE_REMOVAL_REASON = (
+    "This path is absent from the current release; review whether to keep or "
+    "remove it by hand."
+)
 ADOPTION_REASONS = {
     ("missing", "copy"): "The target has no file here; add the artifact file.",
     ("missing", "merge"): "The target has no file here; add the artifact file and fill in the project values.",
@@ -139,6 +152,60 @@ def _validated_version_selection(value: str) -> str:
     if SEMVER_RE.fullmatch(value) is None:
         raise InstallerError("version must be 'latest' or full SemVer without a leading v prefix")
     return value
+
+
+def _validated_base_version(value: str) -> str:
+    if value == LATEST_VERSION or SEMVER_RE.fullmatch(value) is None:
+        raise InstallerError(
+            "base version must be full SemVer without a leading v prefix; "
+            "'latest' is not allowed"
+        )
+    return value
+
+
+def _semver_parts(value: str) -> tuple[tuple[int, int, int], Optional[tuple[str, ...]]]:
+    """Return SemVer precedence components after full validation."""
+
+    if SEMVER_RE.fullmatch(value) is None:
+        raise InstallerError("version must be full SemVer")
+    without_build = value.split("+", 1)[0]
+    core, separator, prerelease = without_build.partition("-")
+    major, minor, patch = (int(part) for part in core.split("."))
+    return (major, minor, patch), (tuple(prerelease.split(".")) if separator else None)
+
+
+def _compare_semver_precedence(left: str, right: str) -> int:
+    """Compare two validated SemVer values, ignoring build metadata."""
+
+    left_core, left_pre = _semver_parts(left)
+    right_core, right_pre = _semver_parts(right)
+    if left_core != right_core:
+        return -1 if left_core < right_core else 1
+    if left_pre is None or right_pre is None:
+        if left_pre is right_pre:
+            return 0
+        return 1 if left_pre is None else -1
+    for left_part, right_part in zip(left_pre, right_pre):
+        if left_part == right_part:
+            continue
+        left_numeric = left_part.isdigit()
+        right_numeric = right_part.isdigit()
+        if left_numeric and right_numeric:
+            return -1 if int(left_part) < int(right_part) else 1
+        if left_numeric != right_numeric:
+            return -1 if left_numeric else 1
+        return -1 if left_part < right_part else 1
+    if len(left_pre) == len(right_pre):
+        return 0
+    return -1 if len(left_pre) < len(right_pre) else 1
+
+
+def _require_older_base_version(base_version: str, current_version: str) -> None:
+    if _compare_semver_precedence(base_version, current_version) >= 0:
+        raise InstallerError(
+            "base version %s must have lower SemVer precedence than current version %s"
+            % (base_version, current_version)
+        )
 
 
 def _validated_release_url(value: str) -> str:
@@ -375,6 +442,154 @@ def _validated_member_record(tag: str, member: Any) -> None:
         raise InstallerError("locale %s member timestamp must be %s" % (tag, ARCHIVE_TIMESTAMP_TEXT))
 
 
+def _validated_base_manifest(manifest: Any) -> Mapping[str, Any]:
+    """Validate only the two historical schemas accepted for base comparison.
+
+    This parser must not be used by current release verification. Its exact-key
+    handling is intentionally isolated so historical compatibility cannot loosen
+    the running installer's self-binding contract.
+    """
+
+    if not isinstance(manifest, dict) or set(manifest) != {
+        "schema_version",
+        "version",
+        "source_commit",
+        "repository",
+        "locales",
+        "installer",
+    }:
+        raise InstallerError("base release manifest has unexpected top-level keys")
+    schema_version = manifest["schema_version"]
+    if (
+        isinstance(schema_version, bool)
+        or not isinstance(schema_version, int)
+        or schema_version not in (1, 2)
+    ):
+        raise InstallerError("unsupported base release manifest schema_version")
+    version = manifest["version"]
+    if not isinstance(version, str) or SEMVER_RE.fullmatch(version) is None:
+        raise InstallerError("base release manifest version must be full SemVer")
+    source_commit = manifest["source_commit"]
+    if not isinstance(source_commit, str) or COMMIT_RE.fullmatch(source_commit) is None:
+        raise InstallerError(
+            "base release manifest source_commit must be 40 lowercase hex characters"
+        )
+    repository = manifest["repository"]
+    if not isinstance(repository, str) or REPOSITORY_RE.fullmatch(repository) is None:
+        raise InstallerError("base release manifest repository must be an OWNER/NAME slug")
+    _validated_base_installer_record(manifest["installer"])
+    locales = manifest["locales"]
+    if not isinstance(locales, dict) or not locales:
+        raise InstallerError("base release manifest locales must be a non-empty object")
+    for tag, record in locales.items():
+        if not isinstance(tag, str) or LOCALE_KEY_RE.fullmatch(tag) is None:
+            raise InstallerError("unsupported locale tag in base release manifest: %s" % tag)
+        _validated_base_locale_record(tag, record, version, schema_version)
+    return manifest
+
+
+def _validated_base_installer_record(record: Any) -> None:
+    if not isinstance(record, dict) or set(record) != {"asset", "sha256", "bytes"}:
+        raise InstallerError("base release manifest installer record is invalid")
+    if record["asset"] != INSTALLER_ASSET:
+        raise InstallerError("base release manifest installer asset must be %s" % INSTALLER_ASSET)
+    if not isinstance(record["sha256"], str) or SHA256_RE.fullmatch(record["sha256"]) is None:
+        raise InstallerError("base release manifest installer sha256 is invalid")
+    if (
+        isinstance(record["bytes"], bool)
+        or not isinstance(record["bytes"], int)
+        or not 1 <= record["bytes"] <= MANIFEST_MAX_BYTES
+    ):
+        raise InstallerError("base release manifest installer bytes is invalid")
+
+
+def _validated_base_locale_record(
+    tag: str, record: Any, version: str, schema_version: int
+) -> None:
+    if not isinstance(record, dict) or set(record) != {
+        "status",
+        "asset",
+        "sha256",
+        "bytes",
+        "compression",
+        "members",
+    }:
+        raise InstallerError("base locale record has unexpected keys: %s" % tag)
+    if record["status"] != "complete":
+        raise InstallerError("base locale %s is not complete" % tag)
+    expected_asset = "coding-agent-docs-template-%s-v%s.zip" % (tag, version)
+    if record["asset"] != expected_asset:
+        raise InstallerError(
+            "base locale %s asset name does not bind the locale and version: %s"
+            % (tag, record["asset"])
+        )
+    if not isinstance(record["sha256"], str) or SHA256_RE.fullmatch(record["sha256"]) is None:
+        raise InstallerError("base locale %s archive sha256 is invalid" % tag)
+    if (
+        isinstance(record["bytes"], bool)
+        or not isinstance(record["bytes"], int)
+        or not 1 <= record["bytes"] <= ARCHIVE_MAX_BYTES
+    ):
+        raise InstallerError("base locale %s archive size is outside the download limit" % tag)
+    if record["compression"] != "stored":
+        raise InstallerError("base locale %s archive must use stored compression" % tag)
+    members = record["members"]
+    if not isinstance(members, list) or not members:
+        raise InstallerError("base locale %s must declare at least one member" % tag)
+    for member in members:
+        _validated_base_member_record(tag, member, schema_version)
+    paths = [member["path"] for member in members]
+    if len(set(paths)) != len(paths):
+        raise InstallerError("base locale %s declares duplicate member paths" % tag)
+    if len({path.casefold() for path in paths}) != len(paths):
+        raise InstallerError("base locale %s declares case-fold colliding member paths" % tag)
+    for path in paths:
+        _validated_member_path(path)
+    folded_paths = {path.casefold(): path for path in paths}
+    for path in paths:
+        parts = PurePosixPath(path).parts
+        for length in range(1, len(parts)):
+            parent = "/".join(parts[:length])
+            conflicting = folded_paths.get(parent.casefold())
+            if conflicting is not None:
+                raise InstallerError(
+                    "base locale %s declares member path prefix conflict: %s and %s"
+                    % (tag, conflicting, path)
+                )
+
+
+def _validated_base_member_record(tag: str, member: Any, schema_version: int) -> None:
+    expected_keys = {"path", "sha256", "bytes", "mode", "timestamp"}
+    if schema_version == 2:
+        expected_keys.add("policy")
+    if not isinstance(member, dict) or set(member) != expected_keys:
+        raise InstallerError("base locale %s has an invalid member record" % tag)
+    if schema_version == 2 and (
+        not isinstance(member["policy"], str)
+        or member["policy"] not in ADOPTION_POLICIES
+    ):
+        raise InstallerError("base locale %s has an invalid member adoption policy" % tag)
+    if (
+        not isinstance(member["path"], str)
+        or not isinstance(member["sha256"], str)
+        or SHA256_RE.fullmatch(member["sha256"]) is None
+    ):
+        raise InstallerError("base locale %s has an invalid member hash" % tag)
+    if (
+        isinstance(member["bytes"], bool)
+        or not isinstance(member["bytes"], int)
+        or member["bytes"] < 0
+    ):
+        raise InstallerError("base locale %s has an invalid member size" % tag)
+    if member["mode"] != FILE_MODE_INT:
+        raise InstallerError("base locale %s member mode must be 0644" % tag)
+    if member["timestamp"] != ARCHIVE_TIMESTAMP_TEXT:
+        raise InstallerError(
+            "base locale %s member timestamp must be %s"
+            % (tag, ARCHIVE_TIMESTAMP_TEXT)
+        )
+
+
 def _validated_member_path(path: str) -> PurePosixPath:
     if "\\" in path or "\x00" in path:
         raise InstallerError("member path must not contain backslashes or NUL: %s" % path)
@@ -445,6 +660,81 @@ def _verified_manifest(
     if sums.get(INSTALLER_ASSET) != manifest["installer"]["sha256"]:
         raise InstallerError("SHA256SUMS and the release manifest disagree about installer.py")
     return manifest
+
+
+def _verified_base_release(
+    release_url: str,
+    version: str,
+    locale: str,
+    current_manifest: Mapping[str, Any],
+) -> tuple[Mapping[str, Any], Mapping[str, Any], dict[str, bytes]]:
+    """Read one exact historical release without loading its installer code."""
+
+    sums = _validated_sums(
+        _fetch(_asset_url(release_url, version, SUMS_ASSET), SUMS_MAX_BYTES)
+    )
+    manifest_data = _fetch(
+        _asset_url(release_url, version, MANIFEST_ASSET), MANIFEST_MAX_BYTES
+    )
+    if sums.get(MANIFEST_ASSET) != _sha256(manifest_data):
+        raise InstallerError("base release manifest does not match SHA256SUMS")
+    manifest = _validated_base_manifest(
+        _parsed_json(manifest_data, "base release-manifest.json")
+    )
+    _require_matching_repository(release_url, manifest)
+    if manifest["version"] != version:
+        raise InstallerError(
+            "base release manifest version %s does not match the requested version %s"
+            % (manifest["version"], version)
+        )
+    if manifest["repository"].casefold() != current_manifest["repository"].casefold():
+        raise InstallerError("base and current release repositories do not match")
+
+    # This is deliberately a closed release inventory. A future release that
+    # adds a signed sidecar or another asset must update this contract and its
+    # fixtures in the same change before that release can be used as a base.
+    expected_assets = {MANIFEST_ASSET, INSTALLER_ASSET}
+    expected_assets.update(
+        record["asset"] for record in manifest["locales"].values()
+    )
+    if set(sums) != expected_assets:
+        missing = sorted(expected_assets - set(sums))
+        unexpected = sorted(set(sums) - expected_assets)
+        raise InstallerError(
+            "base SHA256SUMS asset inventory differs (missing: %s; unexpected: %s)"
+            % (missing or "none", unexpected or "none")
+        )
+    installer_record = manifest["installer"]
+    if sums[INSTALLER_ASSET] != installer_record["sha256"]:
+        raise InstallerError(
+            "base SHA256SUMS and release manifest disagree about installer.py"
+        )
+    for tag, record in manifest["locales"].items():
+        if sums[record["asset"]] != record["sha256"]:
+            raise InstallerError(
+                "base SHA256SUMS and release manifest disagree about locale %s" % tag
+            )
+
+    installer_data = _fetch(
+        _asset_url(release_url, version, INSTALLER_ASSET), MANIFEST_MAX_BYTES
+    )
+    if (
+        len(installer_data) != installer_record["bytes"]
+        or _sha256(installer_data) != installer_record["sha256"]
+    ):
+        raise InstallerError("base installer.py does not match its manifest record")
+
+    record = _selected_locale_record(manifest, locale)
+    archive = _fetch(
+        _asset_url(release_url, version, record["asset"]), ARCHIVE_MAX_BYTES
+    )
+    if len(archive) != record["bytes"]:
+        raise InstallerError(
+            "base locale %s archive size %d does not match the manifest declaration %d"
+            % (locale, len(archive), record["bytes"])
+        )
+    members = _read_verified_archive(archive, locale, record)
+    return manifest, record, members
 
 
 def _require_matching_repository(
@@ -700,6 +990,7 @@ def adopt(
     output: Path,
     *,
     installer_bytes: Optional[bytes] = None,
+    base_version: Optional[str] = None,
 ) -> Mapping[str, Any]:
     """Verify a release and stage it with a read-only plan for an existing repository.
 
@@ -710,13 +1001,31 @@ def adopt(
 
     release_url = _validated_release_url(release_url)
     version = _validated_version_selection(version)
+    if base_version is not None:
+        base_version = _validated_base_version(base_version)
     root = _validated_adoption_root(Path(repo_root))
     output = _validated_export_output(Path(output))
     _require_separate_trees(root, output)
     manifest = _verified_manifest(release_url, version, _running_installer_bytes(installer_bytes))
     record = _selected_locale_record(manifest, locale)
     members = _verified_members(release_url, manifest, locale)
-    plan = adoption_plan(root, manifest, locale, record, members)
+    if base_version is None:
+        plan = adoption_plan(root, manifest, locale, record, members)
+    else:
+        _require_older_base_version(base_version, manifest["version"])
+        base_manifest, base_record, base_members = _verified_base_release(
+            release_url, base_version, locale, manifest
+        )
+        plan = upgrade_adoption_plan(
+            root,
+            manifest,
+            locale,
+            record,
+            members,
+            base_manifest,
+            base_record,
+            base_members,
+        )
     files = {
         "%s/%s" % (ADOPTION_ARTIFACT_DIR, name): data for name, data in members.items()
     }
@@ -797,6 +1106,89 @@ def adoption_plan(
     }
 
 
+def upgrade_adoption_plan(
+    root: Path,
+    manifest: Mapping[str, Any],
+    locale: str,
+    record: Mapping[str, Any],
+    members: Mapping[str, bytes],
+    base_manifest: Mapping[str, Any],
+    base_record: Mapping[str, Any],
+    base_members: Mapping[str, bytes],
+) -> dict[str, Any]:
+    """Classify the base/current inventory union without modifying the target."""
+
+    current_records = {member["path"]: member for member in record["members"]}
+    base_records = {member["path"]: member for member in base_record["members"]}
+    listings: dict[Path, Optional[tuple[str, ...]]] = {}
+    entries = []
+    for name in sorted(set(base_records) | set(current_records)):
+        state, target_sha256 = _adoption_target(
+            root, _validated_member_path(name), listings
+        )
+        base_sha256 = _sha256(base_members[name]) if name in base_members else None
+        artifact_sha256 = _sha256(members[name]) if name in members else None
+        upgrade_status = _upgrade_status(
+            state, base_sha256, artifact_sha256, target_sha256
+        )
+        current_member = current_records.get(name)
+        if current_member is None:
+            policy = None
+            status = None
+            reason = (
+                _adoption_reason("blocked", "", state)
+                if upgrade_status == "blocked"
+                else UPGRADE_REMOVAL_REASON
+            )
+        else:
+            policy = current_member["policy"]
+            status = _adoption_status(
+                policy, state, target_sha256, artifact_sha256
+            )
+            reason = _adoption_reason(status, policy, state)
+        entries.append(
+            {
+                "path": name,
+                "policy": policy,
+                "status": status,
+                "upgrade_status": upgrade_status,
+                "target": state,
+                "base_sha256": base_sha256,
+                "artifact_sha256": artifact_sha256,
+                "target_sha256": target_sha256,
+                "reason": reason,
+            }
+        )
+
+    summary = {status: 0 for status in ADOPTION_STATUSES}
+    upgrade_summary = {status: 0 for status in UPGRADE_STATUSES}
+    for entry in entries:
+        if entry["status"] is not None:
+            summary[entry["status"]] += 1
+        upgrade_summary[entry["upgrade_status"]] += 1
+    return {
+        "format": ADOPTION_FORMAT,
+        "format_version": ADOPTION_UPGRADE_FORMAT_VERSION,
+        "stability": "experimental",
+        "base_release": {
+            "repository": base_manifest["repository"],
+            "version": base_manifest["version"],
+            "source_commit": base_manifest["source_commit"],
+            "locale": locale,
+        },
+        "release": {
+            "repository": manifest["repository"],
+            "version": manifest["version"],
+            "source_commit": manifest["source_commit"],
+            "locale": locale,
+        },
+        "guide": ADOPTION_GUIDE,
+        "summary": summary,
+        "upgrade_summary": upgrade_summary,
+        "paths": entries,
+    }
+
+
 def _adoption_target(
     root: Path,
     path: PurePosixPath,
@@ -857,6 +1249,27 @@ def _adoption_status(
     return "identical" if target_sha256 == artifact_sha256 else "merge"
 
 
+def _upgrade_status(
+    state: str,
+    base_sha256: Optional[str],
+    artifact_sha256: Optional[str],
+    target_sha256: Optional[str],
+) -> str:
+    """Classify the base/current/target equality partition; None means absent."""
+
+    if state not in ("absent", "file"):
+        return "blocked"
+    if base_sha256 == artifact_sha256 == target_sha256:
+        return "unchanged"
+    if base_sha256 == target_sha256 and artifact_sha256 != base_sha256:
+        return "template-only"
+    if base_sha256 == artifact_sha256 and target_sha256 != base_sha256:
+        return "project-only"
+    if artifact_sha256 == target_sha256 and base_sha256 != artifact_sha256:
+        return "converged"
+    return "diverged"
+
+
 def _adoption_reason(status: str, policy: str, state: str) -> str:
     if status == "blocked":
         return "Resolve the %s target path by hand before adopting this file." % state
@@ -875,12 +1288,18 @@ def _plan_bytes(plan: Mapping[str, Any]) -> bytes:
 def _print_adoption_summary(plan: Mapping[str, Any], output: Path) -> None:
     release = plan["release"]
     summary = plan["summary"]
+    if plan["format_version"] == ADOPTION_UPGRADE_FORMAT_VERSION:
+        print(
+            "Upgrade classification assumes the target was derived from base %s; "
+            "absence alone cannot prove a project deletion."
+            % plan["base_release"]["version"]
+        )
     print(
         "Adoption plan for %s %s: %d paths (%s)"
         % (
             release["locale"],
             release["version"],
-            len(plan["paths"]),
+            sum(summary.values()),
             ", ".join("%s %d" % (status, summary[status]) for status in ADOPTION_STATUSES),
         )
     )
@@ -892,6 +1311,30 @@ def _print_adoption_summary(plan: Mapping[str, Any], output: Path) -> None:
             print("%s:" % status)
             for path in paths:
                 print("  %s" % path)
+    if plan["format_version"] == ADOPTION_UPGRADE_FORMAT_VERSION:
+        upgrade_summary = plan["upgrade_summary"]
+        print(
+            "Upgrade classification: %d paths (%s)"
+            % (
+                len(plan["paths"]),
+                ", ".join(
+                    "%s %d" % (status, upgrade_summary[status])
+                    for status in UPGRADE_STATUSES
+                ),
+            )
+        )
+        for status in UPGRADE_STATUSES:
+            if status == "unchanged":
+                continue
+            paths = [
+                entry["path"]
+                for entry in plan["paths"]
+                if entry["upgrade_status"] == status
+            ]
+            if paths:
+                print("upgrade %s:" % status)
+                for path in paths:
+                    print("  %s" % path)
     print(
         "Wrote %s and %s/ in %s. The target repository was not modified; "
         "follow %s to merge."
@@ -965,6 +1408,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     adopt_parser.add_argument("--output", required=True, type=Path, help="empty output directory outside the project")
     adopt_parser.add_argument("--locale", required=True, help="complete locale tag from the release manifest")
     adopt_parser.add_argument("--version", default=LATEST_VERSION, help="release version, or 'latest'")
+    adopt_parser.add_argument(
+        "--base-version",
+        help="older exact SemVer previously applied to the target; adopt only",
+    )
 
     list_parser = subparsers.add_parser("list-locales", help="list verified locales of a release")
     _add_remote_arguments(list_parser)
@@ -979,7 +1426,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             written = export_artifact(args.release_url, args.version, args.locale, args.output)
             print("Exported %s locale with %d files to %s" % (args.locale, len(written), args.output))
         elif args.command == "adopt":
-            plan = adopt(args.release_url, args.version, args.locale, args.repo_root, args.output)
+            plan = adopt(
+                args.release_url,
+                args.version,
+                args.locale,
+                args.repo_root,
+                args.output,
+                base_version=args.base_version,
+            )
             _print_adoption_summary(plan, args.output)
         else:
             manifest = list_locales(args.release_url, args.version)

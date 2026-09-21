@@ -103,6 +103,25 @@ python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agen
 
 `adoption-plan.json`은 `stability: experimental` 형식이며 minor release에서 필드가 바뀔 수 있습니다. 적용을 취소하려면 output 디렉터리를 삭제합니다.
 
+과거 exact release에서 유래한 저장소를 업그레이드하려면 그 이전 full SemVer를 base로 지정합니다. base에는 `latest`를 쓸 수 없으며 최초 adoption에서는 `--base-version`을 생략합니다.
+
+```sh
+python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --base-version {{OLDER_EXACT_VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
+```
+
+base 모드는 과거 installer를 import하거나 실행하지 않고 historical release를 검증합니다. 대상이 해당 exact base에서 유래했다고 전제하며, 파일 byte만으로 프로젝트가 삭제한 경로와 처음부터 적용하지 않은 경로를 구분할 수 없습니다.
+
+| upgrade status | 의미 |
+|---|---|
+| `unchanged` | base, current artifact와 target이 같습니다. |
+| `template-only` | target은 base와 같고 template만 바뀌었습니다. template 추가·제거도 포함합니다. |
+| `project-only` | template 경로는 그대로이고 target만 달라졌습니다. |
+| `converged` | target이 이미 변경된 current artifact와 같습니다. |
+| `diverged` | template과 target이 서로 다른 결과로 바뀌었습니다. |
+| `blocked` | target 경로를 안전하게 비교할 수 없어 사람이 정리해야 합니다. |
+
+format 2에서 `summary`는 current artifact 경로만 세고 `upgrade_summary`는 `base ∪ current` 합집합을 셉니다. current release에서 제거된 경로는 `policy`, `status`, `artifact_sha256`이 null인 채 upgrade 목록에만 나타나며 자동 삭제 대상으로 해석하지 않고 직접 검토합니다. staging된 `artifact/`에는 current release만 들어가며 어떤 분류도 자동 병합·덮어쓰기·삭제 권한을 주지 않습니다.
+
 새 프로젝트에는 존재하지 않거나 빈 대상에 `install`을 사용합니다. 대상에 artifact 경로가 하나라도 있으면 아무것도 쓰지 않고 중단합니다.
 
 ```sh

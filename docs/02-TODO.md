@@ -18,7 +18,7 @@
 - **Goal:** Origin `main`에 통합된 T-008·T-009를 patch release로 준비하고, 실제 draft와 immutable release에서 candidate·published 검증 경로를 확인
 - **Target:** `v2.1.1` GitHub Release와 T-008 candidate·published 운영 기록
 - **Status:** In Progress — T-008·T-009 구현은 Origin `main`에 통합됐고, release 준비 PR과 draft 운영 검증이 남았습니다. 이전 마일스톤 `v2.1.0`은 2026-09-19 공개와 T-004·T-005 완료로 종료했습니다.
-- **다음 마일스톤:** `v2.1.1` 공개 뒤 승인된 업그레이드용 `adopt` 분류 T-007 구현을 시작하고, 정책 결정 T-010은 별도 후보로 유지합니다.
+- **다음 마일스톤:** `v2.1.1` 공개 뒤 현재 구현 브랜치의 업그레이드용 `adopt` 분류 T-007 W-001~W-004를 Origin `main`에 통합하고, 정책 결정 T-010은 별도 후보로 유지합니다.
 
 ## 운영 규칙
 
@@ -60,14 +60,14 @@
 
 ## Backlog
 
-아래 T-007은 계약 승인 뒤 구현을 시작하지 않은 기능 변경이고, T-010은 `v2.1.0` 작업에서 드러난 미승인 후보이며, T-012는 T-011 리뷰에서 분리한 기존 진단 결함입니다. T-009의 실행 결함과 분리했고 남은 결정 질문은 [PROJECT §11](./00-PROJECT.md#11-open-questions)에 있습니다.
+아래 T-007은 승인된 계약의 W-001~W-004를 구현 브랜치에서 검증한 기능 변경이고, T-010은 `v2.1.0` 작업에서 드러난 미승인 후보이며, T-012는 T-011 리뷰에서 분리한 기존 진단 결함입니다. T-009의 실행 결함과 분리했고 남은 결정 질문은 [PROJECT §11](./00-PROJECT.md#11-open-questions)에 있습니다.
 
-- [ ] **T-007 이미 적용한 저장소의 업그레이드를 위한 `adopt` 분류 개선** — 계약 승인, 구현 미착수
+- [ ] **T-007 이미 적용한 저장소의 업그레이드를 위한 `adopt` 분류 개선** — 로컬 구현·검증 완료, Origin 통합 전
   - 변경-ID: `2026-09-20-adopt-upgrade-classification`
-  - 결정·계획: [PROJECT D-008](./00-PROJECT.md#8-decisions), [승인된 계약](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md), [미착수 PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md)
+  - 결정·계획: [PROJECT D-008](./00-PROJECT.md#8-decisions), [승인된 계약](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md), [실행 PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md)
   - 계약: `adopt --base-version <older-exact-semver>`은 과거 installer를 실행하지 않고 exact base의 schema 1·2 asset을 읽기 전용으로 검증합니다. `base ∪ current` 경로를 target과 비교해 여섯 upgrade status를 format 2에 기록하되 base 없는 format 1, 대상 무변경, 자동 merge·삭제 없음은 유지합니다.
-  - 현재 상태: 사용자가 2026-09-20 권고 계약과 계약 PR만 승인했고 2026-09-21 PR #23 리뷰 보강을 승인했습니다. Origin PR #23은 문서 범위이며 installer·테스트·사용자 가이드 구현은 시작하지 않았습니다.
-  - 구현 선행조건: PR #23 통합 뒤 별도 사용자 시작 요청과 최신 Origin `main`. T-011은 Origin PR #22 merge commit `62d1de45d9eb9c8c0387b3f2c4007fcc17480a21`로 통합됐고, T-006 consumer 작업은 회귀 fixture 근거이지만 기능 선행조건은 아닙니다.
+  - 현재 상태: Origin PR #23 계약과 PR #22 T-011을 통합하고 Origin·GitHub `main`을 `1423060d6943d31764729396523222e863de612d`로 맞췄습니다. 사용자 구현 시작 요청 뒤 `codex/t007-base-aware-adopt` 작업 트리에서 PLAN W-001~W-004 구현·로컬 검증을 완료했으며 Origin 통합과 W-005 공개·consumer 검증은 남았습니다.
+  - 구현 선행조건: 충족. T-006 consumer 작업은 회귀 fixture 근거이며 기능 선행조건은 아닙니다.
   - 완료 조건: PLAN W-001~W-004가 Origin `main`에 통합되고 format 1 호환·base verifier·3-way 분류·format 2·en/ko 문서를 검증합니다. 별도 release 위임 뒤 W-005에서 `v2.2.0` candidate·published gate, 과거 v2.0→v2.1 회귀 fixture와 v2.1→v2.2 consumer 원격 E2E를 완료합니다.
 - [ ] **T-010 skill metadata·maintainer 가이드 정책 정리** — 설계 결정 필요
   - `project-analysis` skill의 `Owner`·`Last reviewed` placeholder를 템플릿 소유 skill에서 제거할지, 적용 시 두 skill 사본을 함께 채우는 현재 계약을 유지할지 정합니다.
@@ -119,6 +119,6 @@
 
 - [x] **T-011 release verifier adoption plan 진단 강화**
   - 통합 결과: malformed `adoption-plan.json`을 일관된 `VerificationError`로 진단하고 공개 plan v1의 status 계약을 verifier checkout의 installer와 분리한 구현을 Origin PR #22 merge commit `62d1de45d9eb9c8c0387b3f2c4007fcc17480a21`에 통합했습니다. 리뷰에서 확인한 기존 ancestry 진단 결함은 T-012로 분리했습니다.
-  - 검증 근거: PR #22 exact code head `c2bf788288c4ad1b61d69597614b3918e537dae6`에서 verifier test 14개와 전체 unittest 156개, root docs, stable locale, Python compile, `git diff --check`, 공개 `v2.1.0` `published` 검증이 통과했습니다. 최종 문서 증분 `7721962976ac80a276398e2ce993b80dfe411c9b`은 T-012 추적만 추가했습니다.
+  - 검증 근거: PR #22 exact code head `c2bf788288c4ad1b61d69597614b3918e537dae6`에서 verifier test 14개와 전체 unittest 156개, root docs, stable locale, Python compile, `git diff --check`, 공개 `v2.1.0` `published` 검증이 통과했습니다. 최종 문서 증분 `7721962976ac80a276398e2ce993b80dfe411c9b`은 T-012 추적만 추가했습니다. 이 구현 작업의 완료 범위는 Origin·GitHub 통합이며 다음 candidate·published 운영 검증은 T-008이 소유합니다.
 
 완료 이력이 길어지면 기존 CHANGELOG 또는 마일스톤별 보관 문서로 연결하고 본문을 복제하지 않습니다.

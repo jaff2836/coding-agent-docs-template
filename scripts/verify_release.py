@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import io
 import json
 import os
@@ -23,13 +24,36 @@ import package_release
 
 ROOT = Path(__file__).resolve().parent.parent
 REMOTE_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
+COMMIT_RE = re.compile(r"[0-9a-f]{40}")
+SHA256_RE = re.compile(r"[0-9a-f]{64}")
 FILE_MODE = 0o644
+ADOPTION_POLICIES = frozenset(("copy", "decide", "merge"))
 ADOPTION_SUMMARY_STATUSES = (
     "missing",
     "identical",
     "merge",
     "decision",
     "blocked",
+)
+UPGRADE_SUMMARY_STATUSES = (
+    "unchanged",
+    "template-only",
+    "project-only",
+    "converged",
+    "diverged",
+    "blocked",
+)
+ADOPTION_TARGET_STATES = frozenset(
+    (
+        "absent",
+        "file",
+        "unreadable",
+        "case-variant",
+        "symlink",
+        "parent-symlink",
+        "parent-not-directory",
+        "special",
+    )
 )
 
 
@@ -366,6 +390,189 @@ def _validated_adoption_summary(plan: Any) -> Mapping[str, int]:
     return summary
 
 
+def _validated_upgrade_plan(
+    plan: Any,
+    *,
+    expected_current: Mapping[str, bytes],
+    repository: str,
+    current_version: str,
+    base_version: str,
+    locale: str,
+) -> None:
+    """Validate the public format 2 contract independently of installer output."""
+
+    if not isinstance(plan, dict) or set(plan) != {
+        "format",
+        "format_version",
+        "stability",
+        "base_release",
+        "release",
+        "guide",
+        "summary",
+        "upgrade_summary",
+        "paths",
+    }:
+        raise VerificationError("upgrade adoption plan has invalid top-level keys")
+    if (
+        plan["format"] != "coding-agent-docs-template/adoption-plan"
+        or isinstance(plan["format_version"], bool)
+        or not isinstance(plan["format_version"], int)
+        or plan["format_version"] != 2
+        or plan["stability"] != "experimental"
+        or plan["guide"] != "artifact/docs/TEMPLATE_GUIDE.md §2"
+    ):
+        raise VerificationError("upgrade adoption plan identity is invalid")
+    for key, version in (("base_release", base_version), ("release", current_version)):
+        release = plan[key]
+        if not isinstance(release, dict) or set(release) != {
+            "repository",
+            "version",
+            "source_commit",
+            "locale",
+        }:
+            raise VerificationError("upgrade adoption plan %s is invalid" % key)
+        if (
+            not isinstance(release["repository"], str)
+            or release["repository"].casefold() != repository.casefold()
+            or not isinstance(release["version"], str)
+            or release["version"] != version
+            or not isinstance(release["locale"], str)
+            or release["locale"] != locale
+            or not isinstance(release["source_commit"], str)
+            or COMMIT_RE.fullmatch(release["source_commit"]) is None
+        ):
+            raise VerificationError("upgrade adoption plan %s provenance is invalid" % key)
+
+    summary = _validated_adoption_summary(plan)
+    upgrade_summary = plan["upgrade_summary"]
+    if not isinstance(upgrade_summary, dict) or set(upgrade_summary) != set(
+        UPGRADE_SUMMARY_STATUSES
+    ):
+        raise VerificationError("upgrade adoption plan summary has invalid statuses")
+    for status in UPGRADE_SUMMARY_STATUSES:
+        value = upgrade_summary[status]
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise VerificationError(
+                "upgrade adoption plan summary value must be a non-negative integer: %s"
+                % status
+            )
+
+    paths = plan["paths"]
+    if not isinstance(paths, list):
+        raise VerificationError("upgrade adoption plan paths must be an array")
+    expected_entry_keys = {
+        "path",
+        "policy",
+        "status",
+        "upgrade_status",
+        "base_sha256",
+        "artifact_sha256",
+        "target_sha256",
+        "target",
+        "reason",
+    }
+    seen: set[str] = set()
+    summary_counts = {status: 0 for status in ADOPTION_SUMMARY_STATUSES}
+    upgrade_counts = {status: 0 for status in UPGRADE_SUMMARY_STATUSES}
+    current_paths: set[str] = set()
+    for entry in paths:
+        if not isinstance(entry, dict) or set(entry) != expected_entry_keys:
+            raise VerificationError("upgrade adoption plan path entry is invalid")
+        path = entry["path"]
+        if (
+            not isinstance(path, str)
+            or not path
+            or "\\" in path
+            or "\x00" in path
+            or not all(part and part not in (".", "..") for part in path.split("/"))
+            or path in seen
+        ):
+            raise VerificationError("upgrade adoption plan path is invalid or duplicated")
+        seen.add(path)
+        if not isinstance(entry["reason"], str) or not entry["reason"]:
+            raise VerificationError("upgrade adoption plan path reason is invalid")
+        target = entry["target"]
+        if not isinstance(target, str) or target not in ADOPTION_TARGET_STATES:
+            raise VerificationError("upgrade adoption plan target state is invalid")
+        for hash_key in ("base_sha256", "artifact_sha256", "target_sha256"):
+            digest = entry[hash_key]
+            if digest is not None and (
+                not isinstance(digest, str)
+                or SHA256_RE.fullmatch(digest) is None
+            ):
+                raise VerificationError("upgrade adoption plan %s is invalid" % hash_key)
+        if (target == "file") != (entry["target_sha256"] is not None):
+            raise VerificationError("upgrade adoption plan target hash is inconsistent")
+        upgrade_status = entry["upgrade_status"]
+        if upgrade_status not in UPGRADE_SUMMARY_STATUSES:
+            raise VerificationError("upgrade adoption plan path status is invalid")
+        base_sha256 = entry["base_sha256"]
+        artifact_sha256 = entry["artifact_sha256"]
+        target_sha256 = entry["target_sha256"]
+        if target not in ("absent", "file"):
+            expected_upgrade_status = "blocked"
+        elif base_sha256 == artifact_sha256 == target_sha256:
+            expected_upgrade_status = "unchanged"
+        elif base_sha256 == target_sha256 and artifact_sha256 != base_sha256:
+            expected_upgrade_status = "template-only"
+        elif base_sha256 == artifact_sha256 and target_sha256 != base_sha256:
+            expected_upgrade_status = "project-only"
+        elif artifact_sha256 == target_sha256 and base_sha256 != artifact_sha256:
+            expected_upgrade_status = "converged"
+        else:
+            expected_upgrade_status = "diverged"
+        if upgrade_status != expected_upgrade_status:
+            raise VerificationError(
+                "upgrade adoption plan path classification is inconsistent"
+            )
+        upgrade_counts[upgrade_status] += 1
+        if path in expected_current:
+            current_paths.add(path)
+            policy = entry["policy"]
+            if not isinstance(policy, str) or policy not in ADOPTION_POLICIES:
+                raise VerificationError("upgrade adoption plan current path policy is invalid")
+            if target not in ("absent", "file"):
+                expected_status = "blocked"
+            elif policy == "decide":
+                expected_status = "decision"
+            elif target == "absent":
+                expected_status = "missing"
+            elif target_sha256 == artifact_sha256:
+                expected_status = "identical"
+            else:
+                expected_status = "merge"
+            if (
+                not isinstance(entry["status"], str)
+                or entry["status"] not in ADOPTION_SUMMARY_STATUSES
+                or entry["status"] != expected_status
+                or artifact_sha256
+                != hashlib.sha256(expected_current[path]).hexdigest()
+            ):
+                raise VerificationError("upgrade adoption plan current path is invalid")
+            summary_counts[entry["status"]] += 1
+        elif (
+            entry["policy"] is not None
+            or entry["status"] is not None
+            or artifact_sha256 is not None
+            or base_sha256 is None
+        ):
+            raise VerificationError("upgrade adoption plan base-only path is invalid")
+        elif target in ("absent", "file") and entry["reason"] != (
+            "This path is absent from the current release; review whether to keep or "
+            "remove it by hand."
+        ):
+            raise VerificationError("upgrade adoption plan base-only reason is invalid")
+    ordered = [entry["path"] for entry in paths]
+    if ordered != sorted(ordered):
+        raise VerificationError("upgrade adoption plan paths are not sorted")
+    if current_paths != set(expected_current):
+        raise VerificationError("upgrade adoption plan does not cover current paths")
+    if summary_counts != summary or sum(summary.values()) != len(expected_current):
+        raise VerificationError("upgrade adoption plan current summary is inconsistent")
+    if upgrade_counts != upgrade_summary or sum(upgrade_summary.values()) != len(paths):
+        raise VerificationError("upgrade adoption plan upgrade summary is inconsistent")
+
+
 def _archive_members(
     artifacts: package_release.ReleaseArtifacts, locale: str
 ) -> dict[str, bytes]:
@@ -412,7 +619,11 @@ def _verify_published_e2e(
     release_url: str,
     version: str,
     artifacts: package_release.ReleaseArtifacts,
+    base_version: Optional[str] = None,
 ) -> None:
+    if base_version is not None:
+        base_version = installer._validated_base_version(base_version)
+        installer._require_older_base_version(base_version, version)
     installer_bytes = artifacts.files["installer.py"]
     expected_by_locale = {
         locale: _archive_members(artifacts, locale)
@@ -527,6 +738,51 @@ def _verify_published_e2e(
                     _tree_files(adoption_output / "artifact"),
                     prefix + " adopt artifact",
                 )
+                if base_version is not None:
+                    upgrade_output = base / (prefix + "-upgrade-adopt")
+                    _command(
+                        [
+                            sys.executable,
+                            "-B",
+                            str(installer_path),
+                            "adopt",
+                            *remote_arguments,
+                            "--base-version",
+                            base_version,
+                            "--repo-root",
+                            str(adoption_root),
+                            "--output",
+                            str(upgrade_output),
+                        ],
+                        cwd=base,
+                    )
+                    if _tree_snapshot(adoption_root) != before:
+                        raise VerificationError(
+                            "base-aware adopt modified the target repository"
+                        )
+                    try:
+                        upgrade_plan = json.loads(
+                            (upgrade_output / "adoption-plan.json").read_text(
+                                encoding="utf-8"
+                            )
+                        )
+                    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+                        raise VerificationError(
+                            "base-aware adopt did not write a valid plan"
+                        ) from exc
+                    _validated_upgrade_plan(
+                        upgrade_plan,
+                        expected_current=expected,
+                        repository=artifacts.manifest["repository"],
+                        current_version=version,
+                        base_version=base_version,
+                        locale=locale,
+                    )
+                    _compare_assets(
+                        expected,
+                        _tree_files(upgrade_output / "artifact"),
+                        prefix + " base-aware adopt artifact",
+                    )
                 if selector == version:
                     _check_artifact(repository_root, exported)
 
@@ -607,6 +863,7 @@ def verify_published(
     release_url: str,
     origin_remote: str,
     github_remote: str,
+    base_version: Optional[str] = None,
 ) -> None:
     """Verify an immutable latest release and exercise its public installer paths."""
 
@@ -614,6 +871,9 @@ def verify_published(
     version, source_commit, repository = _validated_identity(
         version, source_commit, repository
     )
+    if base_version is not None:
+        base_version = installer._validated_base_version(base_version)
+        installer._require_older_base_version(base_version, version)
     release_url = installer._validated_release_url(release_url)
     expected_repository = installer._github_repository(release_url)
     if expected_repository is None or expected_repository.casefold() != repository.casefold():
@@ -645,6 +905,7 @@ def verify_published(
         release_url=release_url,
         version=version,
         artifacts=artifacts,
+        base_version=base_version,
     )
     package_release.verify_source_revision(repository_root, source_commit)
     print(
@@ -678,6 +939,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     published.add_argument(
         "--release-url", required=True, help="GitHub Releases root URL"
     )
+    published.add_argument(
+        "--base-version",
+        help="older exact SemVer for optional base-aware adopt verification",
+    )
     args = parser.parse_args(argv)
     try:
         common = {
@@ -691,7 +956,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         if args.command == "candidate":
             verify_candidate(**common)
         else:
-            verify_published(release_url=args.release_url, **common)
+            verify_published(
+                release_url=args.release_url,
+                base_version=args.base_version,
+                **common,
+            )
     except (
         VerificationError,
         export_template.ExportError,

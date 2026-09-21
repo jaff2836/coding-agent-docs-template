@@ -8,7 +8,7 @@
 - **Source:** 2026-09-20 사용자 대화 — T-006·T-011 뒤 T-007 진행 요청
 - **Parent:** [제품 기준](../../00-PROJECT.md) D-006과 [기존 저장소 adoption SPEC](../2026-09-18-existing-repository-adoption/02-SPEC.md)
 - **Decision:** [PROJECT D-008](../../00-PROJECT.md#8-decisions)
-- **Approval:** Chae Sangwon, 2026-09-20 사용자 대화 — 권고 계약 승인, 계약 PR만 진행하고 구현은 별도 시작 요청 전까지 보류. 2026-09-21 사용자 대화 — PR #23 계약 보강 승인, 세 후속 아이디어는 Deferred 후보로만 기록
+- **Approval:** Chae Sangwon, 2026-09-20 사용자 대화 — 권고 계약 승인, 계약 PR만 진행하고 구현은 별도 시작 요청 전까지 보류. 2026-09-21 사용자 대화 — PR #23 계약 보강 승인, 세 후속 아이디어는 Deferred 후보로만 기록. Origin·GitHub `main` 동기화 뒤 구현 시작 요청
 - **Execution:** [03-PLAN.md](./03-PLAN.md)와 [전역 TODO](../../02-TODO.md)의 T-007
 
 ## 1. Intent
@@ -201,10 +201,11 @@ D-006의 대상 무변경, 검증된 staging, 자동 merge·overwrite 제외, ex
 - **회귀 검증:** 업그레이드 전 `claude-review-e2e` exact head와 `v2.0.0` base·`v2.1.0` current byte fixture에서 기존 수동 3-way 판정을 재현합니다.
 - **지원 검증:** `v2.1.0`을 적용한 consumer를 target으로 두고 `v2.1.0` base·공개 `v2.2.0` current의 새 report를 사람이 독립적으로 대조합니다.
 
-계약은 승인됐지만 구현은 시작하지 않았습니다. 구현은 별도 사용자 요청 뒤 [03-PLAN.md](./03-PLAN.md)의 미착수 작업부터 진행합니다.
+계약 구현 상태와 검증 근거는 [03-PLAN.md](./03-PLAN.md)가 소유합니다. 계약 승인과 구현·통합·공개 완료를 구분합니다.
 
 ## 3. 변경 기록
 
 - 2026-09-20: T-007 근거와 실제 `v2.0.0` schema 1·`v2.1.0` schema 2 경계를 확인하고 Draft를 작성했습니다. base installer 자동 실행 대신 base 전용 read-only compatibility parser를 권고합니다.
 - 2026-09-20: 사용자가 권고 계약을 승인했습니다. 독립적인 보안·report·실행 검토에서 경로 집합, format 2 호환, legacy validator, release·consumer 검증 경계를 보완했고 구현은 별도 시작 요청까지 보류했습니다.
 - 2026-09-21: PR #23 리뷰의 checksum 닫힌 집합, schema exact key, base 사용 전제, 두 summary 분모, stdout 순서와 격리 회귀 조건을 보강했습니다. 세 UX·provenance 아이디어는 현재 구현 범위와 분리한 Deferred 후보로 기록했습니다.
+- 2026-09-21: Origin PR #23 통합과 GitHub fast-forward 뒤 사용자가 W-001~W-004 구현 시작을 요청했습니다. 계약은 바꾸지 않고 실행 상태를 PLAN으로 넘겼습니다.
