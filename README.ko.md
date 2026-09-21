@@ -55,9 +55,9 @@ Windows PowerShell에서는 다음과 같이 실행합니다.
 python installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale ko --repo-root C:\path\to\existing-project --output C:\path\to\empty-directory
 ```
 
-`adopt`는 프로젝트에 아무것도 쓰지 않습니다. 검증된 locale 파일을 담은 `artifact/`와, 각 경로를 `missing`, `identical`, `merge`, `decision`(예: `LICENSE`), `blocked`로 분류한 `adoption-plan.json`을 만듭니다. 병합은 직접 또는 coding agent로 `artifact/docs/TEMPLATE_GUIDE.md`의 적용 절차에 따라 수행합니다. output 디렉터리는 프로젝트 밖이어야 하며, 삭제하면 적용이 취소됩니다. plan 형식은 실험적이며 minor release에서 바뀔 수 있습니다. `adopt`는 `v2.1.0` installer부터 제공합니다.
+`adopt`는 프로젝트에 아무것도 쓰지 않습니다. 검증된 locale 파일을 담은 `artifact/`와, 각 경로를 `missing`, `identical`, `merge`, `decision`(예: `LICENSE`), `blocked`로 분류한 `adoption-plan.json`을 만듭니다. 병합은 직접 또는 coding agent로 `artifact/docs/TEMPLATE_GUIDE.md`의 적용 절차에 따라 수행합니다. output 디렉터리는 프로젝트 밖이어야 하며, 삭제하면 적용이 취소됩니다. plan 형식은 실험적이며 minor release에서 바뀔 수 있습니다.
 
-installer `v2.2.0`부터 이미 적용한 프로젝트는 `--base-version <older-exact-semver>`을 추가해 과거 exact release, 현재 release와 작업 tree를 비교할 수 있습니다. 대상이 해당 exact base에서 유래한 경우에만 사용하고 최초 adoption에서는 생략합니다. format 2 report는 `base ∪ current` 경로를 `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, `blocked`로 분류합니다. 이 모드도 읽기 전용이며 파일을 자동 병합하거나 삭제하지 않습니다.
+exact release에서 적용한 프로젝트는 `--base-version <older-exact-semver>`을 추가해 해당 base release, 선택한 current release와 작업 tree를 비교할 수 있습니다. 대상이 해당 exact base에서 유래한 경우에만 사용하고 최초 adoption에서는 생략합니다. format 2 report는 `base ∪ current` 경로를 `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, `blocked`로 분류합니다. 이 모드도 읽기 전용이며 파일을 자동 병합하거나 삭제하지 않습니다.
 
 ### 4. 새 프로젝트에 설치하기
 
@@ -141,9 +141,11 @@ python3 scripts/verify-release.py published --version {{VERSION}} --source-commi
 - **`project-analysis`:** 명시적으로 요청된 프로젝트 전체를 기본 읽기 전용으로 근거 중심 분석하고 GO·조건부 GO·NO-GO·근거 부족 중 하나로 판단합니다.
 - **`review-round`:** 명시적으로 시작한 PR 리뷰·수정 라운드를 exact head 기준으로 진행하고, 설정한 gate 통과와 사용자 확인 후에만 merge합니다.
 
-`project-analysis`는 `v2.1.0`부터 번들 skill로 포함됩니다. `v2.0.0` artifact는 동일한 절차를 `docs/PROJECT_ANALYSIS.md` 문서로 제공합니다.
-
 Codex·Cursor·OMP는 `.agents/skills/`, Claude Code는 byte-identical한 `.claude/skills/` 복제본을 읽습니다.
+
+## 릴리스 노트
+
+버전별 변경 사항은 [한국어 릴리스 노트](./CHANGELOG.ko.md)에 기록합니다. [영문 릴리스 노트](./CHANGELOG.md)도 함께 제공합니다.
 
 ## License
 

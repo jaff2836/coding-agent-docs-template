@@ -90,3 +90,4 @@ D-004의 transport·source identity·게시 순서는 유지합니다. D-004가 
 - 2026-09-20: T-008 범위를 게시 전후 검증 전용 maintainer CLI로 확정하고 remote mutation과 특정 CI workflow를 제외했습니다.
 - 2026-09-20: unit test와 공개된 immutable `v2.1.0` 기준 실환경 `published` 검증을 수행했습니다.
 - 2026-09-20: PR #20 리뷰에 따라 candidate의 draft-aware 조회를 고정하고 published E2E가 package의 installer를 직접 실행하도록 수정했습니다.
+- 2026-09-21: `v2.1.1` exact source `0cfcc896ee92ec018d12c88f3f2638a154b35720`과 synchronized `main` `d821dec23b0e34295b96f9af0690ba15f2d33edb`에서 실제 draft candidate와 immutable published 검증이 통과했습니다. 검증된 5개 asset은 게시 전후 교체하지 않았습니다.

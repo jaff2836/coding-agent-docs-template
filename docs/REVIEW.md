@@ -164,7 +164,7 @@ P0와 P1은 end-to-end로 추적한 경우에만 부여합니다.
 
 | ID      | Scope       | Reason | Owner  | Expires/Revisit | Tracking       |
 | ------- | ----------- | ------ | ------ | --------------- | -------------- |
-| DFR-001 | `template/common/scripts/check-docs.py`가 적용 가이드 §3의 지원 범위 밖 Markdown 구문(Setext heading, 여러 줄에 걸친 링크 텍스트·reference definition, 지원하지 않는 HTML block 형식)을 해석하지 못해 생기는 오탐·미탐 | checker는 CommonMark 전체 parser가 아니며 템플릿 문서가 쓰는 형식만 지원하도록 범위를 문서화했습니다. 범위 안의 결함과 범위 문서와 코드의 불일치는 이 예외에 포함되지 않습니다. | Chae Sangwon | `v2.2.0` release 준비 시, 또는 범위 밖 구문을 쓰는 적용 저장소 문서가 확인될 때 | T-005 |
+| DFR-001 | `template/common/scripts/check-docs.py`가 적용 가이드 §3의 지원 범위 밖 Markdown 구문(Setext heading, 여러 줄에 걸친 링크 텍스트·reference definition, 지원하지 않는 HTML block 형식)을 해석하지 못해 생기는 오탐·미탐 | checker는 CommonMark 전체 parser가 아니며 템플릿 문서가 쓰는 형식만 지원하도록 범위를 문서화했습니다. 범위 안의 결함과 범위 문서와 코드의 불일치는 이 예외에 포함되지 않습니다. | Chae Sangwon | 공식 source가 범위 밖 구문을 사용하거나 적용 consumer에서 검증된 P1/P2 결함으로 재현될 때 | T-005, `v2.2.0` 준비 재검토 |
 <!-- 예시 형식입니다. 실제로 승인된 항목만 표에 추가하세요.
 | DFR-001 | 구체적 범위 | 이유   | 담당자 | YYYY-MM-DD      | 이슈 링크/번호 |
 -->

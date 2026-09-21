@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** `v2.1.1` checker·installer 진단 수정과 release 검증 운영
-- **Goal:** Origin `main`에 통합된 T-008·T-009를 patch release로 준비하고, 실제 draft와 immutable release에서 candidate·published 검증 경로를 확인
-- **Target:** `v2.1.1` GitHub Release와 T-008 candidate·published 운영 기록
-- **Status:** In Progress — T-008·T-009 구현과 T-007 W-001~W-004는 Origin `main`에 통합됐고, `v2.1.1` release 준비 PR과 draft 운영 검증이 남았습니다. `v2.1.1`은 T-007 구현 전 exact source commit을 사용하고 그 commit이 동기화된 `main`의 조상인지 T-008로 확인해야 합니다. 이전 마일스톤 `v2.1.0`은 2026-09-19 공개와 T-004·T-005 완료로 종료했습니다.
-- **다음 마일스톤:** `v2.1.1` 공개 뒤 T-007의 review 후속을 통합하고 `v2.2.0` W-005 공개·consumer 검증으로 진행합니다. 정책 결정 T-010은 별도 후보로 유지합니다.
+- **Name:** `v2.2.0` base-aware adoption 공개·consumer 검증
+- **Goal:** T-007 W-001~W-004와 review 후속을 release source로 정렬하고, immutable `v2.2.0`과 실제 consumer에서 base-aware upgrade report를 검증
+- **Target:** `v2.2.0` GitHub Release, en·ko published upgrade E2E와 v2.1 적용 consumer 독립 대조
+- **Status:** In Progress — `v2.1.1` candidate·published 검증과 공개를 완료했고, Origin·GitHub `main`은 PR #25 merge `d821dec23b0e34295b96f9af0690ba15f2d33edb`으로 동기화됐습니다. W-005의 source version·release notes 정렬과 공개·consumer 검증이 남았습니다.
+- **다음 마일스톤:** W-005 완료 뒤 정책 결정 T-010을 별도 후보로 유지합니다.
 
 ## 운영 규칙
 
@@ -35,33 +35,18 @@
 
 ## In Progress
 
-- [ ] **T-008 release 검증 절차 스크립트화** — Origin `main` 통합, 다음 draft 운영 검증 대기
-  - 변경-ID: `2026-09-20-release-verification`
-  - 결정: [PROJECT D-007](./00-PROJECT.md#8-decisions)과 [변경 문서](./changes/2026-09-20-release-verification/01-CHANGE.md)에 따라 tag·release mutation은 사람이 유지하고 candidate·published 검증만 자동화합니다.
-  - 구현 범위: clean exact-source gate, package 2회 byte 대조, Origin·GitHub `main`·annotated tag 대조, draft·published asset 대조, 공개 latest·exact의 모든 공식 locale `list-locales`·`install`·`export`·`adopt`와 source export 비교
-  - 현재 근거: Origin PR #20 merge commit `40306b65fe211402090d7a11b5c3ffafcb3689eb`에 통합됐습니다. 통합 `main`에서 unit test 12개를 포함한 전체 unittest 154개, root docs, stable locale, Python compile과 `git diff --check`가 통과했고, immutable Latest `v2.1.0`의 exact checkout에서 package의 installer를 실행하는 실환경 `published` 검증이 통과했습니다.
-  - 남은 한계: 현재 draft release가 없고 이를 임의로 만드는 것은 범위 밖이므로 candidate 성공 경로의 실환경 검증은 다음 release의 기존 draft에서 publish 전에 수행합니다. PR #24가 T-007 구현을 Origin `main`에 먼저 통합했으므로 `v2.1.1`은 기능 구현 전 exact source를 선택하고 두 remote `main` 동기화 뒤 그 조상 관계를 확인해야 합니다. 그동안 release source와 T-007이 통합된 `main`은 서로 다른 artifact를 같은 `2.1.1` version으로 표시하므로, `v2.1.1` 공개 직후 W-005에서 source version을 `2.2.0`으로 정렬합니다.
-  - 완료 조건: 다음 release 운영 기록에서 실제 draft의 candidate 성공 경로와 게시 후 published 경로를 확인합니다.
-
-- [ ] **T-009 checker·installer 확정 결함 수정** — Origin `main` 통합, `v2.1.1` release 준비 중
-  - 범위: `check_versions()`가 `docs/TEMPLATE_GUIDE.md`의 실제 부재만 허용하고 외부 symlink·비파일 entry를 오류로 보고합니다. manifest schema가 실행 중인 installer와 다르면 같은 release version의 `installer.py`를 사용하라는 복구 안내를 제공합니다.
-  - 근거: consumer PR #28의 pr-bot P3를 현재 checker에서 재현했고, `v2.0.0` installer와 `schema_version` 2 release를 조합하면 원인만 있고 복구 방법이 없는 오류를 확인했습니다.
-  - 현재 검증: checker test 51개, installer test 34개와 전체 unittest 154개가 통과했습니다. 외부 symlink·directory·실제 부재와 schema mismatch CLI 오류를 고정하는 회귀 테스트를 각각 추가했고, root docs·stable locale·en/ko export artifact checker와 각 artifact test 49개·Python compile·`git diff --check`가 통과했습니다.
-  - 비범위: skill metadata와 maintainer 가이드 동기화 정책은 T-010, `--base-version`과 adoption report 확장은 T-007이 소유합니다. version bump·package·draft·공개 release는 이 구현 단계에서 수행하지 않습니다.
-  - 완료 조건: `v2.1.1` release 준비 commit을 Origin·GitHub `main`에 통합하고, T-008 candidate·published gate로 tag·draft·immutable release를 검증합니다.
-
-- [ ] **T-007 이미 적용한 저장소의 업그레이드를 위한 `adopt` 분류 개선** — Origin 구현 통합, review 후속과 W-005 대기
+- [ ] **T-007 이미 적용한 저장소의 업그레이드를 위한 `adopt` 분류 개선** — W-005 release 준비·consumer 검증 진행 중
   - 변경-ID: `2026-09-20-adopt-upgrade-classification`
   - 결정·계획: [PROJECT D-008](./00-PROJECT.md#8-decisions), [승인된 계약](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md), [실행 PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md)
   - 계약: `adopt --base-version <older-exact-semver>`은 과거 installer를 실행하지 않고 exact base의 schema 1·2 asset을 읽기 전용으로 검증합니다. `base ∪ current` 경로를 target과 비교해 여섯 upgrade status를 format 2에 기록하되 base 없는 format 1, 대상 무변경, 자동 merge·삭제 없음은 유지합니다.
-  - 현재 상태: W-001~W-004는 Origin PR #24 merge commit `564c1bf5ca36115020fea0b346f95f13931171dd`에 통합됐습니다. C24-001 target ground-truth 검증과 C24-002 root 명령 문서 정합성을 `codex/t007-review-followups`에서 후속 처리하며 W-005 공개·consumer 검증은 남았습니다.
+  - 현재 상태: W-001~W-004는 Origin PR #24 merge `564c1bf5ca36115020fea0b346f95f13931171dd`, review 후속과 T-012는 PR #25 merge `d821dec23b0e34295b96f9af0690ba15f2d33edb`에 통합됐습니다. W-005의 source 정렬과 v2.0→v2.1 historical fixture 재현을 마쳤고 `v2.2.0` 공개·consumer 검증이 남았습니다.
   - 구현 선행조건: 충족. T-006 consumer 작업은 회귀 fixture 근거이며 기능 선행조건은 아닙니다.
   - 완료 조건: review 후속을 통합하고, 별도 release 위임 뒤 W-005에서 `v2.2.0` candidate·published gate, 과거 v2.0→v2.1 회귀 fixture와 v2.1→v2.2 consumer 원격 E2E를 완료합니다.
 
-- [ ] **T-012 release verifier의 remote `main` 객체·history 진단** — 로컬 구현·검증 완료, Origin 통합 전
+- [ ] **T-012 release verifier의 remote `main` 객체·history 진단** — Origin 통합, `v2.2.0` 운영 검증 대기
   - 근거: Origin PR #22 C22-002에서 `ls-remote`로 확인한 synchronized `main` commit 객체가 source checkout에 없을 때 `git merge-base --is-ancestor` exit 128을 실제 비조상 관계로 잘못 보고하는 경로를 재현했습니다.
   - 범위: ancestry 검사 전에 `git cat-file -e <main>^{commit}`으로 remote `main` commit 객체의 로컬 존재를 확인합니다. 없으면 자동 fetch나 remote mutation 없이 fetch가 필요하다는 별도 `VerificationError`를 냅니다. ancestry 검사가 실패한 shallow repository는 history 부족 진단으로 구분하되, 필요한 history가 있어 검사가 성공하는 shallow repository는 허용하고 실제 비조상 관계의 기존 오류는 유지합니다.
-  - 현재 검증: `codex/t007-review-followups` 작업 트리에서 object 부재, history가 부족한 shallow repository, 충분한 history가 있는 성공 경로와 실제 비조상 fixture를 분리했습니다. verifier test 16개, 전체 unittest 166개, root docs, stable locale, Python compile과 `git diff --check`가 통과했습니다.
+  - 현재 검증: PR #25 head `4366c2a04986aaabb63056db7486ec7ed644998b`에서 object 부재, history가 부족한 shallow repository, 충분한 history가 있는 성공 경로와 실제 비조상 fixture를 분리했고 merge `d821dec23b0e34295b96f9af0690ba15f2d33edb`에 통합됐습니다. verifier test 16개, 전체 unittest 166개, root docs, stable locale, Python compile과 `git diff --check`가 통과했습니다. `v2.1.1` exact source의 구 verifier에서는 실제 candidate 첫 실행에서 main object 부재 오진을 재확인했고 object fetch 뒤 candidate·published가 통과했습니다.
   - 완료 조건: 이 후속이 Origin `main`에 통합되고 candidate·published 성공 경로가 유지됩니다.
 
 ## Next
@@ -79,7 +64,6 @@ T-010은 `v2.1.0` 작업에서 드러난 미승인 후보입니다. T-009의 실
   - `project-analysis` skill의 `Owner`·`Last reviewed` placeholder를 템플릿 소유 skill에서 제거할지, 적용 시 두 skill 사본을 함께 채우는 현재 계약을 유지할지 정합니다.
   - root `docs/TEMPLATE_GUIDE.md`·`docs/DOCS_GUIDE.md`를 locale 가이드의 복제본으로 계속 동기화할지, locale 가이드 링크와 maintainer 전용 내용만 남길지 정합니다.
   - 이 단위는 확정 결함 T-009의 `v2.1.1` patch를 지연시키지 않으며, artifact 계약이 바뀌면 별도 SemVer 범위를 결정합니다.
-- [ ] `v2.2.0` 준비 시 [REVIEW.md](./REVIEW.md) §9 DFR-001(checker Markdown 지원 범위 밖 구문) 재검토
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
 
 ## Cancelled
@@ -118,6 +102,18 @@ T-010은 `v2.1.0` 작업에서 드러난 미승인 후보입니다. T-009의 실
 - [x] **T-006 consumer PR #28 마무리 (외부 저장소 `jaff2836/claude-review-e2e`)**
   - 통합 결과: `v2.1.0` `adopt` report를 반영한 PR #28 exact head `4b3987dad933142a192ebee08aea7c525a7681da`를 GitHub `main` merge commit `26c531beb65eaef8f524a00bcf8f06c52445c3d8`에 통합했습니다. 처리된 7개 review thread를 모두 해소했고 template 저장소로 이관한 P3는 T-009에 반영했습니다.
   - 검증 근거: exact head에서 Claude workflow #8과 jaff2836-pr-reviewer가 approve했고 네 job이 통과했습니다. 통합 `main`에서 checker test 48개, docs checker, Python compile과 `git diff --check`가 통과했으며 기존 `.github/`·`src/`는 PR에서 변경되지 않았습니다. 로컬 `.env`는 존재하지 않았고 통합된 `.gitignore`가 `.env`를 제외합니다.
+
+- [x] **T-008 release 검증 절차 스크립트화**
+  - 변경-ID: `2026-09-20-release-verification`
+  - 통합·운영 결과: Origin PR #20 merge `40306b65fe211402090d7a11b5c3ffafcb3689eb`의 검증 CLI로 `v2.1.1` exact source `0cfcc896ee92ec018d12c88f3f2638a154b35720`의 실제 draft candidate와 immutable published 경로를 확인했습니다. 게시 시 양쪽 `main`은 `d821dec23b0e34295b96f9af0690ba15f2d33edb`으로 같았고 5개 asset을 교체하지 않았습니다.
+  - 검증 근거: candidate·published가 모두 통과했고 published는 latest·exact의 en·ko `list-locales`·`install`·`export`·`adopt`, source export와 target 불변을 확인했습니다. release는 `isDraft=false`, `isImmutable=true`, Latest입니다.
+
+- [x] **T-009 checker·installer 확정 결함 수정**
+  - 통합·공개 결과: checker의 선택 파일 경계와 installer schema mismatch 복구 진단을 포함한 exact source `0cfcc896ee92ec018d12c88f3f2638a154b35720`을 annotated tag `v2.1.1`과 immutable GitHub Release로 공개했습니다.
+  - 검증 근거: exact source의 전체 unittest 154개, root docs, stable locale, Python compile, `git diff --check`, 두 번 생성한 5개 package byte 동일성과 T-008 candidate·published gate가 통과했습니다.
+
+- [x] **DFR-001 `v2.2.0` 준비 재검토**
+  - 결과: 공식 locale source는 적용 가이드 §3의 지원 Markdown 범위만 사용하고 full CommonMark parser가 필요한 새 결함 근거가 없어 현재 범위를 유지합니다. 범위 밖 구문이 공식 source에 들어가거나 적용 consumer에서 검증된 P1/P2 결함으로 재현되면 다시 검토합니다.
 
 - [x] **T-011 release verifier adoption plan 진단 강화**
   - 통합 결과: malformed `adoption-plan.json`을 일관된 `VerificationError`로 진단하고 공개 plan v1의 status 계약을 verifier checkout의 installer와 분리한 구현을 Origin PR #22 merge commit `62d1de45d9eb9c8c0387b3f2c4007fcc17480a21`에 통합했습니다. 리뷰에서 확인한 기존 ancestry 진단 결함은 T-012로 분리했습니다.

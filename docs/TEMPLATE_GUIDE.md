@@ -7,7 +7,7 @@ v2 source root는 적용 payload가 아니므로 직접 복사하지 않습니�
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.1.1
+- **Template version:** 2.2.0
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -281,6 +281,14 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v2.2.0 — base-aware adoption report
+
+- `adopt --base-version <older-exact-semver>`은 과거 installer를 실행하지 않고 이전 exact release를 검증해 base release, current release와 target tree를 비교합니다.
+- 선택형 format 2 report는 `base ∪ current` 경로를 `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, `blocked`로 분류하며 대상 파일을 자동 병합하거나 삭제하지 않습니다.
+- release verifier는 공개 `en`·`ko` upgrade 경로와 format 2 불변식을 검사합니다.
+- 이번 판의 artifact에서 적용 저장소에 반영할 변경은 `docs/TEMPLATE_GUIDE.md`와 `docs/DOCS_GUIDE.md` 두 문서이며, `--base-version` 기능은 선택한 release의 `installer.py`가 제공합니다.
+- 적용 저장소에서 확인할 것: 대상이 지정한 exact base에서 유래했을 때만 `--base-version`을 사용하고 `diverged`·`blocked`·base-only 경로를 직접 검토하세요.
 
 ### v2.1.1 — 문서 checker와 installer 진단 수정
 

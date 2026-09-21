@@ -55,9 +55,9 @@ On Windows PowerShell:
 python installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root C:\path\to\existing-project --output C:\path\to\empty-directory
 ```
 
-`adopt` never writes to the project. It creates `artifact/` with the verified locale files and `adoption-plan.json`, which marks each path as `missing`, `identical`, `merge`, `decision` (for example `LICENSE`), or `blocked`. Merge the files yourself or with a coding agent by following the adoption steps in `artifact/docs/TEMPLATE_GUIDE.md`. The output directory must be outside the project; delete it to cancel. The plan format is experimental and may change in a minor release. `adopt` is available from installer `v2.1.0`.
+`adopt` never writes to the project. It creates `artifact/` with the verified locale files and `adoption-plan.json`, which marks each path as `missing`, `identical`, `merge`, `decision` (for example `LICENSE`), or `blocked`. Merge the files yourself or with a coding agent by following the adoption steps in `artifact/docs/TEMPLATE_GUIDE.md`. The output directory must be outside the project; delete it to cancel. The plan format is experimental and may change in a minor release.
 
-Beginning with installer `v2.2.0`, an already adopted project can compare an older exact release, the current release, and its working tree by adding `--base-version <older-exact-semver>`. Use this only when the target was derived from that exact base; omit it for a first adoption. The format 2 report classifies the `base ∪ current` paths as `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, or `blocked`. It remains read-only and never merges or deletes files automatically.
+For a project previously adopted from an exact release, add `--base-version <older-exact-semver>` to compare that base release, the selected current release, and the working tree. Use this only when the target was derived from that exact base; omit it for a first adoption. The format 2 report classifies the `base ∪ current` paths as `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, or `blocked`. It remains read-only and never merges or deletes files automatically.
 
 ### 4. Install into a new project
 
@@ -141,9 +141,11 @@ See the [Template Guide](./docs/TEMPLATE_GUIDE.md) for the complete structure an
 - **`project-analysis`:** performs an explicitly requested, evidence-based whole-project assessment in read-only mode by default and reaches a GO, conditional, no-go, or insufficient-evidence decision.
 - **`review-round`:** runs an explicitly invoked review/fix cycle against the exact PR head and merges only after the configured gate passes and the user confirms.
 
-`project-analysis` is a bundled skill from `v2.1.0`. The `v2.0.0` artifacts provide the same process as `docs/PROJECT_ANALYSIS.md`.
-
 Codex, Cursor, and OMP load the `.agents/skills/` copies; Claude Code loads the byte-identical `.claude/skills/` copies.
+
+## Release notes
+
+Version-specific changes are recorded in the [release notes](./CHANGELOG.md). A [Korean version](./CHANGELOG.ko.md) is also available.
 
 ## License
 
