@@ -18,7 +18,7 @@
 - **Goal:** D-009에 따라 locale guide를 artifact 정본으로 정리하고 skill Metadata 제거와 선택형 changelog 안내를 en·ko artifact에 배포
 - **Target:** Origin `main` 통합 뒤 `v2.3.0` immutable GitHub Release와 en·ko 공개 경로 검증
 - **Status:** Completed — Origin PR #28 merge `5066d821084545554588182f5250cc9dea12e444`을 양쪽 `main`에 동기화하고 같은 commit의 immutable Latest `v2.3.0`을 공개했습니다. published gate의 임시 fixture에서 latest·exact en·ko install·export·adopt와 `v2.2.0` base-aware 경로를 검증했으며, 별도 적용 저장소 대조를 뜻하지 않습니다.
-- **다음 마일스톤:** T-015 Windows release 도구 호환성 수정을 우선 검토하고, T-016의 `install` 대상 계약은 Draft 설계 합의 뒤 진행합니다. 운영 회귀 방지와 review ID 정리, community locale은 Backlog 후보로 유지합니다.
+- **다음 마일스톤:** T-015 Windows release 도구 호환성 수정을 진행 중이며, T-016의 `install` 대상 계약은 Draft 설계 합의 뒤 진행합니다. 운영 회귀 방지와 review ID 정리, community locale은 Backlog 후보로 유지합니다.
 
 ## 운영 규칙
 
@@ -35,15 +35,21 @@
 
 ## In Progress
 
-없음.
-
-## Next
-
 - [ ] **T-015 Windows release 도구 호환성 수정**
+  - 기준: Origin `main` merge `430de821db02d63808bcf520e7f1a6f8706db264`에서 `codex/t015-windows-release-compatibility` 작업 트리로 진행합니다.
   - 출처: 2026-09-22 사용자 제공 전체 프로젝트 리뷰, 기준 `5066d821084545554588182f5250cc9dea12e444`의 F-001·F-002와 검증 보완 항목
   - 확인된 증상: F-001은 Windows의 `Path` 정렬이 POSIX 상대 경로 문자열 inventory 순서와 달라 정상 source에서도 `exported member inventory differs`로 packaging이 중단됩니다. F-002는 정상 Windows 파일 mode가 `0666`으로 관찰될 때 verifier가 POSIX `0644`와 무조건 비교해 `verification file mode is not 0644`로 실패합니다.
-  - 범위: artifact member를 POSIX 상대 경로 문자열로 정렬해 manifest 순서와 맞추고, 설치·export tree의 실제 mode 검사를 OS 의미에 맞게 분리하되 ZIP의 Unix mode `0644` 계약은 유지합니다. Windows checkout·fixture의 LF를 명시하고 symlink capability 부재의 skip/error 처리를 테스트 전반에서 일관되게 정리합니다.
-  - 완료 조건: Linux 기존 회귀와 Windows en·ko package 2회 byte 동일성, 정상 published E2E, POSIX mode 위반·ZIP metadata 변조 실패가 모두 확인돼야 합니다. 특정 CI runner 설정 추가는 별도 사용자 지정 전까지 범위 밖입니다.
+  - [x] artifact member를 POSIX 상대 경로 문자열로 정렬하고 native path 정렬 차이를 모사하는 회귀를 추가했습니다.
+  - [x] 설치·export tree는 Windows에서 writable 의미를, 그 밖의 플랫폼에서 정확한 `0644`를 검사하며 ZIP의 Unix mode `0644` 계약은 유지했습니다.
+  - [x] `.gitattributes`로 text checkout의 LF를 고정하고 LF fixture·materialized mode assertion을 플랫폼 의미에 맞췄습니다.
+  - [x] symlink fixture는 `NotImplementedError`와 Windows `WinError 1314`만 skip하고 다른 `OSError`는 실패시키며, artifact checker의 symlink 검증을 일반 경로 검증과 분리했습니다.
+  - [x] Linux 관련 회귀, 전체 unittest, root docs, stable locale과 `git diff --check`를 통과했습니다.
+  - [x] commit `556c434`의 native Windows·Python 3.14.7에서 문서·stable locale·LF checkout·file mode와 en·ko package 2회 5개 asset byte 동일성을 확인했습니다.
+  - [ ] symlink fixture 보완 head의 native Windows 전체 unittest와 en·ko export artifact test를 확인합니다.
+  - [ ] 후속 patch release 공개 뒤 그 release의 native Windows published E2E를 확인합니다. immutable `v2.3.0`은 수정 전 artifact test를 포함하므로 이 branch의 완료 gate로 소급 사용하지 않습니다.
+  - [ ] Origin 통합과 후속 release 범위를 확정합니다. 특정 CI runner 설정 추가는 별도 사용자 지정 전까지 범위 밖입니다.
+
+## Next
 
 - [ ] **T-016 새 프로젝트 `install` 대상 계약 정합화**
   - 변경-ID: `2026-09-22-install-target-contract`, [Draft 변경 설계](./changes/2026-09-22-install-target-contract/01-CHANGE.md)
@@ -58,6 +64,7 @@
 
 - [ ] **T-013 D-009 운영 계약 회귀 방지** — `project-analysis`에 한정한 source root↔`locales/ko` 사본 동등성 검사, source/artifact checker CLI 경계와 source changelog의 공개 전 heading 예외 문서화, locale별 placeholder 검색 어휘의 단일 출처·검증 방식을 함께 설계합니다. `design`·`review-round` skill 사본은 같은 동등성 계약으로 일반화하지 않습니다.
 - [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다.
+- [ ] **T-017 Windows junction 경계 검증** — `Path.is_symlink()`가 Windows directory junction을 탐지하지 못해 installer의 `install`·`adopt`·`export` 대상 경계를 우회할 수 있다는 PR #30 C30-002를 native Windows에서 재현합니다. 지원 Python 범위에서 symlink와 junction을 함께 fail-closed로 처리하는 방법과 회귀 테스트를 설계한 뒤 별도 변경으로 진행합니다.
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
 
 ## Cancelled

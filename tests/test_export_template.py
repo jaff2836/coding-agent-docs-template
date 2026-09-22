@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import stat
 import subprocess
@@ -26,6 +27,25 @@ class ExportTemplateTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
+
+    def symlink_or_skip(
+        self, link: Path, target: str | Path, *, target_is_directory: bool = False
+    ) -> None:
+        try:
+            link.symlink_to(target, target_is_directory=target_is_directory)
+        except NotImplementedError as exc:
+            self.skipTest("symlink creation is unavailable: %s" % exc)
+        except OSError as exc:
+            if getattr(exc, "winerror", None) == 1314:
+                self.skipTest("symlink creation requires Windows privileges: %s" % exc)
+            raise
+
+    def assert_materialized_file_mode(self, path: Path) -> None:
+        mode = stat.S_IMODE(path.stat().st_mode)
+        if os.name == "nt":
+            self.assertTrue(mode & stat.S_IWRITE)
+        else:
+            self.assertEqual(mode, 0o644)
 
     def expected_paths(self) -> tuple[str, ...]:
         manifest = json.loads(
@@ -64,7 +84,7 @@ class ExportTemplateTests(unittest.TestCase):
                     )
                     target = output / relative
                     self.assertEqual(target.read_bytes(), (source_root / relative).read_bytes())
-                    self.assertEqual(stat.S_IMODE(target.stat().st_mode), 0o644)
+                    self.assert_materialized_file_mode(target)
 
                 completed = subprocess.run(
                     [
@@ -127,7 +147,7 @@ class ExportTemplateTests(unittest.TestCase):
         target = self.temp_root / "target"
         target.mkdir()
         output = self.temp_root / "linked-output"
-        output.symlink_to(target, target_is_directory=True)
+        self.symlink_or_skip(output, target, target_is_directory=True)
         with self.assertRaisesRegex(EXPORT_TEMPLATE.ExportError, "symlink"):
             EXPORT_TEMPLATE.export_locale(REPOSITORY_ROOT, "en", output)
         self.assertEqual(tuple(target.iterdir()), ())

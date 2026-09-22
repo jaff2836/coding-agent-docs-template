@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** Active — `v2.3.0` 문서 소유권 변경 공개·published gate 검증 완료, 다음 마일스톤 미선정
+- **Status:** Active — `v2.3.0` 공개 완료, T-015 Windows release 도구 호환성 수정 중
 - **Owner:** Chae Sangwon
 - **Last reviewed:** 2026-09-22
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
@@ -191,7 +191,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 ## 11. Open Questions
 
-`v2.3.0` 범위는 D-009와 T-010으로 완료됐습니다. 새로 확인한 T-016은 `install`을 새 대상 또는 빈 디렉터리에만 허용할지, artifact 경로와 겹치지 않는 기존 파일이 있는 대상도 허용할지 결정해야 합니다. 현재 README·locale guide와 D-006의 기존 저장소 `adopt` 경계는 전자를 지지하지만 [Draft 변경 설계](./changes/2026-09-22-install-target-contract/01-CHANGE.md)는 아직 승인되지 않았습니다. 운영 회귀 방지와 병렬 리뷰 ID 정리는 TODO의 후속 후보이며, `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
+`v2.3.0` 범위는 D-009와 T-010으로 완료됐습니다. 새로 확인한 T-016은 `install`을 새 대상 또는 빈 디렉터리에만 허용할지, artifact 경로와 겹치지 않는 기존 파일이 있는 대상도 허용할지 결정해야 합니다. root landing README의 약속과 D-006의 기존 저장소 `adopt` 경계는 전자(A안)를 지지하고, locale guide의 artifact 경로 충돌 설명과 현재 구현은 후자(B안)와 일치합니다. [Draft 변경 설계](./changes/2026-09-22-install-target-contract/01-CHANGE.md)는 아직 승인되지 않았습니다. 운영 회귀 방지와 병렬 리뷰 ID 정리는 TODO의 후속 후보이며, `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
 
 ## 12. Rejected or Deferred Ideas
 

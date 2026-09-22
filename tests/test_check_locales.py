@@ -37,6 +37,18 @@ class LocaleFixtureTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temporary.cleanup()
 
+    def symlink_or_skip(
+        self, link: Path, target: str | Path, *, target_is_directory: bool = False
+    ) -> None:
+        try:
+            link.symlink_to(target, target_is_directory=target_is_directory)
+        except NotImplementedError as exc:
+            self.skipTest("symlink creation is unavailable: %s" % exc)
+        except OSError as exc:
+            if getattr(exc, "winerror", None) == 1314:
+                self.skipTest("symlink creation requires Windows privileges: %s" % exc)
+            raise
+
     @property
     def manifest_path(self) -> Path:
         return self.root / "locales/manifest.json"
@@ -48,6 +60,7 @@ class LocaleFixtureTests(unittest.TestCase):
         self.manifest_path.write_text(
             json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
+            newline="\n",
         )
 
     def path(self, relative: str) -> Path:
@@ -199,14 +212,14 @@ class LocaleFixtureTests(unittest.TestCase):
         self.path("locales/fr/README.md").write_text("bonjour\n", encoding="utf-8")
         self.assert_error("undeclared locale source directory")
 
-    def test_symlink_and_non_lf_source_are_rejected(self) -> None:
+    def test_symlink_source_is_rejected(self) -> None:
         agents = self.path("locales/en/AGENTS.md")
         agents.unlink()
-        agents.symlink_to("README.md")
+        self.symlink_or_skip(agents, "README.md")
         self.assert_error("source contains symlink")
 
-        agents.unlink()
-        shutil.copy2(REPOSITORY_ROOT / "locales/en/AGENTS.md", agents)
+    def test_non_lf_source_is_rejected(self) -> None:
+        agents = self.path("locales/en/AGENTS.md")
         agents.write_bytes(agents.read_bytes().replace(b"\n", b"\r\n"))
         self.assert_error("must use LF line endings")
 

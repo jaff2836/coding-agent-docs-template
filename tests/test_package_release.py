@@ -10,6 +10,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest.mock import patch
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -49,9 +50,8 @@ class PackageReleaseTests(unittest.TestCase):
         )
         self.installer = self.repository / "scripts/installer.py"
         self.installer.parent.mkdir()
-        self.installer.write_text(
-            "#!/usr/bin/env python3\nraise SystemExit('fixture only')\n",
-            encoding="utf-8",
+        self.installer.write_bytes(
+            b"#!/usr/bin/env python3\nraise SystemExit('fixture only')\n"
         )
         self.kwargs = {
             "version": SOURCE_VERSION,
@@ -61,6 +61,18 @@ class PackageReleaseTests(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
+
+    def symlink_or_skip(
+        self, link: Path, target: str | Path, *, target_is_directory: bool = False
+    ) -> None:
+        try:
+            link.symlink_to(target, target_is_directory=target_is_directory)
+        except NotImplementedError as exc:
+            self.skipTest("symlink creation is unavailable: %s" % exc)
+        except OSError as exc:
+            if getattr(exc, "winerror", None) == 1314:
+                self.skipTest("symlink creation requires Windows privileges: %s" % exc)
+            raise
 
     def build(self) -> PACKAGE_RELEASE.ReleaseArtifacts:
         return PACKAGE_RELEASE.build_release_artifacts(self.repository, **self.kwargs)
@@ -98,6 +110,22 @@ class PackageReleaseTests(unittest.TestCase):
         for line in checksum_lines:
             digest, name = line.split("  ", 1)
             self.assertEqual(digest, _sha256(first.files[name]))
+
+    def test_artifact_members_use_posix_relative_path_order(self) -> None:
+        output = self.temp_root / "exported"
+        EXPORT_TEMPLATE.export_locale(
+            self.repository, "en", output, require_complete=True
+        )
+        path_type = type(output)
+
+        def casefolded_native_order(left: Path, right: Path) -> bool:
+            return left.as_posix().casefold() < right.as_posix().casefold()
+
+        with patch.object(path_type, "__lt__", casefolded_native_order):
+            members = PACKAGE_RELEASE._artifact_members(output)
+
+        actual = tuple(path for path, _ in members)
+        self.assertEqual(actual, tuple(sorted(actual)))
 
     def test_archives_have_exact_members_hashes_modes_and_timestamps(self) -> None:
         artifacts = self.build()
@@ -162,16 +190,6 @@ class PackageReleaseTests(unittest.TestCase):
             )
         self.assertEqual((occupied / "keep").read_text(encoding="utf-8"), "keep\n")
 
-        target = self.temp_root / "target"
-        target.mkdir()
-        linked = self.temp_root / "linked-release"
-        linked.symlink_to(target, target_is_directory=True)
-        with self.assertRaisesRegex(PACKAGE_RELEASE.ReleaseError, "symlink"):
-            PACKAGE_RELEASE.write_release_artifacts(
-                self.repository, linked, artifacts
-            )
-        self.assertEqual(tuple(target.iterdir()), ())
-
         unsafe = PACKAGE_RELEASE.ReleaseArtifacts(
             files={"../escape": b"bad"}, manifest={}
         )
@@ -181,6 +199,18 @@ class PackageReleaseTests(unittest.TestCase):
                 self.repository, unsafe_output, unsafe
             )
         self.assertFalse((self.temp_root / "escape").exists())
+
+    def test_rejects_a_symlink_output_without_touching_its_target(self) -> None:
+        artifacts = self.build()
+        target = self.temp_root / "target"
+        target.mkdir()
+        linked = self.temp_root / "linked-release"
+        self.symlink_or_skip(linked, target, target_is_directory=True)
+        with self.assertRaisesRegex(PACKAGE_RELEASE.ReleaseError, "symlink"):
+            PACKAGE_RELEASE.write_release_artifacts(
+                self.repository, linked, artifacts
+            )
+        self.assertEqual(tuple(target.iterdir()), ())
 
     def test_stable_gate_rejects_an_incomplete_required_locale(self) -> None:
         fixture = self.temp_root / "incomplete-repository"
@@ -199,6 +229,7 @@ class PackageReleaseTests(unittest.TestCase):
         manifest_path.write_text(
             json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
+            newline="\n",
         )
         with self.assertRaisesRegex(EXPORT_TEMPLATE.ExportError, "is not complete"):
             PACKAGE_RELEASE.build_release_artifacts(fixture, **self.kwargs)

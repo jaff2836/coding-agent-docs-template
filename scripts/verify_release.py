@@ -355,6 +355,17 @@ def _download_release_assets(
         return assets
 
 
+def _verify_tree_file_mode(mode: int, relative: str, platform_name: str) -> None:
+    if platform_name == "nt":
+        if mode & stat.S_IWRITE:
+            return
+        raise VerificationError(
+            "verification file is read-only on Windows: %s" % relative
+        )
+    if mode != FILE_MODE:
+        raise VerificationError("verification file mode is not 0644: %s" % relative)
+
+
 def _tree_files(root: Path) -> dict[str, bytes]:
     files: dict[str, bytes] = {}
     for path in sorted(root.rglob("*")):
@@ -365,8 +376,9 @@ def _tree_files(root: Path) -> dict[str, bytes]:
             continue
         if not path.is_file():
             raise VerificationError("verification tree contains a special file: %s" % relative)
-        if stat.S_IMODE(path.lstat().st_mode) != FILE_MODE:
-            raise VerificationError("verification file mode is not 0644: %s" % relative)
+        _verify_tree_file_mode(
+            stat.S_IMODE(path.lstat().st_mode), relative, os.name
+        )
         files[relative] = path.read_bytes()
     return files
 

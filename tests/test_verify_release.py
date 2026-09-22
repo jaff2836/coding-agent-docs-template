@@ -39,6 +39,20 @@ class VerifyReleaseTests(unittest.TestCase):
                 expected, {"one": b"1", "two": b"changed"}, "fixture"
             )
 
+    def test_tree_file_modes_follow_platform_semantics(self) -> None:
+        for mode in (0o644, 0o666):
+            VERIFY_RELEASE._verify_tree_file_mode(mode, "AGENTS.md", "nt")
+        with self.assertRaisesRegex(
+            VERIFY_RELEASE.VerificationError, "read-only on Windows"
+        ):
+            VERIFY_RELEASE._verify_tree_file_mode(0o444, "AGENTS.md", "nt")
+
+        VERIFY_RELEASE._verify_tree_file_mode(0o644, "AGENTS.md", "posix")
+        with self.assertRaisesRegex(
+            VERIFY_RELEASE.VerificationError, "mode is not 0644"
+        ):
+            VERIFY_RELEASE._verify_tree_file_mode(0o666, "AGENTS.md", "posix")
+
     def test_repeated_package_must_be_byte_identical(self) -> None:
         first = PACKAGE_RELEASE.ReleaseArtifacts(
             files={"asset": b"one"}, manifest={"version": VERSION}
