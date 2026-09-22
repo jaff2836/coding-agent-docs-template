@@ -123,7 +123,7 @@ base 모드는 과거 installer를 import하거나 실행하지 않고 historica
 
 format 2에서 `summary`는 current artifact 경로만 세고 `upgrade_summary`는 `base ∪ current` 합집합을 셉니다. current release에서 제거된 경로는 `policy`, `status`, `artifact_sha256`이 null인 채 upgrade 목록에만 나타나며 자동 삭제 대상으로 해석하지 않고 직접 검토합니다. staging된 `artifact/`에는 current release만 들어가며 어떤 분류도 자동 병합·덮어쓰기·삭제 권한을 주지 않습니다.
 
-새 프로젝트에는 존재하지 않거나 빈 대상에 `install`을 사용합니다. 대상에 artifact 경로가 하나라도 있으면 아무것도 쓰지 않고 중단합니다.
+새 프로젝트에는 존재하지 않는 경로나 빈 디렉터리에 `install`을 사용합니다. artifact와 무관한 경로를 포함해 대상에 파일이나 디렉터리가 하나라도 있으면 아무것도 쓰지 않고 중단하며 기존 저장소에는 `adopt`를 안내합니다.
 
 ```sh
 python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
@@ -150,7 +150,7 @@ python3 installer.py export --release-url https://github.com/jaff2836/coding-age
 12. [문서 운영 안내](./DOCS_GUIDE.md)의 Template Adoption Checklist로 적용 완료 여부를 확인합니다.
 13. CI를 쓰는 저장소는 [CI.md](./CI.md)의 워크플로와 체크리스트로 기존 러너에 품질 게이트를 연결합니다. GitHub Actions·Buildkite 등 특정 제품의 pipeline 파일은 이 템플릿이 포함하지 않습니다. 사용자가 러너를 지정하기 전에는 YAML을 새로 만들지 마세요. CI가 없으면 같은 게이트를 로컬에서 실행하고 미사용 이유를 기록합니다.
 
-기존 프로젝트에는 `install`을 바로 실행하지 말고 위의 `adopt` report와 `artifact/`를 기존 지침·문서·ignore 규칙과 비교하여 수동 병합하세요. installer는 같은 경로가 하나라도 있으면 전체 설치를 중단하며 `--force`, 자동 update, 자동 locale 전환을 제공하지 않습니다. 기존 코드, 프로젝트가 채운 값, 사용자 변경을 보존하고 적용·제외한 파일을 Template revision 기록 옆에 남깁니다. 문제가 생기면 작업 전 branch 또는 backup으로 되돌립니다.
+기존 프로젝트에는 `install`을 바로 실행하지 말고 위의 `adopt` report와 `artifact/`를 기존 지침·문서·ignore 규칙과 비교하여 수동 병합하세요. installer는 기존 경로가 artifact와 겹치지 않더라도 대상이 비어 있지 않으면 전체 설치를 중단하며 `--force`, 자동 update, 자동 locale 전환을 제공하지 않습니다. 기존 코드, 프로젝트가 채운 값, 사용자 변경을 보존하고 적용·제외한 파일을 Template revision 기록 옆에 남깁니다. 문제가 생기면 작업 전 branch 또는 backup으로 되돌립니다.
 
 공식 locale은 `en`과 `ko`입니다. 다른 언어가 필요하면 영어 artifact를 출발점으로 사용하고 [AGENTS.md](../AGENTS.md)의 Communication 정책과 프로젝트 소유 문서를 원하는 언어로 수정할 수 있습니다. 이 수동 변경을 공식 locale 지원이나 locale parity 검증으로 표시하지 마세요.
 

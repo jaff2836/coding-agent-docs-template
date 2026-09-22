@@ -71,7 +71,7 @@ Windows PowerShell에서는 다음과 같이 실행합니다.
 python installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale ko --repo-root C:\path\to\new-project
 ```
 
-`--locale`에는 `en` 또는 `ko`를 지정합니다. 설치 대상은 존재하지 않거나 비어 있어야 하며, 기존 파일이 하나라도 있으면 아무것도 쓰지 않습니다.
+`--locale`에는 `en` 또는 `ko`를 지정합니다. 설치 대상은 존재하지 않는 경로이거나 빈 디렉터리여야 합니다. artifact와 무관한 경로를 포함해 파일이나 디렉터리가 하나라도 있으면 아무것도 쓰지 않고 기존 저장소에는 `adopt`를 안내합니다.
 
 ### artifact만 export하기
 

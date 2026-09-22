@@ -14,6 +14,7 @@ import unittest
 import urllib.request
 import zipfile
 from pathlib import Path
+from unittest import mock
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -329,6 +330,7 @@ class InstallerTests(unittest.TestCase):
     def test_install_writes_the_verified_locale_into_the_target_root(self) -> None:
         base = self.publish()
         target = self.temp_root() / "project"
+        target.mkdir()
         completed = self.run_cli(
             "install",
             "--release-url",
@@ -394,18 +396,16 @@ class InstallerTests(unittest.TestCase):
 
     # -- target protection -------------------------------------------------
 
-    def test_install_refuses_conflicts_and_preserves_the_target_tree(self) -> None:
+    def test_install_refuses_a_nonempty_target_and_preserves_the_tree(self) -> None:
         base = self.publish()
         target = self.temp_root() / "project"
         target.mkdir()
-        existing = target / "AGENTS.md"
-        existing.write_bytes(b"# user document\n")
-        readme = target / "README.md"
-        readme.write_bytes(b"# user readme\n")
+        existing = target / "existing.txt"
+        existing.write_bytes(b"# unrelated user file\n")
         nested = target / "docs"
         nested.mkdir()
         (nested / "keep.txt").write_bytes(b"keep\n")
-        before = _tree_state(target)
+        before = _tree_snapshot(target)
         completed = self.run_cli(
             "install",
             "--release-url",
@@ -418,14 +418,36 @@ class InstallerTests(unittest.TestCase):
             str(target),
         )
         self.assertEqual(completed.returncode, 1)
-        self.assertIn("AGENTS.md", completed.stderr)
-        self.assertIn("README.md", completed.stderr)
-        self.assertIn("2 conflicting path(s)", completed.stderr)
+        self.assertIn("new path or an empty directory", completed.stderr)
         self.assertIn("run 'adopt'", completed.stderr)
-        self.assertEqual(existing.read_bytes(), b"# user document\n")
-        self.assertEqual(readme.read_bytes(), b"# user readme\n")
-        self.assertEqual((nested / "keep.txt").read_bytes(), b"keep\n")
-        self.assertEqual(_tree_state(target), before)
+        self.assertEqual(_tree_snapshot(target), before)
+        self.assertFalse((target / "AGENTS.md").exists())
+
+    def test_write_members_keeps_member_conflict_checks_as_defense_in_depth(self) -> None:
+        target = self.temp_root() / "project"
+        target.mkdir()
+        existing = target / "AGENTS.md"
+        existing.write_bytes(b"# user document\n")
+        before = _tree_snapshot(target)
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            INSTALLER._write_members(
+                target,
+                {"AGENTS.md": b"# agent contract\n", "README.md": b"# readme\n"},
+            )
+        self.assertIn("1 conflicting path(s)", str(context.exception))
+        self.assertIn("AGENTS.md", str(context.exception))
+        self.assertEqual(_tree_snapshot(target), before)
+
+    def test_install_fails_closed_when_target_emptiness_cannot_be_read(self) -> None:
+        target = self.temp_root() / "project"
+        target.mkdir()
+        before = _tree_snapshot(target)
+        with mock.patch.object(Path, "iterdir", side_effect=OSError("permission denied")):
+            with self.assertRaises(INSTALLER.InstallerError) as context:
+                INSTALLER._require_empty_install_target(target)
+        self.assertIn("cannot confirm that the install target is empty", str(context.exception))
+        self.assertIn("run 'adopt'", str(context.exception))
+        self.assertEqual(_tree_snapshot(target), before)
 
     def test_install_rejects_a_symlinked_target_root(self) -> None:
         base = self.publish()

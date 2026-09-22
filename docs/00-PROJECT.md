@@ -7,9 +7,9 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** Active — `v2.3.1` 공개와 T-015 지원 검증 완료, T-016 계약 결정 대기
+- **Status:** Active — `v2.3.1` 공개와 T-015 지원 검증 완료, D-010·T-016 구현 중
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-22
+- **Last reviewed:** 2026-09-23
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
 
 ## 1. Context
@@ -72,12 +72,12 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 | `locales/manifest.json` | baseline, locale 상태, common/localized output inventory | checker·exporter·packager가 사용 | Chae Sangwon |
 | 번들 skill | `design`, `project-analysis`, `review-round`의 조건부 절차를 tool별 고정 경로에 제공 | locale별 `.agents`·`.claude` byte-identical 사본과 skill fixture | Chae Sangwon |
 | locale exporter·packager | 단일-locale tree와 deterministic ZIP·manifest·checksum 생성 | complete locale source, 고정 installer source | Chae Sangwon |
-| 비파괴 installer | 명시한 GitHub Releases root의 manifest·checksum·locale ZIP을 검증하고 새 대상에 install하거나 빈 디렉터리로 export하며, 기존 저장소에는 `adopt`로 대상 밖 output에 artifact와 경로별 plan을 게시합니다. 선택형 exact base가 있으면 과거 코드를 실행하지 않고 base·current·target의 3-way upgrade 상태를 함께 분류합니다. | GitHub asset HTTPS redirect만 제한 허용, 기존 경로 충돌 시 전체 중단, `adopt`는 대상에 쓰거나 자동 병합·삭제하지 않음 | Chae Sangwon |
+| 비파괴 installer | 명시한 GitHub Releases root의 manifest·checksum·locale ZIP을 검증하고 새 경로 또는 빈 디렉터리에만 install하거나 빈 디렉터리로 export하며, 기존 저장소에는 `adopt`로 대상 밖 output에 artifact와 경로별 plan을 게시합니다. 선택형 exact base가 있으면 과거 코드를 실행하지 않고 base·current·target의 3-way upgrade 상태를 함께 분류합니다. | GitHub asset HTTPS redirect만 제한 허용, 비어 있지 않거나 읽을 수 없는 install 대상은 쓰기 전 전체 중단, `adopt`는 대상에 쓰거나 자동 병합·삭제하지 않음 | Chae Sangwon |
 | release 검증 도구 | 게시 후보의 local gate·재현 package·draft asset과 공개된 immutable Latest release의 모든 locale 경로를 읽기 전용으로 검증하며, 선택형 base-aware 공개 upgrade E2E도 검사 | clean exact-source checkout, `git`, `gh`, GitHub Releases | Chae Sangwon |
 
 ### Data Flow
 
-exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. packager는 `locales/manifest.json`의 adoption policy도 각 member에 materialize합니다(`schema_version` 2). installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고 경로 충돌·부분 실패를 거부하거나 rollback합니다. 기존 저장소에는 `adopt`가 같은 검증 후 artifact 경로만 list·lstat·read로 분류하고, 대상 밖의 빈 output에 `artifact/`와 실험적 `adoption-plan.json`을 원자적으로 게시합니다. 선택형 base-aware 경로는 더 낮은 exact SemVer의 schema 1·2 release를 과거 코드 실행 없이 별도 검증하고 `base ∪ current` 경로를 target과 비교한 format 2 report를 만듭니다. release 검증 도구는 사람이 만든 draft와 공개된 immutable release를 package byte·ref·공개 installer 경로와 대조할 뿐 tag나 release를 변경하지 않습니다. source root 자체는 배포하지 않습니다. `v2.0.0`·`v2.1.0`·`v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`은 실제 immutable GitHub Release에서 각 계약에 맞는 원격 E2E를 검증했습니다.
+exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. packager는 `locales/manifest.json`의 adoption policy도 각 member에 materialize합니다(`schema_version` 2). installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고, `install` 대상이 새 경로 또는 읽을 수 있는 빈 디렉터리인지 확인한 뒤 경로 충돌·부분 실패를 거부하거나 rollback합니다. 기존 저장소에는 `adopt`가 같은 검증 후 artifact 경로만 list·lstat·read로 분류하고, 대상 밖의 빈 output에 `artifact/`와 실험적 `adoption-plan.json`을 원자적으로 게시합니다. 선택형 base-aware 경로는 더 낮은 exact SemVer의 schema 1·2 release를 과거 코드 실행 없이 별도 검증하고 `base ∪ current` 경로를 target과 비교한 format 2 report를 만듭니다. release 검증 도구는 사람이 만든 draft와 공개된 immutable release를 package byte·ref·공개 installer 경로와 대조할 뿐 tag나 release를 변경하지 않습니다. source root 자체는 배포하지 않습니다. `v2.0.0`·`v2.1.0`·`v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`은 실제 immutable GitHub Release에서 각 계약에 맞는 원격 E2E를 검증했습니다.
 
 ### External Boundaries
 
@@ -143,6 +143,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | D-007 | 2026-09-20 | Accepted | release 준비를 candidate와 published의 두 읽기 전용 검증 단계로 자동화하고 tag·release mutation은 사람이 수행 | [release 검증 변경](./changes/2026-09-20-release-verification/01-CHANGE.md) | 수동 반복과 특정 CI 자동 게시를 기각; D-004의 transport·게시 경계를 유지하고 검증만 확장 | Chae Sangwon, 2026-09-20 대화 — T-008 진행 요청 |
 | D-008 | 2026-09-20 | Accepted | `adopt --base-version <older-exact-semver>`으로 검증된 base·current release inventory 합집합을 target과 3-way 분류하고 base 모드에만 experimental format 2 report를 제공 | [base-aware adoption 변경](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md) | 과거 installer 자동 실행, 모든 schema 일반 호환과 로컬 base path를 기각. base 전용 schema 1·2 검증, base 없는 format 1, 대상 무변경과 자동 merge·삭제 없음 유지; `v2.2.0` minor release | Chae Sangwon, 2026-09-20 대화 — 권고 계약 승인, 이후 별도 요청으로 구현 시작 |
 | D-009 | 2026-09-22 | Accepted | locale guide를 artifact 정본으로 두고 root guide는 maintainer addendum으로 축약하며, `project-analysis` Metadata를 제거하고 선택형 changelog 안내를 `v2.3.0` artifact에 추가 | [문서 소유권 변경](./changes/2026-09-22-documentation-ownership/01-CHANGE.md) | 수동 복제·생성 계층·root-only 안내·실제 changelog 자동 생성을 기각. 기존 프로젝트 문서 보존과 source/artifact별 release history 검증 유지 | Chae Sangwon, 2026-09-22 대화 — T-010 권고안과 `docs/` changelog 안내 승인 |
+| D-010 | 2026-09-23 | Accepted | 새 프로젝트용 `install`은 존재하지 않는 경로나 빈 디렉터리만 허용하고 비어 있지 않거나 emptiness를 확인할 수 없는 대상은 쓰기 전에 거부하며 기존 저장소에는 `adopt`를 안내 | [install 대상 계약 변경](./changes/2026-09-22-install-target-contract/01-CHANGE.md) | artifact 경로 충돌만 거부하는 기존 구현과 문서 완화를 기각. 겹치지 않는 파일이 있는 대상도 실패하지만 D-006의 `install`·`adopt` 역할과 사용자 tree 보존을 강제 | Chae Sangwon, 2026-09-23 대화 — A안 권고 뒤 계속 진행 승인 |
 
 중요한 결정이 많아지면 개별 ADR 문서로 분리하고 여기에는 링크와 요약만 남깁니다.
 
@@ -189,10 +190,11 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | `adopt` report를 자동 병합 승인으로 오해하거나 대상에 기록 | Medium | High | 대상 밖 output 강제, `decision` 분류, 실험적 report 표시와 대상 tree 불변 테스트 | 대상 before/after snapshot 차이 또는 `LICENSE` 무단 추가 |
 | base 비교를 위해 검증되지 않은 과거 installer를 실행하거나 legacy parser가 current 검증을 느슨하게 함 | Low | High | base installer는 opaque byte로만 검증, schema 1·2 exact-key parser를 base 경로에 격리, 나머지 schema fail-closed | subprocess/import 감시 실패, current 명령에서 legacy schema 수용 |
 | 수동 release gate에서 source·asset·remote 근거가 어긋남 | Medium | High | candidate는 exact source·두 remote·draft asset byte를, published는 immutable Latest asset과 package의 installer를 통한 공개 E2E를 각각 한 실행에 결합 | 단계별 검증 대상 SHA·version 불일치 또는 일부 locale 누락 |
+| 비어 있지 않은 기존 저장소에 `install`이 파일을 추가 | Medium | High | 새 경로·빈 디렉터리 preflight와 불변 snapshot 회귀, 기존 저장소에는 읽기 전용 `adopt` 안내 | 겹치지 않는 `existing.txt`가 있는 대상에서 install 성공 또는 tree 변경 |
 
 ## 11. Open Questions
 
-`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. T-016은 `install`을 새 대상 또는 빈 디렉터리에만 허용할지, artifact 경로와 겹치지 않는 기존 파일이 있는 대상도 허용할지 결정해야 합니다. root landing README의 약속과 D-006의 기존 저장소 `adopt` 경계는 전자(A안)를 지지하고, locale guide의 artifact 경로 충돌 설명과 현재 구현은 후자(B안)와 일치합니다. [Draft 변경 설계](./changes/2026-09-22-install-target-contract/01-CHANGE.md)는 아직 승인되지 않았습니다. Windows junction 경계와 지원 Python 범위는 T-017, 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
+`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. T-016의 `install` 대상 계약은 D-010으로 확정해 구현 중입니다. Windows junction 경계와 지원 Python 범위는 T-017, 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
 
 ## 12. Rejected or Deferred Ideas
 
@@ -211,5 +213,6 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | release 검증 자동화 | [2026-09-20-release-verification](./changes/2026-09-20-release-verification/01-CHANGE.md) | D-007이 D-004의 사람이 소유한 게시 경계를 유지하며 게시 전후 검증을 자동화 | maintainer release candidate와 공개 완료 검증 |
 | base-aware adoption 분류 | [2026-09-20-adopt-upgrade-classification](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md) | D-008이 D-006의 읽기 전용 report를 선택형 3-way upgrade 분류로 확장 | 기존 적용 저장소를 다음 exact release와 비교할 때 |
 | 문서 소유권과 changelog 안내 | [2026-09-22-documentation-ownership](./changes/2026-09-22-documentation-ownership/01-CHANGE.md) | D-009가 locale artifact 안내와 root maintainer 보충 문서의 소유권을 분리 | `v2.3.0` 문서 inventory·skill·checker 변경 |
+| 새 프로젝트 install 대상 계약 | [2026-09-22-install-target-contract](./changes/2026-09-22-install-target-contract/01-CHANGE.md) | D-010이 D-002·D-006의 `install`·`adopt` 역할 경계를 새 경로·빈 디렉터리 preflight로 명확화 | installer·root README·locale 적용 가이드 변경 |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.

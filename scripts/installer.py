@@ -803,6 +803,28 @@ def _resolve_target_root(path: Path) -> Path:
     return target
 
 
+def _require_empty_install_target(target: Path) -> None:
+    """Require install targets to be new paths or readable empty directories."""
+
+    if not target.exists():
+        return
+    try:
+        next(target.iterdir())
+    except StopIteration:
+        return
+    except OSError as exc:
+        raise InstallerError(
+            "cannot confirm that the install target is empty; refusing to modify it. "
+            "For an existing repository, run 'adopt' to stage the verified artifact with a "
+            "per-path adoption plan, or choose a new or empty directory: %s" % exc
+        ) from exc
+    raise InstallerError(
+        "install target must be a new path or an empty directory; refusing to modify the "
+        "non-empty target. For an existing repository, run 'adopt' to stage the verified "
+        "artifact with a per-path adoption plan."
+    )
+
+
 def _checked_member_target(root: Path, path: PurePosixPath) -> tuple[Path, bool]:
     """Return (absolute target, exists) and reject symlinked ancestor directories."""
 
@@ -935,6 +957,7 @@ def install(
     record = _selected_locale_record(manifest, locale)
     members = _verified_members(release_url, manifest, locale)
     target = _resolve_target_root(repo_root)
+    _require_empty_install_target(target)
     written = _write_members(target, members)
     return written
 
@@ -1389,7 +1412,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     install_parser = subparsers.add_parser("install", help="verify and install one locale into a project root")
     _add_remote_arguments(install_parser)
-    install_parser.add_argument("--repo-root", required=True, type=Path, help="target project root")
+    install_parser.add_argument(
+        "--repo-root",
+        required=True,
+        type=Path,
+        help="new or empty target project root",
+    )
     install_parser.add_argument("--locale", required=True, help="complete locale tag from the release manifest")
     install_parser.add_argument("--version", default=LATEST_VERSION, help="release version, or 'latest'")
 

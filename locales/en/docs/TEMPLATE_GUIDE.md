@@ -123,7 +123,7 @@ Base mode validates the historical release without importing or running its inst
 
 In format 2, `summary` still counts only current artifact paths, while `upgrade_summary` counts the `base ∪ current` union. A path removed from the current release appears only in the upgrade list with null `policy`, `status`, and `artifact_sha256`; review it by hand rather than treating it as an automatic deletion. The staged `artifact/` contains only the current release, and no classification authorizes an automatic merge, overwrite, or removal.
 
-For a new project, use `install` with a new or empty target. If any artifact path already exists in the target, it writes nothing and stops.
+For a new project, use `install` with a new path or an empty directory. If the target contains any file or directory, including paths unrelated to the artifact, it writes nothing and stops with guidance to use `adopt` for an existing repository.
 
 ```sh
 python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
@@ -150,7 +150,7 @@ python3 installer.py export --release-url https://github.com/jaff2836/coding-age
 12. Use the Template Adoption Checklist in the [Documentation Guide](./DOCS_GUIDE.md) to confirm adoption is complete.
 13. Repositories that use CI should connect the quality gates to their existing runner using the workflow and checklist in [CI.md](./CI.md). This template does not include product-specific pipeline files for GitHub Actions, Buildkite, or another runner. Do not create YAML until the user selects a runner. If the repository has no CI, run the same gates locally and record why CI is not used.
 
-For an existing project, do not run `install` directly into its tree. Compare the `adopt` report and `artifact/` above with the existing instructions, documents, and ignore rules, then merge them manually. The installer stops the entire installation if any target path exists and does not provide `--force`, automatic updates, or automatic locale switching. Preserve existing code, project-specific values, and user changes; record included and excluded files next to the Template revision. If something goes wrong, return to the pre-change branch or backup.
+For an existing project, do not run `install` directly into its tree. Compare the `adopt` report and `artifact/` above with the existing instructions, documents, and ignore rules, then merge them manually. The installer stops the entire installation when the target is not empty, even if its existing paths do not overlap the artifact, and does not provide `--force`, automatic updates, or automatic locale switching. Preserve existing code, project-specific values, and user changes; record included and excluded files next to the Template revision. If something goes wrong, return to the pre-change branch or backup.
 
 The official locales are `en` and `ko`. For another language, use the English artifact as a starting point and intentionally change the Communication policy in [AGENTS.md](../AGENTS.md) and the project-owned documents. Do not present this manual adaptation as an officially supported locale or as having passed locale-parity verification.
 

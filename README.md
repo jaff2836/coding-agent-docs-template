@@ -71,7 +71,7 @@ On Windows PowerShell:
 python installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root C:\path\to\new-project
 ```
 
-Set `--locale` to `en` or `ko`. The target must be new or empty; if any destination file already exists, the installer writes nothing.
+Set `--locale` to `en` or `ko`. The target must be a new path or an empty directory. If it contains any file or directory, including paths unrelated to the artifact, the installer writes nothing and directs existing repositories to `adopt`.
 
 ### Export the artifact only
 
