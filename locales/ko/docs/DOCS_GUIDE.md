@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.2.0
+- **Template version:** 2.3.0
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (미커밋 변경 포함 시 미확정)
 - **Owner:** 프로젝트에 맞게 작성
@@ -28,6 +28,7 @@
 | [REVIEW_ROUND.md](./REVIEW_ROUND.md) | 요청된 리뷰 라운드의 수정·통합 절차 | 사용자가 라운드를 시작할 때. 이전 인계 반영은 §9만 |
 | [`project-analysis`](../.agents/skills/project-analysis/SKILL.md) | 근거 기반 전체 프로젝트 분석과 도입 판단 | 명시적인 전체 분석 요청 |
 | [CI.md](./CI.md) | 러너 불문의 품질 게이트 순서·연결 확인 | CI를 붙이거나 로컬 게이트와 맞출 때 |
+| [CHANGELOG_GUIDE.md](./CHANGELOG_GUIDE.md) | 선택형 프로젝트 릴리스 노트의 경계와 관리 규칙 | 프로젝트 changelog를 도입하거나 갱신할 때 |
 
 `changes/_template/`의 [CHANGE](./changes/_template/01-CHANGE.md)·[INTENT](./changes/_template/01-INTENT.md)·[SPEC](./changes/_template/02-SPEC.md)·[PLAN](./changes/_template/03-PLAN.md)은 하나의 복사용 양식 묶음입니다. 템플릿을 프로젝트에 적용할 때는 네 파일을 모두 유지합니다. 실제 변경은 별도 변경-ID 폴더에서 관리하며, 그때는 변경 규모에 맞는 형식만 복사합니다. 양식 자체를 승인된 설계나 미완료 작업으로 집계하지 않습니다.
 
@@ -65,7 +66,7 @@
 | 최초 요청·요구 변화 | 변경 INTENT 또는 합본형 문서의 Intent 절 | 출처·링크 |
 | 변경 단위 우선순위·선행조건·통합 결과 | 전역 TODO | 관련 변경-ID |
 | 상세 작업·검증 상태 | 변경별 PLAN이 있으면 PLAN, 없으면 전역 TODO 항목 | 같은 체크박스·로그 복제 금지 |
-| 릴리스 완료 이력 | 기존 CHANGELOG가 있으면 CHANGELOG | TODO Completed는 근거 연결 |
+| 릴리스 완료 이력 | 기존 CHANGELOG가 있으면 CHANGELOG. [CHANGELOG_GUIDE.md](./CHANGELOG_GUIDE.md)를 따름 | TODO Completed는 근거 연결 |
 | 리뷰 판단·예외 | REVIEW | 도구별 필요한 복제본만 유지 |
 | 실행 명령 문자열 | AGENTS.md와 적용 프로젝트 README | CI 잡에만 있는 명령을 두지 않음 |
 | 품질 게이트 순서·연결 확인 | [CI.md](./CI.md) | 러너 YAML은 적용 프로젝트가 소유. 이 템플릿은 제공하지 않음 |
@@ -123,6 +124,7 @@
 
 - [ ] TEMPLATE_GUIDE의 이관 절차로 이전 파일명·절·코드·테스트·도구 참조를 확인했다.
 - [ ] 루트 README.md의 placeholder를 실제 프로젝트 사용법으로 바꿨고, 템플릿 source 저장소의 소개문을 복사하지 않았다.
+- [ ] 프로젝트에 root `CHANGELOG.md`가 필요한지 결정했고, 기존 형식이 있으면 보존했으며, [CHANGELOG_GUIDE.md](./CHANGELOG_GUIDE.md)에 따라 계획 작업을 공개 이력처럼 기록하지 않았다.
 - [ ] release installer를 사용했다면 최종 asset URL·exact version·locale을 확인했고, source checkout exporter를 사용했다면 exact source revision과 미커밋 변경 포함 여부를 기록했다.
 - [ ] 기존 프로젝트에는 `adopt`로 대상 밖 빈 디렉터리에 artifact와 report를 만들고 `merge`·`decision`·`blocked` 경로를 모두 처리해 수동 병합했으며, 기존 문서·명령·결정·라이선스를 자동 덮어쓰지 않았다.
 - [ ] 프로젝트 정보·명령·담당자·예시를 실제 값으로 교체했다. 원본 양식은 실제 작업으로 집계하지 않는다.

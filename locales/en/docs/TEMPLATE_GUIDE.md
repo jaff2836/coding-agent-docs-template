@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.2.0
+- **Template version:** 2.3.0
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -51,6 +51,7 @@ The template does not include an initialization script, review prompts or automa
 ├── .omp/
 │   └── WATCHDOG.md            # Optional: OMP advisor review priorities; imports REVIEW.md
 └── docs/
+    ├── CHANGELOG_GUIDE.md     # Boundaries for optional project release notes
     ├── DOCS_GUIDE.md          # Document index, operating rules, and adoption checklist
     ├── TEMPLATE_GUIDE.md      # This document: first-time adoption instructions
     ├── 00-PROJECT.md          # Product baseline, base design, decisions, and design index
@@ -136,6 +137,7 @@ python3 installer.py export --release-url https://github.com/jaff2836/coding-age
 
 1. In a new project created with `install`, or in a repository merged according to the `adopt` report, record its version and source commit in both guide documents as described in §5. Confirm that the artifact inventory includes the hidden `.agents/`, `.claude/`, `.cursor/`, and `.omp/` entries, `.gitignore`, and all four templates under `docs/changes/_template/`. Do not copy the source repository root directly.
 2. The root [README.md](../README.md) is already the project template in the selected locale. Fill in the project name, description, requirements, installation, execution and verification instructions, security guidance, and license.
+   Decide separately whether the project needs a root `CHANGELOG.md`. Preserve an existing format and follow [CHANGELOG_GUIDE.md](./CHANGELOG_GUIDE.md); the template does not create or overwrite that file.
 3. Adapt the project information and commands in [AGENTS.md](../AGENTS.md) to the actual repository. Confirm that they agree with the README's execution instructions.
 4. Replace the placeholders and example items listed below. When deleting the example invariant in [REVIEW.md](./REVIEW.md) or turning it into a real rule, also delete the `template-example:project-invariant` marker immediately above it.
 5. In [00-PROJECT.md](./00-PROJECT.md), distinguish the current product baseline from approved goals and link the sources of truth for existing designs. In [02-TODO.md](./02-TODO.md), record the integration target and change-level work items for the first milestone. If a change has a PLAN, keep its detailed work and verification status only in that PLAN. If there is no long-term extension, remove `10-EXTENSION.md` and incoming links to it.
@@ -339,6 +341,13 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v2.3.0 — Documentation Ownership and Changelog Guidance
+
+- Added locale-specific `docs/CHANGELOG_GUIDE.md` without creating a project-owned root changelog. It separates current README behavior, published release history, future TODO or PLAN work, and template provenance.
+- Removed project-specific Metadata placeholders from the bundled `project-analysis` skill.
+- The locale guides are the canonical artifact guidance; the source repository keeps only maintainer-specific addenda instead of manually duplicating the artifact guides.
+- When adopting this version, add the guide and related links, preserve any existing changelog format, replace both skill copies together, and rerun the documentation checks.
 
 ### v2.2.0 — Base-aware Adoption Reports
 

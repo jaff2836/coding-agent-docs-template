@@ -30,7 +30,9 @@ SPEC.loader.exec_module(CHECK_DOCS)
 def main(argv: Optional[Sequence[str]] = None) -> int:
     arguments = list(sys.argv[1:] if argv is None else argv)
     if arguments:
+        CHECK_DOCS.HISTORY_PATH = "docs/TEMPLATE_GUIDE.md"
         return CHECK_DOCS.main(arguments)
+    CHECK_DOCS.HISTORY_PATH = "CHANGELOG.md"
     return CHECK_DOCS.run_checks(
         REPOSITORY_ROOT,
         excluded_top_level=("locales", "template"),

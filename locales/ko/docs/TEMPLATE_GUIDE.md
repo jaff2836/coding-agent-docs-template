@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.2.0
+- **Template version:** 2.3.0
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -51,6 +51,7 @@
 ├── .omp/
 │   └── WATCHDOG.md            # 선택 사항: OMP advisor 전용 리뷰 우선순위. REVIEW.md를 import
 └── docs/
+    ├── CHANGELOG_GUIDE.md     # 선택형 프로젝트 릴리스 노트의 경계
     ├── DOCS_GUIDE.md          # 문서 인덱스·운영 규칙·적용 완료 체크리스트
     ├── TEMPLATE_GUIDE.md      # 이 문서: 최초 적용 방법
     ├── 00-PROJECT.md          # 제품 기준·기본 설계·결정·설계 인덱스
@@ -136,6 +137,7 @@ python3 installer.py export --release-url https://github.com/jaff2836/coding-age
 
 1. `install`한 새 프로젝트 또는 `adopt` report에 따라 병합한 저장소에서 §5에 따라 version·source commit을 두 안내 문서에 기록합니다. 숨김 항목인 `.agents/`, `.claude/`, `.cursor/`, `.omp/`와 `.gitignore`, `docs/changes/_template/`의 네 양식도 artifact inventory에 포함되었는지 확인하세요. source 저장소 root를 직접 복사하지 마세요.
 2. 루트 [README.md](../README.md)는 이미 선택한 locale의 적용 프로젝트 양식입니다. 프로젝트 이름, 설명, 요구사항, 설치·실행·검증 방법, 보안 안내 및 라이선스를 작성합니다.
+   프로젝트에 root `CHANGELOG.md`가 필요한지는 별도로 결정합니다. 기존 형식을 보존하고 [CHANGELOG_GUIDE.md](./CHANGELOG_GUIDE.md)를 따르며, 템플릿은 그 파일을 만들거나 덮어쓰지 않습니다.
 3. [AGENTS.md](../AGENTS.md)의 프로젝트 정보와 명령을 실제 저장소에 맞게 작성합니다. README의 실행 방법과 서로 일치하도록 확인하세요.
 4. 아래 placeholder와 예시 항목을 교체합니다. [REVIEW.md](./REVIEW.md)의 예시 불변조건을 삭제하거나 실제 규칙으로 바꿀 때는 바로 위 `template-example:project-invariant` marker도 함께 삭제합니다.
 5. [00-PROJECT.md](./00-PROJECT.md)에 현재 제품 기준과 승인된 목표를 구분하고 기존 설계의 정본을 연결합니다. [02-TODO.md](./02-TODO.md)에 통합 대상과 첫 마일스톤의 변경 단위 항목을 작성합니다. 변경별 PLAN이 있으면 상세 작업·검증 상태는 PLAN에만 둡니다. 장기 확장이 없으면 `10-EXTENSION.md`와 들어오는 링크를 제거합니다.
@@ -339,6 +341,13 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v2.3.0 — 문서 소유권과 changelog 안내
+
+- 프로젝트 소유 root changelog를 만들지 않고 locale별 `docs/CHANGELOG_GUIDE.md`를 추가했습니다. README의 현재 동작, 공개 릴리스 이력, TODO·PLAN의 미래 작업과 템플릿 provenance를 구분합니다.
+- 번들 `project-analysis` skill에서 프로젝트별 Metadata placeholder를 제거했습니다.
+- locale 안내 문서를 artifact 정본으로 삼고 source 저장소 root에는 이를 수동 복제하지 않는 maintainer 전용 보충 안내만 둡니다.
+- 이 판을 적용할 때 새 안내와 링크를 추가하고, 기존 changelog 형식을 보존하며, 두 skill 사본을 함께 교체한 뒤 문서 검사를 다시 실행하세요.
 
 ### v2.2.0 — base-aware adoption report
 

@@ -1,8 +1,17 @@
 # 릴리스 노트
 
+<!-- template-section:release-history -->
+
 [English](./CHANGELOG.md)
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
+
+## v2.3.0 — 문서 소유권과 changelog 안내
+
+- locale artifact에 `docs/CHANGELOG_GUIDE.md`를 추가해 README의 현재 동작, 공개 릴리스 이력, TODO·PLAN의 미래 작업과 템플릿 provenance를 구분하며 프로젝트 소유 root changelog는 만들지 않습니다.
+- 번들 `project-analysis` skill에서 프로젝트별 owner·검토일 metadata를 제거했습니다.
+- locale 가이드를 artifact 안내 정본으로 삼고 source root 가이드는 maintainer 전용 보충 내용만 유지합니다.
+- source와 artifact 문서 검사는 각 영역의 정본 릴리스 이력을 검증합니다.
 
 ## [v2.2.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.2.0) — base-aware adoption report
 

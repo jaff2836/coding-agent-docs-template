@@ -1,8 +1,17 @@
 # Release Notes
 
+<!-- template-section:release-history -->
+
 [한국어](./CHANGELOG.ko.md)
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
+
+## v2.3.0 — Documentation ownership and changelog guidance
+
+- Locale artifacts include `docs/CHANGELOG_GUIDE.md`, which separates current README behavior, published release history, future TODO or PLAN work, and template adoption provenance without creating a project-owned root changelog.
+- The bundled `project-analysis` skill no longer carries project-specific owner and review-date metadata.
+- Locale guides are the canonical artifact guidance; source-root guides contain only maintainer-specific addenda.
+- Source and artifact documentation checks validate their release histories from the appropriate canonical files.
 
 ## [v2.2.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.2.0) — Base-aware adoption reports
 

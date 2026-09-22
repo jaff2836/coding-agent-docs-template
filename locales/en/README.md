@@ -46,6 +46,7 @@ Run the documentation checker regression tests when changing `scripts/check-docs
 - [Template Guide](./docs/TEMPLATE_GUIDE.md): how to apply this template to a project for the first time
 - [AGENTS.md](./AGENTS.md): shared project instructions for AI development tools
 - [Documentation Guide](./docs/DOCS_GUIDE.md): documentation system, sources of truth, and template completion checklist
+- [Changelog Guide](./docs/CHANGELOG_GUIDE.md): boundaries and maintenance rules for optional project release notes
 - [00-PROJECT.md](./docs/00-PROJECT.md): product overview, base design, current and target structures, decisions, and design index
 - [01-DESIGN.md](./docs/01-DESIGN.md): pre-implementation design process for changes to structure or contracts
 - [02-TODO.md](./docs/02-TODO.md): project-wide changes, priorities, dependencies, and integration results

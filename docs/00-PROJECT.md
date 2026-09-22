@@ -7,9 +7,9 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** Active — `v2.2.0` base-aware adoption 공개·consumer 검증 완료, 다음 마일스톤 미선정
+- **Status:** Active — `v2.2.0` 공개 완료, D-009의 `v2.3.0` 문서 소유권 변경 구현 중
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-21
+- **Last reviewed:** 2026-09-22
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
 
 ## 1. Context
@@ -25,13 +25,14 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Current State
 
-- 공개 release 기준은 [immutable GitHub Release `v2.2.0`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.2.0)(2026-09-21 공개, Latest)이며 tag와 양쪽 `main`의 commit은 `70a5a7a9e97fa5a89609a120ad69bced7e8ae1ac`입니다. T-008 candidate·published gate에서 교체하지 않은 5개 asset, latest·exact의 en·ko install/export/adopt와 `v2.1.0` base-aware upgrade 경로를 확인했습니다. 이전 release는 그대로 유지되며 exact version에 맞는 자기 installer로만 설치할 수 있습니다.
+- 공개 release 기준은 [immutable GitHub Release `v2.2.0`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.2.0)(2026-09-21 공개, Latest)이며 tag commit은 `70a5a7a9e97fa5a89609a120ad69bced7e8ae1ac`입니다. release 완료 기록을 통합한 뒤 양쪽 `main`은 그 후손 `7121c51698a38a24fe371c537a246ab943dc6db5`에 동기화됐습니다. T-008 candidate·published gate에서 교체하지 않은 5개 asset, latest·exact의 en·ko install/export/adopt와 `v2.1.0` base-aware upgrade 경로를 확인했습니다. 이전 release는 그대로 유지되며 exact version에 맞는 자기 installer로만 설치할 수 있습니다.
 - W-001의 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source 분리는 Origin PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에 통합됐습니다.
 - W-002의 `locales/en`·locale별 skill S2 계약과 W-003 locale/artifact 검사는 각각 Origin PR #4·#5에 통합됐습니다. `en`·`ko` source는 모두 `complete`입니다.
 - W-004 exporter·packager는 Origin PR #6 merge commit `f60ae97`, W-005 비파괴 installer는 PR #7 merge commit `9d4637d`, W-006 적용 문서는 PR #8 merge commit `60638ed`에 통합됐습니다.
 - W-007은 `60638ed` exact head에서 `en`·`ko` package/install/export와 Claude·Codex·Cursor·OMP의 실제 로딩 probe를 통과했습니다. D-004 공개 gate에서는 tag commit의 102개 테스트·docs·stable locale, deterministic package와 기존 draft asset byte 동일성, 실제 GitHub HTTPS latest·exact 설치를 추가로 확인했습니다.
 - `project-analysis` locale별 skill(D-005, PR #12), 기존 저장소용 읽기 전용 `adopt`와 adoption policy·release manifest schema 2(D-006, PR #14~#16), 강화된 artifact `check-docs.py`(T-005, PR #17)가 `v2.1.0` asset에 포함됐습니다.
 - D-008의 base-aware `adopt`와 release verifier 후속은 Origin PR #24·#25, release 준비는 PR #26 merge `70a5a7a9e97fa5a89609a120ad69bced7e8ae1ac`로 통합됐습니다. 공개 en·ko upgrade E2E와 `claude-review-e2e@26c531beb65eaef8f524a00bcf8f06c52445c3d8`의 v2.1→v2.2 report 독립 대조를 통과했고 consumer tree는 바뀌지 않았습니다.
+- D-009는 locale artifact guide를 적용 안내 정본으로 두고 root guide를 maintainer addendum으로 줄이며, 선택형 프로젝트 changelog 안내와 skill Metadata 제거를 `v2.3.0` 목표로 확정했습니다. 아직 통합된 현재 지원 범위가 아니며 실행 상태는 T-010이 소유합니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -124,6 +125,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | 공개 배포 | GitHub Releases transport와 v2.0.0 게시 | W-007, D-004 | 공개된 tag·asset은 교체하지 않고 결함 시 patch release | `v2.0.0` tag `8bc8b1b`, immutable release와 [W-003·W-004 검증](./changes/2026-09-18-github-releases-publication/03-PLAN.md) |
 | 기존 저장소 adoption | adoption policy, release manifest schema 2, `adopt`, 기존 저장소 우선 문서와 `v2.1.0` 게시 | D-006, T-005 checker 강화 | `install`·`export` CLI 유지; 결함 시 `adopt`·policy를 제거한 patch release | PR #14~#18, `v2.1.0` tag `36a123f` immutable release와 [adoption PLAN](./changes/2026-09-18-existing-repository-adoption/03-PLAN.md) W-004 원격 E2E |
 | base-aware adoption 분류 | exact base 검증, 3-way 분류, format 2 report와 `v2.2.0` 지원 검증 | D-008, T-011 뒤 구현·review 후속 통합 | base 없는 format 1 유지; 과거 installer 비실행; 자동 merge·삭제 없음; `--base-version` 생략으로 rollback | Origin PR #24~#26, `v2.2.0` tag `70a5a7a`, [base-aware adoption PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md) W-001~W-005 |
+| 문서 소유권과 changelog 안내 | locale guide 정본화, root maintainer addendum, skill Metadata 제거, 선택형 changelog 안내 | D-009 승인, T-010 branch 구현·검증 | 기존 프로젝트 changelog 보존; 새 안내 경로 제거와 checker 기본값 복원으로 rollback | [문서 소유권 변경](./changes/2026-09-22-documentation-ownership/01-CHANGE.md) R-001~R-006; Origin 통합·`v2.3.0` 공개는 대기 |
 
 ## 8. Decisions
 
@@ -139,6 +141,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | D-006 | 2026-09-19 | Accepted | 기존 저장소를 주 adoption 시나리오로 두고 `installer.py adopt`로 검증된 staging tree와 읽기 전용 실험적 adoption report를 제공. 경로별 policy는 `locales/manifest.json`이 소유하고 release manifest `schema_version` 2에 materialize | [기존 저장소 adoption SPEC](./changes/2026-09-18-existing-repository-adoption/02-SPEC.md) | 문서만 보강, 자동 추가·overwrite, installer 내장 policy, 공개 report schema, agent prompt를 기각. D-002의 수동 merge 계약을 확장하고 D-004 transport는 유지; `v2.1.0` minor release | Chae Sangwon, 2026-09-19 대화 — 결정 1~7 권고안 승인 |
 | D-007 | 2026-09-20 | Accepted | release 준비를 candidate와 published의 두 읽기 전용 검증 단계로 자동화하고 tag·release mutation은 사람이 수행 | [release 검증 변경](./changes/2026-09-20-release-verification/01-CHANGE.md) | 수동 반복과 특정 CI 자동 게시를 기각; D-004의 transport·게시 경계를 유지하고 검증만 확장 | Chae Sangwon, 2026-09-20 대화 — T-008 진행 요청 |
 | D-008 | 2026-09-20 | Accepted | `adopt --base-version <older-exact-semver>`으로 검증된 base·current release inventory 합집합을 target과 3-way 분류하고 base 모드에만 experimental format 2 report를 제공 | [base-aware adoption 변경](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md) | 과거 installer 자동 실행, 모든 schema 일반 호환과 로컬 base path를 기각. base 전용 schema 1·2 검증, base 없는 format 1, 대상 무변경과 자동 merge·삭제 없음 유지; `v2.2.0` minor release | Chae Sangwon, 2026-09-20 대화 — 권고 계약 승인, 이후 별도 요청으로 구현 시작 |
+| D-009 | 2026-09-22 | Accepted | locale guide를 artifact 정본으로 두고 root guide는 maintainer addendum으로 축약하며, `project-analysis` Metadata를 제거하고 선택형 changelog 안내를 `v2.3.0` artifact에 추가 | [문서 소유권 변경](./changes/2026-09-22-documentation-ownership/01-CHANGE.md) | 수동 복제·생성 계층·root-only 안내·실제 changelog 자동 생성을 기각. 기존 프로젝트 문서 보존과 source/artifact별 release history 검증 유지 | Chae Sangwon, 2026-09-22 대화 — T-010 권고안과 `docs/` changelog 안내 승인 |
 
 중요한 결정이 많아지면 개별 ADR 문서로 분리하고 여기에는 링크와 요약만 남깁니다.
 
@@ -168,6 +171,12 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 - 더 낮은 exact SemVer의 base release를 과거 코드 실행 없이 검증하고 `base ∪ current` 경로의 3-way 분류를 추가했습니다.
 - base 없는 format 1과 target 불변을 회귀로 고정하고, 공개 `v2.2.0`과 v2.1 적용 consumer에서 base-aware report를 독립 대조했습니다.
 
+### Phase 5 — documentation ownership
+
+- locale guide를 artifact 정본으로 유지하고 root maintainer guide와 책임을 분리합니다.
+- 선택형 changelog 안내를 배포하되 적용 프로젝트의 실제 release notes는 만들거나 덮어쓰지 않습니다.
+- source·artifact의 각 정본 이력을 검사하고 `v2.3.0` release gate에서 새 inventory를 검증합니다.
+
 ## 10. Risks
 
 | Risk | Likelihood | Impact | Mitigation | Trigger/Signal |
@@ -182,10 +191,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 ## 11. Open Questions
 
-남은 미결정 사항은 [02-TODO.md](./02-TODO.md)의 T-010이 소유합니다. T-007의 upgrade 분류는 D-008과 `v2.2.0` 공개로, T-009의 확정 checker·installer 결함은 `v2.1.1` 공개로, release 검증 자동화 경계는 D-007로 닫혔습니다. GitHub immutable releases 설정 여부는 `v2.0.0` 게시에서 확인했습니다.
-
-- [ ] **skill 파일의 프로젝트 metadata:** `project-analysis` SKILL.md의 Metadata에 `Owner`·`Last reviewed` placeholder가 있습니다. 적용 저장소는 `.agents/`·`.claude/` 두 사본을 똑같이 고쳐야 하고, placeholder 검색에도 걸립니다. 템플릿 소유 skill에서 프로젝트 metadata를 없앨지, 현재 계약을 유지할지 정해야 합니다. (T-010)
-- [ ] **maintainer 안내 문서의 동기화 방식:** root `docs/TEMPLATE_GUIDE.md`·`docs/DOCS_GUIDE.md`는 locale 가이드의 일부를 따로 복제해 두고, `v2.1.0` 준비 때 수동으로 맞췄습니다. 계속 복제본으로 유지할지, locale 가이드 링크와 maintainer 전용 내용으로 줄일지 정해야 합니다. (T-010)
+현재 승인된 `v2.3.0` 범위 안의 미결정 계약은 없습니다. T-010의 두 질문은 D-009로 닫혔습니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
 
 ## 12. Rejected or Deferred Ideas
 
@@ -203,5 +209,6 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | 기존 저장소 adoption | [2026-09-18-existing-repository-adoption SPEC](./changes/2026-09-18-existing-repository-adoption/02-SPEC.md) | D-006이 D-002의 수동 export/merge 계약을 확장하고 release manifest를 schema 2로 갱신 | 기존 저장소 적용, installer·packager·locale manifest 변경 |
 | release 검증 자동화 | [2026-09-20-release-verification](./changes/2026-09-20-release-verification/01-CHANGE.md) | D-007이 D-004의 사람이 소유한 게시 경계를 유지하며 게시 전후 검증을 자동화 | maintainer release candidate와 공개 완료 검증 |
 | base-aware adoption 분류 | [2026-09-20-adopt-upgrade-classification](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md) | D-008이 D-006의 읽기 전용 report를 선택형 3-way upgrade 분류로 확장 | 기존 적용 저장소를 다음 exact release와 비교할 때 |
+| 문서 소유권과 changelog 안내 | [2026-09-22-documentation-ownership](./changes/2026-09-22-documentation-ownership/01-CHANGE.md) | D-009가 locale artifact 안내와 root maintainer 보충 문서의 소유권을 분리 | `v2.3.0` 문서 inventory·skill·checker 변경 |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.
