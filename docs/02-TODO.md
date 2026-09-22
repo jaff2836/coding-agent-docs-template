@@ -17,7 +17,7 @@
 - **Name:** `v2.3.1` Windows release 도구 호환성 patch
 - **Goal:** T-015의 Windows packaging·검증·checkout·test portability 수정과 native Windows 근거를 patch release로 공개
 - **Target:** Origin `main` 통합과 동기화된 GitHub `main`, immutable Latest `v2.3.1`, Windows published E2E
-- **Status:** In Progress — Origin PR #30 merge `3b4bf674da8f7e8c13b2a69c45b2cf1f8ce54756`을 양쪽 `main`에 동기화했고 `codex/v2.3.1-release-prep`에서 source version·release history를 정렬 중입니다.
+- **Status:** In Progress — release 준비 PR #31 merge `3460e4ccd0065bcd8a24fd64a6cd7135293926a0`을 양쪽 `main`에 동기화하고 같은 exact source의 immutable Latest `v2.3.1`을 공개했습니다. Linux candidate·published gate는 통과했으며 native Windows published E2E만 남았습니다.
 - **다음 마일스톤:** T-016은 Draft 설계 합의 뒤 진행합니다. T-013·T-014·T-017과 community locale은 Backlog로 유지합니다.
 
 ## 운영 규칙
@@ -46,9 +46,9 @@
   - [x] Linux 관련 회귀, 전체 unittest, root docs, stable locale과 `git diff --check`를 통과했습니다.
   - [x] commit `556c434`의 native Windows·Python 3.14.7에서 문서·stable locale·LF checkout·file mode와 en·ko package 2회 5개 asset byte 동일성을 확인했습니다.
   - [x] head `a64a889`의 native Windows·Python 3.14.7에서 전체 unittest 174개(실패·오류 0, symlink 관련 skip 16), en·ko export artifact checker·test와 `git diff --check`를 확인했습니다. skip된 symlink 보호 동작 자체는 검증하지 않았지만 분리한 일반 경로 검증은 실행됐습니다.
-  - [ ] 후속 patch release 공개 뒤 그 release의 native Windows published E2E를 확인합니다. immutable `v2.3.0`은 수정 전 artifact test를 포함하므로 이 branch의 완료 gate로 소급 사용하지 않습니다.
+  - [ ] 공개된 `v2.3.1`의 native Windows published E2E를 확인합니다. immutable `v2.3.0`은 수정 전 artifact test를 포함하므로 이 작업의 완료 gate로 소급 사용하지 않습니다.
   - [x] Origin PR #30 merge `3b4bf674da8f7e8c13b2a69c45b2cf1f8ce54756`을 양쪽 `main`에 동기화하고 후속 release를 `v2.3.1` patch로 확정했습니다.
-  - [ ] clean exact source의 `v2.3.1` candidate를 검증하고 같은 5개 asset을 immutable Latest release로 공개한 뒤 published·Windows E2E를 확인합니다. 특정 CI runner 설정 추가는 범위 밖입니다.
+  - [x] release 준비 PR #31 merge `3460e4ccd0065bcd8a24fd64a6cd7135293926a0`의 clean exact source에서 candidate를 통과한 5개 asset을 교체 없이 [immutable Latest `v2.3.1`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.1)로 공개하고 `published --base-version 2.3.0` 검증을 통과했습니다. 특정 CI runner 설정 추가는 범위 밖입니다.
 
 ## Next
 
@@ -112,8 +112,8 @@
 
 - [x] **T-008 release 검증 절차 스크립트화**
   - 변경-ID: `2026-09-20-release-verification`
-  - 통합·운영 결과: Origin PR #20 merge `40306b65fe211402090d7a11b5c3ffafcb3689eb`의 검증 CLI로 `v2.1.1` exact source `0cfcc896ee92ec018d12c88f3f2638a154b35720`과 `v2.2.0` exact source `70a5a7a9e97fa5a89609a120ad69bced7e8ae1ac`의 실제 draft candidate·immutable published 경로를 확인했습니다. 두 release 모두 검증한 5개 asset을 게시 전후 교체하지 않았습니다.
-  - 검증 근거: 두 release의 candidate·published가 통과했고, `v2.2.0` published는 latest·exact의 en·ko `list-locales`·`install`·`export`·`adopt`, `v2.1.0` base-aware upgrade, source export와 target 불변을 확인했습니다. release는 `isDraft=false`, `isImmutable=true`, Latest입니다.
+  - 통합·운영 결과: Origin PR #20 merge `40306b65fe211402090d7a11b5c3ffafcb3689eb`의 검증 CLI로 `v2.1.1`부터 `v2.3.1`까지 실제 draft candidate·immutable published 경로를 반복 확인했습니다. 각 release에서 검증한 5개 asset을 게시 전후 교체하지 않았으며 exact source는 [변경 기록](./changes/2026-09-20-release-verification/01-CHANGE.md)에 남겼습니다.
+  - 검증 근거: 각 release의 candidate·published가 통과했고, 최신 `v2.3.1` published는 latest·exact의 en·ko `list-locales`·`install`·`export`·`adopt`, `v2.3.0` base-aware upgrade, source export와 target 불변을 확인했습니다. release는 `isDraft=false`, `isImmutable=true`, Latest입니다.
 
 - [x] **T-009 checker·installer 확정 결함 수정**
   - 통합·공개 결과: checker의 선택 파일 경계와 installer schema mismatch 복구 진단을 포함한 exact source `0cfcc896ee92ec018d12c88f3f2638a154b35720`을 annotated tag `v2.1.1`과 immutable GitHub Release로 공개했습니다.
