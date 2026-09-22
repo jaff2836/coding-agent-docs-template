@@ -109,3 +109,10 @@ branch 구현, Origin 통합과 공개 완료를 별도 상태로 기록합니�
 
 - 2026-09-22: 사용자가 T-010의 두 정책과 `docs/` changelog 안내를 함께
   채택하고 `v2.3.0` 구현·Origin PR 진행을 승인했습니다.
+- 2026-09-22: PR #28 version 1 리뷰 후 source root 두 skill 사본까지 R-001
+  범위를 명확히 해 Metadata를 제거하고, README 정본 안내와 changelog guide의
+  placeholder 어휘를 보완했습니다. version 2 재리뷰에는 새 finding이 없었습니다.
+- 2026-09-22: PR #28 merge `5066d821084545554588182f5250cc9dea12e444`을
+  Origin·GitHub `main`에 동기화하고 같은 exact source의 annotated tag와 검증한
+  5개 asset을 immutable Latest `v2.3.0`으로 공개했습니다. candidate와
+  `published --base-version 2.2.0` 검증이 통과했습니다.
