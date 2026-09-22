@@ -8,7 +8,7 @@
 
 - **Status:** Active
 - **Owner:** 프로젝트에 맞게 작성
-- **Last reviewed:** 적용 시 실제 검토일로 교체
+- **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** 릴리스 절차 또는 문서 소유권 변경 시
 
 ## 1. 문서 경계

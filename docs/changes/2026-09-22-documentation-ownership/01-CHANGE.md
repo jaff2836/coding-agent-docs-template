@@ -33,9 +33,9 @@ artifact에는 README·TODO·릴리스 이력의 경계를 설명하는 changelo
 
 ### 1.3 범위와 비범위
 
-범위는 en·ko skill 사본, locale 안내·README·AGENTS, manifest inventory와
-adoption policy, root maintainer guide·CHANGELOG, 문서 checker와 회귀 테스트,
-`v2.3.0` 문서 provenance입니다.
+범위는 source root와 en·ko skill 사본, locale 안내·README·AGENTS, manifest
+inventory와 adoption policy, root maintainer guide·CHANGELOG, 문서 checker와
+회귀 테스트, `v2.3.0` 문서 provenance입니다.
 
 적용 프로젝트의 실제 `CHANGELOG.md` 자동 생성·변환, 기존 changelog 형식
 강제, 새 locale, 특정 CI runner 설정과 release 공개는 이번 branch 구현
@@ -57,7 +57,7 @@ adoption policy, root maintainer guide·CHANGELOG, 문서 checker와 회귀 테�
 
 | ID | 요구사항 | 검증 |
 | -- | -------- | ---- |
-| R-001 | 네 `project-analysis` 사본에서 `Metadata` 절 전체를 제거하고 locale별 사본 계약을 유지합니다. | skill equality·fixture·placeholder 검색 |
+| R-001 | source root 두 사본과 locale 네 사본의 `project-analysis`에서 `Metadata` 절 전체를 제거하고 각 사본 계약을 유지합니다. | skill equality·fixture·placeholder 검색 |
 | R-002 | locale `TEMPLATE_GUIDE.md`·`DOCS_GUIDE.md`가 artifact 적용 안내의 정본이고 root guide는 maintainer 전용 addendum입니다. | 링크·절 참조·중복 범위 검토 |
 | R-003 | en·ko에 `docs/CHANGELOG_GUIDE.md`를 추가하고 manifest inventory와 `copy` adoption policy에 등록합니다. | stable locale·export inventory 검사 |
 | R-004 | guide는 README=현재, 선택형 root CHANGELOG=공개 이력, TODO/PLAN=미래, guide Metadata=template provenance 경계를 정의하고 기존 형식을 보존합니다. | locale parity·artifact 문서 검사 |

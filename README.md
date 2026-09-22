@@ -133,7 +133,7 @@ python3 scripts/verify-release.py published --version {{VERSION}} --source-commi
 - **Multilingual delivery:** `template/common/`, `locales/en/`, `locales/ko/`, the manifest, and the schema
 - **Tools:** documentation and locale checks, export, release packaging and verification, and installation
 
-See the [Template Guide](./docs/TEMPLATE_GUIDE.md) for the complete structure and adoption checklist, and the [Documentation Guide](./docs/DOCS_GUIDE.md) for document ownership and operating rules. This repository does not include application code or pipelines for a specific CI product.
+Use the locale artifact guides for the complete structure and adoption checklist: [English Template Guide](./locales/en/docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./locales/en/docs/DOCS_GUIDE.md), or [Korean Template Guide](./locales/ko/docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./locales/ko/docs/DOCS_GUIDE.md). The root [Template Guide](./docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./docs/DOCS_GUIDE.md) contain maintainer-specific addenda. This repository does not include application code or pipelines for a specific CI product.
 
 ## Bundled skills
 

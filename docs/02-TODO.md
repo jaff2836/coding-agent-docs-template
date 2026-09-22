@@ -37,7 +37,7 @@
 
 - [ ] **T-010 문서 소유권·skill Metadata·changelog 안내 정리**
   - 변경-ID: `2026-09-22-documentation-ownership`, 결정 D-009
-  - [x] 네 `project-analysis` skill 사본에서 Metadata 절을 제거하고 계약·사본 동등성을 검증했습니다.
+  - [x] source root 두 사본과 locale 네 사본의 `project-analysis`에서 Metadata 절을 제거하고 계약·사본 동등성을 검증했습니다.
   - [x] root guide를 maintainer addendum으로 줄이고 locale guide를 artifact 정본으로 명시했습니다.
   - [x] en·ko `docs/CHANGELOG_GUIDE.md`, manifest inventory·adoption policy와 진입점 링크를 추가했습니다.
   - [x] root와 artifact release history source를 분리한 checker 회귀를 추가했습니다.

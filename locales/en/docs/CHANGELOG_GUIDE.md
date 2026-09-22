@@ -8,7 +8,7 @@
 
 - **Status:** Active
 - **Owner:** Customize for the project
-- **Last reviewed:** Replace with the review date when adopting
+- **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** When the release process or documentation ownership changes
 
 ## 1. Document Boundaries
