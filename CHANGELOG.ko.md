@@ -6,7 +6,7 @@
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
 
-## v2.3.0 — 문서 소유권과 changelog 안내
+## [v2.3.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.0) — 문서 소유권과 changelog 안내
 
 - locale artifact에 `docs/CHANGELOG_GUIDE.md`를 추가해 README의 현재 동작, 공개 릴리스 이력, TODO·PLAN의 미래 작업과 템플릿 provenance를 구분하며 프로젝트 소유 root changelog는 만들지 않습니다.
 - 번들 `project-analysis` skill에서 프로젝트별 owner·검토일 metadata를 제거했습니다.
