@@ -133,7 +133,7 @@ python3 scripts/verify-release.py published --version {{VERSION}} --source-commi
 - **다국어 배포:** `template/common/`, `locales/en/`, `locales/ko/`, manifest와 schema
 - **도구:** 문서·locale 검사, export, release package·검증, installer
 
-전체 구조와 적용 체크리스트는 [Template Guide](./docs/TEMPLATE_GUIDE.md), 문서별 역할과 운영 규칙은 [Documentation Guide](./docs/DOCS_GUIDE.md)를 참고하세요. 이 저장소에는 애플리케이션 코드나 특정 CI 제품의 pipeline이 포함되지 않습니다.
+전체 구조와 적용 체크리스트는 locale artifact의 [한국어 Template Guide](./locales/ko/docs/TEMPLATE_GUIDE.md)·[Documentation Guide](./locales/ko/docs/DOCS_GUIDE.md) 또는 [영문 Template Guide](./locales/en/docs/TEMPLATE_GUIDE.md)·[Documentation Guide](./locales/en/docs/DOCS_GUIDE.md)를 참고하세요. root [Template Guide](./docs/TEMPLATE_GUIDE.md)와 [Documentation Guide](./docs/DOCS_GUIDE.md)는 maintainer 전용 보충 안내입니다. 이 저장소에는 애플리케이션 코드나 특정 CI 제품의 pipeline이 포함되지 않습니다.
 
 ## 번들 스킬
 

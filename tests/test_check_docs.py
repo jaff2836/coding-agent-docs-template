@@ -33,10 +33,12 @@ CheckDocsTests = COMMON_TESTS.CheckDocsTests
 
 class MaintainerCheckDocsTests(unittest.TestCase):
     def test_no_arguments_check_source_tree_with_payload_exclusions(self) -> None:
+        MAINTAINER_CHECKER.CHECK_DOCS.HISTORY_PATH = "unexpected.md"
         with patch.object(
             MAINTAINER_CHECKER.CHECK_DOCS, "run_checks", return_value=0
         ) as run_checks:
             self.assertEqual(MAINTAINER_CHECKER.main([]), 0)
+        self.assertEqual(MAINTAINER_CHECKER.CHECK_DOCS.HISTORY_PATH, "CHANGELOG.md")
         run_checks.assert_called_once_with(
             REPOSITORY_ROOT,
             excluded_top_level=("locales", "template"),
@@ -44,10 +46,15 @@ class MaintainerCheckDocsTests(unittest.TestCase):
 
     def test_explicit_arguments_use_artifact_cli_without_exclusions(self) -> None:
         arguments = ["--root", "/tmp/example-artifact"]
+        MAINTAINER_CHECKER.CHECK_DOCS.HISTORY_PATH = "CHANGELOG.md"
         with patch.object(
             MAINTAINER_CHECKER.CHECK_DOCS, "main", return_value=0
         ) as artifact_main:
             self.assertEqual(MAINTAINER_CHECKER.main(arguments), 0)
+        self.assertEqual(
+            MAINTAINER_CHECKER.CHECK_DOCS.HISTORY_PATH,
+            "docs/TEMPLATE_GUIDE.md",
+        )
         artifact_main.assert_called_once_with(arguments)
 
 

@@ -46,6 +46,7 @@ python -m unittest discover -s tests -p 'test_check_docs.py' -v
 - [Template Guide](./docs/TEMPLATE_GUIDE.md): 이 템플릿을 프로젝트에 처음 적용하는 방법
 - [AGENTS.md](./AGENTS.md): AI 개발 도구의 공통 프로젝트 지침
 - [Documentation Guide](./docs/DOCS_GUIDE.md): 문서 체계, source of truth 및 템플릿 완료 체크리스트
+- [Changelog Guide](./docs/CHANGELOG_GUIDE.md): 선택형 프로젝트 릴리스 노트의 경계와 관리 규칙
 - [00-PROJECT.md](./docs/00-PROJECT.md): 제품 개요·기본 설계·현재/목표 구조·결정·설계 인덱스
 - [01-DESIGN.md](./docs/01-DESIGN.md): 구조·계약을 바꾸는 변경의 구현 전 설계 절차
 - [02-TODO.md](./docs/02-TODO.md): 프로젝트 전체의 변경·우선순위·의존성과 통합 결과

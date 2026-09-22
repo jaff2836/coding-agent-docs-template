@@ -781,8 +781,41 @@ Translated guidance
                 CHECK_DOCS.check_versions(errors, [])
 
             self.assertIn(
-                "Current version is absent from TEMPLATE_GUIDE.md history: 1.2.3",
+                "Current version is absent from docs/TEMPLATE_GUIDE.md history: 1.2.3",
                 errors,
+            )
+
+    def test_alternate_history_path_accepts_linked_level_two_heading(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/DOCS_GUIDE.md",
+                "# Docs\n\n- **Template version:** 1.2.3\n",
+            )
+            write(
+                root,
+                "docs/TEMPLATE_GUIDE.md",
+                "# Guide\n\n- **Template version:** 1.2.3\n",
+            )
+            write(
+                root,
+                "CHANGELOG.md",
+                "# Releases\n\n"
+                "<!-- template-section:release-history -->\n\n"
+                "## [v1.2.3](https://example.com/releases/v1.2.3) — Current\n",
+            )
+
+            errors = []
+            notes = []
+            with patch.object(CHECK_DOCS, "ROOT", root), patch.object(
+                CHECK_DOCS, "HISTORY_PATH", "CHANGELOG.md"
+            ):
+                CHECK_DOCS.check_versions(errors, notes)
+
+            self.assertEqual(errors, [])
+            self.assertIn(
+                "Current version is present in revision history: 1.2.3", notes
             )
 
     def test_template_version_ignores_fenced_and_commented_decoys(self) -> None:

@@ -1330,9 +1330,15 @@ def check_versions(errors: List[str], notes: List[str]) -> None:
         )
     elif v1 and v2:
         notes.append("Template versions match: %s" % v1)
-        history = guide.read_text(encoding="utf-8")
+        history_path = ROOT / HISTORY_PATH
+        if not is_file_inside_root(history_path):
+            errors.append(
+                "Release history source is missing or unsafe: %s" % HISTORY_PATH
+            )
+            return
+        history = history_path.read_text(encoding="utf-8")
         try:
-            _, marker_index, end_index, lines = marked_section_bounds(
+            _, marker_index, end_index, _ = marked_section_bounds(
                 history, RELEASE_HISTORY_MARKER
             )
         except ValueError as error:
@@ -1343,12 +1349,13 @@ def check_versions(errors: List[str], notes: List[str]) -> None:
             searchable_lines[marker_index + 1 : end_index]
         )
         version_heading = re.compile(
-            r"^[ ]{0,3}###\s+v?%s(?:\s|$)" % re.escape(v1),
+            r"^[ ]{0,3}#{2,3}\s+(?:v?%s|\[v?%s\]\([^\r\n)]+\))(?:\s|$)"
+            % (re.escape(v1), re.escape(v1)),
             re.MULTILINE | re.IGNORECASE,
         )
         if version_heading.search(release_history) is None:
             errors.append(
-                "Current version is absent from TEMPLATE_GUIDE.md history: %s" % v1
+                "Current version is absent from %s history: %s" % (HISTORY_PATH, v1)
             )
         else:
             notes.append("Current version is present in revision history: %s" % v1)

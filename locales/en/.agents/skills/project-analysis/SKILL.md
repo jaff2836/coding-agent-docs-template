@@ -21,13 +21,6 @@ The stable tokens are `scope=explicit-whole-project`, `mode=read-only`, and `evi
 
 Apply this skill only when the user explicitly requests a whole-project analysis, technical due diligence, architecture assessment, or adoption-feasibility assessment. Do not apply this entire procedure to ordinary feature implementation, bug fixes, question answering, or PR reviews.
 
-## Metadata
-
-- **Status:** Active
-- **Owner:** Customize for the project
-- **Last reviewed:** YYYY-MM-DD
-- **Review cadence:** When the analysis criteria or project documentation system changes
-
 ## 1. Purpose
 
 The purpose of an analysis is to answer the following questions using evidence from the repository's actual code and configuration.

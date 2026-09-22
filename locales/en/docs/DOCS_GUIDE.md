@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.2.0
+- **Template version:** 2.3.0
 - **Template source:** Describe the original template repository URL or another retrievable archive location as appropriate for the project
 - **Template revision:** Describe the full SHA of the copied source commit as appropriate for the project; if the copy includes uncommitted changes, record it as `Unconfirmed`
 - **Owner:** Describe as appropriate for the project
@@ -28,6 +28,7 @@ The root [README.md](../README.md) contains project usage instructions for the a
 | [REVIEW_ROUND.md](./REVIEW_ROUND.md) | Requested review round remediation and integration process | When the user starts a round. For a previous handoff, apply only §9 |
 | [`project-analysis`](../.agents/skills/project-analysis/SKILL.md) | Evidence-based whole-project analysis and adoption decision | Explicit request for whole-project analysis |
 | [CI.md](./CI.md) | Runner-agnostic quality gate order and integration verification | Connecting CI or aligning it with local gates |
+| [CHANGELOG_GUIDE.md](./CHANGELOG_GUIDE.md) | Boundaries and maintenance rules for optional project release notes | Introducing or updating a project changelog |
 
 The [CHANGE](./changes/_template/01-CHANGE.md), [INTENT](./changes/_template/01-INTENT.md), [SPEC](./changes/_template/02-SPEC.md), and [PLAN](./changes/_template/03-PLAN.md) files in `changes/_template/` are one set of copyable templates. Keep all four files when applying the template to a project. Manage an actual change in a separate change-ID folder, and copy only the format appropriate to that change's scale. Do not count the templates themselves as approved designs or incomplete work.
 
@@ -65,7 +66,7 @@ The [CHANGE](./changes/_template/01-CHANGE.md), [INTENT](./changes/_template/01-
 | Original request and requirement changes | Change INTENT or the Intent section of a combined document | Source and link |
 | Change-level priority, prerequisites, and integration result | Global TODO | Related change-ID |
 | Detailed work and verification status | Change-specific PLAN when one exists; otherwise the global TODO item | Do not duplicate checkboxes or logs |
-| Completed release history | Existing CHANGELOG when one exists | TODO Completed links to evidence |
+| Completed release history | Existing CHANGELOG when one exists; follow [CHANGELOG_GUIDE.md](./CHANGELOG_GUIDE.md) | TODO Completed links to evidence |
 | Review judgments and exceptions | REVIEW | Maintain only necessary tool-specific copies |
 | Execution command strings | AGENTS.md and the adopting project's README | Do not keep commands only in CI jobs |
 | Quality gate order and integration verification | [CI.md](./CI.md) | Runner YAML is owned by the adopting project and is not provided by this template |
@@ -123,6 +124,7 @@ A remote repository, PR, and CI are optional. Record the adopting project's inte
 
 - [ ] Checked prior filenames, sections, code, tests, and tool references using the migration process in TEMPLATE_GUIDE.
 - [ ] Replaced placeholders in the root README.md with actual project usage instructions and did not copy the template source repository's introduction.
+- [ ] Decided whether the project needs a root `CHANGELOG.md`; preserved its existing format when present and applied [CHANGELOG_GUIDE.md](./CHANGELOG_GUIDE.md) without treating planned work as published history.
 - [ ] If using the release installer, verified the final asset URL, exact version, and locale; if using the source checkout exporter, recorded the exact source revision and whether uncommitted changes were included.
 - [ ] For an existing project, used `adopt` to create the artifact and report in an empty directory outside the target, resolved every `merge`, `decision`, and `blocked` path, and merged manually without automatically overwriting existing documents, commands, decisions, or the license.
 - [ ] Replaced project information, commands, owners, and examples with actual values. Did not count source templates as actual work.

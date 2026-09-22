@@ -77,6 +77,12 @@ Treat commands that still contain a `{{...}}` placeholder as unconfigured and do
 - Use it only when the user explicitly requests whole-project analysis, technical due diligence, an architecture assessment, or an adoption decision.
 - It gathers evidence in read-only mode by default, distinguishes verified facts, inferences, and unverified items, and reaches an adoption decision. Do not apply it to ordinary implementation, bug fixes, question answering, or PR reviews.
 
+### [`docs/CHANGELOG_GUIDE.md`](./docs/CHANGELOG_GUIDE.md) — Release Notes Guidance
+
+- Read it when introducing or updating release notes.
+- Keep current behavior in README, published history in a project-owned root CHANGELOG when one exists, and future work in TODO or PLAN.
+- Preserve an existing changelog and its format. The template does not require or overwrite a root CHANGELOG.
+
 ### [`docs/CI.md`](./docs/CI.md) — Quality Gates
 
 - This template does not choose a CI runner product. Follow this document for what to run, in what order, and how to verify the integration.

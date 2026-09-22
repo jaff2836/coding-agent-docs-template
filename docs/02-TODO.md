@@ -8,17 +8,17 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-21 (UTC)
+- **Last reviewed:** 2026-09-22 (UTC)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
 - **Integration target:** local `main`; 공개 저장소 target `jaff2836/coding-agent-docs-template`; v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
-- **Name:** `v2.2.0` base-aware adoption 공개·consumer 검증
-- **Goal:** T-007 W-001~W-004와 review 후속을 release source로 정렬하고, immutable `v2.2.0`과 실제 consumer에서 base-aware upgrade report를 검증
-- **Target:** `v2.2.0` GitHub Release, en·ko published upgrade E2E와 v2.1 적용 consumer 독립 대조
-- **Status:** Completed — Origin PR #26 merge와 양쪽 `main` `70a5a7a9e97fa5a89609a120ad69bced7e8ae1ac` 동기화, immutable `v2.2.0` candidate·published gate, 공개 en·ko base-aware E2E와 v2.1 적용 consumer 독립 대조를 완료했습니다.
-- **다음 마일스톤:** 미선정. T-010 정책 결정과 community locale은 사용자 논의 전까지 Backlog 후보로 유지합니다.
+- **Name:** `v2.3.0` 문서 소유권과 changelog 안내
+- **Goal:** D-009에 따라 locale guide를 artifact 정본으로 정리하고 skill Metadata 제거와 선택형 changelog 안내를 en·ko artifact에 배포
+- **Target:** Origin `main` 통합 뒤 `v2.3.0` immutable GitHub Release와 en·ko 공개 경로 검증
+- **Status:** In Progress — `7121c51698a38a24fe371c537a246ab943dc6db5` 기준 `codex/t010-documentation-ownership` branch에서 구현 중이며 전체 검증·Origin 통합·release는 대기 중입니다.
+- **다음 마일스톤:** `v2.3.0` 공개와 consumer 검증 뒤 별도 결정합니다. community locale은 Backlog 후보로 유지합니다.
 
 ## 운영 규칙
 
@@ -35,7 +35,14 @@
 
 ## In Progress
 
-없음.
+- [ ] **T-010 문서 소유권·skill Metadata·changelog 안내 정리**
+  - 변경-ID: `2026-09-22-documentation-ownership`, 결정 D-009
+  - [x] source root 두 사본과 locale 네 사본의 `project-analysis`에서 Metadata 절을 제거하고 계약·사본 동등성을 검증했습니다.
+  - [x] root guide를 maintainer addendum으로 줄이고 locale guide를 artifact 정본으로 명시했습니다.
+  - [x] en·ko `docs/CHANGELOG_GUIDE.md`, manifest inventory·adoption policy와 진입점 링크를 추가했습니다.
+  - [x] root와 artifact release history source를 분리한 checker 회귀를 추가했습니다.
+  - [x] root gate, stable locale, en·ko export·artifact 자체 검사를 통과했습니다.
+  - [ ] Origin 통합 뒤 clean exact source의 `v2.3.0` candidate·published·consumer 경로를 검증합니다.
 
 ## Next
 
@@ -47,11 +54,6 @@
 
 ## Backlog
 
-T-010은 `v2.1.0` 작업에서 드러난 미승인 후보입니다. T-009의 실행 결함과 분리했고 남은 결정 질문은 [PROJECT §11](./00-PROJECT.md#11-open-questions)에 있습니다.
-- [ ] **T-010 skill metadata·maintainer 가이드 정책 정리** — 설계 결정 필요
-  - `project-analysis` skill의 `Owner`·`Last reviewed` placeholder를 템플릿 소유 skill에서 제거할지, 적용 시 두 skill 사본을 함께 채우는 현재 계약을 유지할지 정합니다.
-  - root `docs/TEMPLATE_GUIDE.md`·`docs/DOCS_GUIDE.md`를 locale 가이드의 복제본으로 계속 동기화할지, locale 가이드 링크와 maintainer 전용 내용만 남길지 정합니다.
-  - 이 단위는 확정 결함 T-009의 `v2.1.1` patch를 지연시키지 않으며, artifact 계약이 바뀌면 별도 SemVer 범위를 결정합니다.
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
 
 ## Cancelled
