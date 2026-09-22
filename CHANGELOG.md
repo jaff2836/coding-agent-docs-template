@@ -6,12 +6,12 @@
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
 
-## v2.3.1 — Windows release tool portability
+## [v2.3.1](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.1) — Windows release tool portability
 
 - Release packaging uses POSIX relative-path ordering so Windows and POSIX hosts produce the same artifact inventory and deterministic bytes.
 - Materialized-tree verification follows Windows writable semantics while ZIP members retain the Unix `0644` contract.
 - LF checkout and narrowly scoped symlink-test skips make the source and exported artifact test suites portable without hiding unrelated filesystem errors.
-- Native Windows validation covers the complete test suite and deterministic `en` and `ko` package and export paths; published verification follows after release publication.
+- Native Windows validation covers the complete test suite and deterministic `en` and `ko` package and export paths. Candidate and published verification passed against the immutable release; native Windows published E2E remains the final support check.
 
 ## [v2.3.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.0) — Documentation ownership and changelog guidance
 
