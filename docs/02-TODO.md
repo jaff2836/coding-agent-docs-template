@@ -17,7 +17,7 @@
 - **Name:** `v2.3.0` 문서 소유권과 changelog 안내 공개 완료
 - **Goal:** D-009에 따라 locale guide를 artifact 정본으로 정리하고 skill Metadata 제거와 선택형 changelog 안내를 en·ko artifact에 배포
 - **Target:** Origin `main` 통합 뒤 `v2.3.0` immutable GitHub Release와 en·ko 공개 경로 검증
-- **Status:** Completed — Origin PR #28 merge `5066d821084545554588182f5250cc9dea12e444`을 양쪽 `main`에 동기화하고 같은 commit의 immutable Latest `v2.3.0`과 en·ko 공개 consumer 경로를 검증했습니다.
+- **Status:** Completed — Origin PR #28 merge `5066d821084545554588182f5250cc9dea12e444`을 양쪽 `main`에 동기화하고 같은 commit의 immutable Latest `v2.3.0`을 공개했습니다. published gate의 임시 fixture에서 latest·exact en·ko install·export·adopt와 `v2.2.0` base-aware 경로를 검증했으며, 별도 적용 저장소 대조를 뜻하지 않습니다.
 - **다음 마일스톤:** T-015 Windows release 도구 호환성 수정을 우선 검토하고, T-016의 `install` 대상 계약은 Draft 설계 합의 뒤 진행합니다. 운영 회귀 방지와 review ID 정리, community locale은 Backlog 후보로 유지합니다.
 
 ## 운영 규칙
@@ -41,12 +41,13 @@
 
 - [ ] **T-015 Windows release 도구 호환성 수정**
   - 출처: 2026-09-22 사용자 제공 전체 프로젝트 리뷰, 기준 `5066d821084545554588182f5250cc9dea12e444`의 F-001·F-002와 검증 보완 항목
+  - 확인된 증상: F-001은 Windows의 `Path` 정렬이 POSIX 상대 경로 문자열 inventory 순서와 달라 정상 source에서도 `exported member inventory differs`로 packaging이 중단됩니다. F-002는 정상 Windows 파일 mode가 `0666`으로 관찰될 때 verifier가 POSIX `0644`와 무조건 비교해 `verification file mode is not 0644`로 실패합니다.
   - 범위: artifact member를 POSIX 상대 경로 문자열로 정렬해 manifest 순서와 맞추고, 설치·export tree의 실제 mode 검사를 OS 의미에 맞게 분리하되 ZIP의 Unix mode `0644` 계약은 유지합니다. Windows checkout·fixture의 LF를 명시하고 symlink capability 부재의 skip/error 처리를 테스트 전반에서 일관되게 정리합니다.
   - 완료 조건: Linux 기존 회귀와 Windows en·ko package 2회 byte 동일성, 정상 published E2E, POSIX mode 위반·ZIP metadata 변조 실패가 모두 확인돼야 합니다. 특정 CI runner 설정 추가는 별도 사용자 지정 전까지 범위 밖입니다.
 
 - [ ] **T-016 새 프로젝트 `install` 대상 계약 정합화**
   - 변경-ID: `2026-09-22-install-target-contract`, [Draft 변경 설계](./changes/2026-09-22-install-target-contract/01-CHANGE.md)
-  - 출처: 같은 리뷰의 F-003. 문서는 새 대상 또는 빈 디렉터리만 허용하지만 구현은 artifact 경로와 겹치지 않는 기존 파일을 보존하면서 새 파일을 추가합니다.
+  - 출처: 같은 리뷰의 F-003. root landing README는 새 대상 또는 빈 디렉터리를 요구하지만, locale guide는 새·빈 대상을 권장하면서 실제 구현과 같은 artifact 경로 충돌 조건을 설명합니다. 구현은 겹치지 않는 기존 파일을 보존하면서 새 파일을 추가합니다.
   - 다음 단계: 기존 저장소는 `adopt`, 새 프로젝트만 `install`로 분리한 현재 제품 경계에 따라 비어 있지 않은 대상 전체를 거부하는 권고안을 사용자와 합의합니다. 승인 전에는 구현하지 않습니다.
 
 ## Blocked

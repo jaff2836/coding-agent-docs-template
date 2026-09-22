@@ -15,11 +15,13 @@
 
 ### 1.1 문제
 
-root README와 locale 적용 가이드는 새 프로젝트의 `install` 대상이 존재하지 않거나
-비어 있어야 한다고 설명합니다. 구현은 artifact member와 겹치는 경로만 충돌로
-검사하므로, `existing.txt`처럼 겹치지 않는 파일이 있는 디렉터리에는 기존 파일을
-보존하면서 template 파일을 추가합니다. 기존 저장소는 읽기 전용 `adopt`를 먼저
-사용한다는 제품 경계와 실제 `install` 동작이 일치하지 않습니다.
+root landing README는 새 프로젝트의 `install` 대상이 존재하지 않거나 비어 있어야
+한다고 요구합니다. locale 적용 가이드는 새·빈 대상을 사용하라고 권장하면서,
+중단 조건은 artifact member 경로가 이미 존재하는 경우로 설명해 현재 구현과
+일치합니다. 구현은 `existing.txt`처럼 겹치지 않는 파일이 있는 디렉터리에는 기존
+파일을 보존하면서 template 파일을 추가합니다. landing 약속과 구현이 다르고,
+기존 저장소는 읽기 전용 `adopt`를 먼저 사용한다는 제품 경계도 명확히 고정되지
+않았습니다.
 
 ### 1.2 기대 결과
 
@@ -43,8 +45,9 @@ root README와 locale 적용 가이드는 새 프로젝트의 `install` 대상�
 ### 1.5 미해결 질문
 
 `install`을 존재하지 않거나 빈 대상에만 제한할지, artifact path와 겹치지 않는
-기존 파일을 허용할지 사용자 결정이 필요합니다. 현재 문서와 D-006의 역할 분리는
-전자(A안)를 지지합니다.
+기존 파일을 허용할지 사용자 결정이 필요합니다. root landing README의 약속과
+D-006의 역할 분리는 전자(A안)를 지지하며, locale guide의 정확한 충돌 설명과
+현재 구현은 후자(B안)와 일치합니다.
 
 ## 2. Spec
 
@@ -59,13 +62,14 @@ root README와 locale 적용 가이드는 새 프로젝트의 `install` 대상�
 
 ### 2.2 대안과 선택 이유
 
-- **A안 — 비어 있지 않은 대상을 전부 거부(권고):** README와 locale guide의 현재
-  약속, 새 프로젝트=`install`·기존 저장소=`adopt`라는 D-006 경계를 코드로
-  강제합니다. 겹치지 않는 기존 파일이 있는 대상에서 이전에는 성공하던 호출이
-  실패하는 호환성 비용이 있지만, 문서만 보고 기대한 안전성을 복구합니다.
-- **B안 — artifact path 충돌만 거부:** 현재 구현을 유지하고 문서를 완화합니다.
-  부분 설치가 편하지만 기존 저장소에 자동으로 파일을 추가하지 않는 adoption
-  경계가 흐려지고 `install`과 `adopt`의 역할이 겹칩니다.
+- **A안 — 비어 있지 않은 대상을 전부 거부(권고):** root landing README의 강한
+  약속과 새 프로젝트=`install`·기존 저장소=`adopt`라는 D-006 경계를 코드로
+  강제하고 locale guide의 정확한 충돌 문장도 새 계약에 맞춥니다. 겹치지 않는 기존
+  파일이 있는 대상에서 이전에는 성공하던 호출이 실패하는 호환성 비용이 있습니다.
+- **B안 — artifact path 충돌만 거부:** 현재 구현과 locale guide의 정확한 충돌
+  설명을 유지하고 root landing README의 `must`·기존 파일 전체 거부 표현을
+  완화합니다. 부분 설치가 편하지만 기존 저장소에 자동으로 파일을 추가하지 않는
+  adoption 경계가 흐려지고 `install`과 `adopt`의 역할이 겹칩니다.
 - **변경하지 않음:** 문서와 구현의 모순을 유지하므로 기각합니다.
 
 ### 2.3 설계와 계약
@@ -75,9 +79,11 @@ A안을 선택하면 release와 archive 검증을 마친 뒤 첫 파일을 쓰�
 없으면 fail-closed하고 `adopt`를 안내합니다. 기존 member별 충돌 검사는 race와
 방어 심도를 위해 유지하며 쓰기·rollback 경로는 바꾸지 않습니다.
 
-B안을 선택하면 코드는 유지하되 root·en·ko 문서가 비어 있지 않은 대상도 artifact
-경로가 겹치지 않으면 파일을 추가한다는 사실과, 기존 저장소에는 여전히 `adopt`를
-권장하는 이유를 명시해야 합니다.
+A안의 구현·문서 범위는 `scripts/installer.py`의 preflight·오류 메시지,
+`tests/test_install_release.py`, root `README.md`·`README.ko.md`와 en·ko locale
+`docs/TEMPLATE_GUIDE.md` §2입니다. B안을 선택하면 installer와 locale guide의 현재
+충돌 조건은 유지하고 root 두 README를 실제 동작에 맞춥니다. 어느 쪽이든 기존
+저장소에는 `adopt`를 권장하는 이유와 대상 보존 경계를 유지합니다.
 
 ### 2.4 상위 설계에 미치는 영향
 
@@ -105,3 +111,6 @@ A안은 D-002의 비파괴 installer와 D-006의 새 프로젝트 `install`·기
 
 - 2026-09-22: 전체 프로젝트 리뷰 F-003을 재현하고 공개 계약 선택이 필요해
   T-016과 Draft 설계로 분리했습니다. A안을 권고하지만 아직 승인되지 않았습니다.
+- 2026-09-22: PR #29 리뷰에 따라 강한 빈 대상 약속은 root landing README에,
+  현재 artifact 경로 충돌 설명은 locale guide와 구현에 있다는 차이를 명시하고
+  A안·B안별 변경 문서 목록을 고정했습니다.

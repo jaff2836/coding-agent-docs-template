@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** Active — `v2.3.0` 문서 소유권 변경 공개·consumer 검증 완료, 다음 마일스톤 미선정
+- **Status:** Active — `v2.3.0` 문서 소유권 변경 공개·published gate 검증 완료, 다음 마일스톤 미선정
 - **Owner:** Chae Sangwon
 - **Last reviewed:** 2026-09-22
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
