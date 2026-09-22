@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.3.0
+- **Template version:** 2.3.1
 - **Template source:** Describe the original template repository URL or another retrievable archive location as appropriate for the project
 - **Template revision:** Describe the full SHA of the copied source commit as appropriate for the project; if the copy includes uncommitted changes, record it as `Unconfirmed`
 - **Owner:** Describe as appropriate for the project

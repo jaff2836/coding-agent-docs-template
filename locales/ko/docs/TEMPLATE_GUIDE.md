@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.3.0
+- **Template version:** 2.3.1
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -341,6 +341,13 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v2.3.1 — Windows release 도구 호환성
+
+- release packaging은 artifact member를 POSIX 상대 경로로 정렬하고 materialized tree 검증은 ZIP의 Unix mode `0644` 계약을 유지하면서 Windows의 writable 의미를 사용합니다.
+- 저장소 text checkout은 LF로 고정하며 symlink 의존 테스트는 플랫폼 capability나 Windows 권한이 없을 때만 skip합니다. symlink와 무관한 검증은 분리되어 계속 실행됩니다.
+- 적용할 기능성 artifact 변경은 `tests/test_check_docs.py`이며 이 문서와 `docs/DOCS_GUIDE.md`는 version 기록을 담습니다. release packager·verifier 변경은 artifact 밖의 maintainer 도구입니다.
+- 적용 저장소에서 확인할 것: 번들 checker test를 교체하고 문서 checker와 테스트를 다시 실행하며 Windows의 symlink 전용 skip은 명시적인 coverage 한계로 취급하세요.
 
 ### v2.3.0 — 문서 소유권과 changelog 안내
 

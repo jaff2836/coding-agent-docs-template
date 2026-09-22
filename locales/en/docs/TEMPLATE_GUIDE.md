@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.3.0
+- **Template version:** 2.3.1
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -341,6 +341,13 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v2.3.1 — Windows Release Tool Portability
+
+- Release packaging orders artifact members by POSIX relative path, and materialized-tree verification uses Windows writable semantics while preserving the ZIP Unix mode `0644` contract.
+- Repository text checkout is pinned to LF, and symlink-dependent tests skip only when the platform lacks the required capability or Windows privilege. Non-symlink checks remain separate and continue to run.
+- The functional artifact change to apply is `tests/test_check_docs.py`; this guide and `docs/DOCS_GUIDE.md` carry the version record, while the release packager and verifier changes are maintainer tools outside the artifact.
+- Verify in the adopting repository: replace the bundled checker test, rerun the documentation checker and its tests, and treat symlink-only skips on Windows as an explicit coverage limitation.
 
 ### v2.3.0 — Documentation Ownership and Changelog Guidance
 
