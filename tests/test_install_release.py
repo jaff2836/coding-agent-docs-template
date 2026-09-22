@@ -205,6 +205,21 @@ class InstallerTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory(prefix="template-install-test-")
         self.addCleanup(self.temporary.cleanup)
 
+    def symlink_or_skip(
+        self, link: Path, target: str | Path, *, target_is_directory: bool = False
+    ) -> None:
+        try:
+            link.symlink_to(target, target_is_directory=target_is_directory)
+        except (NotImplementedError, OSError) as exc:
+            self.skipTest("symlink creation is unavailable: %s" % exc)
+
+    def assert_materialized_file_mode(self, path: Path) -> None:
+        mode = stat.S_IMODE(path.lstat().st_mode)
+        if os.name == "nt":
+            self.assertTrue(mode & stat.S_IWRITE)
+        else:
+            self.assertEqual(mode, 0o644)
+
     def publish(self, **overrides) -> str:
         payloads = build_release_payloads(**overrides)
         server = FakeReleaseServer(payloads)
@@ -324,9 +339,7 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn("Installed ko locale with 4 files", completed.stdout)
         self.assertEqual((target / "AGENTS.md").read_bytes(), b"# agent contract\n")
-        self.assertEqual(
-            stat.S_IMODE((target / "docs/REVIEW.md").lstat().st_mode), 0o644
-        )
+        self.assert_materialized_file_mode(target / "docs/REVIEW.md")
 
     def test_install_resolves_latest_through_the_immutable_namespace(self) -> None:
         base = self.publish()
@@ -415,7 +428,7 @@ class InstallerTests(unittest.TestCase):
         target = self.temp_root() / "elsewhere"
         target.mkdir()
         link = self.temp_root() / "project"
-        link.symlink_to(target, target_is_directory=True)
+        self.symlink_or_skip(link, target, target_is_directory=True)
         completed = self.run_cli(
             "install",
             "--release-url",
@@ -489,9 +502,11 @@ class InstallerTests(unittest.TestCase):
         outside = self.temp_root() / "outside-skills"
         outside.mkdir()
         (outside / "keep.md").write_bytes(b"outside\n")
-        (root / ".agents").symlink_to(outside, target_is_directory=True)
+        self.symlink_or_skip(
+            root / ".agents", outside, target_is_directory=True
+        )
         (root / ".omp").mkdir()
-        (root / ".omp/WATCHDOG.md").symlink_to(outside / "keep.md")
+        self.symlink_or_skip(root / ".omp/WATCHDOG.md", outside / "keep.md")
         (root / "scripts").mkdir()
         (root / "scripts/check-docs.py").mkdir()
         (root / "tests").write_bytes(b"not a directory\n")
@@ -610,7 +625,7 @@ class InstallerTests(unittest.TestCase):
         self.assertFalse(missing.exists())
 
         link = self.temp_root() / "linked-project"
-        link.symlink_to(target, target_is_directory=True)
+        self.symlink_or_skip(link, target, target_is_directory=True)
         with self.assertRaises(INSTALLER.InstallerError) as context:
             INSTALLER.adopt(base, "2.0.0", "ko", link, self.temp_root() / "out-b")
         self.assertIn("symlink", str(context.exception))
@@ -728,7 +743,7 @@ class InstallerTests(unittest.TestCase):
             (target / name).write_bytes(data)
         outside = self.temp_root() / "outside-blocked"
         outside.write_bytes(b"outside\n")
-        (target / "blocked.md").symlink_to(outside)
+        self.symlink_or_skip(target / "blocked.md", outside)
         before = _tree_snapshot(target)
         output = self.temp_root() / "upgrade-output"
 

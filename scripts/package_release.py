@@ -143,10 +143,15 @@ def _installer_bytes(repository_root: Path) -> bytes:
 
 def _artifact_members(root: Path) -> tuple[tuple[str, bytes], ...]:
     members = []
-    for path in sorted(item for item in root.rglob("*") if item.is_file()):
+    paths = (
+        (path.relative_to(root).as_posix(), path)
+        for path in root.rglob("*")
+        if path.is_file()
+    )
+    for relative, path in sorted(paths, key=lambda item: item[0]):
         if path.is_symlink():
             raise ReleaseError("artifact must not contain symlinks")
-        members.append((path.relative_to(root).as_posix(), path.read_bytes()))
+        members.append((relative, path.read_bytes()))
     return tuple(members)
 
 
