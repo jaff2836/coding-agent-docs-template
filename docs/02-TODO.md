@@ -17,7 +17,7 @@
 - **Name:** `v2.3.1` Windows release 도구 호환성 patch
 - **Goal:** T-015의 Windows packaging·검증·checkout·test portability 수정과 native Windows 근거를 patch release로 공개
 - **Target:** Origin `main` 통합과 동기화된 GitHub `main`, immutable Latest `v2.3.1`, Windows published E2E
-- **Status:** In Progress — release 준비 PR #31 merge `3460e4ccd0065bcd8a24fd64a6cd7135293926a0`을 양쪽 `main`에 동기화하고 같은 exact source의 immutable Latest `v2.3.1`을 공개했습니다. Linux candidate·published gate는 통과했으며 native Windows published E2E만 남았습니다.
+- **Status:** Completed — release 준비 PR #31 merge `3460e4ccd0065bcd8a24fd64a6cd7135293926a0`의 immutable Latest `v2.3.1`을 공개하고 Linux와 native Windows에서 published E2E를 통과했습니다.
 - **다음 마일스톤:** T-016은 Draft 설계 합의 뒤 진행합니다. T-013·T-014·T-017과 community locale은 Backlog로 유지합니다.
 
 ## 운영 규칙
@@ -35,20 +35,7 @@
 
 ## In Progress
 
-- [ ] **T-015 Windows release 도구 호환성 수정**
-  - 기준: Origin `main` merge `430de821db02d63808bcf520e7f1a6f8706db264`에서 `codex/t015-windows-release-compatibility` 작업 트리로 진행합니다.
-  - 출처: 2026-09-22 사용자 제공 전체 프로젝트 리뷰, 기준 `5066d821084545554588182f5250cc9dea12e444`의 F-001·F-002와 검증 보완 항목
-  - 확인된 증상: F-001은 Windows의 `Path` 정렬이 POSIX 상대 경로 문자열 inventory 순서와 달라 정상 source에서도 `exported member inventory differs`로 packaging이 중단됩니다. F-002는 정상 Windows 파일 mode가 `0666`으로 관찰될 때 verifier가 POSIX `0644`와 무조건 비교해 `verification file mode is not 0644`로 실패합니다.
-  - [x] artifact member를 POSIX 상대 경로 문자열로 정렬하고 native path 정렬 차이를 모사하는 회귀를 추가했습니다.
-  - [x] 설치·export tree는 Windows에서 writable 의미를, 그 밖의 플랫폼에서 정확한 `0644`를 검사하며 ZIP의 Unix mode `0644` 계약은 유지했습니다.
-  - [x] `.gitattributes`로 text checkout의 LF를 고정하고 LF fixture·materialized mode assertion을 플랫폼 의미에 맞췄습니다.
-  - [x] symlink fixture는 `NotImplementedError`와 Windows `WinError 1314`만 skip하고 다른 `OSError`는 실패시키며, artifact checker의 symlink 검증을 일반 경로 검증과 분리했습니다.
-  - [x] Linux 관련 회귀, 전체 unittest, root docs, stable locale과 `git diff --check`를 통과했습니다.
-  - [x] commit `556c434`의 native Windows·Python 3.14.7에서 문서·stable locale·LF checkout·file mode와 en·ko package 2회 5개 asset byte 동일성을 확인했습니다.
-  - [x] head `a64a889`의 native Windows·Python 3.14.7에서 전체 unittest 174개(실패·오류 0, symlink 관련 skip 16), en·ko export artifact checker·test와 `git diff --check`를 확인했습니다. skip된 symlink 보호 동작 자체는 검증하지 않았지만 분리한 일반 경로 검증은 실행됐습니다.
-  - [ ] 공개된 `v2.3.1`의 native Windows published E2E를 확인합니다. immutable `v2.3.0`은 수정 전 artifact test를 포함하므로 이 작업의 완료 gate로 소급 사용하지 않습니다.
-  - [x] Origin PR #30 merge `3b4bf674da8f7e8c13b2a69c45b2cf1f8ce54756`을 양쪽 `main`에 동기화하고 후속 release를 `v2.3.1` patch로 확정했습니다.
-  - [x] release 준비 PR #31 merge `3460e4ccd0065bcd8a24fd64a6cd7135293926a0`의 clean exact source에서 candidate를 통과한 5개 asset을 교체 없이 [immutable Latest `v2.3.1`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.1)로 공개하고 `published --base-version 2.3.0` 검증을 통과했습니다. 특정 CI runner 설정 추가는 범위 밖입니다.
+없음.
 
 ## Next
 
@@ -134,5 +121,9 @@
 - [x] **T-012 release verifier의 remote `main` 객체·history 진단**
   - 통합 결과: remote `main` 객체 부재, shallow history 부족, 충분한 shallow history와 실제 비조상 관계를 구분하는 진단을 Origin PR #25 merge `d821dec23b0e34295b96f9af0690ba15f2d33edb`에 통합했습니다.
   - 검증 근거: PR #25 head의 verifier test 16개와 전체 unittest 166개가 통과했고, 후속 exact source `70a5a7a9e97fa5a89609a120ad69bced7e8ae1ac`의 `v2.2.0` candidate·published 성공 경로에서 동기화된 두 remote `main`과 tag ancestry를 추가 fetch 없이 확인했습니다.
+
+- [x] **T-015 Windows release 도구 호환성 수정**
+  - 통합·공개 결과: POSIX 상대 경로 정렬, Windows materialized mode 의미, LF checkout과 제한된 symlink fixture skip을 Origin PR #30 merge `3b4bf674da8f7e8c13b2a69c45b2cf1f8ce54756`에 통합했습니다. release 준비 PR #31 merge `3460e4ccd0065bcd8a24fd64a6cd7135293926a0`의 5개 asset을 교체 없이 [immutable Latest `v2.3.1`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.1)로 공개했습니다.
+  - 검증 근거: PR head `a64a8897673924abe1c110baad3b2a6ecc8aa811`의 native Windows·Python 3.14.7에서 전체 unittest 174개(실패·오류 0, symlink 관련 skip 16)와 en·ko package·export artifact 검증이 통과했습니다. `v2.3.1` exact source의 `published --base-version 2.3.0`은 Linux와 native Windows 10.0.28000에서 모두 통과했고, Windows 실행은 synchronized `main` `969d1ed48414cee30e698067417d40122a1b8f59`과 5개 asset을 확인한 뒤 exit code 0으로 끝났습니다.
 
 완료 이력이 길어지면 기존 CHANGELOG 또는 마일스톤별 보관 문서로 연결하고 본문을 복제하지 않습니다.

@@ -11,7 +11,7 @@
 - release packaging이 POSIX 상대 경로 순서를 사용해 Windows와 POSIX host에서 같은 artifact inventory와 결정적 byte를 생성합니다.
 - materialized tree 검증은 Windows의 writable 의미를 사용하고 ZIP member의 Unix `0644` 계약은 유지합니다.
 - LF checkout과 좁게 제한한 symlink test skip으로 관련 없는 파일시스템 오류를 숨기지 않으면서 source와 export artifact test를 이식 가능하게 했습니다.
-- native Windows에서 전체 test와 en·ko package·export 결정성을 확인했습니다. immutable release의 candidate·published 검증은 통과했고 native Windows published E2E가 마지막 지원 확인으로 남았습니다.
+- native Windows에서 전체 test와 en·ko package·export 결정성을 확인했습니다. 공개 전 candidate gate가 통과했고 immutable release의 published 검증은 Linux와 native Windows에서 모두 통과했습니다.
 
 ## [v2.3.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.0) — 문서 소유권과 changelog 안내
 
