@@ -67,8 +67,12 @@ class PackageReleaseTests(unittest.TestCase):
     ) -> None:
         try:
             link.symlink_to(target, target_is_directory=target_is_directory)
-        except (NotImplementedError, OSError) as exc:
+        except NotImplementedError as exc:
             self.skipTest("symlink creation is unavailable: %s" % exc)
+        except OSError as exc:
+            if getattr(exc, "winerror", None) == 1314:
+                self.skipTest("symlink creation requires Windows privileges: %s" % exc)
+            raise
 
     def build(self) -> PACKAGE_RELEASE.ReleaseArtifacts:
         return PACKAGE_RELEASE.build_release_artifacts(self.repository, **self.kwargs)

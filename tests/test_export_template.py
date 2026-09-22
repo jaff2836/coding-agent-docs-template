@@ -33,8 +33,12 @@ class ExportTemplateTests(unittest.TestCase):
     ) -> None:
         try:
             link.symlink_to(target, target_is_directory=target_is_directory)
-        except (NotImplementedError, OSError) as exc:
+        except NotImplementedError as exc:
             self.skipTest("symlink creation is unavailable: %s" % exc)
+        except OSError as exc:
+            if getattr(exc, "winerror", None) == 1314:
+                self.skipTest("symlink creation requires Windows privileges: %s" % exc)
+            raise
 
     def assert_materialized_file_mode(self, path: Path) -> None:
         mode = stat.S_IMODE(path.stat().st_mode)

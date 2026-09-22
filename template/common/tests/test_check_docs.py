@@ -53,6 +53,18 @@ def write_minimal_artifact(root: Path) -> None:
 
 
 class CheckDocsTests(unittest.TestCase):
+    def symlink_or_skip(
+        self, link: Path, target: str | Path, *, target_is_directory: bool = False
+    ) -> None:
+        try:
+            link.symlink_to(target, target_is_directory=target_is_directory)
+        except NotImplementedError as exc:
+            self.skipTest("symlink creation is unavailable: %s" % exc)
+        except OSError as exc:
+            if getattr(exc, "winerror", None) == 1314:
+                self.skipTest("symlink creation requires Windows privileges: %s" % exc)
+            raise
+
     def test_codex_policy_must_be_boolean_false(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -140,10 +152,7 @@ class CheckDocsTests(unittest.TestCase):
             root.mkdir()
             outside = parent / "AGENTS.md"
             outside.write_text("# External instructions\n", encoding="utf-8")
-            try:
-                (root / "AGENTS.md").symlink_to(outside)
-            except OSError as error:
-                self.skipTest("symlinks unavailable: %s" % error)
+            self.symlink_or_skip(root / "AGENTS.md", outside)
 
             stderr = io.StringIO()
             with contextlib.redirect_stderr(stderr):
@@ -160,10 +169,7 @@ class CheckDocsTests(unittest.TestCase):
             outside.write_text("# Design\n", encoding="utf-8")
             copy = root / ".claude/skills/design/SKILL.md"
             copy.parent.mkdir(parents=True)
-            try:
-                copy.symlink_to(outside)
-            except OSError as error:
-                self.skipTest("symlinks unavailable: %s" % error)
+            self.symlink_or_skip(copy, outside)
 
             errors = []
             with patch.object(CHECK_DOCS, "ROOT", root), patch.object(
@@ -208,10 +214,9 @@ class CheckDocsTests(unittest.TestCase):
             outside.mkdir()
             write(outside, "BROKEN.md", "[missing](./MISSING.md)\n")
             root.mkdir()
-            try:
-                (root / "handbook").symlink_to(outside, target_is_directory=True)
-            except OSError as error:
-                self.skipTest("symlinks unavailable: %s" % error)
+            self.symlink_or_skip(
+                root / "handbook", outside, target_is_directory=True
+            )
 
             errors = []
             with patch.object(CHECK_DOCS, "ROOT", root):
@@ -226,10 +231,7 @@ class CheckDocsTests(unittest.TestCase):
             outside.write_text("# Outside\n", encoding="utf-8")
             link = root / ".omp/WATCHDOG.md"
             link.parent.mkdir(parents=True)
-            try:
-                link.symlink_to(outside)
-            except OSError as error:
-                self.skipTest("symlinks unavailable: %s" % error)
+            self.symlink_or_skip(link, outside)
 
             errors = []
             with patch.object(CHECK_DOCS, "ROOT", root):
@@ -288,10 +290,7 @@ class CheckDocsTests(unittest.TestCase):
             outside.write_text("# Outside\n## 1. Existing\n", encoding="utf-8")
             write(root, "docs/SOURCE.md", "PROJECT §1\n")
             project = root / "docs/00-PROJECT.md"
-            try:
-                project.symlink_to(outside)
-            except OSError as error:
-                self.skipTest("symlinks unavailable: %s" % error)
+            self.symlink_or_skip(project, outside)
 
             errors = []
             with patch.object(CHECK_DOCS, "ROOT", root):
@@ -857,7 +856,7 @@ Translated guidance
             self.assertIn("exactly once", "\n".join(errors))
 
     def test_template_guide_is_omitted_only_when_the_path_is_absent(self) -> None:
-        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as outside:
+        with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             write(
                 root,
@@ -872,12 +871,20 @@ Translated guidance
             self.assertEqual(errors, [])
             self.assertIn("TEMPLATE_GUIDE.md omitted (allowed)", "\n".join(notes))
 
+    def test_template_guide_cannot_be_an_external_symlink(self) -> None:
+        with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as outside:
+            root = Path(directory)
+            write(
+                root,
+                "docs/DOCS_GUIDE.md",
+                "# Guide\n- **Template version:** 1.0.0\n",
+            )
             external = Path(outside) / "TEMPLATE_GUIDE.md"
             external.write_text(
                 "# Guide\n- **Template version:** 1.0.0\n",
                 encoding="utf-8",
             )
-            (root / "docs/TEMPLATE_GUIDE.md").symlink_to(external)
+            self.symlink_or_skip(root / "docs/TEMPLATE_GUIDE.md", external)
             errors = []
             notes = []
             with patch.object(CHECK_DOCS, "ROOT", root):
@@ -885,7 +892,14 @@ Translated guidance
             self.assertEqual(errors, ["docs/TEMPLATE_GUIDE.md escapes artifact root"])
             self.assertNotIn("omitted", "\n".join(notes))
 
-            (root / "docs/TEMPLATE_GUIDE.md").unlink()
+    def test_template_guide_must_be_a_file(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/DOCS_GUIDE.md",
+                "# Guide\n- **Template version:** 1.0.0\n",
+            )
             (root / "docs/TEMPLATE_GUIDE.md").mkdir()
             errors = []
             notes = []
@@ -1096,7 +1110,7 @@ Translated guidance
                 CHECK_DOCS.check_section_refs(errors, [])
             self.assertEqual(errors, [])
 
-    def test_optional_contract_files_cannot_escape_or_be_directories(self) -> None:
+    def test_optional_contract_files_cannot_escape(self) -> None:
         with tempfile.TemporaryDirectory() as directory, tempfile.TemporaryDirectory() as outside:
             root = Path(directory)
             write(root, "AGENTS.md", "# Project\n")
@@ -1106,9 +1120,9 @@ Translated guidance
             external.write_text("@../docs/REVIEW.md\n", encoding="utf-8")
 
             (root / ".omp").mkdir()
-            (root / ".omp/WATCHDOG.md").symlink_to(external)
+            self.symlink_or_skip(root / ".omp/WATCHDOG.md", external)
             (root / ".cursor").mkdir()
-            (root / ".cursor/BUGBOT.md").symlink_to(external)
+            self.symlink_or_skip(root / ".cursor/BUGBOT.md", external)
             errors = []
             notes = []
             with patch.object(CHECK_DOCS, "ROOT", root):
@@ -1119,9 +1133,16 @@ Translated guidance
             self.assertIn(".cursor/BUGBOT.md escapes artifact root", report)
             self.assertNotIn("omitted", "\n".join(notes))
 
-            (root / ".omp/WATCHDOG.md").unlink()
+    def test_optional_contract_paths_must_be_files(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(root, "AGENTS.md", "# Project\n")
+            write(root, "CLAUDE.md", "@AGENTS.md\n")
+            write(root, "docs/REVIEW.md", "# Review\n")
+
+            (root / ".omp").mkdir()
             (root / ".omp/WATCHDOG.md").mkdir()
-            (root / ".cursor/BUGBOT.md").unlink()
+            (root / ".cursor").mkdir()
             errors = []
             notes = []
             with patch.object(CHECK_DOCS, "ROOT", root):
