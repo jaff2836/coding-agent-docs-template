@@ -64,16 +64,17 @@ Python 3.12부터 제공합니다. Buildkite [build #12](https://buildkite.com/j
   commit `0a19ea15862257e558266a86024c96da86dbfb39`에서 root docs·stable locale·전체
   unittest 176개와 native junction probe를 통과했습니다. canonical 저장소
   연결 후 [build #16](https://buildkite.com/jaff2836-org/windows-ci/builds/16)도 같은 commit에서 전체 gate를 통과했고
-  Origin 성공 check가 게시됐습니다. 개인 API token의
+  Origin 성공 check가 게시됐습니다. 이어 Origin branch push가 [build #17](https://buildkite.com/jaff2836-org/windows-ci/builds/17)을
+  자동 시작해 전체 gate·성공 check를 다시 확인했습니다. 개인 API token의
   pipeline·build·cluster 조회 및 build 실행을 확인했고, token 값은 기록하지 않습니다.
   `jaff2836-worker-windows` queue는 `Default cluster`에 속합니다. cluster·queue
   쓰기 권한은 사용하지 않았습니다.
 - Buildkite가 선정됐으므로 T-017 Origin PR은 정확한 head SHA에서 이 Windows
   queue를 실행해야 합니다. GitHub의 후속 fast-forward 검증은 별도 trigger로
   구분합니다. Buildkite의 Origin provider는 Origin 저장소 PR trigger와 check
-  게시를 지원합니다. Origin check 게시 성공은 확인했고, branch·PR 이벤트의
-  자동 build 생성은 아직 관찰하지 못했습니다. private checkout은 agent의 SSH
-  key로 해결됐습니다.
+  게시를 지원합니다. branch push의 자동 build 생성과 Origin check 게시 성공은
+  확인했고, PR 이벤트의 자동 build 생성은 아직 관찰하지 못했습니다. private
+  checkout은 agent의 SSH key로 해결됐습니다.
 - 기존 코드가 직접 검사하는 경로만 고칠지, 선택된 root/output의 모든 기존
   상위 component도 검사할지 전체 설계 합의가 필요합니다. 후자를 권고합니다.
 
@@ -161,4 +162,5 @@ junction을 제거합니다. 현재는 관찰 결과를 출력하는 진단 단�
   runtime을 배치했고, build #12에서 현행 junction 허용을 재현했습니다. build #13은
   정확한 commit에서 전체 gate 176개와 probe를 통과했습니다. canonical Origin
   저장소 연결로 바꾼 build #16에서도 전체 gate와 check 게시를 확인했습니다.
-  branch·PR 자동 trigger는 별도 확인이 남았습니다.
+  이어 branch push로 자동 실행된 build #17도 통과했습니다. PR 자동 trigger는
+  별도 확인이 남았습니다.
