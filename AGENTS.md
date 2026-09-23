@@ -25,7 +25,7 @@
 - **Typecheck:** N/A
 - **Docs:** `python3 scripts/check-docs.py`
 - **Docs test:** `python3 -m unittest discover -s tests -p 'test_check_docs.py' -v`
-- **Locale source:** `python3 scripts/check-locales.py`
+- **Locale source:** `python3 scripts/check-locales.py --require-stable`
 - **Locale source test:** `python3 -m unittest discover -s tests -p 'test_check_locales.py' -v`
 - **Export:** `python3 scripts/export-template.py --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}`
 - **Package:** `python3 scripts/package-release.py --version {{VERSION}} --source-commit {{EXACT_COMMIT}} --repository {{OWNER/NAME}} --output {{EMPTY_OUTPUT_DIR}}`
