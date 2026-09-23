@@ -6,11 +6,12 @@
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
 
-## v2.3.2 — New-or-empty install target
+## [v2.3.2](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.2) — New-or-empty install target
 
 - `installer.py install` now accepts only a new path or a readable empty directory; it rejects every non-empty or unreadable target before writing template members.
 - Existing repositories, including targets with unrelated files, are directed to the read-only `adopt` plan rather than receiving a partial template installation.
 - The root README and both locale application guides describe the same install/adopt boundary, and installer regressions preserve the target tree on refusal.
+- The immutable Latest release passed candidate and published verification, including both locale paths, the `v2.3.1` base-aware upgrade, and refusal of non-empty install targets.
 
 ## [v2.3.1](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.1) — Windows release tool portability
 

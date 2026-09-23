@@ -472,6 +472,7 @@ class VerifyReleaseTests(unittest.TestCase):
 
         invoked_installer_bytes = []
         base_aware_invocations = []
+        refused_install_targets = []
 
         def command(arguments, *, cwd):
             self.assertGreaterEqual(len(arguments), 4)
@@ -482,9 +483,11 @@ class VerifyReleaseTests(unittest.TestCase):
                 return ("Release %s (source commit fixture)\n" % VERSION).encode()
             if command_name == "install":
                 root = Path(arguments[arguments.index("--repo-root") + 1])
-                if (root / "AGENTS.md").exists():
+                if root.exists() and any(root.iterdir()):
+                    refused_install_targets.append(next(root.iterdir()).name)
                     raise VERIFY_RELEASE.VerificationError(
-                        "verification command failed: 1 conflicting path(s)"
+                        "verification command failed: Install failed: install target "
+                        "must be a new path or an empty directory"
                     )
                 write_members(root)
                 return b""
@@ -589,6 +592,11 @@ class VerifyReleaseTests(unittest.TestCase):
         self.assertEqual(set(invoked_installer_bytes), {b"installer"})
         self.assertEqual(artifact_check.call_count, 1)
         self.assertEqual(len(base_aware_invocations), 2)
+        self.assertEqual(len(refused_install_targets), 4)
+        self.assertEqual(
+            set(refused_install_targets),
+            {"AGENTS.md", ".release-verification-marker"},
+        )
 
     def test_adoption_plan_summary_rejects_malformed_structure(self) -> None:
         valid = {
