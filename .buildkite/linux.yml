@@ -1,0 +1,13 @@
+agents:
+  queue: "jaff2836-worker-linux"
+
+steps:
+  - label: ":linux: Python quality gates"
+    command: |
+      set -eu
+      python3 --version
+      python3 scripts/check-docs.py
+      python3 scripts/check-locales.py --require-stable
+      python3 -m unittest discover -s tests -v
+    env:
+      GIT_SSH_COMMAND: "ssh -o BatchMode=yes -o ConnectTimeout=15"
