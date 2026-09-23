@@ -8,17 +8,17 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-22 (UTC)
+- **Last reviewed:** 2026-09-23 (UTC)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
 - **Integration target:** local `main`; 공개 저장소 target `jaff2836/coding-agent-docs-template`; v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
-- **Name:** `v2.3.1` Windows release 도구 호환성 patch
-- **Goal:** T-015의 Windows packaging·검증·checkout·test portability 수정과 native Windows 근거를 patch release로 공개
-- **Target:** Origin `main` 통합과 동기화된 GitHub `main`, immutable Latest `v2.3.1`, Windows published E2E
-- **Status:** Completed — release 준비 PR #31 merge `3460e4ccd0065bcd8a24fd64a6cd7135293926a0`의 immutable Latest `v2.3.1`을 공개하고 Linux와 native Windows에서 published E2E를 통과했습니다.
-- **다음 마일스톤:** T-016은 Draft 설계 합의 뒤 진행합니다. T-013·T-014·T-017과 community locale은 Backlog로 유지합니다.
+- **Name:** T-016 새 프로젝트 `install` 대상 계약 정합화
+- **Goal:** D-010에 따라 `install`을 새 경로·빈 디렉터리로 제한하고 기존 저장소의 비파괴 `adopt` 경계를 코드·문서·테스트에서 일치시킴
+- **Target:** Origin `main` 구현 통합과 후속 release 범위 결정
+- **Status:** In Progress — A안 권고가 D-010으로 승인됐고 `codex/t016-install-target-contract`에서 구현 중입니다.
+- **다음 마일스톤:** T-013·T-014·T-017과 community locale은 Backlog로 유지하며 T-016 통합 뒤 우선순위를 정합니다.
 
 ## 운영 규칙
 
@@ -35,14 +35,18 @@
 
 ## In Progress
 
-없음.
+- [ ] **T-016 새 프로젝트 `install` 대상 계약 정합화**
+  - 변경-ID: `2026-09-22-install-target-contract`, [Accepted 변경 설계](./changes/2026-09-22-install-target-contract/01-CHANGE.md), 결정 D-010
+  - 기준: Origin·GitHub `main` `fe1d941c8aa7de81e032f287b6566e240d6b5f92`에서 `codex/t016-install-target-contract`로 진행합니다.
+  - [x] A안, 즉 새 경로·빈 디렉터리만 `install`하고 기존 저장소에는 `adopt`를 사용하는 계약을 승인했습니다.
+  - [x] 비어 있지 않거나 emptiness를 확인할 수 없는 대상을 쓰기 전에 거부하고 member 충돌·rollback 방어를 유지했습니다.
+  - [x] root README와 en·ko locale 적용 가이드를 같은 계약으로 정렬했습니다.
+  - [x] installer 회귀 44개, 전체 unittest 176개, root docs, stable locale, en·ko export·artifact checker와 각 artifact test 53개, Python compile과 `git diff --check`를 통과했습니다.
+  - [ ] Origin 통합과 후속 release 범위를 결정합니다.
 
 ## Next
 
-- [ ] **T-016 새 프로젝트 `install` 대상 계약 정합화**
-  - 변경-ID: `2026-09-22-install-target-contract`, [Draft 변경 설계](./changes/2026-09-22-install-target-contract/01-CHANGE.md)
-  - 출처: 같은 리뷰의 F-003. root landing README는 새 대상 또는 빈 디렉터리를 요구하지만, locale guide는 새·빈 대상을 권장하면서 실제 구현과 같은 artifact 경로 충돌 조건을 설명합니다. 구현은 겹치지 않는 기존 파일을 보존하면서 새 파일을 추가합니다.
-  - 다음 단계: 기존 저장소는 `adopt`, 새 프로젝트만 `install`로 분리한 현재 제품 경계에 따라 비어 있지 않은 대상 전체를 거부하는 권고안을 사용자와 합의합니다. 승인 전에는 구현하지 않습니다.
+없음.
 
 ## Blocked
 
