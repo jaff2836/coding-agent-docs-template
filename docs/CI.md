@@ -1,6 +1,6 @@
 # CI 품질 게이트
 
-이 문서는 **무엇을, 어떤 순서로, 성공·실패를 어떻게 판정하는지**를 정합니다. 이 저장소의 Windows 검증용 Buildkite pipeline은 `.buildkite/pipeline.yml`을 업로드해 실행합니다. 템플릿 적용 프로젝트가 GitHub Actions, Buildkite, 그 외 러너 중 무엇을 쓸지는 각 프로젝트가 고릅니다.
+이 문서는 **무엇을, 어떤 순서로, 성공·실패를 어떻게 판정하는지**를 정합니다. 이 저장소의 Windows·Linux Buildkite pipeline은 각각 `.buildkite/pipeline.yml`·`.buildkite/linux.yml`을 업로드해 실행합니다. 템플릿 적용 프로젝트가 GitHub Actions, Buildkite, 그 외 러너 중 무엇을 쓸지는 각 프로젝트가 고릅니다.
 
 원격 CI는 필수가 아닙니다. CI가 없으면 같은 게이트를 로컬에서 실행하고, 미사용 이유와 대체 검증을 [02-TODO.md](./02-TODO.md)의 통합 완료 조건 또는 프로젝트 README에 남깁니다.
 
@@ -103,11 +103,13 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 - CI에서만 통과하고 로컬 문서에 없는 검사라면, 명령을 AGENTS.md·README에 올리거나 CI에서 제거합니다.
 - `scripts/check-docs.py`를 바꾸면 로컬에서 G-docs-test를 실행한 뒤에만 완료로 보고합니다.
 
-## 6. Buildkite Windows 검증
+## 6. Buildkite Windows·Linux 검증
 
-`.buildkite/pipeline.yml`은 Origin 연결 파이프라인에서 `jaff2836-worker-windows` self-hosted queue를 대상으로 실행합니다. agent에 배치한 Python 3.12.10 CI runtime의 명시적 경로로 root docs, stable locale source와 전체 unittest를 실행하고, T-017 junction probe로 fixture 생성과 현행 경계 판정을 기록합니다. Probe는 설계 재현용 진단 단계이며, installer 경계 회귀 검증으로 승격할 때 허용·거부 결과를 명시적으로 단언해야 합니다.
+두 pipeline은 연결된 Origin installation의 canonical repository URL `https://origin.cursor.com/git/jaff2836/ai-agent-docs-template.git`을 사용합니다. 각 self-hosted agent의 Git URL rewrite가 HTTPS checkout을 SSH로 전환하며 agent key로 정확한 commit을 가져옵니다. Origin branch push에서 두 pipeline이 자동 시작하고 각각 Origin check를 게시합니다. 실제 PR 이벤트의 자동 시작과 GitHub push trigger는 아직 확인하거나 구성하지 않았습니다. agent 인증 비밀값은 저장소와 로그에 기록하지 않습니다.
 
-Buildkite pipeline [`windows-ci`](https://buildkite.com/jaff2836-org/windows-ci)는 연결된 Origin installation에서 선택한 저장소의 canonical URL `https://origin.cursor.com/git/jaff2836/ai-agent-docs-template.git`을 사용하고 Windows queue가 속한 cluster에서 실행합니다. self-hosted agent의 Git URL rewrite가 이 HTTPS checkout을 SSH로 전환하며 agent key로 정확한 commit을 가져옵니다. Origin branch push로 자동 시작한 [build #17](https://buildkite.com/jaff2836-org/windows-ci/builds/17)의 Python 3.12.10에서 문서·stable locale 검사, 전체 unittest 176개, native junction probe가 통과했고, 해당 commit의 Origin 성공 check 게시도 확인했습니다. agent의 WindowsApps `python3` 별칭은 실행되지 않아 공식 Python NuGet CI 배포본을 `%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe`에 배치하고 해당 경로를 사용합니다. Probe는 현행 installer가 junction 경로를 허용한다고 기록하므로 T-017 구현·회귀가 아직 필요합니다. PR 자동 trigger 설정은 켰지만 실제 PR 이벤트에서의 자동 시작은 아직 확인하지 않았습니다. agent 인증 비밀값은 저장소와 로그에 기록하지 않습니다.
+[`windows-ci`](https://buildkite.com/jaff2836-org/windows-ci)는 [`pipeline.yml`](../.buildkite/pipeline.yml)을 `jaff2836-worker-windows` queue에서 실행합니다. WindowsApps의 실행 불가 `python3` 별칭 대신 공식 Python 3.12.10 NuGet CI 배포본을 `%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe`에 배치했습니다. root docs·stable locale 검사와 전체 unittest 뒤 T-017 native junction probe를 실행합니다. Probe는 설계 재현용 진단 단계로 현행 installer가 junction 경로를 허용한다고 기록합니다. 경계 회귀 검증으로 승격할 때 허용·거부 결과를 명시적으로 단언해야 합니다.
+
+[`linux-ci`](https://buildkite.com/jaff2836-org/linux-ci)는 [`linux.yml`](../.buildkite/linux.yml)을 `jaff2836-worker-linux` queue에서 실행합니다. agent의 Python 3.13.5로 같은 root docs·stable locale 검사와 전체 unittest를 실행합니다. [Windows build #19](https://buildkite.com/jaff2836-org/windows-ci/builds/19)와 [Linux build #4](https://buildkite.com/jaff2836-org/linux-ci/builds/4)는 같은 commit `ec325e34faa405546f5f4916aa01c47c6f4abe8c`에서 자동 시작해 각각 unittest 176개와 Origin 성공 check를 확인했습니다.
 
 ## 7. 제공하지 않는 것
 
