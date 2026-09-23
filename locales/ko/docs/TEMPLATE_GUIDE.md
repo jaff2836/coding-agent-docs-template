@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.3.1
+- **Template version:** 2.3.2
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -341,6 +341,12 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v2.3.2 — 새 경로·빈 디렉터리 install 대상
+
+- `installer.py install`은 새 경로 또는 읽을 수 있는 빈 디렉터리만 허용합니다. artifact와 무관한 경로를 포함해 비어 있지 않거나 읽을 수 없는 대상은 template member를 쓰기 전에 거부합니다.
+- 기존 저장소는 선택한 release의 읽기 전용 `adopt` 명령으로 대상 밖에 artifact와 경로별 plan을 만들며, 대상 파일을 자동 병합·삭제·수정하지 않습니다.
+- 적용할 artifact 변경은 이 문서의 install/adopt 경계와 `scripts/installer.py`입니다. 새 경로와 빈 디렉터리 설치가 성공하는지, 비어 있지 않은 대상에서 install이 실패해도 대상 tree가 그대로인지 확인하세요.
 
 ### v2.3.1 — Windows release 도구 호환성
 

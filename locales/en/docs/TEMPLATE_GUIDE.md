@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.3.1
+- **Template version:** 2.3.2
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -341,6 +341,12 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v2.3.2 — New-or-Empty Install Target
+
+- `installer.py install` accepts only a new path or a readable empty directory. It rejects every non-empty or unreadable target before writing template members, including paths unrelated to the artifact.
+- For an existing repository, use the selected release's read-only `adopt` command to produce an artifact and a per-path plan outside the target; it never merges, deletes, or writes the target automatically.
+- The artifact change to apply is `scripts/installer.py` with this guide's install/adopt boundary. Verify a new path and an empty directory install successfully, and verify a non-empty target remains unchanged when installation fails.
 
 ### v2.3.1 — Windows Release Tool Portability
 
