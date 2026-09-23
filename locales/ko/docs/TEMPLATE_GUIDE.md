@@ -346,7 +346,8 @@ git status --short --untracked-files=all
 
 - `installer.py install`은 새 경로 또는 읽을 수 있는 빈 디렉터리만 허용합니다. artifact와 무관한 경로를 포함해 비어 있지 않거나 읽을 수 없는 대상은 template member를 쓰기 전에 거부합니다.
 - 기존 저장소는 선택한 release의 읽기 전용 `adopt` 명령으로 대상 밖에 artifact와 경로별 plan을 만들며, 대상 파일을 자동 병합·삭제·수정하지 않습니다.
-- 적용할 artifact 변경은 이 문서의 install/adopt 경계와 `scripts/installer.py`입니다. 새 경로와 빈 디렉터리 설치가 성공하는지, 비어 있지 않은 대상에서 install이 실패해도 대상 tree가 그대로인지 확인하세요.
+- 기존 적용 저장소에 반영할 artifact 변경은 `docs/TEMPLATE_GUIDE.md`와 `docs/DOCS_GUIDE.md`로 한정됩니다. 새 경로·빈 디렉터리 `install` 제한은 선택한 release의 별도 `installer.py` asset이 강제합니다.
+- 적용 저장소에서 확인할 것: 현재 저장소에는 `adopt`를 사용하고, `install`은 별도의 새 경로나 빈 디렉터리에만 사용하세요.
 
 ### v2.3.1 — Windows release 도구 호환성
 

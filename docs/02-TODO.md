@@ -38,7 +38,7 @@
 - [ ] **T-018 `v2.3.2` release 준비**
   - 기준: D-010·T-016이 Origin PR #34 merge `a105740ca16ea3e0b6092a7331bf60b89b06f4a3`에 통합된 source입니다. 공개 `v2.3.1` asset은 변경하지 않습니다.
   - [x] template version, root CHANGELOG와 en·ko locale release history를 `2.3.2` 후보로 정렬했습니다.
-  - [x] 작업 트리의 root docs, stable locale, 전체 unittest 176개와 `git diff --check`를 통과했습니다. 이 검증은 아직 미커밋 작업 트리 기준이며 candidate의 exact-source 검증은 아래 단계에 남습니다.
+  - [x] release-prep 브랜치에서 root docs, stable locale, 전체 unittest 176개, en·ko artifact checker와 각 53개 테스트, clean exact source의 5개 asset 2회 byte 동일성 및 `git diff --check`를 확인했습니다. candidate의 tag·draft 검증은 아래 단계에 남습니다.
   - [ ] release-prep PR을 Origin `main`에 통합합니다.
   - [ ] 통합된 Origin `main`의 exact commit을 GitHub `main`에도 반영해 두 remote를 동기화합니다. 현재 GitHub `main`은 `fe1d941c8aa7de81e032f287b6566e240d6b5f92`로 Origin보다 뒤처져 있습니다.
   - [ ] maintainer가 annotated `v2.3.2` tag와 5개 asset의 GitHub draft release를 준비한 뒤, clean exact checkout에서 candidate gate를 통과시킵니다.

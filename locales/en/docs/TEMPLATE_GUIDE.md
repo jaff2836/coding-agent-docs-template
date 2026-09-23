@@ -346,7 +346,8 @@ Use this history to identify changes that an adopted repository has not yet appl
 
 - `installer.py install` accepts only a new path or a readable empty directory. It rejects every non-empty or unreadable target before writing template members, including paths unrelated to the artifact.
 - For an existing repository, use the selected release's read-only `adopt` command to produce an artifact and a per-path plan outside the target; it never merges, deletes, or writes the target automatically.
-- The artifact change to apply is `scripts/installer.py` with this guide's install/adopt boundary. Verify a new path and an empty directory install successfully, and verify a non-empty target remains unchanged when installation fails.
+- The artifact changes to apply in an adopted repository are limited to `docs/TEMPLATE_GUIDE.md` and `docs/DOCS_GUIDE.md`; the selected release's separate `installer.py` asset enforces the new-or-empty `install` target.
+- Verify in the adopting repository: use `adopt` for its existing tree, and reserve `install` for a separate new path or empty directory.
 
 ### v2.3.1 — Windows Release Tool Portability
 
