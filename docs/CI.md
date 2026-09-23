@@ -109,7 +109,7 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 
 [`windows-ci`](https://buildkite.com/jaff2836-org/windows-ci)는 [`pipeline.yml`](../.buildkite/pipeline.yml)을 `jaff2836-worker-windows` queue에서 실행합니다. WindowsApps의 실행 불가 `python3` 별칭 대신 공식 Python 3.12.10 NuGet CI 배포본을 `%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe`에 배치했습니다. root docs·stable locale 검사와 전체 unittest 뒤 T-017 native junction probe를 실행합니다. Probe는 설계 재현용 진단 단계로 현행 installer가 junction 경로를 허용한다고 기록합니다. 경계 회귀 검증으로 승격할 때 허용·거부 결과를 명시적으로 단언해야 합니다.
 
-[`linux-ci`](https://buildkite.com/jaff2836-org/linux-ci)는 [`linux.yml`](../.buildkite/linux.yml)을 `jaff2836-worker-linux` queue에서 실행합니다. agent의 Python 3.13.5로 같은 root docs·stable locale 검사와 전체 unittest를 실행합니다. [Windows build #19](https://buildkite.com/jaff2836-org/windows-ci/builds/19)와 [Linux build #4](https://buildkite.com/jaff2836-org/linux-ci/builds/4)는 같은 commit `ec325e34faa405546f5f4916aa01c47c6f4abe8c`에서 자동 시작해 각각 unittest 176개와 Origin 성공 check를 확인했습니다.
+[`linux-ci`](https://buildkite.com/jaff2836-org/linux-ci)는 [`linux.yml`](../.buildkite/linux.yml)을 `jaff2836-worker-linux` queue에서 실행합니다. agent의 Python 3.13.5로 같은 root docs·stable locale 검사와 전체 unittest를 실행합니다. [Windows build #20](https://buildkite.com/jaff2836-org/windows-ci/builds/20)와 [Linux build #5](https://buildkite.com/jaff2836-org/linux-ci/builds/5)는 같은 commit `8144f35295a45d2035480249398797ca2155436a`에서 자동 시작해 각각 unittest 176개와 Origin 성공 check를 확인했습니다.
 
 ## 7. 제공하지 않는 것
 
