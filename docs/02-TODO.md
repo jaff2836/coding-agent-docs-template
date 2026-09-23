@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-019 `v2.3.2` 공개 기록과 지원 검증
-- **Goal:** 공개한 immutable Latest release의 asset과 en·ko 원격 적용 경로를 검증하고 근거를 통합함
-- **Target:** `v2.3.2` exact source `4c6a798885404fdf5170769e271f7d06f4959234`의 published gate와 Origin release-record PR 통합
-- **Status:** In Progress — `v2.3.2`를 공개했고 보완한 verifier의 published gate가 통과했습니다. 이 기록 PR의 Origin `main` 통합이 남았습니다.
-- **다음 마일스톤:** T-019 통합 뒤 T-017 Windows junction 경계를 먼저 재현·설계하고, T-023 release 후보 회귀를 별도 PR로 진행합니다.
+- **Name:** T-017 Windows junction 경계 검증
+- **Goal:** native Windows 재현과 지원 Python 범위·fail-closed 설계를 확정함
+- **Target:** [T-017 Draft 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)와 별도 구현 PR의 검증 범위 합의
+- **Status:** In Progress — Windows Python 3.12 이상과 Buildkite self-hosted Windows runner를 선택했습니다. Pipeline 설정·진단 probe, queue cluster 조회, agent checkout 준비는 확인했지만 조직 pipeline 생성, native 재현과 전체 경계 설계 합의는 미완료입니다.
+- **다음 마일스톤:** T-017 설계·구현 뒤 T-023 release 후보 회귀를 별도 PR로 진행합니다. T-023 통합 전에는 다음 release candidate를 준비하지 않습니다.
 
 ## 운영 규칙
 
@@ -35,15 +35,11 @@
 
 ## In Progress
 
-- [ ] **T-019 `v2.3.2` 공개 기록과 지원 검증**
-  - [x] T-018 exact source `4c6a798885404fdf5170769e271f7d06f4959234`의 candidate가 통과한 5개 asset을 교체 없이 [immutable Latest `v2.3.2`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.2)로 공개했습니다.
-  - [x] 공개 verifier가 새 install 거부 문구를 이전 문구만으로 판정하던 문제를 수정하고, artifact와 겹치는 파일 및 무관한 파일이 있는 대상 모두에서 거부·tree 불변을 확인합니다.
-  - [x] clean exact source를 `--root`로 지정한 보완 verifier의 `published --base-version 2.3.1`이 통과했습니다. Latest·immutable metadata, 게시 전과 같은 5개 asset, latest·exact의 en·ko list/install/export/adopt, base-aware upgrade와 대상 불변을 확인했습니다.
-  - [ ] release record PR을 Origin `main`에 통합합니다.
+- [ ] **T-017 Windows junction 경계 검증** — Windows Python 3.12 이상과 Buildkite runner 선택을 반영했습니다. pipeline 설정과 진단 probe를 준비했고 queue cluster와 self-hosted checkout 준비를 확인했습니다. Origin pipeline 생성과 native 재현, 전체 설계 합의를 [변경 초안](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)에서 진행합니다. 구현·회귀 검증은 합의 뒤 별도 PR로 진행합니다.
 
 ## Next
 
-없음.
+- [ ] **T-023 release 후보의 verifier·installer 계약 회귀** — T-017 구현 통합 뒤 진행합니다. `v2.3.2` 공개 직후 verifier가 실제 installer의 새 거부 문구를 구형 fixture로만 판정해 실패한 사례를 release 전 회귀로 막습니다. 실제 installer의 새·빈 대상 허용과 겹치거나 무관한 파일이 있는 대상 거부·tree 불변을 verifier 판정과 같은 local fixture에서 대조하고, mock 오류 문구만으로 통과하지 않도록 합니다. 기존 candidate의 로컬 테스트 gate에 포함하고, **다음 release candidate 전에 통합합니다.** Release mutation, 새 production dependency, 특정 CI runner 연결은 포함하지 않습니다.
 
 ## Blocked
 
@@ -56,9 +52,9 @@
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 1 | `codex/v2.3.2-release-record` | T-019: immutable asset과 published E2E를 기록 | **In Progress** — 공개·검증 완료, 기록 PR 통합 대기 |
-| 2 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction·최소 Python 범위를 재현·설계 | 승인된 해결책은 별도 구현 PR |
-| 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | T-019 verifier 보완 통합 뒤; 기존 candidate의 로컬 gate에 포함, 게시 권한 추가 없음 |
+| 1 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction을 재현·설계 | **In Progress** — Buildkite pipeline/probe와 checkout 준비 확인; pipeline 생성·실행과 전체 설계 미완료 |
+| 2 | T-017 구현 PR | T-017: 승인된 경계와 native 회귀를 구현 | 설계 합의와 native 재현 뒤 진행 |
+| 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | T-017 구현·T-019 verifier 보완 통합 뒤; **다음 release candidate 전 통합 필수**; 기존 candidate의 로컬 gate에 포함, 게시 권한 추가 없음 |
 | 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | D-010 계약은 바꾸지 않음; 다음 patch release 후보 |
 | 5 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
 | 6 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
@@ -68,11 +64,9 @@
 - [ ] **T-020 install onboarding 진단·안내 평가** — PR #34 리뷰의 C34-001과 parent-directory 안내 권고를 Backlog로 보존합니다. 현재 D-010 계약과 R-002는 충족하므로 결함 수정으로 분류하지 않으며, `git init` 순서·새/빈 대상의 선택·부모 조건을 더 명확히 할 가치가 있는지 진단·README·locale guide·회귀를 한 PR에서 검토합니다.
 - [ ] **T-021 install preflight 순서 재설계** — release·archive 검증 뒤에 대상 preflight를 하는 D-010 §2.3을 유지할지, 대상 진단과 불필요한 다운로드를 우선할지 설계합니다. 신뢰 검증 순서와 오류 우선순위가 바뀌므로 설계 합의 전에는 구현하지 않습니다.
 - [ ] **T-022 install 대상 불변조건 등록 평가** — 비어 있지 않거나 확인 불가한 대상에 template 파일을 추가하지 않는 규칙을 `docs/REVIEW.md`와 `.cursor/BUGBOT.md`의 project invariant로 올릴지 검토합니다. 채택하면 두 사본과 checker 계약을 함께 검증합니다.
-- [ ] **T-023 release 후보의 verifier·installer 계약 회귀** — `v2.3.2` 공개 직후 verifier가 실제 installer의 새 거부 문구를 구형 fixture로만 판정해 실패한 사례를 release 전 회귀로 막습니다. 실제 installer의 새·빈 대상 허용과 겹치거나 무관한 파일이 있는 대상 거부·tree 불변을 verifier 판정과 같은 local fixture에서 대조하고, mock 오류 문구만으로 통과하지 않도록 합니다. 기존 candidate의 로컬 테스트 gate에서 실행하며 release mutation, 새 production dependency, 특정 CI runner 연결은 포함하지 않습니다.
 
 - [ ] **T-013 D-009 운영 계약 회귀 방지** — `project-analysis`에 한정한 source root↔`locales/ko` 사본 동등성 검사, source/artifact checker CLI 경계와 source changelog의 공개 전 heading 예외, root `.gitattributes`가 maintainer checkout의 LF를 고정하는 목적, locale별 placeholder 검색 어휘의 단일 출처·검증 방식을 함께 설계합니다. `design`·`review-round` skill 사본은 같은 동등성 계약으로 일반화하지 않습니다.
 - [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다.
-- [ ] **T-017 Windows junction 경계 검증** — `Path.is_symlink()`가 Windows directory junction을 탐지하지 못해 installer의 `install`·`adopt`·`export` 대상 경계를 우회할 수 있다는 PR #30 C30-002를 native Windows에서 재현합니다. 최소 지원 Python 범위를 먼저 정하고 그 범위에서 symlink와 junction을 함께 fail-closed로 처리하는 방법과 회귀 테스트를 설계한 뒤 별도 변경으로 진행합니다.
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
 
 ## Cancelled
@@ -82,6 +76,10 @@
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-019 `v2.3.2` 공개 기록과 지원 검증**
+  - 통합 결과: T-018 exact source `4c6a798885404fdf5170769e271f7d06f4959234`의 candidate가 통과한 5개 asset을 교체 없이 [immutable Latest `v2.3.2`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.2)로 공개했습니다. verifier의 새 install 거부 문구 대응과 공개 기록은 Origin PR #36 merge `cc791be2370e76930184e473061312518d5fe221`에 통합하고 GitHub `main`에도 non-force fast-forward로 반영했습니다.
+  - 검증 근거: clean exact source를 `--root`로 지정한 보완 verifier의 `published --base-version 2.3.1`이 통과했습니다. Latest·immutable metadata와 게시 전과 같은 5개 asset, latest·exact의 en·ko list/install/export/adopt, base-aware upgrade, artifact와 겹치거나 무관한 파일이 있는 install 대상의 거부·tree 불변을 확인했습니다. 두 remote `main`이 merge commit을 가리킵니다.
 
 - [x] **T-001 다국어 템플릿 source와 선택형 배포 도입**
   - 변경-ID: `2026-09-09-multilingual-template`

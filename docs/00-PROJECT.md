@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** Active — immutable Latest `v2.3.2` 공개·지원 검증 완료, T-019 기록 통합 중
+- **Status:** Active — immutable Latest `v2.3.2` 공개·지원 검증과 T-019 기록 통합 완료
 - **Owner:** Chae Sangwon
 - **Last reviewed:** 2026-09-23
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
@@ -34,7 +34,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 - D-008의 base-aware `adopt`와 release verifier 후속은 Origin PR #24·#25, release 준비는 PR #26 merge `70a5a7a9e97fa5a89609a120ad69bced7e8ae1ac`로 통합됐습니다. 공개 en·ko upgrade E2E와 `claude-review-e2e@26c531beb65eaef8f524a00bcf8f06c52445c3d8`의 v2.1→v2.2 report 독립 대조를 통과했고 consumer tree는 바뀌지 않았습니다.
 - D-009의 locale artifact guide 정본화, root maintainer addendum, 선택형 프로젝트 changelog 안내와 skill Metadata 제거는 Origin PR #28 merge `5066d821084545554588182f5250cc9dea12e444`와 `v2.3.0` artifact에 통합됐습니다.
 - T-015의 Windows artifact 정렬·materialized mode·LF checkout·symlink fixture 보완은 Origin PR #30 merge `3b4bf674da8f7e8c13b2a69c45b2cf1f8ce54756`에 통합됐습니다. PR head `a64a8897673924abe1c110baad3b2a6ecc8aa811`의 native Windows·Python 3.14.7에서 전체 unittest 174개(16개 skip)와 en·ko package·export artifact 검증이 통과했습니다. exact `v2.3.1` source `3460e4ccd0065bcd8a24fd64a6cd7135293926a0`의 published E2E도 Linux와 native Windows에서 모두 통과해 T-015를 완료했습니다.
-- D-010의 새 경로·빈 디렉터리 `install` 계약(T-016)은 Origin PR #34 merge commit `a105740ca16ea3e0b6092a7331bf60b89b06f4a3`에 통합됐고, PR #35 merge `4c6a798885404fdf5170769e271f7d06f4959234`의 `v2.3.2` asset으로 공개됐습니다. 두 remote `main`, annotated tag, draft candidate와 immutable published 검증이 통과했습니다. 공개 검증기의 새 거부 문구 대응은 T-019 기록 PR에서 보완합니다.
+- D-010의 새 경로·빈 디렉터리 `install` 계약(T-016)은 Origin PR #34 merge commit `a105740ca16ea3e0b6092a7331bf60b89b06f4a3`에 통합됐고, PR #35 merge `4c6a798885404fdf5170769e271f7d06f4959234`의 `v2.3.2` asset으로 공개됐습니다. 두 remote `main`, annotated tag, draft candidate와 immutable published 검증이 통과했습니다. 공개 검증기의 새 거부 문구 대응과 지원 검증 기록은 Origin PR #36 merge `cc791be2370e76930184e473061312518d5fe221`에 통합하고 GitHub `main`에도 fast-forward로 반영했습니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -195,7 +195,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 ## 11. Open Questions
 
-`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. D-010·T-016의 `install` 대상 계약은 `v2.3.2`에 포함됐고 T-018 candidate와 T-019 공개·published 검증을 통과했습니다. T-019 기록의 Origin 통합이 남았습니다. install 안내·preflight 순서·리뷰 불변조건 권고는 Backlog의 독립 PR 단위로 둡니다. Windows junction 경계와 지원 Python 범위는 T-017, 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
+`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. D-010·T-016의 `install` 대상 계약은 `v2.3.2`에 포함됐고 T-018 candidate와 T-019 공개·published 검증 및 기록 통합을 마쳤습니다. install 안내·preflight 순서·리뷰 불변조건 권고는 Backlog의 독립 PR 단위로 둡니다. Windows junction 경계와 지원 Python 범위는 [T-017 Draft](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)에서 설계 중입니다. Buildkite self-hosted Windows pipeline/probe 설정과 queue·checkout 준비를 확인했지만 Origin pipeline 생성과 native 실행은 아직 완료되지 않았습니다. T-023 release 후보 회귀가 다음 candidate의 선행조건입니다. 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
 
 ## 12. Rejected or Deferred Ideas
 

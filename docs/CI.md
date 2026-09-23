@@ -1,14 +1,14 @@
 # CI 품질 게이트
 
-이 문서는 **무엇을, 어떤 순서로, 성공·실패를 어떻게 판정하는지**를 정합니다. GitHub Actions, Buildkite, 그 외 러너 중 무엇을 쓰는지는 적용 프로젝트가 고릅니다. 이 템플릿은 특정 제품의 pipeline 파일·워크플로 YAML·플러그인 목록을 포함하지 않습니다.
+이 문서는 **무엇을, 어떤 순서로, 성공·실패를 어떻게 판정하는지**를 정합니다. 이 저장소의 Windows 검증용 Buildkite 설정은 `.buildkite/pipeline.yml`에 준비했으며, 실제 pipeline 연결과 실행은 아직 확인되지 않았습니다. 템플릿 적용 프로젝트가 GitHub Actions, Buildkite, 그 외 러너 중 무엇을 쓸지는 각 프로젝트가 고릅니다.
 
 원격 CI는 필수가 아닙니다. CI가 없으면 같은 게이트를 로컬에서 실행하고, 미사용 이유와 대체 검증을 [02-TODO.md](./02-TODO.md)의 통합 완료 조건 또는 프로젝트 README에 남깁니다.
 
 ## Metadata
 
 - **Status:** Active
-- **Owner:** 프로젝트에 맞게 작성
-- **Last reviewed:** YYYY-MM-DD
+- **Owner:** Repository maintainers
+- **Last reviewed:** 2026-09-23
 - **Review cadence:** 품질 게이트 구성 또는 로컬 명령이 바뀔 때
 
 명령 문자열의 정본은 루트 [AGENTS.md](../AGENTS.md)와 적용 프로젝트 README입니다. 한쪽만 바꾸지 마세요. 기계적 규칙은 리뷰 finding이 아니라 이 게이트로 강제합니다. 판정 기준은 [REVIEW.md](./REVIEW.md) §12입니다.
@@ -103,9 +103,15 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 - CI에서만 통과하고 로컬 문서에 없는 검사라면, 명령을 AGENTS.md·README에 올리거나 CI에서 제거합니다.
 - `scripts/check-docs.py`를 바꾸면 로컬에서 G-docs-test를 실행한 뒤에만 완료로 보고합니다.
 
-## 6. 제공하지 않는 것
+## 6. Buildkite Windows 검증
 
-- GitHub Actions 워크플로 파일, Buildkite pipeline 파일, 기타 러너 설정
+`.buildkite/pipeline.yml`은 Origin 연결 파이프라인에서 `jaff2836-worker-windows` self-hosted queue를 대상으로 실행하도록 구성합니다. 이 queue의 Windows Python 3.12 이상에서 root docs, stable locale source와 전체 unittest를 실행하고, T-017 junction probe로 fixture 생성과 현행 경계 판정을 기록합니다. Probe는 설계 재현용 진단 단계이며, installer 경계 회귀 검증으로 승격할 때 허용·거부 결과를 명시적으로 단언해야 합니다.
+
+파이프라인은 Origin의 Buildkite repository provider에서 이 Origin 저장소를 선택하고 branch·pull request trigger와 check publication을 켜야 합니다. 또한 기존 Windows queue를 소유한 cluster에 pipeline을 연결해야 합니다. Self-hosted Windows agent는 private Origin 저장소 checkout을 위해 agent service 계정에 read-only SSH 접근을 갖춰야 합니다. Origin의 native checkout 자격 증명은 Buildkite hosted agents에만 적용됩니다. 파이프라인 생성, checkout 및 Origin check 게시의 실제 연결 검증은 아직 완료되지 않았습니다.
+
+## 7. 제공하지 않는 것
+
+- 템플릿 artifact에 포함할 GitHub Actions 워크플로 파일, Buildkite pipeline 파일, 기타 러너 설정
 - 자동 리뷰 실행 잡, 리뷰 프롬프트, 봇 토큰 설정
 - 배포·릴리스·tag 잡. 품질 게이트와 배포 권한을 한 잡에 섞지 마세요
 - `scripts/check-docs.py`를 다른 언어로 다시 짠 복제 구현
