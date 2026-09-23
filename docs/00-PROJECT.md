@@ -195,7 +195,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 ## 11. Open Questions
 
-`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. D-010·T-016의 `install` 대상 계약은 `v2.3.2`에 포함됐고 T-018 candidate와 T-019 공개·published 검증 및 기록 통합을 마쳤습니다. install 안내·preflight 순서·리뷰 불변조건 권고는 Backlog의 독립 PR 단위로 둡니다. Windows junction 경계와 지원 Python 범위는 [T-017 Draft](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)에서 설계 중입니다. Buildkite pipeline `windows-ci`는 연결된 Origin 저장소의 canonical URL을 agent에서 SSH로 checkout해 self-hosted Windows Python 3.12.10의 전체 gate·native probe를 통과했고 Origin branch push 자동 trigger와 성공 check 게시도 확인했습니다. 현행 installer가 junction 경계를 허용하는 재현 결과는 T-017 구현의 근거이며, PR 자동 trigger와 전체 설계 합의는 별도 확인이 남았습니다. T-023 release 후보 회귀가 다음 candidate의 선행조건입니다. 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
+`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. D-010·T-016의 `install` 대상 계약은 `v2.3.2`에 포함됐고 T-018 candidate와 T-019 공개·published 검증 및 기록 통합을 마쳤습니다. install 안내·preflight 순서·리뷰 불변조건 권고는 Backlog의 독립 PR 단위로 둡니다. Windows junction 경계와 지원 Python 범위는 [T-017 Draft](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)에서 설계 중입니다. Origin의 Buildkite Windows·Linux pipeline은 정확한 head에서 전체 gate를 통과했고, Windows Python 3.12.10에서 native probe로 현행 installer의 junction 허용을 재현했습니다. PR #37을 연 직후에는 기존 head check가 표시됐고 새 build는 관찰되지 않았지만, 이후 PR head push는 PR 정보가 연결된 두 build와 성공 check를 자동 생성했습니다. 두 check는 Origin `main` 병합 필수 조건입니다. T-017의 전체 경계 설계 합의는 남았고, T-023 release 후보 회귀가 다음 candidate의 선행조건입니다. 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
 
 ## 12. Rejected or Deferred Ideas
 

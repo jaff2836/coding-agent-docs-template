@@ -72,11 +72,15 @@ Python 3.12부터 제공합니다. Buildkite [build #12](https://buildkite.com/j
 - Buildkite가 선정됐으므로 T-017 Origin PR은 정확한 head SHA에서 이 Windows
   queue를 실행해야 합니다. GitHub의 후속 fast-forward 검증은 별도 trigger로
   구분합니다. Buildkite의 Origin provider는 Origin 저장소 PR trigger와 check
-  게시를 지원합니다. branch push의 자동 build 생성과 Origin check 게시 성공은
-  확인했고, PR 이벤트의 자동 build 생성은 아직 관찰하지 못했습니다. private
-  checkout은 agent의 SSH key로 해결됐습니다.
+  게시를 지원합니다. PR #37을 연 직후에는 같은 head의 기존 branch check가
+  표시됐고 새 build는 관찰되지 않았습니다. 이후 PR head push는 Windows·Linux
+  build를 자동 시작해 두 성공 check를 게시했습니다. private checkout은
+  agent의 SSH key로 해결됐습니다.
 - 기존 코드가 직접 검사하는 경로만 고칠지, 선택된 root/output의 모든 기존
-  상위 component도 검사할지 전체 설계 합의가 필요합니다. 후자를 권고합니다.
+  상위 component도 검사할지 전체 설계 합의가 필요합니다. 모든 상위 component를
+  거부하면 POSIX의 기존 상위 symlink 경로와 Windows의 junction 기반 사용자
+  프로필을 막을 수 있으므로, 위협 범위와 호환성 영향을 확인하기 전에는 확정하지
+  않습니다.
 
 ## 2. Spec (제안)
 
@@ -87,7 +91,7 @@ Python 3.12부터 제공합니다. Buildkite [build #12](https://buildkite.com/j
 | R-001 | Windows installer의 Python 하한은 3.12입니다. | Windows Python 3.11 이하에서 installer 명령 실행 | 네트워크 조회나 target 접근 전에 명확한 오류로 중단합니다. 3.12 이상과 비-Windows 동작은 유지합니다. | 지원 버전 경계 단위 검사와 native 3.12 이상 실행 |
 | R-002 | `install` root·부모·member 디렉터리 경로의 symlink/junction을 거부합니다. | root 자체 또는 새 root의 부모가 junction; `_write_members`의 방어적 member 검사에 junction이 있는 경우 | 쓰기 전에 거부하고 연결된 tree와 원래 target을 보존합니다. 새·빈 실제 디렉터리는 성공합니다. | native junction fixture, target·외부 snapshot |
 | R-003 | `adopt` root와 분류 대상의 symlink/junction을 따라가지 않습니다. | root junction, member의 부모 junction, 최종 member junction | root는 거부하고 member는 blocked 상태로 분류하며 바깥 파일은 읽지 않습니다. target 불변을 유지합니다. | native fixture, report 및 바깥 tree 검사 |
-| R-004 | `export`와 `adopt` output의 symlink/junction을 거부합니다. | output 또는 그 상위 경로가 junction | staging·게시 전에 중단하고 연결된 tree에 파일을 만들지 않습니다. | native fixture, 두 tree snapshot |
+| R-004 | `export`와 `adopt` output의 symlink/junction을 거부합니다. | output 자체 또는 현행 검사 범위인 직접 부모가 junction | staging·게시 전에 중단하고 연결된 tree에 파일을 만들지 않습니다. | native fixture, 두 tree snapshot |
 | R-005 | 문서와 release 검증이 변경된 지원 범위와 경계를 반영합니다. | Windows 설치 안내 및 다음 release candidate | Python 하한과 새 installer의 경계가 일치하고, candidate 전 테스트에서 회귀가 드러납니다. | README en·ko, installer 테스트, candidate gate |
 
 ### 2.2 조사할 현재 경계
@@ -109,22 +113,24 @@ Python 3.12부터 제공합니다. Buildkite [build #12](https://buildkite.com/j
 | 대안 | 장점 | 비용·위험 | 판정 |
 |---|---|---|---|
 | A. Windows Python 3.12+에서 `Path.is_junction()`을 symlink 검사와 결합 | 표준 라이브러리의 명시적 junction 판정, 작은 구현 | 이전 Windows Python 지원 중단; 검사 위치를 빠뜨리면 우회 | **권고** — 사용자 선택한 하한과 일치 |
-| B. 기존 Python 범위에서 `lstat().st_file_attributes`의 reparse bit 검사 | 구형 Windows Python에 적용 가능, 알려지지 않은 reparse point도 거부 | 플랫폼 속성·지원 하한을 별도로 설명해야 하고 더 넓은 종류를 거부 | Python 3.12 선택에 따라 보류 |
+| B. 기존 Python 범위에서 `lstat().st_file_attributes`의 reparse bit 검사 | 구형 Windows Python에 적용 가능, 알려지지 않은 reparse point도 거부 | 플랫폼 속성·지원 하한을 별도로 설명해야 하고 OneDrive Files On-Demand placeholder까지 거부할 가능성이 있어 native 확인 필요 | Python 3.12 선택에 따라 보류 |
 | C. 기존 검사 유지 또는 `resolve()`의 경로 중첩 검사에 의존 | 코드 변경 적음 | junction 종류 자체를 거부하지 못하고 `adopt` member 분류에 적용되지 않음 | 기각 제안 |
 
-권고 구현은 Windows Python 하한을 명확히 검사한 뒤, `Path.is_symlink()`과
-`Path.is_junction()`을 한 경계 판정 함수에서 사용하고 root·output의 **모든
-기존 상위 component** 및 member 검사·쓰기·adoption 분류에 적용합니다. 없는
+구현 제안은 Windows Python 하한을 명확히 검사한 뒤, `Path.is_symlink()`과
+`Path.is_junction()`을 한 경계 판정 함수에서 사용합니다. 우선 현행 검사 범위인
+root·output 자체, 새 root·output의 직접 부모와 member·중간 디렉터리에 적용하고,
+그보다 위의 기존 component까지 넓힐지는 호환성 근거와 함께 합의합니다. 없는
 component는 기존 새 경로 규칙에 따라 허용합니다. 경로 확인 실패는 허용으로
 취급하지 않습니다. POSIX 경로의 기존 검사는 유지합니다. 검사 대상과 오류
-메시지는 native 재현 뒤 최종 확정합니다.
+메시지는 전체 설계 합의 뒤 최종 확정합니다.
 
 ### 2.4 호환성·배포·rollback
 
 - 새 installer가 포함된 다음 release부터 Windows의 Python 3.11 이하 호출은
   중단됩니다. `v2.3.2`와 그 이전 immutable installer는 바꾸지 않습니다.
-- junction 또는 junction 상위 경로를 통과하던 호출은 실패합니다. 사용자는 실제
-  디렉터리를 대상으로 재실행할 수 있습니다.
+- 검사 대상 경로의 junction을 통과하던 호출은 실패합니다. 사용자는 실제
+  디렉터리를 대상으로 재실행할 수 있습니다. 더 위의 기존 component는
+  전체 설계 합의 전까지 거부 범위에 넣지 않습니다.
 - Linux/macOS 지원 범위를 의도적으로 바꾸지 않습니다. runtime 하한을
   Windows에서만 적용하므로 OS 분기를 단위·native 검사로 확인합니다.
 - 설계가 잘못되면 새 release의 후속 patch에서 보완하며 공개 asset은 교체하지
@@ -139,8 +145,10 @@ component는 기존 새 경로 규칙에 따라 허용합니다. 경로 확인 �
    실행해야 하며, GitHub의 후속 fast-forward 검증은 별도 trigger로 구분합니다.
 2. 재현과 전체 설계에 사용자 합의를 받은 뒤 별도 구현 PR에서 경계 판정을
    공유 지점에 추가하고 `install`·`adopt`·`export`의 모든 호출자를 갱신합니다.
-3. 실제 junction fixture의 허용·거부·불변 회귀를 native Windows에서 실행하고,
-   기존 symlink 회귀와 Linux 전체 unittest, root docs, stable locale 검사,
+3. 빈 외부 디렉터리를 가리키는 `install` root junction을 포함해 실제 junction
+   fixture의 허용·거부·불변 회귀를 native Windows에서 실행하고, 외부 디렉터리가
+   계속 비어 있음을 단언합니다. 기존 symlink 회귀와 Linux 전체 unittest,
+   root docs, stable locale 검사,
    en·ko artifact 검사, `git diff --check`를 수행합니다.
 4. 다음 release candidate 전에 T-023 verifier·installer 계약 회귀 PR을
    통합하고, 그 뒤 exact source의 candidate gate를 실행합니다.

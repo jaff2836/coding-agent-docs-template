@@ -2,7 +2,7 @@
 
 이 문서는 **무엇을, 어떤 순서로, 성공·실패를 어떻게 판정하는지**를 정합니다. 이 저장소의 Windows·Linux Buildkite pipeline은 각각 `.buildkite/pipeline.yml`·`.buildkite/linux.yml`을 업로드해 실행합니다. 템플릿 적용 프로젝트가 GitHub Actions, Buildkite, 그 외 러너 중 무엇을 쓸지는 각 프로젝트가 고릅니다.
 
-원격 CI는 필수가 아닙니다. CI가 없으면 같은 게이트를 로컬에서 실행하고, 미사용 이유와 대체 검증을 [02-TODO.md](./02-TODO.md)의 통합 완료 조건 또는 프로젝트 README에 남깁니다.
+이 저장소의 Origin `main` 병합에는 Windows·Linux Buildkite check가 모두 필요합니다. 템플릿 적용 프로젝트에서는 원격 CI를 선택할 수 있습니다. 적용 프로젝트가 CI를 쓰지 않으면 같은 게이트를 로컬에서 실행하고, 미사용 이유와 대체 검증을 [02-TODO.md](./02-TODO.md)의 통합 완료 조건 또는 프로젝트 README에 남깁니다.
 
 ## Metadata
 
@@ -106,6 +106,8 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 ## 6. Buildkite Windows·Linux 검증
 
 두 pipeline은 연결된 Origin installation의 canonical repository URL `https://origin.cursor.com/git/jaff2836/ai-agent-docs-template.git`을 사용합니다. 각 self-hosted agent의 Git URL rewrite가 HTTPS checkout을 SSH로 전환하며 agent key로 정확한 commit을 가져옵니다. Origin branch push와 열린 PR의 head push에서 두 pipeline이 자동 시작하고 각각 Origin check를 게시합니다. `main` 대상 merge ruleset은 Buildkite 앱의 `jaff2836-org / windows-ci`와 `jaff2836-org / linux-ci` check suite를 필수로 요구합니다. PR #37을 연 직후에는 같은 head의 기존 branch check가 표시됐고 새 build는 관찰되지 않았습니다. 이후 PR head push에서는 PR 정보가 연결된 두 build가 자동 시작했습니다. GitHub push trigger는 구성하지 않았습니다. agent 인증 비밀값은 저장소와 로그에 기록하지 않습니다.
+
+필수 check가 없거나 agent 부재로 대기하면 병합을 보류합니다. agent를 복구한 뒤 Buildkite에서 정확한 head를 재실행하거나 변경된 PR head를 push하고, 두 Origin check의 성공을 확인합니다. 로컬 게이트만으로 이 저장소의 필수 check를 충족했다고 판단하지 않습니다.
 
 [`windows-ci`](https://buildkite.com/jaff2836-org/windows-ci)는 [`pipeline.yml`](../.buildkite/pipeline.yml)을 `jaff2836-worker-windows` queue에서 실행합니다. WindowsApps의 실행 불가 `python3` 별칭 대신 공식 Python 3.12.10 NuGet CI 배포본을 `%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe`에 배치했습니다. root docs·stable locale 검사와 전체 unittest 뒤 T-017 native junction probe를 실행합니다. Probe는 설계 재현용 진단 단계로 현행 installer가 junction 경로를 허용한다고 기록합니다. 경계 회귀 검증으로 승격할 때 허용·거부 결과를 명시적으로 단언해야 합니다.
 
