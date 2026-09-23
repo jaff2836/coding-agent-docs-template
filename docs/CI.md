@@ -1,6 +1,6 @@
 # CI 품질 게이트
 
-이 문서는 **무엇을, 어떤 순서로, 성공·실패를 어떻게 판정하는지**를 정합니다. 이 저장소의 Windows 검증용 Buildkite 설정은 `.buildkite/pipeline.yml`에 준비했으며, 실제 pipeline 연결과 실행은 아직 확인되지 않았습니다. 템플릿 적용 프로젝트가 GitHub Actions, Buildkite, 그 외 러너 중 무엇을 쓸지는 각 프로젝트가 고릅니다.
+이 문서는 **무엇을, 어떤 순서로, 성공·실패를 어떻게 판정하는지**를 정합니다. 이 저장소의 Windows 검증용 Buildkite pipeline은 `.buildkite/pipeline.yml`을 업로드해 실행합니다. 템플릿 적용 프로젝트가 GitHub Actions, Buildkite, 그 외 러너 중 무엇을 쓸지는 각 프로젝트가 고릅니다.
 
 원격 CI는 필수가 아닙니다. CI가 없으면 같은 게이트를 로컬에서 실행하고, 미사용 이유와 대체 검증을 [02-TODO.md](./02-TODO.md)의 통합 완료 조건 또는 프로젝트 README에 남깁니다.
 
@@ -78,7 +78,7 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 
 - [ ] 각 게이트의 명령 문자열이 AGENTS.md·README와 같다.
 - [ ] placeholder가 남은 명령은 실행하지 않으며, `N/A`이면 이유와 함께 이 표에서 건너뛴다.
-- [ ] G-docs를 유지하면 `python`/`python3` 중 러너에 있는 쪽으로 문서와 파이프라인이 같다.
+- [ ] G-docs를 유지하면 러너의 `python`/`python3` 또는 명시적 `python.exe` 경로로 문서의 동일한 스크립트를 실행한다.
 - [ ] 의존성 설치가 필요하면 Install 명령을 게이트 앞에만 둔다.
 
 ### 실패와 권한
@@ -105,9 +105,9 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 
 ## 6. Buildkite Windows 검증
 
-`.buildkite/pipeline.yml`은 Origin 연결 파이프라인에서 `jaff2836-worker-windows` self-hosted queue를 대상으로 실행하도록 구성합니다. 이 queue의 Windows Python 3.12 이상에서 root docs, stable locale source와 전체 unittest를 실행하고, T-017 junction probe로 fixture 생성과 현행 경계 판정을 기록합니다. Probe는 설계 재현용 진단 단계이며, installer 경계 회귀 검증으로 승격할 때 허용·거부 결과를 명시적으로 단언해야 합니다.
+`.buildkite/pipeline.yml`은 Origin 연결 파이프라인에서 `jaff2836-worker-windows` self-hosted queue를 대상으로 실행합니다. agent에 배치한 Python 3.12.10 CI runtime의 명시적 경로로 root docs, stable locale source와 전체 unittest를 실행하고, T-017 junction probe로 fixture 생성과 현행 경계 판정을 기록합니다. Probe는 설계 재현용 진단 단계이며, installer 경계 회귀 검증으로 승격할 때 허용·거부 결과를 명시적으로 단언해야 합니다.
 
-파이프라인은 Origin의 Buildkite repository provider에서 이 Origin 저장소를 선택하고 branch·pull request trigger와 check publication을 켜야 합니다. 또한 기존 Windows queue를 소유한 cluster에 pipeline을 연결해야 합니다. Buildkite pipeline `windows-ci`는 생성됐고 build #1이 Windows queue의 agent에 배정됐지만, self-hosted agent의 HTTPS checkout은 자격 증명 부재로 실패했습니다. Origin 문서의 clone URL은 HTTPS이므로 SSH key만 준비해서는 이 checkout을 인증할 수 없습니다. 권고하는 최소 권한 방식은 저장소에 `repository:contents:read` 권한을 승인한 Origin App의 App ID·installation ID·Ed25519 private key로 짧은 수명의 installation token을 발급해 pre-checkout 인증 경로에 안전하게 연결하는 것입니다. agent service 계정에 Origin CLI 사용자 인증을 구성하는 대안도 있습니다. private key와 token은 저장소나 로그에 두지 않습니다. 현재 native junction probe, 테스트 실행 및 Origin check 게시 성공은 검증되지 않았습니다.
+Buildkite pipeline [`windows-ci`](https://buildkite.com/jaff2836-org/windows-ci)는 Origin provider에 `ssh://git@origin.cursor.com/jaff2836/ai-agent-docs-template.git`을 연결하고 Windows queue가 속한 cluster에서 실행합니다. agent의 SSH key로 정확한 commit을 checkout했으며, [build #13](https://buildkite.com/jaff2836-org/windows-ci/builds/13)의 Python 3.12.10에서 문서·stable locale 검사, 전체 unittest 176개, native junction probe가 통과했습니다. agent의 WindowsApps `python3` 별칭은 실행되지 않아 공식 Python NuGet CI 배포본을 `%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe`에 배치하고 해당 경로를 사용합니다. Probe는 현행 installer가 junction 경로를 허용한다고 기록하므로 T-017 구현·회귀가 아직 필요합니다. branch·PR 자동 trigger와 Origin check 게시 설정은 켰지만, 해당 이벤트에서 실제 자동 시작과 check 게시까지는 확인하지 않았습니다. agent 인증 비밀값은 저장소와 로그에 기록하지 않습니다.
 
 ## 7. 제공하지 않는 것
 

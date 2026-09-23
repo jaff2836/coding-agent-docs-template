@@ -17,7 +17,7 @@
 - **Name:** T-017 Windows junction 경계 검증
 - **Goal:** native Windows 재현과 지원 Python 범위·fail-closed 설계를 확정함
 - **Target:** [T-017 Draft 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)와 별도 구현 PR의 검증 범위 합의
-- **Status:** In Progress — Windows Python 3.12 이상과 Buildkite self-hosted Windows runner를 선택했습니다. Pipeline 설정·진단 probe, queue cluster 조회, agent checkout 준비는 확인했지만 조직 pipeline 생성, native 재현과 전체 경계 설계 합의는 미완료입니다.
+- **Status:** In Progress — Windows Python 3.12 이상과 Buildkite self-hosted Windows runner를 선택했습니다. Origin SSH checkout, Python 3.12.10 전체 gate 및 native junction 재현을 확인했습니다. 현행 installer는 junction 경계를 허용하며, 전체 경계 설계 합의·구현은 남았습니다.
 - **다음 마일스톤:** T-017 설계·구현 뒤 T-023 release 후보 회귀를 별도 PR로 진행합니다. T-023 통합 전에는 다음 release candidate를 준비하지 않습니다.
 
 ## 운영 규칙
@@ -35,7 +35,7 @@
 
 ## In Progress
 
-- [ ] **T-017 Windows junction 경계 검증** — Windows Python 3.12 이상과 Buildkite runner 선택을 반영했습니다. pipeline 설정과 진단 probe를 준비했고 queue cluster와 self-hosted checkout 준비를 확인했습니다. Origin pipeline 생성과 native 재현, 전체 설계 합의를 [변경 초안](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)에서 진행합니다. 구현·회귀 검증은 합의 뒤 별도 PR로 진행합니다.
+- [ ] **T-017 Windows junction 경계 검증** — Windows Python 3.12 이상과 Buildkite runner 선택을 반영했습니다. Origin pipeline의 정확한 commit checkout, Windows 전체 gate와 native junction 재현을 확인했습니다. 재현 결과와 남은 전체 설계 합의를 [변경 초안](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)에서 관리합니다. 구현·회귀 검증은 합의 뒤 별도 PR로 진행합니다.
 
 ## Next
 
@@ -52,7 +52,7 @@
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 1 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction을 재현·설계 | **In Progress** — Buildkite `windows-ci` build #1이 Windows agent에 도달했으나 Origin HTTPS checkout 인증 실패; App installation token의 pre-checkout 연결과 native 재현·전체 설계 미완료 |
+| 1 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction을 재현·설계 | **In Progress** — Buildkite `windows-ci` build #13에서 Windows gate 176개와 native junction 재현 통과; 전체 설계 합의·Origin 자동 trigger/check 게시 확인은 미완료 |
 | 2 | T-017 구현 PR | T-017: 승인된 경계와 native 회귀를 구현 | 설계 합의와 native 재현 뒤 진행 |
 | 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | T-017 구현·T-019 verifier 보완 통합 뒤; **다음 release candidate 전 통합 필수**; 기존 candidate의 로컬 gate에 포함, 게시 권한 추가 없음 |
 | 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | D-010 계약은 바꾸지 않음; 다음 patch release 후보 |

@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Change ID:** `2026-09-23-windows-junction-boundary`
-- **Status:** Draft — Windows 최소 Python 3.12 선택은 합의됐고, native 재현·전체 설계는 미확정
+- **Status:** Draft — Windows 최소 Python 3.12 선택과 native 재현은 완료, 전체 경계 설계는 미합의
 - **Originator:** Chae Sangwon
 - **Source:** Origin PR #30 C30-002에서 이월된 T-017과 2026-09-23 사용자 요청("T-017 이후 바로 T-023")
 - **Parent:** [제품 기준](../../00-PROJECT.md) D-002·D-006·D-010 및 [install 대상 계약](../2026-09-22-install-target-contract/01-CHANGE.md)
@@ -19,9 +19,11 @@
 분류 대상, `export`/`adopt` output을 `Path.is_symlink()` 또는 `lstat().st_mode`의
 symlink 판정으로 보호합니다. [Python 문서](https://docs.python.org/3.12/library/pathlib.html#pathlib.Path.is_junction)는
 Windows directory junction을 별도 경로 종류로 정의하고 `is_junction()`을
-Python 3.12부터 제공합니다. 따라서 junction에서 현재 symlink 검사만으로는
-보호되지 않을 수 있습니다. **이 마지막 동작과 실제 외부 경로 접근은 현재 Linux
-환경에서 코드·문서로 추론한 것이며 native Windows에서 아직 재현하지 못했습니다.**
+Python 3.12부터 제공합니다. Buildkite [build #12](https://buildkite.com/jaff2836-org/windows-ci/builds/12)의 native Windows·Python 3.12.10에서
+`is_symlink() == False`, `is_junction() == True`인 실제 junction을 만들었습니다.
+현행 installer는 `install`·`adopt` root, `export` output과 junction을 통과하는
+`adopt` member를 모두 허용했습니다. 마지막 member 판정은 연결 대상 파일의
+해시를 반환했습니다. 진단 동안 외부 대상은 변경되지 않았습니다.
 
 ### 1.2 기대 결과와 범위
 
@@ -39,8 +41,8 @@ Python 3.12부터 제공합니다. 따라서 junction에서 현재 symlink 검�
 - 기존 D-010의 새 경로·빈 디렉터리 `install`, D-006의 읽기 전용 `adopt`,
   `export`의 빈 output과 rollback을 유지합니다.
 - production dependency를 추가하지 않습니다. 사용자가 선택한 Buildkite 설정은 native 재현·품질 게이트에만 사용하며 installer runtime 계약을 바꾸지 않습니다.
-- native Windows에서 Python 3.12 이상의 junction fixture로 현재 동작을 먼저
-  재현해야 합니다. 이 환경에는 Windows 실행기가 없어 재현 근거가 없습니다.
+- native Windows·Python 3.12.10의 실제 junction fixture로 현재 동작을
+  재현했습니다. 허용·거부를 단언하는 회귀는 구현 PR에서 추가해야 합니다.
 - 사용자가 Buildkite 조직 `jaff2836-org`에 self-hosted Windows machine이 있고
   Origin의 Buildkite 앱을 설치했다고 확인했습니다. 로컬 `.env`에는 Windows
   queue key `jaff2836-worker-windows`와 agent token 설정이 있습니다. token 값은
@@ -51,28 +53,21 @@ Python 3.12부터 제공합니다. 따라서 junction에서 현재 symlink 검�
   Origin-hosted repository의 PR trigger와 check 게시를 지원하고, 현재 저장소는
   `origin repo mirror status`에서 `no-mirror`로 확인됐습니다. `.buildkite/pipeline.yml`과
   임시 진단 probe를 추가하고 Buildkite pipeline `windows-ci`를 연결했습니다.
-  2026-09-23 build #1은 정확한 commit `63cfef85ed3f6a1e779ef45ca869f0dadd7f5b68`로
-  Windows queue의 agent까지 도달했지만, HTTPS checkout에서 대화형 자격 증명을
-  요구해 exit 128로 실패했습니다. 따라서 native probe와 테스트는 실행되지 않았고
-  Origin check 게시도 검증되지 않았습니다. 개인 API token의 pipeline·build·cluster
-  읽기를 확인했습니다.
-  `jaff2836-worker-windows` queue가 `Default cluster`에 속합니다. 앞서 권한
-  권고에서 cluster 조회용 `read_clusters`를 빠뜨렸으나 사용자가 추가해 현재는
-  조회됩니다. `write_pipelines`와 `write_builds` scope로 pipeline 생성과 build
-  실행이 성공했습니다. cluster나 queue 쓰기 권한은 필요하지 않습니다. 사용자가 준비했다고 한 SSH key는
-  Origin checkout에 적용되지 않았습니다. Origin이 문서화한 clone URL은 HTTPS이며,
-  이 self-hosted agent에서 SSH 주소를 확인하지 못했습니다. private checkout을
-  재시도하려면 Windows agent의 checkout 전에 Origin HTTPS 자격 증명을 제공해야
-  합니다. 비대화형 CI의 최소 권한 권고 경로는 Origin App의 App ID, 설치 ID, 해당
-  저장소의 `repository:contents:read` 승인 및 Ed25519 private signing key로 짧은
-  수명의 installation token을 발급하는 것입니다. private key는 Buildkite/agent
-  비밀 저장소에만 둡니다. 대안으로 Origin CLI 사용자 인증을 agent service 계정에
-  구성할 수도 있지만, checkout 전 인증 설정이 필요하다는 점은 같습니다.
+  최초 build #1의 HTTPS checkout은 대화형 자격 증명 부재로 실패했습니다.
+  이후 pipeline repository를 `ssh://git@origin.cursor.com/jaff2836/ai-agent-docs-template.git`로
+  바꾸고 agent의 SSH key를 준비해 정확한 commit checkout을 확인했습니다.
+  WindowsApps의 `python3` 별칭은 실행되지 않아 공식 Python 3.12.10 NuGet CI
+  배포본을 agent 계정의 `%LOCALAPPDATA%`에 배치했습니다. [build #13](https://buildkite.com/jaff2836-org/windows-ci/builds/13)은
+  commit `0a19ea15862257e558266a86024c96da86dbfb39`에서 root docs·stable locale·전체
+  unittest 176개와 native junction probe를 통과했습니다. 개인 API token의
+  pipeline·build·cluster 조회 및 build 실행을 확인했고, token 값은 기록하지 않습니다.
+  `jaff2836-worker-windows` queue는 `Default cluster`에 속합니다. cluster·queue
+  쓰기 권한은 사용하지 않았습니다.
 - Buildkite가 선정됐으므로 T-017 Origin PR은 정확한 head SHA에서 이 Windows
   queue를 실행해야 합니다. GitHub의 후속 fast-forward 검증은 별도 trigger로
   구분합니다. Buildkite의 Origin provider는 Origin 저장소 PR trigger와 check
-  게시를 지원하지만, self-hosted agent의 private checkout credential은 별도
-  설정해야 합니다. 현재 checkout 실패는 그 별도 인증 설정이 없음을 확인한 결과입니다.
+  게시를 지원하지만, 실제 PR 자동 trigger와 Origin check 게시 성공은 아직
+  관찰하지 못했습니다. private checkout은 agent의 SSH key로 해결됐습니다.
 - 기존 코드가 직접 검사하는 경로만 고칠지, 선택된 root/output의 모든 기존
   상위 component도 검사할지 전체 설계 합의가 필요합니다. 후자를 권고합니다.
 
@@ -155,8 +150,8 @@ junction을 제거합니다. 현재는 관찰 결과를 출력하는 진단 단�
   뒤 T-017 설계를 시작했습니다. 사용자 응답으로 Windows Python 3.12 이상을
   선택했으며 native 재현과 전체 경계 설계는 Draft로 남습니다.
 - 2026-09-23: 사용자가 Buildkite Windows CI를 선택해 queue 전용 pipeline과
-  junction 진단 probe를 준비했습니다. pipeline `windows-ci`와 build #1을 만들고
-  정확한 branch revision을 실행했습니다. Windows agent 연결은 성공했지만 Origin
-  HTTPS checkout은 credentials 부재로 실패해 native 재현은 시작되지 않았습니다.
-  SSH key는 이 HTTPS checkout에 적용되지 않으며, Origin App installation token을
-  checkout hook에 안전하게 제공하는 구성이 필요합니다.
+  junction 진단 probe를 준비했습니다. 최초 HTTPS checkout 실패 뒤 Origin SSH
+  주소와 agent key로 checkout을 해결했습니다. 공식 Python 3.12.10 NuGet CI
+  runtime을 배치했고, build #12에서 현행 junction 허용을 재현했습니다. build #13은
+  정확한 commit에서 전체 gate 176개와 probe를 통과했습니다. branch·PR 자동
+  trigger와 check 게시는 별도 확인이 남았습니다.
