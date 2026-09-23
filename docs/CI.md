@@ -105,11 +105,11 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 
 ## 6. Buildkite Windows·Linux 검증
 
-두 pipeline은 연결된 Origin installation의 canonical repository URL `https://origin.cursor.com/git/jaff2836/ai-agent-docs-template.git`을 사용합니다. 각 self-hosted agent의 Git URL rewrite가 HTTPS checkout을 SSH로 전환하며 agent key로 정확한 commit을 가져옵니다. Origin branch push에서 두 pipeline이 자동 시작하고 각각 Origin check를 게시합니다. 실제 PR 이벤트의 자동 시작과 GitHub push trigger는 아직 확인하거나 구성하지 않았습니다. agent 인증 비밀값은 저장소와 로그에 기록하지 않습니다.
+두 pipeline은 연결된 Origin installation의 canonical repository URL `https://origin.cursor.com/git/jaff2836/ai-agent-docs-template.git`을 사용합니다. 각 self-hosted agent의 Git URL rewrite가 HTTPS checkout을 SSH로 전환하며 agent key로 정확한 commit을 가져옵니다. Origin branch push와 열린 PR의 head push에서 두 pipeline이 자동 시작하고 각각 Origin check를 게시합니다. `main` 대상 merge ruleset은 Buildkite 앱의 `jaff2836-org / windows-ci`와 `jaff2836-org / linux-ci` check suite를 필수로 요구합니다. PR #37을 연 직후에는 같은 head의 기존 branch check가 표시됐고 새 build는 관찰되지 않았습니다. 이후 PR head push에서는 PR 정보가 연결된 두 build가 자동 시작했습니다. GitHub push trigger는 구성하지 않았습니다. agent 인증 비밀값은 저장소와 로그에 기록하지 않습니다.
 
 [`windows-ci`](https://buildkite.com/jaff2836-org/windows-ci)는 [`pipeline.yml`](../.buildkite/pipeline.yml)을 `jaff2836-worker-windows` queue에서 실행합니다. WindowsApps의 실행 불가 `python3` 별칭 대신 공식 Python 3.12.10 NuGet CI 배포본을 `%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe`에 배치했습니다. root docs·stable locale 검사와 전체 unittest 뒤 T-017 native junction probe를 실행합니다. Probe는 설계 재현용 진단 단계로 현행 installer가 junction 경로를 허용한다고 기록합니다. 경계 회귀 검증으로 승격할 때 허용·거부 결과를 명시적으로 단언해야 합니다.
 
-[`linux-ci`](https://buildkite.com/jaff2836-org/linux-ci)는 [`linux.yml`](../.buildkite/linux.yml)을 `jaff2836-worker-linux` queue에서 실행합니다. agent의 Python 3.13.5로 같은 root docs·stable locale 검사와 전체 unittest를 실행합니다. [Windows build #20](https://buildkite.com/jaff2836-org/windows-ci/builds/20)와 [Linux build #5](https://buildkite.com/jaff2836-org/linux-ci/builds/5)는 같은 commit `8144f35295a45d2035480249398797ca2155436a`에서 자동 시작해 각각 unittest 176개와 Origin 성공 check를 확인했습니다.
+[`linux-ci`](https://buildkite.com/jaff2836-org/linux-ci)는 [`linux.yml`](../.buildkite/linux.yml)을 `jaff2836-worker-linux` queue에서 실행합니다. agent의 Python 3.13.5로 같은 root docs·stable locale 검사와 전체 unittest를 실행합니다. PR #37의 [Windows build #21](https://buildkite.com/jaff2836-org/windows-ci/builds/21)과 [Linux build #6](https://buildkite.com/jaff2836-org/linux-ci/builds/6)은 같은 head `e7e12581b614685774064d57119b08a508ff5f23`에서 자동 시작해 각각 unittest 176개를 통과하고 Origin 성공 check를 게시했습니다. 두 build의 Buildkite `pull_request.id`는 `37`이며 base는 `main`입니다.
 
 ## 7. 제공하지 않는 것
 

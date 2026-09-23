@@ -52,7 +52,7 @@
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 1 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction을 재현·설계 | **In Progress** — Origin push 자동 실행 build #17에서 Windows gate 176개와 native junction 재현 통과, 성공 check 확인; 전체 설계 합의·PR trigger 확인은 미완료 |
+| 1 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction을 재현·설계 | **In Progress** — Origin Draft PR #37의 head push에서 Windows·Linux 전체 gate 176개와 성공 check를 확인하고 두 check를 `main` merge에 필수로 설정했습니다. 전체 경계 설계 합의·구현은 남았습니다. |
 | 2 | T-017 구현 PR | T-017: 승인된 경계와 native 회귀를 구현 | 설계 합의와 native 재현 뒤 진행 |
 | 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | T-017 구현·T-019 verifier 보완 통합 뒤; **다음 release candidate 전 통합 필수**; 기존 candidate의 로컬 gate에 포함, 게시 권한 추가 없음 |
 | 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | D-010 계약은 바꾸지 않음; 다음 patch release 후보 |

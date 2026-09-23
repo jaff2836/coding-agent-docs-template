@@ -162,5 +162,6 @@ junction을 제거합니다. 현재는 관찰 결과를 출력하는 진단 단�
   runtime을 배치했고, build #12에서 현행 junction 허용을 재현했습니다. build #13은
   정확한 commit에서 전체 gate 176개와 probe를 통과했습니다. canonical Origin
   저장소 연결로 바꾼 build #16에서도 전체 gate와 check 게시를 확인했습니다.
-  이어 branch push로 자동 실행된 build #17도 통과했습니다. PR 자동 trigger는
-  별도 확인이 남았습니다.
+  이어 branch push로 자동 실행된 build #17도 통과했습니다. Origin Draft PR #37의
+  head push에서 Windows build #21·Linux build #6의 자동 실행과 성공 check를
+  확인했습니다. 두 Buildkite check를 `main` merge 필수 조건으로 설정했습니다.
