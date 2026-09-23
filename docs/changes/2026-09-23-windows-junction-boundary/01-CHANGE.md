@@ -54,20 +54,26 @@ Python 3.12부터 제공합니다. Buildkite [build #12](https://buildkite.com/j
   `origin repo mirror status`에서 `no-mirror`로 확인됐습니다. `.buildkite/pipeline.yml`과
   임시 진단 probe를 추가하고 Buildkite pipeline `windows-ci`를 연결했습니다.
   최초 build #1의 HTTPS checkout은 대화형 자격 증명 부재로 실패했습니다.
-  이후 pipeline repository를 `ssh://git@origin.cursor.com/jaff2836/ai-agent-docs-template.git`로
-  바꾸고 agent의 SSH key를 준비해 정확한 commit checkout을 확인했습니다.
+  이후 연결된 Origin installation의 canonical repository URL
+  `https://origin.cursor.com/git/jaff2836/ai-agent-docs-template.git`로 pipeline을
+  지정하고 agent의 Git URL rewrite와 SSH key로 정확한 commit checkout을
+  확인했습니다. 직접 입력한 SSH URL에서는 checkout만 되고 Origin 앱의
+  저장소 연결 정보가 비어 있어 canonical URL로 수정했습니다.
   WindowsApps의 `python3` 별칭은 실행되지 않아 공식 Python 3.12.10 NuGet CI
   배포본을 agent 계정의 `%LOCALAPPDATA%`에 배치했습니다. [build #13](https://buildkite.com/jaff2836-org/windows-ci/builds/13)은
   commit `0a19ea15862257e558266a86024c96da86dbfb39`에서 root docs·stable locale·전체
-  unittest 176개와 native junction probe를 통과했습니다. 개인 API token의
+  unittest 176개와 native junction probe를 통과했습니다. canonical 저장소
+  연결 후 [build #16](https://buildkite.com/jaff2836-org/windows-ci/builds/16)도 같은 commit에서 전체 gate를 통과했고
+  Origin 성공 check가 게시됐습니다. 개인 API token의
   pipeline·build·cluster 조회 및 build 실행을 확인했고, token 값은 기록하지 않습니다.
   `jaff2836-worker-windows` queue는 `Default cluster`에 속합니다. cluster·queue
   쓰기 권한은 사용하지 않았습니다.
 - Buildkite가 선정됐으므로 T-017 Origin PR은 정확한 head SHA에서 이 Windows
   queue를 실행해야 합니다. GitHub의 후속 fast-forward 검증은 별도 trigger로
   구분합니다. Buildkite의 Origin provider는 Origin 저장소 PR trigger와 check
-  게시를 지원하지만, 실제 PR 자동 trigger와 Origin check 게시 성공은 아직
-  관찰하지 못했습니다. private checkout은 agent의 SSH key로 해결됐습니다.
+  게시를 지원합니다. Origin check 게시 성공은 확인했고, branch·PR 이벤트의
+  자동 build 생성은 아직 관찰하지 못했습니다. private checkout은 agent의 SSH
+  key로 해결됐습니다.
 - 기존 코드가 직접 검사하는 경로만 고칠지, 선택된 root/output의 모든 기존
   상위 component도 검사할지 전체 설계 합의가 필요합니다. 후자를 권고합니다.
 
@@ -153,5 +159,6 @@ junction을 제거합니다. 현재는 관찰 결과를 출력하는 진단 단�
   junction 진단 probe를 준비했습니다. 최초 HTTPS checkout 실패 뒤 Origin SSH
   주소와 agent key로 checkout을 해결했습니다. 공식 Python 3.12.10 NuGet CI
   runtime을 배치했고, build #12에서 현행 junction 허용을 재현했습니다. build #13은
-  정확한 commit에서 전체 gate 176개와 probe를 통과했습니다. branch·PR 자동
-  trigger와 check 게시는 별도 확인이 남았습니다.
+  정확한 commit에서 전체 gate 176개와 probe를 통과했습니다. canonical Origin
+  저장소 연결로 바꾼 build #16에서도 전체 gate와 check 게시를 확인했습니다.
+  branch·PR 자동 trigger는 별도 확인이 남았습니다.
