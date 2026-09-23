@@ -238,6 +238,7 @@ class InstallerTests(unittest.TestCase):
             stderr=subprocess.PIPE,
             text=True,
             encoding="utf-8",
+            env={**os.environ, "PYTHONIOENCODING": "utf-8"},
         )
 
     # -- success paths -----------------------------------------------------
