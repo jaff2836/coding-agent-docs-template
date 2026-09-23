@@ -49,22 +49,30 @@ Python 3.12부터 제공합니다. 따라서 junction에서 현재 symlink 검�
   queue의 idle agent 1대를 확인했습니다.
   [Origin 연동](https://buildkite.com/docs/pipelines/source-control/origin)은
   Origin-hosted repository의 PR trigger와 check 게시를 지원하고, 현재 저장소는
-  `origin repo mirror status`에서 `no-mirror`로 확인됐습니다. 다만 self-hosted
-  agent는 Origin private repo의 자동 checkout 자격을 받지 않으므로 별도
-  읽기 권한 구성이 필요합니다. `.buildkite/pipeline.yml`과 임시 진단 probe를
-  추가했지만 Buildkite 조직에는 아직 pipeline이 없고 native run도 하지
-  않았습니다. 개인 API token의 pipeline·build·cluster 읽기를 확인했습니다.
+  `origin repo mirror status`에서 `no-mirror`로 확인됐습니다. `.buildkite/pipeline.yml`과
+  임시 진단 probe를 추가하고 Buildkite pipeline `windows-ci`를 연결했습니다.
+  2026-09-23 build #1은 정확한 commit `63cfef85ed3f6a1e779ef45ca869f0dadd7f5b68`로
+  Windows queue의 agent까지 도달했지만, HTTPS checkout에서 대화형 자격 증명을
+  요구해 exit 128로 실패했습니다. 따라서 native probe와 테스트는 실행되지 않았고
+  Origin check 게시도 검증되지 않았습니다. 개인 API token의 pipeline·build·cluster
+  읽기를 확인했습니다.
   `jaff2836-worker-windows` queue가 `Default cluster`에 속합니다. 앞서 권한
   권고에서 cluster 조회용 `read_clusters`를 빠뜨렸으나 사용자가 추가해 현재는
-  조회됩니다. Pipeline 생성·build 실행 scope(`write_pipelines`,
-  `write_builds`)는 아직 쓰기 요청을 보내지 않아 검증하지 않았습니다.
-  cluster나 queue 쓰기 권한은 필요하지 않습니다. 사용자는 self-hosted agent
-  service 계정의 Origin read-only SSH checkout 준비를 확인했습니다.
+  조회됩니다. `write_pipelines`와 `write_builds` scope로 pipeline 생성과 build
+  실행이 성공했습니다. cluster나 queue 쓰기 권한은 필요하지 않습니다. 사용자가 준비했다고 한 SSH key는
+  Origin checkout에 적용되지 않았습니다. Origin이 문서화한 clone URL은 HTTPS이며,
+  이 self-hosted agent에서 SSH 주소를 확인하지 못했습니다. private checkout을
+  재시도하려면 Windows agent의 checkout 전에 Origin HTTPS 자격 증명을 제공해야
+  합니다. 비대화형 CI의 최소 권한 권고 경로는 Origin App의 App ID, 설치 ID, 해당
+  저장소의 `repository:contents:read` 승인 및 Ed25519 private signing key로 짧은
+  수명의 installation token을 발급하는 것입니다. private key는 Buildkite/agent
+  비밀 저장소에만 둡니다. 대안으로 Origin CLI 사용자 인증을 agent service 계정에
+  구성할 수도 있지만, checkout 전 인증 설정이 필요하다는 점은 같습니다.
 - Buildkite가 선정됐으므로 T-017 Origin PR은 정확한 head SHA에서 이 Windows
   queue를 실행해야 합니다. GitHub의 후속 fast-forward 검증은 별도 trigger로
   구분합니다. Buildkite의 Origin provider는 Origin 저장소 PR trigger와 check
   게시를 지원하지만, self-hosted agent의 private checkout credential은 별도
-  설정해야 합니다.
+  설정해야 합니다. 현재 checkout 실패는 그 별도 인증 설정이 없음을 확인한 결과입니다.
 - 기존 코드가 직접 검사하는 경로만 고칠지, 선택된 root/output의 모든 기존
   상위 component도 검사할지 전체 설계 합의가 필요합니다. 후자를 권고합니다.
 
@@ -147,6 +155,8 @@ junction을 제거합니다. 현재는 관찰 결과를 출력하는 진단 단�
   뒤 T-017 설계를 시작했습니다. 사용자 응답으로 Windows Python 3.12 이상을
   선택했으며 native 재현과 전체 경계 설계는 Draft로 남습니다.
 - 2026-09-23: 사용자가 Buildkite Windows CI를 선택해 queue 전용 pipeline과
-  junction 진단 probe를 준비했습니다. token의 cluster 읽기와 agent SSH 준비를
-  확인했지만 pipeline은 아직 생성되지 않았고 native Windows 재현도 실행하지
-  않았습니다.
+  junction 진단 probe를 준비했습니다. pipeline `windows-ci`와 build #1을 만들고
+  정확한 branch revision을 실행했습니다. Windows agent 연결은 성공했지만 Origin
+  HTTPS checkout은 credentials 부재로 실패해 native 재현은 시작되지 않았습니다.
+  SSH key는 이 HTTPS checkout에 적용되지 않으며, Origin App installation token을
+  checkout hook에 안전하게 제공하는 구성이 필요합니다.

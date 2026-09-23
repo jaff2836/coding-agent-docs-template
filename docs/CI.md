@@ -107,7 +107,7 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 
 `.buildkite/pipeline.yml`은 Origin 연결 파이프라인에서 `jaff2836-worker-windows` self-hosted queue를 대상으로 실행하도록 구성합니다. 이 queue의 Windows Python 3.12 이상에서 root docs, stable locale source와 전체 unittest를 실행하고, T-017 junction probe로 fixture 생성과 현행 경계 판정을 기록합니다. Probe는 설계 재현용 진단 단계이며, installer 경계 회귀 검증으로 승격할 때 허용·거부 결과를 명시적으로 단언해야 합니다.
 
-파이프라인은 Origin의 Buildkite repository provider에서 이 Origin 저장소를 선택하고 branch·pull request trigger와 check publication을 켜야 합니다. 또한 기존 Windows queue를 소유한 cluster에 pipeline을 연결해야 합니다. Self-hosted Windows agent는 private Origin 저장소 checkout을 위해 agent service 계정에 read-only SSH 접근을 갖춰야 합니다. Origin의 native checkout 자격 증명은 Buildkite hosted agents에만 적용됩니다. 파이프라인 생성, checkout 및 Origin check 게시의 실제 연결 검증은 아직 완료되지 않았습니다.
+파이프라인은 Origin의 Buildkite repository provider에서 이 Origin 저장소를 선택하고 branch·pull request trigger와 check publication을 켜야 합니다. 또한 기존 Windows queue를 소유한 cluster에 pipeline을 연결해야 합니다. Buildkite pipeline `windows-ci`는 생성됐고 build #1이 Windows queue의 agent에 배정됐지만, self-hosted agent의 HTTPS checkout은 자격 증명 부재로 실패했습니다. Origin 문서의 clone URL은 HTTPS이므로 SSH key만 준비해서는 이 checkout을 인증할 수 없습니다. 권고하는 최소 권한 방식은 저장소에 `repository:contents:read` 권한을 승인한 Origin App의 App ID·installation ID·Ed25519 private key로 짧은 수명의 installation token을 발급해 pre-checkout 인증 경로에 안전하게 연결하는 것입니다. agent service 계정에 Origin CLI 사용자 인증을 구성하는 대안도 있습니다. private key와 token은 저장소나 로그에 두지 않습니다. 현재 native junction probe, 테스트 실행 및 Origin check 게시 성공은 검증되지 않았습니다.
 
 ## 7. 제공하지 않는 것
 

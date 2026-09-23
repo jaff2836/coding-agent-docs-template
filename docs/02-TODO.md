@@ -52,7 +52,7 @@
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 1 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction을 재현·설계 | **In Progress** — Buildkite pipeline/probe와 checkout 준비 확인; pipeline 생성·실행과 전체 설계 미완료 |
+| 1 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction을 재현·설계 | **In Progress** — Buildkite `windows-ci` build #1이 Windows agent에 도달했으나 Origin HTTPS checkout 인증 실패; App installation token의 pre-checkout 연결과 native 재현·전체 설계 미완료 |
 | 2 | T-017 구현 PR | T-017: 승인된 경계와 native 회귀를 구현 | 설계 합의와 native 재현 뒤 진행 |
 | 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | T-017 구현·T-019 verifier 보완 통합 뒤; **다음 release candidate 전 통합 필수**; 기존 candidate의 로컬 gate에 포함, 게시 권한 추가 없음 |
 | 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | D-010 계약은 바꾸지 않음; 다음 patch release 후보 |
