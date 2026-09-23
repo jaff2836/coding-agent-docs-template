@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-018 `v2.3.2` release 준비
-- **Goal:** D-010·T-016의 통합 source를 patch release 후보로 정렬하고, candidate 전제와 사람이 수행할 공개 경계를 명확히 구분함
-- **Target:** Origin·GitHub `main`이 같은 exact clean source를 가리키는 `v2.3.2` candidate
-- **Status:** In Progress — version·release history source 정렬과 로컬 gate를 마쳤으며 Origin release-prep PR 통합을 기다립니다. GitHub `main`은 아직 Origin `main` `a105740`보다 뒤처져 있습니다.
-- **다음 마일스톤:** Origin PR 통합 뒤 GitHub `main` 동기화, maintainer의 annotated tag·draft, candidate 검증. 공개 뒤에는 T-019를 시작합니다.
+- **Name:** T-019 `v2.3.2` 공개 기록과 지원 검증
+- **Goal:** 공개한 immutable Latest release의 asset과 en·ko 원격 적용 경로를 검증하고 근거를 통합함
+- **Target:** `v2.3.2` exact source `4c6a798885404fdf5170769e271f7d06f4959234`의 published gate와 Origin release-record PR 통합
+- **Status:** In Progress — `v2.3.2`를 공개했고 보완한 verifier의 published gate가 통과했습니다. 이 기록 PR의 Origin `main` 통합이 남았습니다.
+- **다음 마일스톤:** T-019 통합 뒤 T-020 install onboarding 안내 평가를 별도 범위로 검토합니다.
 
 ## 운영 규칙
 
@@ -35,14 +35,11 @@
 
 ## In Progress
 
-- [ ] **T-018 `v2.3.2` release 준비**
-  - 기준: D-010·T-016이 Origin PR #34 merge `a105740ca16ea3e0b6092a7331bf60b89b06f4a3`에 통합된 source입니다. 공개 `v2.3.1` asset은 변경하지 않습니다.
-  - [x] template version, root CHANGELOG와 en·ko locale release history를 `2.3.2` 후보로 정렬했습니다.
-  - [x] release-prep 브랜치에서 root docs, stable locale, 전체 unittest 176개, en·ko artifact checker와 각 53개 테스트, clean exact source의 5개 asset 2회 byte 동일성 및 `git diff --check`를 확인했습니다. candidate의 tag·draft 검증은 아래 단계에 남습니다.
-  - [ ] release-prep PR을 Origin `main`에 통합합니다.
-  - [ ] 통합된 Origin `main`의 exact commit을 GitHub `main`에도 반영해 두 remote를 동기화합니다. 현재 GitHub `main`은 `fe1d941c8aa7de81e032f287b6566e240d6b5f92`로 Origin보다 뒤처져 있습니다.
-  - [ ] maintainer가 annotated `v2.3.2` tag와 5개 asset의 GitHub draft release를 준비한 뒤, clean exact checkout에서 candidate gate를 통과시킵니다.
-  - [ ] 공개 및 published 검증·release 기록은 T-019가 소유합니다.
+- [ ] **T-019 `v2.3.2` 공개 기록과 지원 검증**
+  - [x] T-018 exact source `4c6a798885404fdf5170769e271f7d06f4959234`의 candidate가 통과한 5개 asset을 교체 없이 [immutable Latest `v2.3.2`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.2)로 공개했습니다.
+  - [x] 공개 verifier가 새 install 거부 문구를 이전 문구만으로 판정하던 문제를 수정하고, artifact와 겹치는 파일 및 무관한 파일이 있는 대상 모두에서 거부·tree 불변을 확인합니다.
+  - [x] clean exact source를 `--root`로 지정한 보완 verifier의 `published --base-version 2.3.1`이 통과했습니다. Latest·immutable metadata, 게시 전과 같은 5개 asset, latest·exact의 en·ko list/install/export/adopt, base-aware upgrade와 대상 불변을 확인했습니다.
+  - [ ] release record PR을 Origin `main`에 통합합니다.
 
 ## Next
 
@@ -54,22 +51,19 @@
 
 ## Backlog
 
-아래 순서는 권고하는 독립 PR 경계이며, Backlog 항목을 시작하거나 release를
-공개하는 권한은 아닙니다. `v2.3.2`의 tag·draft·public release는 D-007에 따라
-maintainer가 수행하고, 전후 검증·기록만 PR로 분리합니다.
+아래 순서는 권고하는 독립 PR 경계이며, Backlog 항목을 시작하는 권한은 아닙니다.
+`v2.3.2`의 공개는 D-007 경계에 따라 수행했고, 검증·기록은 별도 PR로 분리합니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 1 | `codex/v2.3.2-release-prep` | T-018: D-010이 포함된 source의 version·release history·candidate 근거를 준비 | **In Progress** — Origin `main` `a105740`; tag·release 생성은 이 PR 범위 밖 |
-| 2 | `codex/v2.3.2-release-record` | T-019: maintainer의 공개 뒤 immutable asset과 published E2E를 기록 | T-018 통합 및 사람이 만든 exact tag·release |
-| 3 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | D-010 계약은 바꾸지 않음; 다음 patch release 후보 |
-| 4 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
-| 5 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
-| 6 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction·최소 Python 범위를 재현·설계 | 승인된 해결책은 별도 구현 PR |
-| 7 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
-| 8 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
+| 1 | `codex/v2.3.2-release-record` | T-019: immutable asset과 published E2E를 기록 | **In Progress** — 공개·검증 완료, 기록 PR 통합 대기 |
+| 2 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | D-010 계약은 바꾸지 않음; 다음 patch release 후보 |
+| 3 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
+| 4 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
+| 5 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction·최소 Python 범위를 재현·설계 | 승인된 해결책은 별도 구현 PR |
+| 6 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
+| 7 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
 
-- [ ] **T-019 `v2.3.2` 공개 기록과 지원 검증** — T-018 뒤 maintainer가 immutable release를 공개한 경우에만 exact Latest·asset·en/ko install/export/adopt 및 필요한 base-aware published gate를 검증하고 release record를 남깁니다. 공개가 없으면 시작하지 않습니다.
 - [ ] **T-020 install onboarding 진단·안내 평가** — PR #34 리뷰의 C34-001과 parent-directory 안내 권고를 Backlog로 보존합니다. 현재 D-010 계약과 R-002는 충족하므로 결함 수정으로 분류하지 않으며, `git init` 순서·새/빈 대상의 선택·부모 조건을 더 명확히 할 가치가 있는지 진단·README·locale guide·회귀를 한 PR에서 검토합니다.
 - [ ] **T-021 install preflight 순서 재설계** — release·archive 검증 뒤에 대상 preflight를 하는 D-010 §2.3을 유지할지, 대상 진단과 불필요한 다운로드를 우선할지 설계합니다. 신뢰 검증 순서와 오류 우선순위가 바뀌므로 설계 합의 전에는 구현하지 않습니다.
 - [ ] **T-022 install 대상 불변조건 등록 평가** — 비어 있지 않거나 확인 불가한 대상에 template 파일을 추가하지 않는 규칙을 `docs/REVIEW.md`와 `.cursor/BUGBOT.md`의 project invariant로 올릴지 검토합니다. 채택하면 두 사본과 checker 계약을 함께 검증합니다.
@@ -123,8 +117,8 @@ maintainer가 수행하고, 전후 검증·기록만 PR로 분리합니다.
 
 - [x] **T-008 release 검증 절차 스크립트화**
   - 변경-ID: `2026-09-20-release-verification`
-  - 통합·운영 결과: Origin PR #20 merge `40306b65fe211402090d7a11b5c3ffafcb3689eb`의 검증 CLI로 `v2.1.1`부터 `v2.3.1`까지 실제 draft candidate·immutable published 경로를 반복 확인했습니다. 각 release에서 검증한 5개 asset을 게시 전후 교체하지 않았으며 exact source는 [변경 기록](./changes/2026-09-20-release-verification/01-CHANGE.md)에 남겼습니다.
-  - 검증 근거: 각 release의 candidate·published가 통과했고, 최신 `v2.3.1` published는 latest·exact의 en·ko `list-locales`·`install`·`export`·`adopt`, `v2.3.0` base-aware upgrade, source export와 target 불변을 확인했습니다. release는 `isDraft=false`, `isImmutable=true`, Latest입니다.
+  - 통합·운영 결과: Origin PR #20 merge `40306b65fe211402090d7a11b5c3ffafcb3689eb`의 검증 CLI로 `v2.1.1`부터 `v2.3.2`까지 실제 draft candidate·immutable published 경로를 반복 확인했습니다. 각 release에서 검증한 5개 asset을 게시 전후 교체하지 않았으며 exact source는 [변경 기록](./changes/2026-09-20-release-verification/01-CHANGE.md)에 남겼습니다.
+  - 검증 근거: 최신 `v2.3.2` published는 새 install 거부 문구를 반영한 verifier에서 latest·exact의 en·ko `list-locales`·`install`·`export`·`adopt`, `v2.3.1` base-aware upgrade, source export와 비어 있지 않은 target 불변을 확인했습니다. release는 `isDraft=false`, `isImmutable=true`, Latest입니다.
 
 - [x] **T-009 checker·installer 확정 결함 수정**
   - 통합·공개 결과: checker의 선택 파일 경계와 installer schema mismatch 복구 진단을 포함한 exact source `0cfcc896ee92ec018d12c88f3f2638a154b35720`을 annotated tag `v2.1.1`과 immutable GitHub Release로 공개했습니다.
@@ -153,6 +147,10 @@ maintainer가 수행하고, 전후 검증·기록만 PR로 분리합니다.
 - [x] **T-016 새 프로젝트 `install` 대상 계약 정합화**
   - 변경-ID: `2026-09-22-install-target-contract`, 결정 D-010. Origin PR #34의 `f4004b727fc6e54ce40e7a05877ce74c20695aa4`은 merge commit `a105740ca16ea3e0b6092a7331bf60b89b06f4a3`으로 Origin `main`에 통합됐습니다.
   - 통합 근거: PR #34는 exact head의 installer 회귀 44개·전체 unittest 176개·root docs·stable locale·en/ko export artifact checker와 각 artifact test 53개·Python compile·`git diff --check`를 통과했습니다. 원격 CI runner는 이 템플릿이 제공하지 않아 `No checks reported`였고, 같은 gate를 로컬에서 실행했습니다.
-  - release 경계: 공개 `v2.3.1` asset은 변경하지 않았습니다. version·candidate·published 검증과 release 이력은 T-018·T-019가 소유합니다.
+  - release 경계: 공개 `v2.3.1` asset은 변경하지 않았습니다. D-010 계약을 포함한 `v2.3.2` 공개와 candidate·published 검증은 T-018·T-019가 소유합니다.
+
+- [x] **T-018 `v2.3.2` release 준비**
+  - 통합 결과: D-010·T-016이 포함된 source의 version·release history를 Origin PR #35 merge `4c6a798885404fdf5170769e271f7d06f4959234`에 통합하고 GitHub `main`에도 non-force fast-forward로 반영했습니다. 양쪽 `main`과 annotated `v2.3.2` tag가 같은 exact source를 가리킵니다.
+  - 검증 근거: clean exact checkout의 root docs·stable locale·전체 unittest 176개, 2회 package byte 동일성, 같은 5개 asset의 GitHub draft와 candidate gate가 통과했습니다. 공개와 published 검증·기록은 T-019가 소유합니다.
 
 완료 이력이 길어지면 기존 CHANGELOG 또는 마일스톤별 보관 문서로 연결하고 본문을 복제하지 않습니다.

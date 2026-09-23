@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** Active — `v2.3.1` 공개와 T-015 지원 검증 완료, D-010·T-016 Origin 통합 완료; `v2.3.2` release 준비 중
+- **Status:** Active — immutable Latest `v2.3.2` 공개·지원 검증 완료, T-019 기록 통합 중
 - **Owner:** Chae Sangwon
 - **Last reviewed:** 2026-09-23
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
@@ -25,7 +25,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Current State
 
-- 공개 release 기준은 [immutable GitHub Release `v2.3.1`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.1)(2026-09-22 공개, Latest)이며 annotated tag와 당시 Origin·GitHub `main`의 commit은 `3460e4ccd0065bcd8a24fd64a6cd7135293926a0`입니다. T-008 candidate·published gate에서 교체하지 않은 5개 asset, latest·exact의 en·ko install/export/adopt와 `v2.3.0` base-aware upgrade 경로를 확인했습니다. 이전 release는 그대로 유지되며 exact version에 맞는 자기 installer로만 설치할 수 있습니다.
+- 공개 release 기준은 [immutable GitHub Release `v2.3.2`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.2)(2026-09-23 공개, Latest)이며 annotated tag와 당시 Origin·GitHub `main`의 commit은 `4c6a798885404fdf5170769e271f7d06f4959234`입니다. candidate·보완한 published gate에서 교체하지 않은 5개 asset, latest·exact의 en·ko install/export/adopt, `v2.3.1` base-aware upgrade 및 비어 있지 않은 install 대상 불변을 확인했습니다. 이전 release는 그대로 유지되며 exact version에 맞는 자기 installer로만 설치할 수 있습니다.
 - W-001의 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source 분리는 Origin PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에 통합됐습니다.
 - W-002의 `locales/en`·locale별 skill S2 계약과 W-003 locale/artifact 검사는 각각 Origin PR #4·#5에 통합됐습니다. `en`·`ko` source는 모두 `complete`입니다.
 - W-004 exporter·packager는 Origin PR #6 merge commit `f60ae97`, W-005 비파괴 installer는 PR #7 merge commit `9d4637d`, W-006 적용 문서는 PR #8 merge commit `60638ed`에 통합됐습니다.
@@ -34,7 +34,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 - D-008의 base-aware `adopt`와 release verifier 후속은 Origin PR #24·#25, release 준비는 PR #26 merge `70a5a7a9e97fa5a89609a120ad69bced7e8ae1ac`로 통합됐습니다. 공개 en·ko upgrade E2E와 `claude-review-e2e@26c531beb65eaef8f524a00bcf8f06c52445c3d8`의 v2.1→v2.2 report 독립 대조를 통과했고 consumer tree는 바뀌지 않았습니다.
 - D-009의 locale artifact guide 정본화, root maintainer addendum, 선택형 프로젝트 changelog 안내와 skill Metadata 제거는 Origin PR #28 merge `5066d821084545554588182f5250cc9dea12e444`와 `v2.3.0` artifact에 통합됐습니다.
 - T-015의 Windows artifact 정렬·materialized mode·LF checkout·symlink fixture 보완은 Origin PR #30 merge `3b4bf674da8f7e8c13b2a69c45b2cf1f8ce54756`에 통합됐습니다. PR head `a64a8897673924abe1c110baad3b2a6ecc8aa811`의 native Windows·Python 3.14.7에서 전체 unittest 174개(16개 skip)와 en·ko package·export artifact 검증이 통과했습니다. exact `v2.3.1` source `3460e4ccd0065bcd8a24fd64a6cd7135293926a0`의 published E2E도 Linux와 native Windows에서 모두 통과해 T-015를 완료했습니다.
-- D-010의 새 경로·빈 디렉터리 `install` 계약(T-016)은 Origin PR #34 merge commit `a105740ca16ea3e0b6092a7331bf60b89b06f4a3`에 통합됐습니다. 공개 `v2.3.1` asset은 그대로이며, `v2.3.2` 준비가 template version·release history를 정렬했습니다. 두 remote `main` 동기화, annotated tag·draft와 candidate, immutable 공개 뒤 published 검증은 아직 완료 근거가 아닙니다.
+- D-010의 새 경로·빈 디렉터리 `install` 계약(T-016)은 Origin PR #34 merge commit `a105740ca16ea3e0b6092a7331bf60b89b06f4a3`에 통합됐고, PR #35 merge `4c6a798885404fdf5170769e271f7d06f4959234`의 `v2.3.2` asset으로 공개됐습니다. 두 remote `main`, annotated tag, draft candidate와 immutable published 검증이 통과했습니다. 공개 검증기의 새 거부 문구 대응은 T-019 기록 PR에서 보완합니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -78,7 +78,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Data Flow
 
-exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. packager는 `locales/manifest.json`의 adoption policy도 각 member에 materialize합니다(`schema_version` 2). installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고, `install` 대상이 새 경로 또는 읽을 수 있는 빈 디렉터리인지 확인한 뒤 경로 충돌·부분 실패를 거부하거나 rollback합니다. 기존 저장소에는 `adopt`가 같은 검증 후 artifact 경로만 list·lstat·read로 분류하고, 대상 밖의 빈 output에 `artifact/`와 실험적 `adoption-plan.json`을 원자적으로 게시합니다. 선택형 base-aware 경로는 더 낮은 exact SemVer의 schema 1·2 release를 과거 코드 실행 없이 별도 검증하고 `base ∪ current` 경로를 target과 비교한 format 2 report를 만듭니다. release 검증 도구는 사람이 만든 draft와 공개된 immutable release를 package byte·ref·공개 installer 경로와 대조할 뿐 tag나 release를 변경하지 않습니다. source root 자체는 배포하지 않습니다. `v2.0.0`·`v2.1.0`·`v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`은 실제 immutable GitHub Release에서 각 계약에 맞는 원격 E2E를 검증했습니다.
+exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. packager는 `locales/manifest.json`의 adoption policy도 각 member에 materialize합니다(`schema_version` 2). installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고, `install` 대상이 새 경로 또는 읽을 수 있는 빈 디렉터리인지 확인한 뒤 경로 충돌·부분 실패를 거부하거나 rollback합니다. 기존 저장소에는 `adopt`가 같은 검증 후 artifact 경로만 list·lstat·read로 분류하고, 대상 밖의 빈 output에 `artifact/`와 실험적 `adoption-plan.json`을 원자적으로 게시합니다. 선택형 base-aware 경로는 더 낮은 exact SemVer의 schema 1·2 release를 과거 코드 실행 없이 별도 검증하고 `base ∪ current` 경로를 target과 비교한 format 2 report를 만듭니다. release 검증 도구는 사람이 만든 draft와 공개된 immutable release를 package byte·ref·공개 installer 경로와 대조할 뿐 tag나 release를 변경하지 않습니다. source root 자체는 배포하지 않습니다. `v2.0.0`·`v2.1.0`·`v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`는 실제 immutable GitHub Release에서 각 계약에 맞는 원격 E2E를 검증했습니다.
 
 ### External Boundaries
 
@@ -195,7 +195,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 ## 11. Open Questions
 
-`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. T-016의 `install` 대상 계약은 D-010으로 확정돼 Origin `main`에 통합됐지만 아직 공개 release에는 포함되지 않았습니다. T-018은 `v2.3.2` source preparation을 진행 중이며, 두 remote 동기화와 사람이 수행하는 tag·draft·public release 뒤에만 candidate·published 근거를 기록할 수 있습니다. install 안내·preflight 순서·리뷰 불변조건 권고는 Backlog의 독립 PR 단위로 둡니다. Windows junction 경계와 지원 Python 범위는 T-017, 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
+`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. D-010·T-016의 `install` 대상 계약은 `v2.3.2`에 포함됐고 T-018 candidate와 T-019 공개·published 검증을 통과했습니다. T-019 기록의 Origin 통합이 남았습니다. install 안내·preflight 순서·리뷰 불변조건 권고는 Backlog의 독립 PR 단위로 둡니다. Windows junction 경계와 지원 Python 범위는 T-017, 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
 
 ## 12. Rejected or Deferred Ideas
 

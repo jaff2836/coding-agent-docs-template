@@ -37,7 +37,7 @@
 
 ### 1.5 미해결 질문
 
-없습니다. candidate의 실제 draft 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`에서 운영 검증했습니다.
+없습니다. candidate의 실제 draft 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`에서 운영 검증했습니다.
 
 ## 2. Spec
 
@@ -83,7 +83,7 @@ D-004의 transport·source identity·게시 순서는 유지합니다. D-004가 
 
 ### 2.6 완료 조건과 미해결 사항
 
-브랜치 구현 완료는 새 unit test, 전체 unittest, root docs, stable locale, Python compile과 `git diff --check` 통과입니다. 공개 경로는 immutable `v2.1.0`의 exact checkout에서 최초 실환경 `published` 검증으로 확인했고, 실제 `candidate`와 `published` 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`에서 반복 검증했습니다. `v2.2.0`부터는 각각 직전 release를 `--base-version`으로 지정해 모든 공식 locale의 base-aware 공개 E2E를 확인했습니다. Origin 통합과 공개는 각각 실제 remote 상태로 확인합니다.
+브랜치 구현 완료는 새 unit test, 전체 unittest, root docs, stable locale, Python compile과 `git diff --check` 통과입니다. 공개 경로는 immutable `v2.1.0`의 exact checkout에서 최초 실환경 `published` 검증으로 확인했고, 실제 `candidate`와 `published` 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`에서 반복 검증했습니다. `v2.2.0`부터는 각각 직전 release를 `--base-version`으로 지정해 모든 공식 locale의 base-aware 공개 E2E를 확인했습니다. Origin 통합과 공개는 각각 실제 remote 상태로 확인합니다.
 
 ## 3. 변경 기록
 
@@ -94,3 +94,4 @@ D-004의 transport·source identity·게시 순서는 유지합니다. D-004가 
 - 2026-09-21: synchronized Origin·GitHub `main`과 annotated tag가 가리키는 `v2.2.0` exact source `70a5a7a9e97fa5a89609a120ad69bced7e8ae1ac`에서 candidate와 immutable published `--base-version 2.1.0` 검증이 통과했습니다. 검증된 5개 asset은 게시 전후 교체하지 않았습니다.
 - 2026-09-22: synchronized Origin·GitHub `main`과 annotated tag가 가리키는 `v2.3.0` exact source `5066d821084545554588182f5250cc9dea12e444`에서 candidate와 immutable published `--base-version 2.2.0` 검증이 통과했습니다. 검증된 5개 asset은 게시 전후 교체하지 않았습니다.
 - 2026-09-22: synchronized Origin·GitHub `main`과 annotated tag가 가리키는 `v2.3.1` exact source `3460e4ccd0065bcd8a24fd64a6cd7135293926a0`에서 candidate와 immutable published `--base-version 2.3.0` 검증이 통과했습니다. 검증된 5개 asset은 게시 전후 교체하지 않았습니다. 후속 native Windows 10.0.28000·PowerShell·Python 3.14.7 실행도 synchronized `main` `969d1ed48414cee30e698067417d40122a1b8f59`과 같은 5개 asset을 확인하고 exit code 0으로 통과했습니다.
+- 2026-09-23: synchronized Origin·GitHub `main`과 annotated tag가 가리키는 `v2.3.2` exact source `4c6a798885404fdf5170769e271f7d06f4959234`에서 candidate가 통과한 5개 asset을 교체 없이 immutable Latest로 공개했습니다. 공개 직후 tag source의 verifier는 새 `install` 거부 문구를 구형 문구로만 판정해 실패했고, T-019 verifier 보완 뒤 clean exact source를 `--root`로 지정한 `published --base-version 2.3.1`이 통과했습니다. 이 gate는 en·ko의 latest·exact 경로, artifact와 겹치거나 무관한 파일이 있는 install 대상의 거부·tree 불변을 확인합니다.

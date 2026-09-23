@@ -6,11 +6,12 @@
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
 
-## v2.3.2 — 새 경로·빈 디렉터리 install 대상
+## [v2.3.2](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.2) — 새 경로·빈 디렉터리 install 대상
 
 - `installer.py install`은 새 경로 또는 읽을 수 있는 빈 디렉터리만 허용하고, 비어 있지 않거나 읽을 수 없는 대상은 template member를 쓰기 전에 거부합니다.
 - artifact와 무관한 파일이 있는 대상을 포함한 기존 저장소는 부분 설치 대신 읽기 전용 `adopt` plan을 안내합니다.
 - root README와 두 locale 적용 가이드가 같은 install/adopt 경계를 설명하며, 거부 시 installer 회귀가 대상 tree 보존을 확인합니다.
+- immutable Latest release의 candidate·published 검증에서 두 locale 경로, `v2.3.1` base-aware upgrade, 비어 있지 않은 install 대상 거부를 확인했습니다.
 
 ## [v2.3.1](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.1) — Windows release 도구 호환성
 
