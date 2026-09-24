@@ -1,14 +1,14 @@
 # CI 품질 게이트
 
-이 문서는 **무엇을, 어떤 순서로, 성공·실패를 어떻게 판정하는지**를 정합니다. GitHub Actions, Buildkite, 그 외 러너 중 무엇을 쓰는지는 적용 프로젝트가 고릅니다. 이 템플릿은 특정 제품의 pipeline 파일·워크플로 YAML·플러그인 목록을 포함하지 않습니다.
+이 문서는 **무엇을, 어떤 순서로, 성공·실패를 어떻게 판정하는지**를 정합니다. 이 저장소의 Windows·Linux Buildkite pipeline은 각각 `.buildkite/pipeline.yml`·`.buildkite/linux.yml`을 업로드해 실행합니다. 템플릿 적용 프로젝트가 GitHub Actions, Buildkite, 그 외 러너 중 무엇을 쓸지는 각 프로젝트가 고릅니다.
 
-원격 CI는 필수가 아닙니다. CI가 없으면 같은 게이트를 로컬에서 실행하고, 미사용 이유와 대체 검증을 [02-TODO.md](./02-TODO.md)의 통합 완료 조건 또는 프로젝트 README에 남깁니다.
+이 저장소의 Origin `main` 병합에는 Windows·Linux Buildkite check가 모두 필요합니다. 템플릿 적용 프로젝트에서는 원격 CI를 선택할 수 있습니다. 적용 프로젝트가 CI를 쓰지 않으면 같은 게이트를 로컬에서 실행하고, 미사용 이유와 대체 검증을 [02-TODO.md](./02-TODO.md)의 통합 완료 조건 또는 프로젝트 README에 남깁니다.
 
 ## Metadata
 
 - **Status:** Active
-- **Owner:** 프로젝트에 맞게 작성
-- **Last reviewed:** YYYY-MM-DD
+- **Owner:** Repository maintainers
+- **Last reviewed:** 2026-09-23
 - **Review cadence:** 품질 게이트 구성 또는 로컬 명령이 바뀔 때
 
 명령 문자열의 정본은 루트 [AGENTS.md](../AGENTS.md)와 적용 프로젝트 README입니다. 한쪽만 바꾸지 마세요. 기계적 규칙은 리뷰 finding이 아니라 이 게이트로 강제합니다. 판정 기준은 [REVIEW.md](./REVIEW.md) §12입니다.
@@ -52,7 +52,7 @@
 | --- | --- | --- | --- | --- |
 | G-docs | 문서 검사 | `python3 scripts/check-docs.py` | 이 템플릿의 `scripts/check-docs.py`를 유지하는 저장소 | 스크립트를 적용 저장소에서 제거한 경우. 제거했다면 들어오는 안내 링크도 정리 |
 | G-docs-test | 문서 검사 회귀 | `python3 -m unittest discover -s tests -p 'test_check_docs.py' -v` | `scripts/check-docs.py` 또는 `tests/test_check_docs.py`를 바꾼 변경. 템플릿 원본 저장소는 상시 | 적용 저장소에서 검사 스크립트를 바꾸지 않은 일상 변경. 테스트 파일을 제거했다면 G-docs만 유지 |
-| G-locale-source | locale source 검사 | `python3 scripts/check-locales.py` | locale source를 관리하는 이 템플릿 원본 저장소 | 적용 artifact와 일반 적용 저장소. 이 gate는 artifact에 포함되지 않음 |
+| G-locale-source | locale source 검사 | `python3 scripts/check-locales.py --require-stable` | locale source를 관리하는 이 템플릿 원본 저장소 | 적용 artifact와 일반 적용 저장소. 이 gate는 artifact에 포함되지 않음 |
 | G-locale-source-test | locale source 검사 회귀 | `python3 -m unittest discover -s tests -p 'test_check_locales.py' -v` | 이 템플릿 원본 저장소는 상시 | 적용 artifact와 일반 적용 저장소 |
 | G-lint | 린트 | AGENTS.md / README의 Lint | 해당 명령이 `N/A`가 아니고 검증된 때 | 미설정 placeholder, `N/A`, 또는 미검증으로 기록된 때 |
 | G-type | 타입 검사 | AGENTS.md / README의 Typecheck | 위와 같음 | 위와 같음 |
@@ -78,7 +78,7 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 
 - [ ] 각 게이트의 명령 문자열이 AGENTS.md·README와 같다.
 - [ ] placeholder가 남은 명령은 실행하지 않으며, `N/A`이면 이유와 함께 이 표에서 건너뛴다.
-- [ ] G-docs를 유지하면 `python`/`python3` 중 러너에 있는 쪽으로 문서와 파이프라인이 같다.
+- [ ] G-docs를 유지하면 러너의 `python`/`python3` 또는 명시적 `python.exe` 경로로 문서의 동일한 스크립트를 실행한다.
 - [ ] 의존성 설치가 필요하면 Install 명령을 게이트 앞에만 둔다.
 
 ### 실패와 권한
@@ -103,9 +103,19 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 - CI에서만 통과하고 로컬 문서에 없는 검사라면, 명령을 AGENTS.md·README에 올리거나 CI에서 제거합니다.
 - `scripts/check-docs.py`를 바꾸면 로컬에서 G-docs-test를 실행한 뒤에만 완료로 보고합니다.
 
-## 6. 제공하지 않는 것
+## 6. Buildkite Windows·Linux 검증
 
-- GitHub Actions 워크플로 파일, Buildkite pipeline 파일, 기타 러너 설정
+두 pipeline은 연결된 Origin installation의 canonical repository URL `https://origin.cursor.com/git/jaff2836/ai-agent-docs-template.git`을 사용합니다. 각 self-hosted agent의 Git URL rewrite가 HTTPS checkout을 SSH로 전환하며 agent key로 정확한 commit을 가져옵니다. Origin branch push와 열린 PR의 head push에서 두 pipeline이 자동 시작하고 각각 Origin check를 게시합니다. `main` 대상 merge ruleset은 Buildkite 앱의 `jaff2836-org / windows-ci`와 `jaff2836-org / linux-ci` check suite를 필수로 요구합니다. PR #37을 연 직후에는 같은 head의 기존 branch check가 표시됐고 새 build는 관찰되지 않았습니다. 이후 PR head push에서는 PR 정보가 연결된 두 build가 자동 시작했습니다. GitHub push trigger는 구성하지 않았습니다. agent 인증 비밀값은 저장소와 로그에 기록하지 않습니다.
+
+필수 check가 없거나 agent 부재로 대기하면 병합을 보류합니다. agent를 복구한 뒤 Buildkite에서 정확한 head를 재실행하거나 변경된 PR head를 push하고, 두 Origin check의 성공을 확인합니다. 로컬 게이트만으로 이 저장소의 필수 check를 충족했다고 판단하지 않습니다.
+
+[`windows-ci`](https://buildkite.com/jaff2836-org/windows-ci)는 [`pipeline.yml`](../.buildkite/pipeline.yml)을 `jaff2836-worker-windows` queue에서 실행합니다. WindowsApps의 실행 불가 `python3` 별칭 대신 공식 Python 3.12.10 NuGet CI 배포본을 `%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe`에 배치했습니다. root docs·stable locale 검사와 전체 unittest 뒤 T-017 native junction probe를 실행합니다. Probe는 설계 재현용 진단 단계로 현행 installer가 junction 경로를 허용한다고 기록합니다. 경계 회귀 검증으로 승격할 때 허용·거부 결과를 명시적으로 단언해야 합니다.
+
+[`linux-ci`](https://buildkite.com/jaff2836-org/linux-ci)는 [`linux.yml`](../.buildkite/linux.yml)을 `jaff2836-worker-linux` queue에서 실행합니다. agent의 Python 3.13.5로 같은 root docs·stable locale 검사와 전체 unittest를 실행합니다. PR #37의 [Windows build #21](https://buildkite.com/jaff2836-org/windows-ci/builds/21)과 [Linux build #6](https://buildkite.com/jaff2836-org/linux-ci/builds/6)은 같은 head `e7e12581b614685774064d57119b08a508ff5f23`에서 자동 시작해 각각 unittest 176개를 통과하고 Origin 성공 check를 게시했습니다. 두 build의 Buildkite `pull_request.id`는 `37`이며 base는 `main`입니다.
+
+## 7. 제공하지 않는 것
+
+- 템플릿 artifact에 포함할 GitHub Actions 워크플로 파일, Buildkite pipeline 파일, 기타 러너 설정
 - 자동 리뷰 실행 잡, 리뷰 프롬프트, 봇 토큰 설정
 - 배포·릴리스·tag 잡. 품질 게이트와 배포 권한을 한 잡에 섞지 마세요
 - `scripts/check-docs.py`를 다른 언어로 다시 짠 복제 구현

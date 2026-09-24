@@ -1,0 +1,11 @@
+agents:
+  queue: "jaff2836-worker-windows"
+
+steps:
+  - label: ":windows: Python 3.12+ quality gates and T-017 junction probe"
+    command: >-
+      "%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe" --version &&
+      "%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe" scripts/check-docs.py &&
+      "%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe" scripts/check-locales.py --require-stable &&
+      "%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe" -m unittest discover -s tests -v &&
+      "%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe" .buildkite/t017-junction-probe.py
