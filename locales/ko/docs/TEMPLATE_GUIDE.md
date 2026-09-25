@@ -73,6 +73,8 @@
 
 공식 release에서는 GitHub Releases의 `installer.py`를 사용합니다. latest installer는 latest version과, exact tag의 installer는 같은 exact version과 함께 사용해야 합니다. installer는 GitHub release asset URL에서 시작한 HTTPS redirect chain만 따르고 exact tag의 checksum과 manifest를 검증합니다.
 
+Windows에서 이 템플릿 source revision의 installer를 실행하려면 directory junction 검사를 위해 Python 3.12 이상이 필요합니다. 이전에 공개된 release는 해당 버전의 Python 지원 범위를 따릅니다.
+
 ```sh
 (
   set -e
@@ -100,7 +102,7 @@ python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agen
 | `identical` | 이미 artifact와 같음 | 조치하지 않습니다. |
 | `merge` | 대상 파일이 다름 | policy가 `merge`(프로젝트 소유)면 기존 내용을 보존하고 템플릿 절을 병합합니다. `copy`(템플릿 소유)면 artifact 판에서 시작해 의도한 프로젝트 수정만 다시 적용합니다. |
 | `decision` | 채택 여부를 프로젝트가 결정 | `LICENSE`는 §3의 라이선스 규칙, `docs/10-EXTENSION.md`는 5단계, `.cursor/BUGBOT.md`·`.omp/WATCHDOG.md`는 8단계에 따라 추가·유지·삭제를 정합니다. |
-| `blocked` | symlink, 일반 파일이 아닌 항목, 대소문자만 다른 이름 등 | 사람이 대상 경로를 먼저 정리한 뒤 `adopt`를 다시 실행합니다. |
+| `blocked` | symlink, Windows directory junction, 일반 파일이 아닌 항목, 대소문자만 다른 이름 등 | 사람이 대상 경로를 먼저 정리한 뒤 `adopt`를 다시 실행합니다. |
 
 `adoption-plan.json`은 `stability: experimental` 형식이며 minor release에서 필드가 바뀔 수 있습니다. 적용을 취소하려면 output 디렉터리를 삭제합니다.
 

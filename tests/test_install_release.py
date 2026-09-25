@@ -218,6 +218,18 @@ class InstallerTests(unittest.TestCase):
                 self.skipTest("symlink creation requires Windows privileges: %s" % exc)
             raise
 
+    def windows_junction(self, link: Path, target: Path) -> None:
+        if os.name != "nt":
+            self.skipTest("native Windows junction required")
+        subprocess.run(
+            ["cmd.exe", "/c", "mklink", "/J", str(link), str(target)],
+            check=True,
+            capture_output=True,
+            timeout=15,
+        )
+        self.assertTrue(link.is_junction())
+        self.addCleanup(lambda: os.rmdir(link) if os.path.lexists(link) else None)
+
     def assert_materialized_file_mode(self, path: Path) -> None:
         mode = stat.S_IMODE(path.lstat().st_mode)
         if os.name == "nt":
@@ -470,6 +482,72 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 1)
         self.assertIn("symlink", completed.stderr)
         self.assertEqual(_tree_state(target), ())
+
+    def test_windows_python_below_312_stops_before_release_access(self) -> None:
+        with mock.patch.object(INSTALLER.os, "name", "nt"), mock.patch.object(
+            INSTALLER.sys, "version_info", (3, 11, 9)
+        ), mock.patch.object(INSTALLER, "list_locales") as list_locales:
+            with mock.patch.object(INSTALLER.sys, "stderr", new_callable=io.StringIO) as stderr:
+                result = INSTALLER.main(
+                    ["list-locales", "--release-url", "https://github.com/owner/repo/releases"]
+                )
+        self.assertEqual(result, 1)
+        self.assertIn("Windows requires Python 3.12 or newer", stderr.getvalue())
+        list_locales.assert_not_called()
+
+    def test_install_rejects_uninspectable_target_before_writing(self) -> None:
+        target = self.temp_root() / "project"
+        with mock.patch.object(Path, "lstat", side_effect=PermissionError("denied")):
+            with self.assertRaisesRegex(INSTALLER.InstallerError, "cannot inspect target path"):
+                INSTALLER._resolve_target_root(target)
+        self.assertFalse(target.exists())
+
+    def test_windows_junction_roots_and_outputs_leave_outside_empty(self) -> None:
+        base = self.publish()
+        outside = self.temp_root() / "outside"
+        outside.mkdir()
+        root_link = self.temp_root() / "root-link"
+        output_link = self.temp_root() / "output-link"
+        parent_link = self.temp_root() / "parent-link"
+        for link in (root_link, output_link, parent_link):
+            self.windows_junction(link, outside)
+
+        with self.assertRaisesRegex(INSTALLER.InstallerError, "junction"):
+            INSTALLER.install(base, "2.0.0", "ko", root_link)
+        with self.assertRaisesRegex(INSTALLER.InstallerError, "junction"):
+            INSTALLER.install(base, "2.0.0", "ko", parent_link / "new")
+        with self.assertRaisesRegex(INSTALLER.InstallerError, "junction"):
+            INSTALLER.adopt(base, "2.0.0", "ko", root_link, self.temp_root() / "plan")
+        with self.assertRaisesRegex(INSTALLER.InstallerError, "junction"):
+            INSTALLER.export_artifact(base, "2.0.0", "ko", output_link)
+        with self.assertRaisesRegex(INSTALLER.InstallerError, "junction"):
+            INSTALLER.export_artifact(base, "2.0.0", "ko", parent_link / "out")
+        real_root = self.temp_root() / "real-root"
+        real_root.mkdir()
+        with self.assertRaisesRegex(INSTALLER.InstallerError, "junction"):
+            INSTALLER.adopt(base, "2.0.0", "ko", real_root, output_link)
+        self.assertEqual(list(outside.iterdir()), [])
+        self.assertFalse((self.temp_root() / "plan").exists())
+
+    def test_windows_adopt_blocks_member_junction_without_reading_outside(self) -> None:
+        base = self.publish()
+        outside = self.temp_root() / "outside"
+        outside.mkdir()
+        (outside / "REVIEW.md").write_bytes(b"outside content")
+        root = self.temp_root() / "root"
+        root.mkdir()
+        self.windows_junction(root / "docs", outside)
+        member_path = INSTALLER.PurePosixPath("docs/REVIEW.md")
+        with self.assertRaisesRegex(INSTALLER.InstallerError, "junction"):
+            INSTALLER._checked_member_target(root, member_path)
+        with self.assertRaisesRegex(INSTALLER.InstallerError, "junction"):
+            INSTALLER._ensure_parent_dirs(root, member_path, [])
+        output = self.temp_root() / "plan"
+        plan = INSTALLER.adopt(base, "2.0.0", "ko", root, output)
+        entry = next(item for item in plan["paths"] if item["path"] == "docs/REVIEW.md")
+        self.assertEqual((entry["status"], entry["target"], entry["target_sha256"]),
+                         ("blocked", "parent-junction", None))
+        self.assertEqual((outside / "REVIEW.md").read_bytes(), b"outside content")
 
     def test_export_refuses_a_nonempty_output_directory(self) -> None:
         base = self.publish()

@@ -103,6 +103,29 @@ class InstallerError(ValueError):
     """Raised when a release asset or target tree violates the contract."""
 
 
+def _require_supported_python() -> None:
+    if os.name == "nt" and sys.version_info < (3, 12):
+        raise InstallerError("Windows requires Python 3.12 or newer to check directory junctions")
+
+
+def _link_kind(path: Path, mode: Optional[int] = None) -> Optional[str]:
+    """Classify a path without following symlinks or Windows junctions."""
+
+    _require_supported_python()
+    try:
+        if mode is None:
+            mode = path.lstat().st_mode
+        if stat.S_ISLNK(mode):
+            return "symlink"
+        if os.name == "nt" and path.is_junction():
+            return "junction"
+    except FileNotFoundError:
+        return None
+    except OSError as exc:
+        raise InstallerError("cannot inspect target path: %s: %s" % (path, exc)) from exc
+    return None
+
+
 class _RejectRedirects(urllib.request.HTTPRedirectHandler):
     """Reject redirects for localhost fixtures and unsupported transports."""
 
@@ -795,11 +818,11 @@ def _read_verified_archive(data: bytes, tag: str, record: Mapping[str, Any]) -> 
 
 def _resolve_target_root(path: Path) -> Path:
     target = Path(path).absolute()
-    if target.is_symlink() or (target.exists() and not target.is_dir()):
-        raise InstallerError("repo root must be a real directory, not a symlink or file")
+    if _link_kind(target) or (target.exists() and not target.is_dir()):
+        raise InstallerError("repo root must be a real directory, not a symlink, junction or file")
     if not target.exists():
-        if not target.parent.is_dir() or target.parent.is_symlink():
-            raise InstallerError("repo root parent must be an existing non-symlink directory")
+        if not target.parent.is_dir() or _link_kind(target.parent):
+            raise InstallerError("repo root parent must be an existing directory without a symlink or junction")
     return target
 
 
@@ -831,14 +854,14 @@ def _checked_member_target(root: Path, path: PurePosixPath) -> tuple[Path, bool]
     probe = root
     for segment in path.parts[:-1]:
         probe = probe / segment
-        if probe.is_symlink():
+        if _link_kind(probe):
             raise InstallerError(
-                "target directory chain contains a symlink: %s" % probe
+                "target directory chain contains a symlink or junction: %s" % probe
             )
         if probe.exists() and not probe.is_dir():
             raise InstallerError("target path parent is not a directory: %s" % probe)
     target = root.joinpath(*path.parts)
-    if target.is_symlink() or target.exists():
+    if _link_kind(target) or target.exists():
         return target, True
     return target, False
 
@@ -903,8 +926,8 @@ def _ensure_parent_dirs(root: Path, path: PurePosixPath, created: list[Path]) ->
     current = root
     for segment in path.parts[:-1]:
         current = current / segment
-        if current.is_symlink():
-            raise InstallerError("target directory chain contains a symlink: %s" % current)
+        if _link_kind(current):
+            raise InstallerError("target directory chain contains a symlink or junction: %s" % current)
         if not current.exists():
             current.mkdir()
             created.append(current)
@@ -1059,9 +1082,9 @@ def adopt(
 
 def _validated_adoption_root(path: Path) -> Path:
     root = path.absolute()
-    if root.is_symlink() or not root.is_dir():
+    if _link_kind(root) or not root.is_dir():
         raise InstallerError(
-            "repo root must be an existing directory, not a symlink; "
+            "repo root must be an existing directory, not a symlink or junction; "
             "use 'install' for a new project"
         )
     return root
@@ -1241,8 +1264,12 @@ def _adoption_target(
             mode = current.lstat().st_mode
         except OSError:
             return "unreadable", None
-        if stat.S_ISLNK(mode):
-            return ("symlink" if last else "parent-symlink"), None
+        try:
+            link_kind = _link_kind(current, mode)
+        except InstallerError:
+            return "unreadable", None
+        if link_kind:
+            return (link_kind if last else "parent-" + link_kind), None
         if not last:
             if not stat.S_ISDIR(mode):
                 return "parent-not-directory", None
@@ -1390,10 +1417,10 @@ def _running_installer_bytes(installer_bytes: Optional[bytes]) -> bytes:
 def _validated_export_output(output: Path) -> Path:
     output = output.absolute()
     parent = output.parent
-    if not parent.is_dir() or parent.is_symlink():
-        raise InstallerError("output parent must be an existing non-symlink directory")
-    if output.is_symlink():
-        raise InstallerError("output must not be a symlink")
+    if not parent.is_dir() or _link_kind(parent):
+        raise InstallerError("output parent must be an existing directory without a symlink or junction")
+    if _link_kind(output):
+        raise InstallerError("output must not be a symlink or junction")
     if output.exists():
         if not output.is_dir():
             raise InstallerError("output must be an empty directory")
@@ -1447,6 +1474,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     args = parser.parse_args(argv)
     try:
+        _require_supported_python()
         if args.command == "install":
             written = install(args.release_url, args.version, args.locale, args.repo_root)
             print("Installed %s locale with %d files into %s" % (args.locale, len(written), args.repo_root))
