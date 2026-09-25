@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-017 Windows junction 경계 검증
-- **Goal:** 승인된 Windows junction 경계와 Python 하한을 구현·native 검증함
-- **Target:** [T-017 승인 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)의 별도 구현 PR
-- **Status:** In Progress — Origin PR #37 merge `9d53913`과 GitHub fast-forward를 확인했습니다. Windows Python 3.12 이상, Buildkite runner와 기존 검사 지점에 junction 판정을 추가하는 범위를 확정했습니다. 구현·native 회귀는 진행 중입니다.
-- **다음 마일스톤:** T-017 설계·구현 뒤 T-023 release 후보 회귀를 별도 PR로 진행합니다. T-023 통합 전에는 다음 release candidate를 준비하지 않습니다.
+- **Name:** T-023 release 후보의 verifier·installer 계약 회귀
+- **Goal:** 실제 installer의 새·빈 대상 허용과 두 종류의 비어 있지 않은 대상 거부를 verifier의 판정과 같은 local fixture에서 검사함
+- **Target:** `codex/t023-release-verifier-contract-regression` (Origin `main` merge `b5a9c4e` 기준)
+- **Status:** In Progress — T-017 구현을 Origin PR #38 merge `b5a9c4e`와 GitHub `main` fast-forward로 통합했습니다. T-023은 별도 브랜치에서 구현·검증 중이며 아직 통합 결과가 없습니다.
+- **다음 마일스톤:** T-023 통합 뒤 다음 release candidate를 준비합니다.
 
 ## 운영 규칙
 
@@ -35,11 +35,11 @@
 
 ## In Progress
 
-- [ ] **T-017 Windows junction 경계 검증** — Windows Python 3.12 이상, Buildkite runner와 현행 검사 범위를 유지하는 junction 차단을 D-011로 확정했습니다. PR #37의 native 재현은 통합됐고, [승인 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)에 따른 구현·native 회귀는 별도 브랜치에서 진행합니다.
+- [ ] **T-023 release 후보의 verifier·installer 계약 회귀** — `v2.3.2` 공개 직후 verifier가 실제 installer의 새 거부 문구를 구형 fixture로만 판정해 실패한 사례를 release 전 회귀로 막습니다. 실제 installer의 새·빈 대상 허용과 겹치거나 무관한 파일이 있는 대상 거부·tree 불변을 verifier 판정과 같은 local fixture에서 대조하고, mock 오류 문구만으로 통과하지 않도록 합니다. 기존 candidate의 로컬 테스트 gate에 포함하고, **다음 release candidate 전에 통합합니다.** Release mutation, 새 production dependency, 특정 CI runner 연결은 포함하지 않습니다. 작업 기준은 Origin `main` merge `b5a9c4e`이며 검증과 통합은 진행 중입니다.
 
 ## Next
 
-- [ ] **T-023 release 후보의 verifier·installer 계약 회귀** — T-017 구현 통합 뒤 진행합니다. `v2.3.2` 공개 직후 verifier가 실제 installer의 새 거부 문구를 구형 fixture로만 판정해 실패한 사례를 release 전 회귀로 막습니다. 실제 installer의 새·빈 대상 허용과 겹치거나 무관한 파일이 있는 대상 거부·tree 불변을 verifier 판정과 같은 local fixture에서 대조하고, mock 오류 문구만으로 통과하지 않도록 합니다. 기존 candidate의 로컬 테스트 gate에 포함하고, **다음 release candidate 전에 통합합니다.** Release mutation, 새 production dependency, 특정 CI runner 연결은 포함하지 않습니다.
+T-023 통합 뒤 Backlog 권고 순서의 T-020을 검토합니다.
 
 ## Blocked
 
@@ -53,8 +53,8 @@
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
 | 1 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction을 재현·설계 | **Integrated** — Origin PR #37 merge `9d53913`과 GitHub `main` fast-forward를 확인했습니다. Windows·Linux 전체 gate와 native 재현을 통과했고, 경계 범위는 D-011로 확정했습니다. |
-| 2 | `codex/t017-junction-boundary-implementation` | T-017: 승인된 경계와 native 회귀를 구현 | **In Progress** — D-011 경계 합의 후 구현·검증 중 |
-| 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | T-017 구현·T-019 verifier 보완 통합 뒤; **다음 release candidate 전 통합 필수**; 기존 candidate의 로컬 gate에 포함, 게시 권한 추가 없음 |
+| 2 | `codex/t017-junction-boundary-implementation` | T-017: 승인된 경계와 native 회귀를 구현 | **Integrated** — Origin PR #38 merge `b5a9c4e`와 GitHub `main` fast-forward를 확인했습니다. 정확한 head의 Windows #27·Linux #12 CI가 통과했습니다. |
+| 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | **In Progress** — `b5a9c4e` 기준 별도 브랜치; 다음 release candidate 전 통합 필수, 게시 권한 추가 없음 |
 | 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | D-010 계약은 바꾸지 않음; 다음 patch release 후보 |
 | 5 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
 | 6 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
@@ -76,6 +76,10 @@
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-017 Windows junction 경계 검증**
+  - 통합 결과: 승인된 [D-011 경계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)를 구현한 Origin PR #38 head `42d9923`을 `b5a9c4e`에 병합하고 GitHub `main`에도 non-force fast-forward로 반영했습니다. 공개 `v2.3.2` asset은 변경하지 않았습니다.
+  - 검증 근거: PR #38 exact head의 Buildkite Windows #27·Linux #12가 통과했고, Windows native junction probe와 전체 unittest 180개, root docs·stable locale gate를 확인했습니다. 다음 release 후보의 installer·verifier 계약 회귀는 T-023이 소유합니다.
 
 - [x] **T-019 `v2.3.2` 공개 기록과 지원 검증**
   - 통합 결과: T-018 exact source `4c6a798885404fdf5170769e271f7d06f4959234`의 candidate가 통과한 5개 asset을 교체 없이 [immutable Latest `v2.3.2`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.2)로 공개했습니다. verifier의 새 install 거부 문구 대응과 공개 기록은 Origin PR #36 merge `cc791be2370e76930184e473061312518d5fe221`에 통합하고 GitHub `main`에도 non-force fast-forward로 반영했습니다.

@@ -663,6 +663,57 @@ def _check_artifact(repository_root: Path, artifact_root: Path) -> None:
     )
 
 
+def _verify_install_target_contract(
+    base: Path,
+    installer_path: Path,
+    remote_arguments: Sequence[str],
+    expected: Mapping[str, bytes],
+    prefix: str,
+) -> None:
+    """Exercise the release installer's new, empty, and non-empty target rules."""
+
+    def install_into(target: Path) -> None:
+        _command(
+            [
+                sys.executable,
+                "-B",
+                str(installer_path),
+                "install",
+                *remote_arguments,
+                "--repo-root",
+                str(target),
+            ],
+            cwd=base,
+        )
+
+    new_root = base / (prefix + "-install")
+    install_into(new_root)
+    _compare_assets(expected, _tree_files(new_root), prefix + " new install")
+
+    empty_root = base / (prefix + "-empty-install")
+    empty_root.mkdir()
+    install_into(empty_root)
+    _compare_assets(expected, _tree_files(empty_root), prefix + " empty install")
+
+    marker = ".release-verification-marker"
+    if "AGENTS.md" not in expected or marker in expected:
+        raise VerificationError("install refusal fixtures do not match the artifact")
+    for existing_name in ("AGENTS.md", marker):
+        target_root = base / (prefix + "-nonempty-" + existing_name)
+        target_root.mkdir()
+        (target_root / existing_name).write_text("keep\n", encoding="utf-8")
+        before = _tree_snapshot(target_root)
+        try:
+            install_into(target_root)
+        except VerificationError as exc:
+            if "install target must be a new path or an empty directory" not in str(exc):
+                raise
+        else:
+            raise VerificationError("install accepted a non-empty target")
+        if _tree_snapshot(target_root) != before:
+            raise VerificationError("failed install changed a non-empty target")
+
+
 def _verify_published_e2e(
     repository_root: Path,
     *,
@@ -731,17 +782,8 @@ def _verify_published_e2e(
                     "--locale",
                     locale,
                 ]
-                _command(
-                    [
-                        sys.executable,
-                        "-B",
-                        str(installer_path),
-                        "install",
-                        *remote_arguments,
-                        "--repo-root",
-                        str(install_root),
-                    ],
-                    cwd=base,
+                _verify_install_target_contract(
+                    base, installer_path, remote_arguments, expected, prefix
                 )
                 _command(
                     [
@@ -837,40 +879,6 @@ def _verify_published_e2e(
                     )
                 if selector == version:
                     _check_artifact(repository_root, exported)
-
-                marker = ".release-verification-marker"
-                if "AGENTS.md" not in expected or marker in expected:
-                    raise VerificationError("install refusal fixtures do not match the artifact")
-                for existing_name in ("AGENTS.md", marker):
-                    target_root = base / (prefix + "-nonempty-" + existing_name)
-                    target_root.mkdir()
-                    (target_root / existing_name).write_text(
-                        "keep\n", encoding="utf-8"
-                    )
-                    before = _tree_snapshot(target_root)
-                    try:
-                        _command(
-                            [
-                                sys.executable,
-                                "-B",
-                                str(installer_path),
-                                "install",
-                                *remote_arguments,
-                                "--repo-root",
-                                str(target_root),
-                            ],
-                            cwd=base,
-                        )
-                    except VerificationError as exc:
-                        expected_refusal = (
-                            "install target must be a new path or an empty directory"
-                        )
-                        if expected_refusal not in str(exc):
-                            raise
-                    else:
-                        raise VerificationError("install accepted a non-empty target")
-                    if _tree_snapshot(target_root) != before:
-                        raise VerificationError("failed install changed a non-empty target")
 
 
 def verify_candidate(

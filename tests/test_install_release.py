@@ -21,6 +21,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY_ROOT / "scripts"))
 import installer as INSTALLER  # noqa: E402
 import package_release as PACKAGE_RELEASE  # noqa: E402
+import verify_release as VERIFY_RELEASE  # noqa: E402
 
 
 REAL_INSTALLER_BYTES = (REPOSITORY_ROOT / "scripts/installer.py").read_bytes()
@@ -435,6 +436,29 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("run 'adopt'", completed.stderr)
         self.assertEqual(_tree_snapshot(target), before)
         self.assertFalse((target / "AGENTS.md").exists())
+
+    def test_release_verifier_checks_actual_installer_target_contract(self) -> None:
+        payloads = build_release_payloads()
+        server = FakeReleaseServer(payloads)
+        self.addCleanup(server.close)
+        installer_path = self.temp_root() / "release-installer.py"
+        installer_path.write_bytes(payloads[VERSION_DIR + "/installer.py"])
+
+        VERIFY_RELEASE._verify_install_target_contract(
+            self.temp_root(),
+            installer_path,
+            [
+                "--release-url",
+                server.base_url,
+                "--version",
+                "2.0.0",
+                "--locale",
+                "ko",
+            ],
+            DEFAULT_MEMBERS,
+            "candidate-ko",
+        )
+        self.assertIn(VERSION_DIR + "/release-manifest.json", server.requests)
 
     def test_write_members_keeps_member_conflict_checks_as_defense_in_depth(self) -> None:
         target = self.temp_root() / "project"

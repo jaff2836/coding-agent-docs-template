@@ -101,7 +101,7 @@ D-006의 `adopt`·adoption policy·release manifest schema 2는 `v2.1.0`으로 �
 
 D-008의 선택형 `adopt --base-version <older-exact-semver>`과 format 2 report는 `v2.2.0`으로 구현·공개되어 §5 현재 구조로 옮겼습니다. 상세 계약과 완료 근거는 [base-aware adoption 변경](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md)과 [PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md)을 따릅니다.
 
-D-011은 Windows Python 3.12 이상에서 installer의 기존 root·output·직접 부모·member 검사 지점에 junction 거부를 추가하고 D-006 adoption SPEC §3.3의 대상 상태를 확장합니다. 선택 경로보다 위의 기존 상위 component는 확대 검사하지 않습니다. 상세 계약은 [T-017 경계 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)를 따르며 구현·native 검증은 진행 중입니다.
+D-011은 Windows Python 3.12 이상에서 installer의 기존 root·output·직접 부모·member 검사 지점에 junction 거부를 추가하고 D-006 adoption SPEC §3.3의 대상 상태를 확장합니다. 선택 경로보다 위의 기존 상위 component는 확대 검사하지 않습니다. 상세 계약은 [T-017 경계 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)를 따릅니다. 구현·native 회귀는 Origin PR #38 merge `b5a9c4e`와 GitHub `main`에 반영됐고 다음 release에는 아직 포함되지 않았습니다.
 
 ### Target Data Flow
 
@@ -198,7 +198,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 ## 11. Open Questions
 
-`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. D-010·T-016의 `install` 대상 계약은 `v2.3.2`에 포함됐고 T-018 candidate와 T-019 공개·published 검증 및 기록 통합을 마쳤습니다. install 안내·preflight 순서·리뷰 불변조건 권고는 Backlog의 독립 PR 단위로 둡니다. Windows Python 3.12 하한과 junction 경계는 [D-011](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)로 확정했고 별도 브랜치에서 구현 중입니다. Origin의 Buildkite Windows·Linux pipeline은 정확한 head에서 전체 gate를 통과했고, Windows Python 3.12.10에서 native probe로 현행 installer의 junction 허용을 재현했습니다. PR #37을 연 직후에는 기존 head check가 표시됐고 새 build는 관찰되지 않았지만, 이후 PR head push는 PR 정보가 연결된 두 build와 성공 check를 자동 생성했습니다. 최종 head `cc67e31`의 두 check 통과 후 Origin PR #37을 `9d53913`에 병합하고 GitHub `main`에도 fast-forward로 반영했습니다. 두 check는 Origin `main` 병합 필수 조건입니다. T-017 구현·native 회귀 검증이 남았고, T-023 release 후보 회귀가 다음 candidate의 선행조건입니다. 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
+`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. D-010·T-016의 `install` 대상 계약은 `v2.3.2`에 포함됐고 T-018 candidate와 T-019 공개·published 검증 및 기록 통합을 마쳤습니다. install 안내·preflight 순서·리뷰 불변조건 권고는 Backlog의 독립 PR 단위로 둡니다. Windows Python 3.12 하한과 junction 경계는 [D-011](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)로 확정하고 Origin PR #38 merge `b5a9c4e` 및 GitHub `main`에 구현을 반영했습니다. Origin의 Buildkite Windows·Linux pipeline은 정확한 head에서 전체 gate를 통과했고, Windows Python 3.12.10에서 native probe로 현행 installer의 junction 허용을 재현했습니다. PR #37을 연 직후에는 기존 head check가 표시됐고 새 build는 관찰되지 않았지만, 이후 PR head push는 PR 정보가 연결된 두 build와 성공 check를 자동 생성했습니다. 최종 head `cc67e31`의 두 check 통과 후 Origin PR #37을 `9d53913`에 병합하고 GitHub `main`에도 fast-forward로 반영했습니다. 두 check는 Origin `main` 병합 필수 조건입니다. T-017 구현 head `42d9923`에서 Windows Buildkite #27·Linux #12가 통과했고, T-023 release 후보 회귀가 다음 candidate의 선행조건입니다. 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
 
 ## 12. Rejected or Deferred Ideas
 
