@@ -1,4 +1,4 @@
-"""Report how the current installer classifies native Windows junction paths."""
+"""Assert that the installer rejects native Windows junction boundaries."""
 
 import os
 from pathlib import Path, PurePosixPath
@@ -21,13 +21,13 @@ def _create_junction(link: Path, target: Path) -> None:
         raise RuntimeError("junction fixture was also classified as a symlink: %s" % link)
 
 
-def _observe(label, operation) -> None:
+def _expect_rejected(label, operation) -> None:
     try:
-        result = operation()
+        operation()
     except installer.InstallerError as error:
         print("%s: rejected (%s)" % (label, error))
     else:
-        print("%s: accepted (%r)" % (label, result))
+        raise AssertionError("%s: junction was accepted" % label)
 
 
 if os.name != "nt":
@@ -41,6 +41,8 @@ import installer  # noqa: E402
 
 with tempfile.TemporaryDirectory(prefix="t017-junction-") as temporary:
     base = Path(temporary)
+    install_target = base / "outside-install-target"
+    install_target.mkdir()
     member_target = base / "outside-member-target"
     member_target.mkdir()
     (member_target / "leaf.txt").write_text("outside", encoding="utf-8")
@@ -48,11 +50,13 @@ with tempfile.TemporaryDirectory(prefix="t017-junction-") as temporary:
     output_target = base / "outside-output-target"
     output_target.mkdir()
 
+    install_junction = base / "install-junction"
     member_junction = base / "member-junction"
     output_junction = base / "output-junction"
-    junctions = (member_junction, output_junction)
+    junctions = (install_junction, member_junction, output_junction)
 
     try:
+        _create_junction(install_junction, install_target)
         _create_junction(member_junction, member_target)
         _create_junction(output_junction, output_target)
         before_member = (member_target / "leaf.txt").read_bytes()
@@ -62,30 +66,28 @@ with tempfile.TemporaryDirectory(prefix="t017-junction-") as temporary:
             "fixture: symlink=%s junction=%s"
             % (member_junction.is_symlink(), member_junction.is_junction())
         )
-        _observe(
+        _expect_rejected(
             "install root",
-            lambda: installer._resolve_target_root(member_junction),
+            lambda: installer._resolve_target_root(install_junction),
         )
-        _observe(
+        _expect_rejected(
             "adopt root",
             lambda: installer._validated_adoption_root(member_junction),
         )
-        _observe(
+        _expect_rejected(
             "export output",
             lambda: installer._validated_export_output(output_junction),
         )
-        _observe(
-            "adopt member through junction",
-            lambda: installer._adoption_target(
-                base,
-                PurePosixPath("member-junction/leaf.txt"),
-                {},
-            ),
+        member_state = installer._adoption_target(
+            base, PurePosixPath("member-junction/leaf.txt"), {}
         )
+        if member_state != ("parent-junction", None):
+            raise AssertionError("adopt member through junction: %r" % (member_state,))
+        print("adopt member through junction: blocked")
 
         after_member = (member_target / "leaf.txt").read_bytes()
         after_output = tuple(sorted(path.name for path in output_target.iterdir()))
-        if before_member != after_member or before_output != after_output:
+        if tuple(install_target.iterdir()) or before_member != after_member or before_output != after_output:
             raise RuntimeError("junction probe unexpectedly modified an outside target")
         print("outside targets unchanged: true")
     finally:

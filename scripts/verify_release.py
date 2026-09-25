@@ -51,6 +51,8 @@ ADOPTION_TARGET_STATES = frozenset(
         "case-variant",
         "symlink",
         "parent-symlink",
+        "junction",
+        "parent-junction",
         "parent-not-directory",
         "special",
     )

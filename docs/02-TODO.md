@@ -8,16 +8,16 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-23 (UTC)
+- **Last reviewed:** 2026-09-25 (UTC)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
 - **Integration target:** local `main`; 공개 저장소 target `jaff2836/coding-agent-docs-template`; v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
 - **Name:** T-017 Windows junction 경계 검증
-- **Goal:** native Windows 재현과 지원 Python 범위·fail-closed 설계를 확정함
-- **Target:** [T-017 Draft 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)와 별도 구현 PR의 검증 범위 합의
-- **Status:** In Progress — Windows Python 3.12 이상과 Buildkite self-hosted Windows runner를 선택했습니다. Origin SSH checkout, Python 3.12.10 전체 gate 및 native junction 재현을 확인했습니다. 현행 installer는 junction 경계를 허용하며, 전체 경계 설계 합의·구현은 남았습니다.
+- **Goal:** 승인된 Windows junction 경계와 Python 하한을 구현·native 검증함
+- **Target:** [T-017 승인 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)의 별도 구현 PR
+- **Status:** In Progress — Origin PR #37 merge `9d53913`과 GitHub fast-forward를 확인했습니다. Windows Python 3.12 이상, Buildkite runner와 기존 검사 지점에 junction 판정을 추가하는 범위를 확정했습니다. 구현·native 회귀는 진행 중입니다.
 - **다음 마일스톤:** T-017 설계·구현 뒤 T-023 release 후보 회귀를 별도 PR로 진행합니다. T-023 통합 전에는 다음 release candidate를 준비하지 않습니다.
 
 ## 운영 규칙
@@ -35,7 +35,7 @@
 
 ## In Progress
 
-- [ ] **T-017 Windows junction 경계 검증** — Windows Python 3.12 이상과 Buildkite runner 선택을 반영했습니다. Origin pipeline의 정확한 commit checkout, Windows 전체 gate와 native junction 재현을 확인했습니다. 재현 결과와 남은 전체 설계 합의를 [변경 초안](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)에서 관리합니다. 구현·회귀 검증은 합의 뒤 별도 PR로 진행합니다.
+- [ ] **T-017 Windows junction 경계 검증** — Windows Python 3.12 이상, Buildkite runner와 현행 검사 범위를 유지하는 junction 차단을 D-011로 확정했습니다. PR #37의 native 재현은 통합됐고, [승인 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)에 따른 구현·native 회귀는 별도 브랜치에서 진행합니다.
 
 ## Next
 
@@ -52,8 +52,8 @@
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 1 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction을 재현·설계 | **In Progress** — Origin Draft PR #37의 head push에서 Windows·Linux 전체 gate 176개와 성공 check를 확인하고 두 check를 `main` merge에 필수로 설정했습니다. 전체 경계 설계 합의·구현은 남았습니다. |
-| 2 | T-017 구현 PR | T-017: 승인된 경계와 native 회귀를 구현 | 설계 합의와 native 재현 뒤 진행 |
+| 1 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction을 재현·설계 | **Integrated** — Origin PR #37 merge `9d53913`과 GitHub `main` fast-forward를 확인했습니다. Windows·Linux 전체 gate와 native 재현을 통과했고, 경계 범위는 D-011로 확정했습니다. |
+| 2 | `codex/t017-junction-boundary-implementation` | T-017: 승인된 경계와 native 회귀를 구현 | **In Progress** — D-011 경계 합의 후 구현·검증 중 |
 | 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | T-017 구현·T-019 verifier 보완 통합 뒤; **다음 release candidate 전 통합 필수**; 기존 candidate의 로컬 gate에 포함, 게시 권한 추가 없음 |
 | 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | D-010 계약은 바꾸지 않음; 다음 patch release 후보 |
 | 5 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
