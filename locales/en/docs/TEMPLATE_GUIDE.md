@@ -73,6 +73,8 @@ The template does not include an initialization script, review prompts or automa
 
 For an official release, use `installer.py` from GitHub Releases. Use the latest installer with the latest version, or a versioned tag's installer with that same exact version. The installer follows only an HTTPS redirect chain initiated by a GitHub release asset URL, then verifies the checksums and manifest from the exact tag.
 
+On Windows, the installer from this template source revision requires Python 3.12 or newer to check directory junctions. Previously published releases retain their own Python support range.
+
 ```sh
 (
   set -e
@@ -100,7 +102,7 @@ python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agen
 | `identical` | Already matches the artifact | No action. |
 | `merge` | The target file differs | For policy `merge` (project-owned), keep the existing content and merge in the template sections. For `copy` (template-owned), start from the artifact version and reapply only intentional project edits. |
 | `decision` | The project decides whether to adopt it | Decide whether to add, keep, or remove `LICENSE` under the license rule in §3, `docs/10-EXTENSION.md` under step 5, and `.cursor/BUGBOT.md` and `.omp/WATCHDOG.md` under step 8. |
-| `blocked` | A symlink, non-regular entry, case-only name variant, or similar | Clean up the target path by hand, then run `adopt` again. |
+| `blocked` | A symlink, Windows directory junction, non-regular entry, case-only name variant, or similar | Clean up the target path by hand, then run `adopt` again. |
 
 `adoption-plan.json` uses the `stability: experimental` format; its fields may change in a minor release. To cancel an adoption, delete the output directory.
 

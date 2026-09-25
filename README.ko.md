@@ -31,7 +31,7 @@ Move-Item -Force -ErrorAction Stop installer.py.part installer.py
 
 다운로드 블록이 성공한 경우에만 다음 단계로 진행하세요.
 
-이 저장소의 installer source는 Windows directory junction을 검사하기 위해 Python 3.12 이상이 필요합니다. 이미 공개된 release asset의 지원 범위는 해당 버전의 계약을 따릅니다.
+Windows에서 이 저장소의 installer source를 실행하려면 directory junction 검사를 위해 Python 3.12 이상이 필요합니다. 이미 공개된 release asset의 지원 범위는 해당 버전의 계약을 따릅니다.
 
 ### 2. 지원 locale 확인
 

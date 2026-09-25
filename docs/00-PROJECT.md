@@ -101,7 +101,7 @@ D-006의 `adopt`·adoption policy·release manifest schema 2는 `v2.1.0`으로 �
 
 D-008의 선택형 `adopt --base-version <older-exact-semver>`과 format 2 report는 `v2.2.0`으로 구현·공개되어 §5 현재 구조로 옮겼습니다. 상세 계약과 완료 근거는 [base-aware adoption 변경](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md)과 [PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md)을 따릅니다.
 
-D-011은 Windows Python 3.12 이상에서 installer의 기존 root·output·직접 부모·member 검사 지점에 junction 거부를 추가합니다. 선택 경로보다 위의 기존 상위 component는 확대 검사하지 않습니다. 상세 계약은 [T-017 경계 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)를 따르며 구현·native 검증은 진행 중입니다.
+D-011은 Windows Python 3.12 이상에서 installer의 기존 root·output·직접 부모·member 검사 지점에 junction 거부를 추가하고 D-006 adoption SPEC §3.3의 대상 상태를 확장합니다. 선택 경로보다 위의 기존 상위 component는 확대 검사하지 않습니다. 상세 계약은 [T-017 경계 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)를 따르며 구현·native 검증은 진행 중입니다.
 
 ### Target Data Flow
 

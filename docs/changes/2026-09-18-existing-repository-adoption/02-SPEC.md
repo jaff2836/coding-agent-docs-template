@@ -102,6 +102,8 @@ packager는 이 값을 release manifest의 각 member record에 `policy`로 복�
 
 `blocked`가 policy보다 우선합니다. 대상 상태 값은 `absent`, `file`, `symlink`, `special`, `unreadable`, `parent-symlink`, `parent-not-directory`, `case-variant`입니다.
 
+이 목록은 D-006의 최초 계약입니다. 후속 [D-011](../2026-09-23-windows-junction-boundary/01-CHANGE.md)의 R-003은 Windows directory junction에 대해 `junction`·`parent-junction` 대상 상태를 추가합니다. 기존 release의 report 계약은 바꾸지 않습니다.
+
 ### 3.4 Adoption report
 
 output은 다음 두 항목만 가집니다. 임시 디렉터리에서 모두 만든 뒤 원자적으로 게시합니다.

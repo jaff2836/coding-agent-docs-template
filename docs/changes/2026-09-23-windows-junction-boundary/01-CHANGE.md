@@ -91,7 +91,9 @@ Python 3.12부터 제공합니다. Buildkite [build #12](https://buildkite.com/j
 | R-002 | `install` root·부모·member 디렉터리 경로의 symlink/junction을 거부합니다. | root 자체 또는 새 root의 부모가 junction; `_write_members`의 방어적 member 검사에 junction이 있는 경우 | 쓰기 전에 거부하고 연결된 tree와 원래 target을 보존합니다. 새·빈 실제 디렉터리는 성공합니다. | native junction fixture, target·외부 snapshot |
 | R-003 | `adopt` root와 분류 대상의 symlink/junction을 따라가지 않습니다. | root junction, member의 부모 junction, 최종 member junction | root는 거부하고 member는 `junction`·`parent-junction` target 상태의 blocked로 분류하며 바깥 파일은 읽지 않습니다. target 불변을 유지합니다. | native fixture, report 및 바깥 tree 검사 |
 | R-004 | `export`와 `adopt` output의 symlink/junction을 거부합니다. | output 자체 또는 현행 검사 범위인 직접 부모가 junction | staging·게시 전에 중단하고 연결된 tree에 파일을 만들지 않습니다. | native fixture, 두 tree snapshot |
-| R-005 | 문서와 release 검증이 변경된 지원 범위와 경계를 반영합니다. | Windows 설치 안내 및 다음 release candidate | Python 하한과 새 installer의 경계가 일치하고, candidate 전 테스트에서 회귀가 드러납니다. | README en·ko, installer 테스트, candidate gate |
+| R-005 | 문서와 release 검증이 변경된 지원 범위와 경계를 반영합니다. | Windows 설치 안내 및 다음 release candidate | Python 하한과 새 installer의 경계가 일치하고, candidate 전 테스트에서 회귀가 드러납니다. | README en·ko, locale 적용 가이드 en·ko, installer 테스트, candidate gate |
+
+R-003은 D-006의 [adoption SPEC §3.3](../2026-09-18-existing-repository-adoption/02-SPEC.md#33-분류)이 정한 최초 대상 상태 목록을 Windows에서만 확장합니다. `v2.1.0`을 포함한 기존 release의 report 상태를 소급 변경하지 않습니다.
 
 ### 2.2 조사할 현재 경계
 
