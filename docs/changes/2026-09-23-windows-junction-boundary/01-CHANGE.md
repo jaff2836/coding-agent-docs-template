@@ -3,13 +3,13 @@
 ## Metadata
 
 - **Change ID:** `2026-09-23-windows-junction-boundary`
-- **Status:** Accepted — 경계 설계 확정, 구현·native 회귀 검증 진행 중
+- **Status:** Accepted — 경계 설계와 구현·native 회귀 검증 통합 완료; 다음 release 반영 전
 - **Originator:** Chae Sangwon
 - **Source:** Origin PR #30 C30-002에서 이월된 T-017과 2026-09-23 사용자 요청("T-017 이후 바로 T-023")
 - **Parent:** [제품 기준](../../00-PROJECT.md) D-002·D-006·D-010 및 [install 대상 계약](../2026-09-22-install-target-contract/01-CHANGE.md)
 - **Decision:** [PROJECT §8 D-011](../../00-PROJECT.md#8-decisions)
 - **Approval:** Windows installer 최소 Python 3.12 이상과 Windows CI runner로 Buildkite를 선택했습니다. 2026-09-25 대화에서 기존 검사 지점에 junction 판정만 추가하고 그보다 위의 상위 경로는 확대 검사하지 않는 1번 안을 승인했습니다.
-- **Execution:** [전역 TODO](../../02-TODO.md)의 T-017. native 재현·CI는 Origin PR #37에 통합했고, 승인된 경계 구현은 별도 PR 범위
+- **Execution:** [전역 TODO](../../02-TODO.md)의 T-017. native 재현·CI는 Origin PR #37에, 승인된 경계 구현·native 회귀는 PR #38 merge `b5a9c4e`에 통합했습니다.
 
 ## 1. Intent
 
@@ -180,3 +180,7 @@ junction을 제거합니다. 저장소 checkout에서 Linux로는 실행하지 �
 - 2026-09-25: 사용자가 1번 안을 선택해 현행 검사 범위에 Windows junction 판정을
   추가하고 더 위의 상위 경로 검사는 확대하지 않기로 했습니다. D-011로 설계를
   확정했으며 별도 구현·native 회귀 검증을 진행합니다.
+- 2026-09-26: 구현 PR #38의 head `42d9923`에서 Buildkite Windows #27·Linux #12가
+  통과했습니다. Origin merge `b5a9c4e`를 GitHub `main`에 fast-forward로 반영했습니다.
+  공개 `v2.3.2` asset은 그대로이며 다음 release candidate 전 verifier·installer
+  계약 회귀는 T-023이 소유합니다.
