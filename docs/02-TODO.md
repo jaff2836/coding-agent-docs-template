@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-023 release 후보의 verifier·installer 계약 회귀
-- **Goal:** 실제 installer의 새·빈 대상 허용과 두 종류의 비어 있지 않은 대상 거부를 verifier의 판정과 같은 local fixture에서 검사함
-- **Target:** `codex/t023-release-verifier-contract-regression` (Origin `main` merge `b5a9c4e` 기준)
-- **Status:** In Progress — T-017 구현을 Origin PR #38 merge `b5a9c4e`와 GitHub `main` fast-forward로 통합했습니다. T-023은 별도 브랜치에서 구현·검증 중이며 아직 통합 결과가 없습니다.
-- **다음 마일스톤:** T-023 통합 뒤 다음 release candidate를 준비합니다.
+- **Name:** T-020 install onboarding 진단·안내 평가
+- **Goal:** 새 프로젝트의 `git init` 순서, 새·빈 대상 선택과 직접 부모 조건을 실제 installer 계약에 맞게 안내함
+- **Target:** `codex/t020-install-onboarding-guidance` (Origin `main` merge `b40630a` 기준)
+- **Status:** In Progress — T-023을 Origin PR #39 merge `b40630a`와 GitHub `main` fast-forward로 통합했습니다. T-020은 별도 브랜치에서 구현·로컬 검증을 마쳤으며 아직 통합 결과가 없습니다.
+- **다음 마일스톤:** T-020 뒤 T-024 stdout 인코딩의 native Windows 확인과 수정을 별도 PR로 검토합니다. 다음 release candidate에 대한 T-023 선행조건은 충족했습니다.
 
 ## 운영 규칙
 
@@ -35,11 +35,11 @@
 
 ## In Progress
 
-- [ ] **T-023 release 후보의 verifier·installer 계약 회귀** — `v2.3.2` 공개 직후 verifier가 실제 installer의 새 거부 문구를 구형 fixture로만 판정해 실패한 사례를 release 전 회귀로 막습니다. 실제 installer의 새·빈 대상 허용과 겹치거나 무관한 파일이 있는 대상 거부·tree 불변을 verifier 판정과 같은 local fixture에서 대조하고, mock 오류 문구만으로 통과하지 않도록 합니다. 기존 candidate의 로컬 테스트 gate에 포함하고, **다음 release candidate 전에 통합합니다.** Release mutation, 새 production dependency, 특정 CI runner 연결은 포함하지 않습니다. 작업 기준은 Origin `main` merge `b5a9c4e`이며 검증과 통합은 진행 중입니다.
+- [ ] **T-020 install onboarding 진단·안내 평가** — PR #34 C34-001의 `.git`만 있는 새 저장소 거부 안내와 직접 부모 디렉터리 조건을 평가합니다. D-010의 새·빈 대상 계약은 유지하고, 거부 메시지·root README en·ko·locale guide en·ko·CLI 회귀를 일치시킵니다. 작업 기준은 Origin `main` merge `b40630a`입니다. 브랜치의 로컬 검증에서 전체 unittest 183건(Windows 전용 2건 skip), root docs·stable locale, en·ko export·artifact docs 검사를 통과했고 원격 통합은 아직 없습니다.
 
 ## Next
 
-T-023 통합 뒤 Backlog 권고 순서의 T-020을 검토합니다.
+T-020 뒤 T-024의 stdout 인코딩 실패를 별도 PR로 검토합니다.
 
 ## Blocked
 
@@ -54,14 +54,15 @@ T-023 통합 뒤 Backlog 권고 순서의 T-020을 검토합니다.
 | --- | --- | --- | --- |
 | 1 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction을 재현·설계 | **Integrated** — Origin PR #37 merge `9d53913`과 GitHub `main` fast-forward를 확인했습니다. Windows·Linux 전체 gate와 native 재현을 통과했고, 경계 범위는 D-011로 확정했습니다. |
 | 2 | `codex/t017-junction-boundary-implementation` | T-017: 승인된 경계와 native 회귀를 구현 | **Integrated** — Origin PR #38 merge `b5a9c4e`와 GitHub `main` fast-forward를 확인했습니다. 정확한 head의 Windows #27·Linux #12 CI가 통과했습니다. |
-| 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | **In Progress** — `b5a9c4e` 기준 별도 브랜치; 다음 release candidate 전 통합 필수, 게시 권한 추가 없음 |
-| 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | D-010 계약은 바꾸지 않음; 다음 patch release 후보 |
-| 5 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
-| 6 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
-| 7 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
-| 8 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
+| 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | **Integrated** — Origin PR #39 merge `b40630a`와 GitHub `main` fast-forward를 확인했습니다. Windows #30·Linux #15 CI가 통과했습니다. |
+| 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | **In Progress** — `b40630a` 기준 별도 브랜치; D-010 계약은 바꾸지 않음, 다음 patch release 후보 |
+| 5 | `codex/t024-installer-stdout-encoding` | T-024: 비-UTF-8 stdout에서 설치 후 거짓 실패 방지 | **Backlog** — `cp1252` 모사에서 파일 생성 뒤 `UnicodeEncodeError` 재현; native Windows와 출력 경계 검증 필요 |
+| 6 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
+| 7 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
+| 8 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
+| 9 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
 
-- [ ] **T-020 install onboarding 진단·안내 평가** — PR #34 리뷰의 C34-001과 parent-directory 안내 권고를 Backlog로 보존합니다. 현재 D-010 계약과 R-002는 충족하므로 결함 수정으로 분류하지 않으며, `git init` 순서·새/빈 대상의 선택·부모 조건을 더 명확히 할 가치가 있는지 진단·README·locale guide·회귀를 한 PR에서 검토합니다.
+- [ ] **T-024 installer stdout 인코딩 후속** — PR #39 v2 리뷰의 제안입니다. `PYTHONIOENCODING=cp1252`로 비-UTF-8 stdout을 모사하고 한글 `--repo-root`에 `install`하면 파일을 쓴 뒤 `UnicodeEncodeError`로 종료 코드 1을 반환합니다(2026-09-26 로컬 재현: `AGENTS.md` 생성 확인). native Windows 재현과 CLI 출력 경계를 확인하고, 성공 후 출력 실패가 설치 실패로 오인되지 않도록 별도 PR에서 수정·회귀 검증합니다. T-020의 안내 변경이나 공개 release asset 수정은 범위가 아닙니다.
 - [ ] **T-021 install preflight 순서 재설계** — release·archive 검증 뒤에 대상 preflight를 하는 D-010 §2.3을 유지할지, 대상 진단과 불필요한 다운로드를 우선할지 설계합니다. 신뢰 검증 순서와 오류 우선순위가 바뀌므로 설계 합의 전에는 구현하지 않습니다.
 - [ ] **T-022 install 대상 불변조건 등록 평가** — 비어 있지 않거나 확인 불가한 대상에 template 파일을 추가하지 않는 규칙을 `docs/REVIEW.md`와 `.cursor/BUGBOT.md`의 project invariant로 올릴지 검토합니다. 채택하면 두 사본과 checker 계약을 함께 검증합니다.
 
@@ -76,6 +77,10 @@ T-023 통합 뒤 Backlog 권고 순서의 T-020을 검토합니다.
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-023 release 후보의 verifier·installer 계약 회귀**
+  - 통합 결과: 실제 installer와 verifier의 새·빈 대상 허용, 겹치거나 무관한 파일이 있는 대상 거부·tree 불변을 같은 local fixture로 대조하는 회귀를 Origin PR #39 head `930e393`에서 `b40630a`로 병합하고 GitHub `main`에도 non-force fast-forward했습니다. 공개 `v2.3.2` asset은 변경하지 않았습니다.
+  - 검증 근거: PR #39 exact head의 Buildkite Windows #30·Linux #15가 통과했습니다. 두 환경에서 전체 unittest 181개와 실제 installer subprocess 회귀를 실행했고, Windows native junction 테스트와 probe도 통과했습니다. 다음 release candidate는 별도 준비·검증 작업입니다.
 
 - [x] **T-017 Windows junction 경계 검증**
   - 통합 결과: 승인된 [D-011 경계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)를 구현한 Origin PR #38 head `42d9923`을 `b5a9c4e`에 병합하고 GitHub `main`에도 non-force fast-forward로 반영했습니다. 공개 `v2.3.2` asset은 변경하지 않았습니다.

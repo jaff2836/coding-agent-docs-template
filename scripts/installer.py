@@ -844,7 +844,7 @@ def _require_empty_install_target(target: Path) -> None:
     raise InstallerError(
         "install target must be a new path or an empty directory; refusing to modify the "
         "non-empty target. For an existing repository, run 'adopt' to stage the verified "
-        "artifact with a per-path adoption plan."
+        "artifact with a per-path adoption plan, or choose a new or empty directory."
     )
 
 

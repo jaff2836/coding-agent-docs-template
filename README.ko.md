@@ -75,6 +75,8 @@ python installer.py install --release-url https://github.com/jaff2836/coding-age
 
 `--locale`에는 `en` 또는 `ko`를 지정합니다. 설치 대상은 존재하지 않는 경로이거나 빈 디렉터리여야 합니다. artifact와 무관한 경로를 포함해 파일이나 디렉터리가 하나라도 있으면 아무것도 쓰지 않고 기존 저장소에는 `adopt`를 안내합니다.
 
+새 Git 저장소는 먼저 설치한 뒤 `git init`을 실행합니다. 이미 초기화하거나 clone한 저장소에는 `.git`이 있어 비어 있지 않으므로 그 대상에는 `adopt`를 사용하거나 다른 새 경로·빈 디렉터리를 선택합니다. 설치 대상 경로가 아직 없다면 바로 위 부모 디렉터리가 이미 존재하고 symlink나 junction이 아니어야 합니다.
+
 ### artifact만 export하기
 
 계획 없이 검증된 파일만 확인하려면 빈 디렉터리로 export합니다.

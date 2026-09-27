@@ -437,6 +437,49 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(_tree_snapshot(target), before)
         self.assertFalse((target / "AGENTS.md").exists())
 
+    def test_install_explains_options_for_an_initialized_repository(self) -> None:
+        base = self.publish()
+        target = self.temp_root() / "project"
+        (target / ".git").mkdir(parents=True)
+        (target / ".git" / "HEAD").write_text(
+            "ref: refs/heads/main\n", encoding="utf-8"
+        )
+        before = _tree_snapshot(target)
+        completed = self.run_cli(
+            "install",
+            "--release-url",
+            base,
+            "--version",
+            "2.0.0",
+            "--locale",
+            "ko",
+            "--repo-root",
+            str(target),
+        )
+        self.assertEqual(completed.returncode, 1)
+        self.assertIn("run 'adopt'", completed.stderr)
+        self.assertIn("choose a new or empty directory", completed.stderr)
+        self.assertEqual(_tree_snapshot(target), before)
+        self.assertFalse((target / "AGENTS.md").exists())
+
+    def test_install_requires_an_existing_direct_parent_for_a_new_root(self) -> None:
+        base = self.publish()
+        target = self.temp_root() / "missing-parent" / "project"
+        completed = self.run_cli(
+            "install",
+            "--release-url",
+            base,
+            "--version",
+            "2.0.0",
+            "--locale",
+            "ko",
+            "--repo-root",
+            str(target),
+        )
+        self.assertEqual(completed.returncode, 1)
+        self.assertIn("repo root parent must be an existing directory", completed.stderr)
+        self.assertFalse(target.parent.exists())
+
     def test_release_verifier_checks_actual_installer_target_contract(self) -> None:
         payloads = build_release_payloads()
         server = FakeReleaseServer(payloads)

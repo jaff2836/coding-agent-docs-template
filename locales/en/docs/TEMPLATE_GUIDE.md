@@ -127,6 +127,8 @@ In format 2, `summary` still counts only current artifact paths, while `upgrade_
 
 For a new project, use `install` with a new path or an empty directory. If the target contains any file or directory, including paths unrelated to the artifact, it writes nothing and stops with guidance to use `adopt` for an existing repository.
 
+For a new Git repository, install first and run `git init` afterward. An initialized or cloned repository contains `.git` and is not empty; use `adopt` for that target or choose another new or empty directory. If the target path does not yet exist, its immediate parent must already exist and must not be a symlink or junction.
+
 ```sh
 python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
 ```

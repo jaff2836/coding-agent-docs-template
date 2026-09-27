@@ -75,6 +75,8 @@ python installer.py install --release-url https://github.com/jaff2836/coding-age
 
 Set `--locale` to `en` or `ko`. The target must be a new path or an empty directory. If it contains any file or directory, including paths unrelated to the artifact, the installer writes nothing and directs existing repositories to `adopt`.
 
+For a new Git repository, install first and run `git init` afterward. An initialized or cloned repository contains `.git` and is not empty; use `adopt` for that target or choose another new or empty directory. If the target path does not yet exist, its immediate parent must already exist and must not be a symlink or junction.
+
 ### Export the artifact only
 
 To inspect the verified files without a plan, export them into an empty directory.

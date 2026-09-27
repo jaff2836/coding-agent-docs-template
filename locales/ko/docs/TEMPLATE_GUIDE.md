@@ -127,6 +127,8 @@ format 2에서 `summary`는 current artifact 경로만 세고 `upgrade_summary`�
 
 새 프로젝트에는 존재하지 않는 경로나 빈 디렉터리에 `install`을 사용합니다. artifact와 무관한 경로를 포함해 대상에 파일이나 디렉터리가 하나라도 있으면 아무것도 쓰지 않고 중단하며 기존 저장소에는 `adopt`를 안내합니다.
 
+새 Git 저장소는 먼저 설치한 뒤 `git init`을 실행합니다. 이미 초기화하거나 clone한 저장소에는 `.git`이 있어 비어 있지 않으므로 그 대상에는 `adopt`를 사용하거나 다른 새 경로·빈 디렉터리를 선택합니다. 설치 대상 경로가 아직 없다면 바로 위 부모 디렉터리가 이미 존재하고 symlink나 junction이 아니어야 합니다.
+
 ```sh
 python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
 ```
