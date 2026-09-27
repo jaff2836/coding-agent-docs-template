@@ -17,7 +17,7 @@
 - **Name:** T-024 installer stdout 인코딩 후속
 - **Goal:** 비-UTF-8 stdout에서 설치·export·adopt 완료 뒤 출력 실패가 성공한 작업을 실패로 오인시키지 않도록 수정함
 - **Target:** `codex/t024-installer-stdout-encoding` (Origin·GitHub `main` `f236bf2` 기준)
-- **Status:** In Progress — T-020은 Origin PR #40 merge `f236bf2`와 GitHub `main`에 통합했습니다. T-024는 별도 브랜치에서 구현·검증 중이며 원격 통합 결과는 없습니다.
+- **Status:** In Progress — T-020은 Origin PR #40 merge `f236bf2`와 GitHub `main`에 통합했습니다. T-024 구현 head `d86bee8`의 Buildkite Windows #35·Linux #20이 통과했으며 최종 PR head 검증과 Origin 통합 결과는 남아 있습니다.
 - **다음 마일스톤:** T-024 통합 뒤 T-017·T-020·T-023·T-024를 포함하는 다음 patch release 후보를 별도 작업으로 준비합니다.
 
 ## 운영 규칙
@@ -56,7 +56,7 @@ T-024 통합 뒤 다음 patch release 후보를 준비합니다.
 | 2 | `codex/t017-junction-boundary-implementation` | T-017: 승인된 경계와 native 회귀를 구현 | **Integrated** — Origin PR #38 merge `b5a9c4e`와 GitHub `main` fast-forward를 확인했습니다. 정확한 head의 Windows #27·Linux #12 CI가 통과했습니다. |
 | 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | **Integrated** — Origin PR #39 merge `b40630a`와 GitHub `main` fast-forward를 확인했습니다. Windows #30·Linux #15 CI가 통과했습니다. |
 | 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | **Integrated** — Origin PR #40 merge `f236bf2`와 GitHub `main` 반영 확인; 다음 patch release 후보 |
-| 5 | `codex/t024-installer-stdout-encoding` | T-024: 비-UTF-8 stdout에서 설치 후 거짓 실패 방지 | **In Progress** — `f236bf2` 기준 별도 브랜치; native Windows gate와 Origin 통합 결과는 미확인 |
+| 5 | `codex/t024-installer-stdout-encoding` | T-024: 비-UTF-8 stdout에서 설치 후 거짓 실패 방지 | **In Progress** — 구현 head `d86bee8`의 Buildkite Windows #35·Linux #20 통과; 최종 PR head와 Origin 통합 결과는 미확인 |
 | 6 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
 | 7 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
 | 8 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
