@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.3.2
+- **Template version:** 2.3.3
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -345,6 +345,13 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v2.3.3 — Windows junction 경계와 install 안내
+
+- Windows에서 선택한 release의 별도 `installer.py`는 Python 3.12 이상을 요구하고 대상·output·직접 부모·artifact member 검사 지점의 directory junction을 거부합니다. 이전에 공개된 installer의 지원 범위는 유지됩니다.
+- installer는 출력 인코딩으로 표현할 수 없는 경로 문자를 escape하므로 `install`·`export`·`adopt`가 완료된 뒤 CLI 실패로 잘못 종료하지 않습니다.
+- 기능 안내가 바뀐 artifact 문서는 `docs/TEMPLATE_GUIDE.md`입니다. 새 Git 저장소는 설치 후 `git init`을 실행하고, 기존 저장소는 `adopt`를 사용하며, 새 대상의 바로 위 부모는 이미 존재하고 symlink나 junction이 아니어야 함을 명확히 합니다. 두 guide 문서 모두 새 template version을 기록합니다.
+- 적용 저장소에서 확인할 것: 기존 파일을 보존하며 `adopt`로 변경을 검토하고, 문서화된 경계에는 선택한 release의 installer를 사용하세요.
 
 ### v2.3.2 — 새 경로·빈 디렉터리 install 대상
 

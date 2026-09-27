@@ -6,6 +6,13 @@
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
 
+## v2.3.3 — Windows junction boundary and installer output
+
+- On Windows with Python 3.12 or newer, the release installer rejects directory junctions at its target, output, direct-parent, and artifact-member checks before following them outside the intended tree.
+- `install`, `export`, and `adopt` report completed work without a false CLI failure when the output encoding cannot represent a path; unsupported characters are escaped in the message.
+- The `en` and `ko` application guides explain the `git init` order, the new or empty install target, and its existing direct-parent requirement.
+- The release candidate verifier exercises the packaged installer against new, empty, and non-empty targets and checks that refused targets remain unchanged.
+
 ## [v2.3.2](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.2) — New-or-empty install target
 
 - `installer.py install` now accepts only a new path or a readable empty directory; it rejects every non-empty or unreadable target before writing template members.
