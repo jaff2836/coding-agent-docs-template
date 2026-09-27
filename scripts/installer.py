@@ -1434,6 +1434,11 @@ def _validated_export_output(output: Path) -> Path:
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
+    # Reporting a Unicode path must not turn a completed write into a CLI failure.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="backslashreplace")
+
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
 

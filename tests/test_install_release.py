@@ -244,14 +244,14 @@ class InstallerTests(unittest.TestCase):
         self.addCleanup(server.close)
         return server.base_url
 
-    def run_cli(self, *arguments: str) -> subprocess.CompletedProcess:
+    def run_cli(self, *arguments: str, io_encoding: str = "utf-8") -> subprocess.CompletedProcess:
         return subprocess.run(
             [sys.executable, str(REPOSITORY_ROOT / "scripts/installer.py"), *arguments],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            encoding="utf-8",
-            env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+            encoding=io_encoding,
+            env={**os.environ, "PYTHONIOENCODING": io_encoding},
         )
 
     # -- success paths -----------------------------------------------------
@@ -360,6 +360,39 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("Installed ko locale with 4 files", completed.stdout)
         self.assertEqual((target / "AGENTS.md").read_bytes(), b"# agent contract\n")
         self.assert_materialized_file_mode(target / "docs/REVIEW.md")
+
+    def test_cli_reports_success_after_writes_with_non_utf8_stdout(self) -> None:
+        base = self.publish()
+        target = self.temp_root() / "새 프로젝트"
+        installed = self.run_cli(
+            "install", "--release-url", base, "--version", "2.0.0",
+            "--locale", "ko", "--repo-root", str(target), io_encoding="cp1252",
+        )
+        self.assertEqual(installed.returncode, 0, installed.stderr)
+        self.assertIn("Installed ko locale with 4 files", installed.stdout)
+        self.assertIn("\\uc0c8", installed.stdout)
+        self.assertTrue((target / "AGENTS.md").is_file())
+
+        output = self.temp_root() / "내보내기"
+        exported = self.run_cli(
+            "export", "--release-url", base, "--version", "2.0.0",
+            "--locale", "ko", "--output", str(output), io_encoding="cp1252",
+        )
+        self.assertEqual(exported.returncode, 0, exported.stderr)
+        self.assertIn("Exported ko locale with 4 files", exported.stdout)
+        self.assertTrue((output / "AGENTS.md").is_file())
+
+        before = _tree_snapshot(target)
+        plan_output = self.temp_root() / "검토 결과"
+        adopted = self.run_cli(
+            "adopt", "--release-url", base, "--version", "2.0.0",
+            "--locale", "ko", "--repo-root", str(target),
+            "--output", str(plan_output), io_encoding="cp1252",
+        )
+        self.assertEqual(adopted.returncode, 0, adopted.stderr)
+        self.assertIn("The target repository was not modified", adopted.stdout)
+        self.assertTrue((plan_output / "adoption-plan.json").is_file())
+        self.assertEqual(_tree_snapshot(target), before)
 
     def test_install_resolves_latest_through_the_immutable_namespace(self) -> None:
         base = self.publish()
