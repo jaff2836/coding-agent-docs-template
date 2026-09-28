@@ -8,7 +8,7 @@ This file records version-specific changes. See [README.md](./README.md) for cur
 
 ## v2.3.3 — Windows junction boundary and installer output
 
-- **Compatibility:** On Windows, the `v2.3.3` installer requires Python 3.12 or newer; Python 3.11 or older stops before release or target access. To retain the previous support range, download the `installer.py` asset from the `v2.3.2` release and run it with `--version 2.3.2`.
+- **Compatibility:** On Windows, the `v2.3.3` installer requires Python 3.12 or newer; Python 3.11 or older stops before release or target access. Upgrade Python and use `v2.3.3` to receive the junction boundary and output fixes below. If upgrading is currently impossible, download the `installer.py` asset from the `v2.3.2` release and run it with the exact `--version 2.3.2`; this fallback does not include those fixes.
 - The Windows installer rejects directory junctions at its target, output, direct-parent, and artifact-member checks before following them outside the intended tree.
 - `install`, `export`, and `adopt` report completed work without a false CLI failure when the output encoding cannot represent a path; unsupported characters are escaped in the message.
 - The `en` and `ko` application guides explain the `git init` order, the new or empty install target, and its existing direct-parent requirement.
