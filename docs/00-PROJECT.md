@@ -151,6 +151,8 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | D-010 | 2026-09-23 | Accepted | 새 프로젝트용 `install`은 존재하지 않는 경로나 빈 디렉터리만 허용하고 비어 있지 않거나 emptiness를 확인할 수 없는 대상은 쓰기 전에 거부하며 기존 저장소에는 `adopt`를 안내 | [install 대상 계약 변경](./changes/2026-09-22-install-target-contract/01-CHANGE.md) | artifact 경로 충돌만 거부하는 기존 구현과 문서 완화를 기각. 겹치지 않는 파일이 있는 대상도 실패하지만 D-006의 `install`·`adopt` 역할과 사용자 tree 보존을 강제 | Chae Sangwon, 2026-09-23 대화 — A안 권고 뒤 계속 진행 승인 |
 | D-011 | 2026-09-25 | Accepted | Windows installer는 Python 3.12 이상에서 현재 검사하는 root·output 자체, 직접 부모와 member 경로의 symlink·junction을 거부하고, 더 위의 상위 경로 검사는 확대하지 않음 | [T-017 경계 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md) R-001~R-005 | 기존 POSIX symlink 경로와 Windows 사용자 프로필 junction의 호환성을 보존; 더 넓은 상위 경로 차단은 이번 범위에서 제외. 구현·native 회귀는 별도 PR | Chae Sangwon, 2026-09-25 대화 — 1번 안 선택 |
 
+미합의 제안: [T-021 preflight 순서 Draft](./changes/2026-09-28-install-preflight-order/01-CHANGE.md)는 D-010 §2.3의 유지·변경을 비교합니다. 현재 결정은 D-010이며 사용자 선택 전에는 이 제안에 새 결정 ID를 발급하거나 현재 계약을 대체하지 않습니다.
+
 중요한 결정이 많아지면 개별 ADR 문서로 분리하고 여기에는 링크와 요약만 남깁니다.
 
 결정 상태와 정본 위치는 이 표가 기준입니다. `D-nnn`은 이 표에 등재할 때 전역으로 발급합니다. 표의 `D-001` 행은 자리 표시이므로 적용 시 삭제하거나 실제 결정으로 교체하세요. 변경 폴더의 `R-001` 등과 같은 번호대가 아닙니다. 상세 설계에 이유·대안·영향이 있으면 여기에는 링크와 요약만 남깁니다. 승인한 사람·범위·확인 가능한 근거를 연결하고, 기존 결정을 대체하면 삭제하지 않고 `Superseded`로 남깁니다. 기존 결정 ID를 파일 번호에 맞춰 재번호하지 않습니다.
@@ -202,7 +204,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 실행 상태와 우선순위는 [전역 TODO](./02-TODO.md)가 소유합니다. 이 절에는 미해결 판단만 남기며, 확정된 계약은 §8 Decisions와 연결된 설계에서 확인합니다.
 
-- `install`의 대상 preflight를 release·archive 검증보다 먼저 수행할지, D-010의 신뢰 검증 순서와 오류 우선순위를 유지할지 결정해야 합니다. 대상 진단과 불필요한 다운로드의 trade-off는 [TODO T-021](./02-TODO.md#backlog)이 소유합니다.
+- `install`의 대상 preflight를 release·archive 검증보다 먼저 수행할지, D-010의 신뢰 검증 순서와 오류 우선순위를 유지할지 결정해야 합니다. 대상 진단·다운로드와 쓰기 전 재검사의 trade-off는 [T-021 Draft 설계](./changes/2026-09-28-install-preflight-order/01-CHANGE.md), 실행 상태는 [TODO](./02-TODO.md#in-progress)에서 확인합니다.
 - source/artifact checker 경계·LF·placeholder 계약의 회귀 방지 범위는 [TODO T-013](./02-TODO.md#backlog), 병렬 리뷰 finding ID 충돌 방지 정책은 [TODO T-014](./02-TODO.md#backlog)에서 합의해야 합니다.
 
 ## 12. Rejected or Deferred Ideas
@@ -223,5 +225,6 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | base-aware adoption 분류 | [2026-09-20-adopt-upgrade-classification](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md) | D-008이 D-006의 읽기 전용 report를 선택형 3-way upgrade 분류로 확장 | 기존 적용 저장소를 다음 exact release와 비교할 때 |
 | 문서 소유권과 changelog 안내 | [2026-09-22-documentation-ownership](./changes/2026-09-22-documentation-ownership/01-CHANGE.md) | D-009가 locale artifact 안내와 root maintainer 보충 문서의 소유권을 분리 | `v2.3.0` 문서 inventory·skill·checker 변경 |
 | 새 프로젝트 install 대상 계약 | [2026-09-22-install-target-contract](./changes/2026-09-22-install-target-contract/01-CHANGE.md) | D-010이 D-002·D-006의 `install`·`adopt` 역할 경계를 새 경로·빈 디렉터리 preflight로 명확화 | installer·root README·locale 적용 가이드 변경 |
+| install preflight 순서 평가 | [2026-09-28-install-preflight-order](./changes/2026-09-28-install-preflight-order/01-CHANGE.md) | Draft — D-010 §2.3 유지·변경 비교이며 현재 결정을 대체하지 않음 | 사용자 선택과 승인 전 설계 검토; 변경 채택 시 별도 구현 PR |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.
