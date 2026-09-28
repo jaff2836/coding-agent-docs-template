@@ -153,6 +153,8 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 [T-021 preflight 순서 평가](./changes/2026-09-28-install-preflight-order/01-CHANGE.md)에서 사용자는 2026-09-28 PR #47 version 1 head `978be17`의 A안을 선택했습니다. D-010 §2.3의 현재 순서·오류 우선순위를 유지하며 별도 구현·release는 필요하지 않습니다. 기존 결정의 재확인이므로 새 결정 ID를 발급하지 않습니다.
 
+미합의 제안: [T-013 문서 운영 계약 회귀 방지](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md)는 D-005·D-009의 검사·회귀 강화와 설명 보강을 비교합니다. Draft이며 현재 계약을 대체하거나 검사 강화를 승인된 것으로 기록하지 않습니다.
+
 중요한 결정이 많아지면 개별 ADR 문서로 분리하고 여기에는 링크와 요약만 남깁니다.
 
 결정 상태와 정본 위치는 이 표가 기준입니다. `D-nnn`은 이 표에 등재할 때 전역으로 발급합니다. 표의 `D-001` 행은 자리 표시이므로 적용 시 삭제하거나 실제 결정으로 교체하세요. 변경 폴더의 `R-001` 등과 같은 번호대가 아닙니다. 상세 설계에 이유·대안·영향이 있으면 여기에는 링크와 요약만 남깁니다. 승인한 사람·범위·확인 가능한 근거를 연결하고, 기존 결정을 대체하면 삭제하지 않고 `Superseded`로 남깁니다. 기존 결정 ID를 파일 번호에 맞춰 재번호하지 않습니다.
@@ -204,7 +206,8 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 실행 상태와 우선순위는 [전역 TODO](./02-TODO.md)가 소유합니다. 이 절에는 미해결 판단만 남기며, 확정된 계약은 §8 Decisions와 연결된 설계에서 확인합니다.
 
-- source/artifact checker 경계·LF·placeholder 계약의 회귀 방지 범위는 [TODO T-013](./02-TODO.md#backlog), 병렬 리뷰 finding ID 충돌 방지 정책은 [TODO T-014](./02-TODO.md#backlog)에서 합의해야 합니다.
+- source/artifact checker 경계·LF·placeholder 계약을 어느 범위까지 기계적 검사·회귀로 보강할지는 [T-013 Draft 설계](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md)에서 합의해야 합니다. 실행 상태는 [TODO](./02-TODO.md#in-progress)가 소유합니다.
+- 병렬 리뷰 finding ID 충돌 방지 정책은 [TODO T-014](./02-TODO.md#backlog)에서 합의해야 합니다.
 
 ## 12. Rejected or Deferred Ideas
 
@@ -225,5 +228,6 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | 문서 소유권과 changelog 안내 | [2026-09-22-documentation-ownership](./changes/2026-09-22-documentation-ownership/01-CHANGE.md) | D-009가 locale artifact 안내와 root maintainer 보충 문서의 소유권을 분리 | `v2.3.0` 문서 inventory·skill·checker 변경 |
 | 새 프로젝트 install 대상 계약 | [2026-09-22-install-target-contract](./changes/2026-09-22-install-target-contract/01-CHANGE.md) | D-010이 D-002·D-006의 `install`·`adopt` 역할 경계를 새 경로·빈 디렉터리 preflight로 명확화 | installer·root README·locale 적용 가이드 변경 |
 | install preflight 순서 평가 | [2026-09-28-install-preflight-order](./changes/2026-09-28-install-preflight-order/01-CHANGE.md) | Accepted A — D-010 §2.3의 현재 순서·오류 우선순위를 재확인 | 현재 순서 유지 판단과 비교 근거; 별도 구현·release 없음 |
+| 문서 운영 계약 회귀 방지 | [2026-09-28-operation-contract-regression](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md) | Draft — D-005·D-009의 source 연결·CLI·LF·placeholder 검사 보강 제안 | 사용자 합의 전 설계 검토; 구현은 후속 PR |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.
