@@ -15,10 +15,10 @@
 ## Current Milestone
 
 - **Name:** T-021 install preflight 순서 설계
-- **Goal:** 대상 진단·다운로드와 release 오류 우선순위를 비교해 기존 순서 유지 또는 변경을 합의함
+- **Goal:** A안으로 합의한 현재 순서 유지 판단을 검증·리뷰하고 설계 문서를 통합함
 - **Target:** `codex/t021-install-preflight-order-design` (Origin·GitHub `main` `4c743f1` 기준)
-- **Status:** In Progress — T-022와 C46-001은 PR #46으로 통합됐습니다. 이 브랜치는 사용자 선택 전 Draft 설계이며 상세 실행·검증·통합 조건은 아래 T-021이 소유합니다.
-- **다음 마일스톤:** A를 확정하면 T-013 운영 계약 설계가 다음 후보이며, B를 확정하면 preflight 구현을 먼저 별도 PR로 진행합니다.
+- **Status:** In Progress — 사용자가 PR #47 version 1의 A안을 선택해 설계는 Accepted입니다. 승인 기록을 반영한 새 head의 수동 리뷰·필수 CI·통합은 아직 확인 전이며 상세 상태는 아래 T-021이 소유합니다.
+- **다음 마일스톤:** T-021 통합 뒤 T-013 운영 계약 설계가 다음 후보입니다.
 
 ## 운영 규칙
 
@@ -36,18 +36,19 @@
 ## In Progress
 
 - [ ] **T-021 install preflight 순서 설계**
-  - 정본·범위: [2026-09-28-install-preflight-order](./changes/2026-09-28-install-preflight-order/01-CHANGE.md)가 Intent·대안·요구·호환성·완료 조건을 소유합니다. 상세 실행 상태는 이 항목에서 관리합니다. 현재 선택은 미합의이며 D-010은 Accepted 기준으로 유지합니다.
+  - 정본·범위: [2026-09-28-install-preflight-order](./changes/2026-09-28-install-preflight-order/01-CHANGE.md)가 Intent·대안·요구·호환성·완료 조건을 소유합니다. 상세 실행 상태는 이 항목에서 관리합니다. A안이 승인됐으며 D-010의 현재 순서·오류 우선순위를 유지합니다. 별도 구현·release는 필요하지 않습니다.
   - [x] PR #46 version 2 head `e113dd1` / base `9a7764b`의 세 재리뷰와 CI를 확인하고 T-022·C46-001의 실제 통합 결과를 아래 완료 항목에 반영했습니다.
   - [x] 기준 `4c743f149d726c692684f8f626e31fd74db34a73`에서 installer 호출자와 기존 계약을 대조하고, Linux의 기존 합성 release fixture 6개로 오류 우선순위·대상 검사·tree 보존·새/빈 대상 성공을 관찰했습니다. B안은 구현·실측 전입니다.
   - [x] A 현재 순서 유지와 B 대상 검사 선행·쓰기 전 재검사를 비교한 Draft를 준비했습니다. 순서 변경 시 REVIEW §6·BUGBOT의 두 불변조건을 같은 구현 PR에서 갱신한다는 PR #46 인계를 Spec R-005에 반영했습니다.
-  - [x] 로컬 root docs·stable locale·docs 회귀 55건·diff 검사가 통과했습니다. 새 설계의 링크·절 참조와 기존 두 불변조건 5개 항목 동등성을 확인했습니다.
-  - [ ] 수동 설계 리뷰와 정확한 head의 필수 Windows/Linux CI를 확인합니다.
-  - [ ] 사용자 선택을 확인하고 승인 범위를 설계 Metadata와 PROJECT §8에 기록합니다. 승인 전에는 순서·런타임·현재 불변조건을 변경하지 않습니다.
-  - [ ] 설계 PR을 Origin·GitHub `main`에 통합합니다. A를 확정하면 구현 없이 종료하고, B를 확정하면 정본의 R-001~R-006에 따른 구현을 별도 PR로 진행합니다.
+  - [x] version 1 head `978be1788fd3e2fc15c72ac823b8c04815e5fc0e`에서 로컬 root docs·stable locale·docs 회귀 55건·diff 검사가 통과했습니다. 새 설계의 링크·절 참조와 기존 두 불변조건 5개 항목 동등성을 확인했습니다. exact head의 Windows #51·Linux #36 CI도 통과했습니다.
+  - [x] 2026-09-28 사용자 대화 “A안으로 할게.”를 근거로 승인 범위를 설계 Metadata와 PROJECT §8에 기록했습니다. D-010 §2.3의 현재 순서를 유지하고 B안은 미선택 비교 근거로 보존합니다.
+  - [x] 승인 기록을 반영한 작업 트리의 로컬 root docs·stable locale·docs 회귀 55건·diff 검사가 통과했습니다.
+  - [ ] 승인 기록을 반영한 새 head의 수동 설계 리뷰·필수 Windows/Linux CI를 확인합니다.
+  - [ ] 설계 PR #47을 Origin·GitHub `main`에 통합한 뒤 별도 구현 없이 T-021을 종료합니다.
 
 ## Next
 
-T-021에서 A를 확정하면 다음 권고 작업은 Backlog의 T-013 운영 계약 회귀 방지 설계입니다. B를 확정하면 승인된 순서 변경을 먼저 별도 구현 PR로 진행합니다. 선택 전에는 두 경로를 통합 완료로 표시하지 않습니다.
+T-021의 승인된 A안 설계를 통합한 뒤 다음 권고 작업은 Backlog의 T-013 운영 계약 회귀 방지 설계입니다. B안 구현은 현재 실행 범위에 포함하지 않습니다.
 
 ## Blocked
 
@@ -70,7 +71,7 @@ T-021에서 A를 확정하면 다음 권고 작업은 Backlog의 T-013 운영 �
 | 8 | `codex/v233-publication-record` | T-028: `v2.3.3` 공개·published 검증 | **Integrated** — Origin PR #44 merge `b423c12`와 GitHub `main` fast-forward 확인; immutable Latest·Linux published 통과 |
 | 9 | `codex/t026-document-status-ownership` | T-026: PROJECT §11·설계 Status 중복 정리 | **Integrated** — Origin PR #45 merge `9a7764b`와 GitHub `main` fast-forward 확인; C44-001 해소 |
 | 10 | `codex/t022-install-target-invariant` | T-022: 승인된 install 대상 계약을 REVIEW/BUGBOT 불변조건으로 등록 | **Integrated** — Origin PR #46 merge `4c743f1`와 GitHub `main` fast-forward 확인; C46-001 해소 |
-| 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 유지·변경을 비교·합의 | **In Progress** — Draft 설계·A 권고; 사용자 선택·리뷰·통합 전. B는 승인 뒤 별도 구현 PR |
+| 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 유지·변경을 비교·합의 | **In Progress** — A안 사용자 승인·Accepted 기록; 새 head 리뷰·필수 CI·통합 전. 별도 구현·release 없음 |
 | 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
 | 13 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
 
