@@ -150,6 +150,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | D-009 | 2026-09-22 | Accepted | locale guide를 artifact 정본으로 두고 root guide는 maintainer addendum으로 축약하며, `project-analysis` Metadata를 제거하고 선택형 changelog 안내를 `v2.3.0` artifact에 추가 | [문서 소유권 변경](./changes/2026-09-22-documentation-ownership/01-CHANGE.md) | 수동 복제·생성 계층·root-only 안내·실제 changelog 자동 생성을 기각. 기존 프로젝트 문서 보존과 source/artifact별 release history 검증 유지 | Chae Sangwon, 2026-09-22 대화 — T-010 권고안과 `docs/` changelog 안내 승인 |
 | D-010 | 2026-09-23 | Accepted | 새 프로젝트용 `install`은 존재하지 않는 경로나 빈 디렉터리만 허용하고 비어 있지 않거나 emptiness를 확인할 수 없는 대상은 쓰기 전에 거부하며 기존 저장소에는 `adopt`를 안내 | [install 대상 계약 변경](./changes/2026-09-22-install-target-contract/01-CHANGE.md), [T-021 순서 유지 판단](./changes/2026-09-28-install-preflight-order/01-CHANGE.md) | artifact 경로 충돌만 거부하는 기존 구현과 문서 완화를 기각. 겹치지 않는 파일이 있는 대상도 실패하지만 D-006의 `install`·`adopt` 역할과 사용자 tree 보존을 강제; T-021에서 §2.3의 검증 뒤 대상 검사 순서를 유지 | Chae Sangwon, 2026-09-23 대화 — A안 권고 뒤 계속 진행 승인; 2026-09-28 대화 — T-021 A안 선택으로 현재 순서 유지 재확인 |
 | D-011 | 2026-09-25 | Accepted | Windows installer는 Python 3.12 이상에서 현재 검사하는 root·output 자체, 직접 부모와 member 경로의 symlink·junction을 거부하고, 더 위의 상위 경로 검사는 확대하지 않음 | [T-017 경계 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md) R-001~R-005 | 기존 POSIX symlink 경로와 Windows 사용자 프로필 junction의 호환성을 보존; 더 넓은 상위 경로 차단은 이번 범위에서 제외. 구현·native 회귀는 별도 PR | Chae Sangwon, 2026-09-25 대화 — 1번 안 선택 |
+| D-012 | 2026-09-28 | Accepted | T-013 A로 `project-analysis`의 root↔ko source 연결·실제 wrapper 회귀·maintainer LF와 준비 이력 안내를 보강하고, locale별 단일 placeholder 검색 선언과 source 검증을 도입 | [문서 운영 계약 회귀 방지](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md) R-001~R-007 | 설명만 보강하는 B를 기각. D-005·D-009와 기존 CLI·schema·inventory 유지; `design`·`review-round`의 root↔ko 차이는 허용. 승인 설계 통합 뒤 두 구현 PR로 진행 | Chae Sangwon, 2026-09-28 선택 응답 — PR #48 version 1 head `7af3e86`의 A 검사·회귀 강화안 승인 |
 
 [T-021 preflight 순서 평가](./changes/2026-09-28-install-preflight-order/01-CHANGE.md)에서 사용자는 2026-09-28 PR #47 version 1 head `978be17`의 A안을 선택했습니다. D-010 §2.3의 현재 순서·오류 우선순위를 유지하며 별도 구현·release는 필요하지 않습니다. 기존 결정의 재확인이므로 새 결정 ID를 발급하지 않습니다.
 
@@ -204,7 +205,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 실행 상태와 우선순위는 [전역 TODO](./02-TODO.md)가 소유합니다. 이 절에는 미해결 판단만 남기며, 확정된 계약은 §8 Decisions와 연결된 설계에서 확인합니다.
 
-- source/artifact checker 경계·LF·placeholder 계약의 회귀 방지 범위는 [TODO T-013](./02-TODO.md#backlog), 병렬 리뷰 finding ID 충돌 방지 정책은 [TODO T-014](./02-TODO.md#backlog)에서 합의해야 합니다.
+- 병렬 리뷰 finding ID 충돌 방지 정책은 [TODO T-014](./02-TODO.md#backlog)에서 합의해야 합니다.
 
 ## 12. Rejected or Deferred Ideas
 
@@ -225,5 +226,6 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | 문서 소유권과 changelog 안내 | [2026-09-22-documentation-ownership](./changes/2026-09-22-documentation-ownership/01-CHANGE.md) | D-009가 locale artifact 안내와 root maintainer 보충 문서의 소유권을 분리 | `v2.3.0` 문서 inventory·skill·checker 변경 |
 | 새 프로젝트 install 대상 계약 | [2026-09-22-install-target-contract](./changes/2026-09-22-install-target-contract/01-CHANGE.md) | D-010이 D-002·D-006의 `install`·`adopt` 역할 경계를 새 경로·빈 디렉터리 preflight로 명확화 | installer·root README·locale 적용 가이드 변경 |
 | install preflight 순서 평가 | [2026-09-28-install-preflight-order](./changes/2026-09-28-install-preflight-order/01-CHANGE.md) | Accepted A — D-010 §2.3의 현재 순서·오류 우선순위를 재확인 | 현재 순서 유지 판단과 비교 근거; 별도 구현·release 없음 |
+| 문서 운영 계약 회귀 방지 | [2026-09-28-operation-contract-regression](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md) | Accepted A — D-012가 D-005·D-009의 source 연결·CLI·LF·placeholder 검증을 보강 | 승인 설계; 구현·통합 상태는 TODO, 두 후속 구현 PR |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.

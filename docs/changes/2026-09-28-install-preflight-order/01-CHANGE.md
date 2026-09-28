@@ -32,7 +32,7 @@ Linux에서 기존 `tests/test_install_release.py`의 `FakeReleaseServer`와
 | 입력 | 현재 결과 | fixture HTTP 요청 | 대상 검사 | 대상에 쓴 파일 |
 |---|---|---|---|---|
 | 정상 release + `existing.txt`가 있는 대상 | 비어 있지 않음 거부·빈 대상/`adopt` 안내 | 3 | root·emptiness 각 1회 | 0, tree 동일 |
-| asset 404 + 같은 대상 | release 요청 오류 | 1 | 없음 | 0, tree 동일 |
+| `SHA256SUMS` 404 + 같은 대상 | release 요청 오류 | 1 | 없음 | 0, tree 동일 |
 | checksum·manifest는 맞지만 ZIP 형식이 잘못된 archive + 같은 대상 | archive 오류 | 3 | 없음 | 0, tree 동일 |
 | 미지원 locale + 같은 대상 | locale 선택 오류 | 2 | 없음 | 0, tree 동일 |
 | 정상 release + 빈 대상 | 성공 | 3 | root·emptiness 각 1회 | fixture member 4개 |
@@ -163,3 +163,6 @@ B를 되돌릴 때는 순서와 관련 문서·불변조건을 함께 되돌리�
 - 2026-09-28: 사용자가 PR #47 version 1 head `978be17`의 비교안에 “A안으로 할게.”라고
   답해 현재 순서 유지를 승인했습니다. Status를 `Accepted`로 바꾸고 D-010 §2.3 유지와
   별도 구현·release 없음, B안 미선택 범위를 기록했습니다. PR 통합 상태는 TODO에서 관리합니다.
+- 2026-09-28: PR #47 version 2 리뷰의 선택 권고에 따라 HTTP 1회 관찰의 실패 asset을
+  `SHA256SUMS`로 명시했습니다. A안 판단·승인과 installer 동작은 유지하며 T-013의
+  다음 문서 변경에 함께 반영합니다.
