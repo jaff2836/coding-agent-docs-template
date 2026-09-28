@@ -205,15 +205,21 @@ Self-hosted bots and GitHub Actions-based reviewers differ by repository and ver
 
 Replacement targets are not limited to the `{{...}}` form. Instructional placeholders also remain, so find them together with this command.
 
+These search commands use **Bash**; on Windows, use Git Bash or WSL. From the repository root, run the declaration first, then either search command in the **same shell**. The declaration is the single source for both patterns.
+
 ```bash
-rg --hidden -n --glob '*.md' --glob '!**/.git/**' --glob '!docs/TEMPLATE_GUIDE.md' --glob '!docs/DOCS_GUIDE.md' \
-  "\{\{|Adapt to the project|Describe as appropriate for the project|Customize for the project|Briefly describe|YYYY-MM-DD|\| Example|Example decision|Example completion|\*\*Example:\*\*|template-example:project-invariant" .
+template_placeholder_pattern='\{\{|Adapt to the project|Describe as appropriate for the project|Customize for the project|Briefly describe|YYYY-MM-DD|\| Example|Example decision|Example completion|\*\*Example:\*\*|template-example:project-invariant'
 ```
 
-If `rg` is unavailable, use:
+```bash
+rg --hidden -n --glob '*.md' --glob '!**/.git/**' --glob '!docs/TEMPLATE_GUIDE.md' --glob '!docs/DOCS_GUIDE.md' \
+  "$template_placeholder_pattern" .
+```
+
+If `rg` is unavailable, use the following in the same shell after the declaration:
 
 ```bash
-grep -rnE "\{\{|Adapt to the project|Describe as appropriate for the project|Customize for the project|Briefly describe|YYYY-MM-DD|\| Example|Example decision|Example completion|\*\*Example:\*\*|template-example:project-invariant" \
+grep -rnE "$template_placeholder_pattern" \
   --include='*.md' --exclude=TEMPLATE_GUIDE.md --exclude=DOCS_GUIDE.md \
   --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv .
 ```
@@ -303,7 +309,7 @@ Keep short rules that always apply in the root `AGENTS.md`. A conditional proces
 - Use the [Documentation Guide](./DOCS_GUIDE.md) as the source of truth for ordinary documentation maintenance and per-document edit authority.
 - [DOCS_GUIDE.md](./DOCS_GUIDE.md) is intentionally not named `README.md`. Naming it `docs/README.md` would conflict with the common practice of putting a root README translation at a path such as `docs/README.ko.md`. Do not rename it back to `docs/README.md`.
 - Use relative paths from the containing file for all repository-internal Markdown links. When moving or renaming a file, update incoming links too.
-- You may retain this document as the template-adoption record. If you delete it after adoption, also remove links to it from the adopted project's [README.md](../README.md) and [Documentation Guide](./DOCS_GUIDE.md).
+- You may retain this document as the template-adoption record. If you delete it after adoption, also remove links to it from the adopted project's [README.md](../README.md) and [Documentation Guide](./DOCS_GUIDE.md). Before deletion, save the `template_placeholder_pattern` declaration and both search commands together in project-owned documentation, such as [DOCS_GUIDE.md](./DOCS_GUIDE.md), so the check remains available.
 - If you remove [.cursor/BUGBOT.md](../.cursor/BUGBOT.md) because Cursor Bugbot is unused, or [.omp/WATCHDOG.md](../.omp/WATCHDOG.md) because OMP is unused, also clean up their links and layout descriptions in this guide and [DOCS_GUIDE.md](./DOCS_GUIDE.md).
 
 ### Recording the Copy Baseline with Git

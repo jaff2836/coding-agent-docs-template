@@ -48,6 +48,11 @@ class PackageReleaseTests(unittest.TestCase):
             self.repository / "template",
             ignore=_ignore_generated,
         )
+        self.repository.joinpath("docs").mkdir()
+        shutil.copy2(
+            REPOSITORY_ROOT / "docs/TEMPLATE_GUIDE.md",
+            self.repository / "docs/TEMPLATE_GUIDE.md",
+        )
         self.installer = self.repository / "scripts/installer.py"
         self.installer.parent.mkdir()
         self.installer.write_bytes(

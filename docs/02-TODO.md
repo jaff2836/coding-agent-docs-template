@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-013 source 검사·회귀 구현 1
-- **Goal:** 승인된 D-012의 R-001~R-004·R-007 source 경계를 구현·검증하고 별도 PR로 통합함
-- **Target:** `codex/t013-source-contract-regression` (Origin·GitHub `main` `4b8ccc1fae789b9555fc80a8fa90727a15b6830d` 기준)
-- **Status:** In Progress — Accepted 설계 PR #48의 세 수동 리뷰·필수 Windows/Linux CI와 Origin/GitHub 통합을 확인했습니다. 구현 1의 브랜치 작업·로컬 검증·후속 PR 통합은 아래에서 구분합니다.
-- **다음 마일스톤:** 구현 1 통합 뒤 placeholder 정본·검증 구현 2를 진행합니다.
+- **Name:** T-013 placeholder 정본·검증 구현 2
+- **Goal:** 승인된 D-012의 R-005~R-007과 C48-001 인계를 구현·검증하고 별도 PR로 통합함
+- **Target:** `codex/t013-placeholder-contract-regression` (Origin·GitHub `main` `f9df2fac4554ef8997695122b200df576133410f` 기준)
+- **Status:** In Progress — 구현 1 PR #49의 세 수동 리뷰·필수 Windows/Linux CI와 Origin/GitHub 통합을 확인했습니다. 구현 2의 브랜치 작업·로컬 검증·후속 PR 통합은 아래에서 구분합니다.
+- **다음 마일스톤:** 구현 2 통합 뒤 T-013을 닫습니다. locale 문서 공개는 별도 release 작업으로 진행하며 T-014는 다음 독립 후보입니다.
 
 ## 운영 규칙
 
@@ -45,20 +45,25 @@
   - [x] 2026-09-28 사용자 선택 응답 “A: 검사·회귀 강화 (권고)”를 근거로 설계 Metadata를 Accepted로 바꾸고 PROJECT §8의 D-012에 승인 범위를 기록했습니다. B는 미선택 비교 근거입니다.
   - [x] 승인 기록을 반영한 작업 트리의 로컬 문서·stable locale·docs 회귀 55건·diff 검사가 통과했습니다.
   - [x] 설계 PR #48 version 2 head `8980c5ba685e175f751a5f61d6ba9e59618560c2` / base `ed3438f`의 세 수동 리뷰와 Windows #55·Linux #40 CI 통과를 확인했습니다. 차단 finding은 없고, Origin merge `4b8ccc1fae789b9555fc80a8fa90727a15b6830d`를 GitHub·로컬 `main`에도 non-force fast-forward했습니다. 통과 head는 동결하고 후속 인계만 이번 브랜치에 기록합니다.
-  - [ ] 구현 1: source 분석 스킬 연결·실제 wrapper 회귀와 CLI·LF·준비 entry 안내를 별도 PR로 구현·검증·통합합니다.
+  - [x] 구현 1: source 분석 스킬 연결·실제 wrapper 회귀와 CLI·LF·준비 entry 안내를 별도 PR로 구현·검증·통합했습니다.
     - [x] 무인자 wrapper에 고정된 `project-analysis` 네 사본 byte 검사와 missing·unreadable·영역 밖 경로 진단을 추가했습니다. 인자 경로와 배포 checker는 기존 계약을 유지합니다.
     - [x] 기존 mock 회귀 2건을 보존하고 실제 checker fixture·Git attribute 회귀 10건을 추가했습니다. pair 동시 drift, 파일 실패·외부 symlink/junction, source/artifact 교차 호출·제외·history·실패 코드와 미공개 후보 heading을 검증합니다. canonical 중첩 `docs/locales/` 회귀도 그대로 재사용합니다.
     - [x] maintainer CLI·LF·공개 준비 entry 안내와 체크리스트를 보강했습니다. `.gitattributes`·common·locale payload·manifest·version은 변경하지 않습니다.
     - [x] 기준 `4b8ccc1`에서 시작한 현재 브랜치 작업 트리의 source docs·stable locale·전체 unittest 194건(Linux에서 Windows 전용 3건 skip)이 통과했습니다. 문서 회귀 65건을 포함하며 en/ko의 30-member export는 기준 payload와 byte-identical합니다. 각 export에서 wrapper `--root`·artifact 자체 checker·tests 53건과 `.gitattributes` 미포함을 확인했습니다. 로컬 검증과 미확인 PR exact head의 원격 Windows/Linux CI는 구분합니다.
-    - [ ] 구현 1 PR의 수동 리뷰·exact head Windows/Linux CI와 Origin/GitHub 통합을 확인합니다.
+    - [x] PR #49 version 1 head `589eb9b431b77f37dcb7264c2d4826c5a6b4686e` / base `4b8ccc1`의 세 리뷰 모두 finding이 없고 Windows #57·Linux #42 CI가 통과했습니다. Origin merge `f9df2fac4554ef8997695122b200df576133410f`를 GitHub·로컬 `main`에도 non-force fast-forward했습니다. 비finding 참고(`cmt_01m3kk9zbyf17v4ea0tga11zmg`)인 fail-fast 진단 방식·저장소 안 symlink 동등성은 승인 계약과 맞아 현재 범위를 유지합니다.
   - [ ] 구현 2: locale별 검색 선언·참조·보관 안내, source locale 검사·독립 sentinel 회귀를 별도 PR로 구현·검증·통합합니다.
-    - PR #48 인계 **C48-001** (`cmt_01m3kgn45be4at0kt1q6tz0z1h`, head `8980c5b`, P2·confidence 0.92·blocking=false)를 수용합니다. R-005·R-007의 완료 조건에 root 검색 안내의 locale 정본 위임과 별도 검색식 부재를 확인하는 source gate·회귀를 포함합니다. root의 현재 축약 검색식은 구현 2에서 교체하며 이번 구현 1에서 해소했다고 표시하지 않습니다.
+    - PR #48 인계 **C48-001** (`cmt_01m3kgn45be4at0kt1q6tz0z1h`, head `8980c5b`, P2·confidence 0.92·blocking=false)를 수용합니다. R-005·R-007의 완료 조건에 root 검색 안내의 locale 정본 위임과 별도 검색식 부재를 확인하는 source gate·회귀를 포함합니다. 현재 브랜치에서 구현했고 PR 검증·통합 후 해소를 확정합니다.
     - PR #48의 비finding 권고(`cmt_01m3kgq9h0epssrvksdyqzw2zp`)도 구현 2에 인계합니다. rg·GNU grep-E·Python `re`에서 같은 의미를 유지하고 Bash(Windows에서는 Git Bash/WSL)·동일 shell에서 선언부터 실행하는 전제를 명시합니다.
+    - [x] en·ko 가이드 §3에 단일 single-quoted literal 선언과 두 quoted 참조를 두고 §5에 TG 삭제 전 선언·명령 보관을 안내했습니다. root §3은 locale 정본에 위임합니다.
+    - [x] 기존 locale 검사에 선언·순서·regex operand·독립 sentinel과 root 정본 위임 검사를 연결했습니다. 전체 regex 복제나 shell 실행 없이 확인하며 source export·package에도 같은 gate가 적용됩니다. source fixture에 필요한 root 안내를 포함했습니다.
+    - [x] 회귀 11건을 추가해 어휘 누락·missing/duplicate/dynamic 선언·잘못된 참조·주석/fence decoy·root 독립 검색식·missing guide를 거부합니다. 실제 rg/GNU grep 명령을 인자 배열로 실행해 Owner 교체 후 남은 날짜·숨김 Markdown·Git 내부 제외·guide 제외·복사용 `_template` 결과를 확인합니다. 도구가 없는 환경은 명시적으로 skip하며 설치하거나 다른 도구로 통과를 가정하지 않습니다.
+    - [x] 기준 `f9df2fa`에서 시작한 현재 브랜치 작업 트리의 source docs(303 links/45 files·절 참조 76개·invariant 5개)·stable locale·문서 회귀 65건·locale 회귀 54건·전체 unittest 205건이 통과했습니다. Linux에서는 Windows 전용 3건 skip이며 rg/GNU grep 실제 명령 회귀는 모두 실행했습니다. en/ko의 30-member export는 기준과 같은 inventory이고 `docs/TEMPLATE_GUIDE.md`만 byte가 달라졌습니다. 각 export에서 wrapper `--root`·artifact 자체 checker·tests 53건, maintainer 파일 미포함과 diff 검사를 확인했습니다. PR exact head의 원격 Windows/Linux CI·수동 리뷰·통합은 후속 확인합니다.
+    - [ ] 구현 2 PR의 수동 리뷰·exact head Windows/Linux CI와 Origin/GitHub 통합을 확인합니다.
   - 완료 경계: 두 구현 PR의 검증과 Origin/GitHub 통합을 확인해야 T-013을 닫습니다. locale payload 변경을 공개하는 후속 release·version·게시 시점은 별도 작업이며 설계 승인으로 완료 처리하지 않습니다.
 
 ## Next
 
-T-013 source 검사·회귀 구현 1을 리뷰·통합한 뒤 placeholder 정본·검증 구현 2와 PR #48 인계를 진행합니다. T-014 리뷰 ID 정책은 다음 독립 후보로 유지합니다.
+T-013 placeholder 정본·검증 구현 2와 PR #48 인계를 리뷰·통합합니다. locale payload 공개의 version·candidate/published gate는 별도 release 작업에서 확정합니다. T-014 리뷰 ID 정책은 다음 독립 후보로 유지합니다.
 
 ## Blocked
 
@@ -82,7 +87,7 @@ T-013 source 검사·회귀 구현 1을 리뷰·통합한 뒤 placeholder 정본
 | 9 | `codex/t026-document-status-ownership` | T-026: PROJECT §11·설계 Status 중복 정리 | **Integrated** — Origin PR #45 merge `9a7764b`와 GitHub `main` fast-forward 확인; C44-001 해소 |
 | 10 | `codex/t022-install-target-invariant` | T-022: 승인된 install 대상 계약을 REVIEW/BUGBOT 불변조건으로 등록 | **Integrated** — Origin PR #46 merge `4c743f1`와 GitHub `main` fast-forward 확인; C46-001 해소 |
 | 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 유지·변경을 비교·합의 | **Integrated** — Origin PR #47 merge `ed3438f`와 GitHub `main` fast-forward 확인; A 유지·별도 구현 없음 |
-| 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | **Integrated** — Accepted A(D-012), Origin PR #48 merge `4b8ccc1`·GitHub fast-forward 확인. Windows #55·Linux #40 통과; 구현 1 진행·구현 2 후속 |
+| 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | **Integrated** — Accepted A(D-012), Origin PR #48 merge `4b8ccc1`·GitHub fast-forward 확인. 구현 1 PR #49 merge `f9df2fa`·Windows #57·Linux #42 통과; 구현 2 진행 |
 | 13 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
 
 - [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다.

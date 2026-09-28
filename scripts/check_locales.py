@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shlex
 import stat
 import sys
 from collections import Counter, defaultdict
@@ -64,6 +65,24 @@ TOP_LEVEL_FRONTMATTER_FIELD_RE = re.compile(
 FENCE_LINE_RE = re.compile(r"^[ ]{0,3}(`{3,}|~{3,})(.*)$")
 BLOCKQUOTE_MARKER_RE = re.compile(r"[ ]{0,3}>[ \t]?")
 PROJECT_INVARIANT_EXAMPLE_PREFIXES = ("- **Example:**", "- **예시:**")
+
+# Independent inputs for the locale search vocabulary, not a copy of its regex.
+PLACEHOLDER_SEARCH_SENTINELS: Mapping[str, Tuple[str, ...]] = {
+    "en": (
+        "{{PROJECT_NAME}}", "{{", "- **Last reviewed:** YYYY-MM-DD",
+        "<!-- template-example:project-invariant -->",
+        "- **Owner:** Adapt to the project",
+        "- **Owner:** Customize for the project",
+        "Describe as appropriate for the project", "Briefly describe the boundaries",
+        "| Example |", "Example decision", "Example completion", "**Example:**",
+    ),
+    "ko": (
+        "{{PROJECT_NAME}}", "{{", "- **Last reviewed:** YYYY-MM-DD",
+        "<!-- template-example:project-invariant -->",
+        "- **Owner:** 프로젝트에 맞게 작성", "간단히 작성",
+        "| 예시 |", "예시 결정", "예시 완료", "**예시:**",
+    ),
+}
 
 ALLOWED_STATUSES = frozenset(("complete", "experimental", "stale"))
 ADOPTION_POLICIES = frozenset(("copy", "decide", "merge"))
@@ -1355,6 +1374,145 @@ def _check_commands(
                 )
 
 
+def _replacement_section(text: str) -> Optional[str]:
+    lines = text.splitlines()
+    context = _markdown_line_context(text)
+    headings = []
+    for index, line in enumerate(lines):
+        if all(context[index]) and line.startswith("## "):
+            match = NUMBERED_HEADING_RE.match(line)
+            headings.append((index, match.group(2) if match else None))
+    starts = [index for index, number in headings if number == "3"]
+    if len(starts) != 1:
+        return None
+    start = starts[0]
+    end = next((index for index, _ in headings if index > start), len(lines))
+    return "\n".join(lines[start + 1:end])
+
+
+def _fenced_code_blocks(text: str) -> List[Tuple[str, str]]:
+    blocks = []
+    fence = None
+    language = ""
+    lines: List[str] = []
+    for line in _mask_html_comments(text).splitlines():
+        if fence is None:
+            match = FENCE_LINE_RE.fullmatch(line)
+            if match is not None:
+                fence = match.group(1)
+                language = match.group(2).strip()
+                lines = []
+        elif re.fullmatch(
+            r"[ ]{0,3}" + re.escape(fence[0]) + "{%d,}[ \t]*" % len(fence), line
+        ):
+            blocks.append((language, "\n".join(lines)))
+            fence = None
+        else:
+            lines.append(line)
+    if fence is not None:
+        blocks.append((language, "\n".join(lines)))
+    return blocks
+
+
+def _check_placeholder_searches(
+    texts: Mapping[Tuple[str, str], str], errors: List[str]
+) -> None:
+    for tag, sentinels in PLACEHOLDER_SEARCH_SENTINELS.items():
+        text = texts.get((tag, "docs/TEMPLATE_GUIDE.md"))
+        if text is None:
+            continue  # Inventory validation reports the missing source.
+        label = "%s:docs/TEMPLATE_GUIDE.md" % tag
+        section = _replacement_section(text)
+        if section is None:
+            errors.append("%s must have one replacement section 3" % label)
+            continue
+        bash = [code for language, code in _fenced_code_blocks(section) if language == "bash"]
+        lines = "\n".join(bash).splitlines()
+        definitions = [
+            (index, line.strip()) for index, line in enumerate(lines)
+            if re.match(r"\s*(?:export\s+)?template_placeholder_pattern\s*=", line)
+        ]
+        definition = (
+            re.fullmatch(r"template_placeholder_pattern='([^']*)'", definitions[0][1])
+            if len(definitions) == 1 else None
+        )
+        if definition is None:
+            errors.append(
+                "%s must declare template_placeholder_pattern exactly once "
+                "as a single-quoted literal in a Bash block" % label
+            )
+            continue
+        pattern = definition.group(1)
+        try:
+            regex = re.compile(pattern)
+        except re.error as error:
+            errors.append("%s invalid placeholder search pattern: %s" % (label, error))
+            continue
+        if regex.search("") is not None:
+            errors.append("%s placeholder search pattern must not match empty text" % label)
+        for sentinel in sentinels:
+            if regex.search(sentinel) is None:
+                errors.append("%s placeholder search misses sentinel: %r" % (label, sentinel))
+        for command in ("rg", "grep"):
+            matches = [
+                (index, line.strip()) for index, line in enumerate(lines)
+                if re.match(r"\s*%s\s" % command, line)
+            ]
+            valid = False
+            if len(matches) == 1:
+                index, line = matches[0]
+                for continuation in lines[index + 1:]:
+                    if not line.endswith("\\"):
+                        break
+                    line = line[:-1] + continuation
+                try:
+                    arguments = shlex.split(line, comments=True)
+                except ValueError:
+                    arguments = []
+                operand = arguments[-2:-1] if command == "rg" else arguments[2:3]
+                valid = (
+                    index > definitions[0][0]
+                    and line.count('"$template_placeholder_pattern"') == 1
+                    and arguments.count("$template_placeholder_pattern") == 1
+                    and operand == ["$template_placeholder_pattern"]
+                )
+            if not valid:
+                errors.append(
+                    "%s %s must use the quoted shared pattern as its regex operand "
+                    "exactly once after the declaration" % (label, command)
+                )
+
+
+def _check_root_search_delegation(root: Path, errors: List[str]) -> None:
+    path = root / "docs/TEMPLATE_GUIDE.md"
+    try:
+        resolved = path.resolve(strict=True)
+        resolved.relative_to(root.resolve())
+        if not resolved.is_file():
+            raise ValueError("expected a regular file")
+    except (OSError, RuntimeError, ValueError) as error:
+        errors.append("cannot read maintainer docs/TEMPLATE_GUIDE.md: %s" % error)
+        return
+    text = _check_utf8_lf_file(resolved, "maintainer", errors)
+    if text is None:
+        return
+    section = _replacement_section(text)
+    targets = _relative_link_target_sequence(section or "")
+    for tag in PLACEHOLDER_SEARCH_SENTINELS:
+        target = "../locales/%s/docs/TEMPLATE_GUIDE.md" % tag
+        if target not in targets:
+            errors.append("maintainer search section must delegate to %s" % target)
+    independent = re.search(
+        r"\btemplate_placeholder_pattern[ \t]*=", _mask_html_comments(text)
+    ) or any(
+        language in {"regex", "regexp"}
+        or re.search(r"(?m)^[ \t]*(?:rg|grep)(?:[ \t]|$)", code)
+        for language, code in _fenced_code_blocks(text)
+    )
+    if independent:
+        errors.append("maintainer guide must not define an independent placeholder search")
+
+
 def _frontmatter_fields(text: str) -> Optional[Dict[str, List[str]]]:
     lines = text.splitlines()
     if not lines or lines[0] != "---":
@@ -1788,6 +1946,8 @@ def check_locales(root: Path = ROOT, require_stable: bool = False) -> List[str]:
     _check_structural_parity(manifest, texts, errors)
     _check_markers(manifest, texts, errors)
     _check_commands(manifest, texts, errors)
+    _check_placeholder_searches(texts, errors)
+    _check_root_search_delegation(root, errors)
     _check_skills(manifest, texts, errors)
     _check_skill_fixture_observables(manifest, texts, common_texts, errors)
     _check_invariant_contract(manifest, texts, errors)

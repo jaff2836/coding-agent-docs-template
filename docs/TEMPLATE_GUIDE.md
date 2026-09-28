@@ -71,19 +71,13 @@ UTF-8·LF·최종 newline은 locale 검사로도 확인합니다. 이 attribute 
 artifact inventory에 포함되지 않으며 적용 프로젝트의 Git 설정을 바꾸지 않습니다.
 
 템플릿을 적용한 직후 실제 변경 폴더와 프로젝트 소유 문서에 남은
-placeholder를 확인합니다. 안내 문서와 `changes/_template/`은 설명·복사용
-placeholder를 의도적으로 포함하므로 결과를 문맥에 따라 판정합니다.
-
-```sh
-rg --hidden -n --glob '*.md' --glob '!**/.git/**' \
-  --glob '!docs/TEMPLATE_GUIDE.md' --glob '!docs/DOCS_GUIDE.md' \
-  --glob '!docs/changes/_template/**' \
-  '\{\{[^}]+\}\}|YYYY-MM-DD|Customize for the project|프로젝트에 맞게 작성'
-```
-
-`rg`가 없으면 같은 exclude 범위를 적용한 `grep -R -n -E`로 대체합니다.
-검색 0건은 명령 실행 가능성, 완료 근거나 README 내용까지 검증했다는 뜻이
-아닙니다. 적용 프로젝트의 전체 체크리스트는 locale
+placeholder를 확인합니다. 검색 선언·rg/grep 명령의 정본은
+[영문 가이드](../locales/en/docs/TEMPLATE_GUIDE.md) §3과
+[한국어 가이드](../locales/ko/docs/TEMPLATE_GUIDE.md) §3입니다.
+해당 locale의 Bash·동일 shell 실행 순서와 §5의 선언·명령 보관 절차를 따릅니다.
+source locale 검사는 이 선언·참조·sentinel과 root 안내의 정본 위임을 확인합니다.
+안내 문서와 `changes/_template/`의 설명·복사용 placeholder는 문맥에 따라
+판정하며, 검색 0건을 적용 완료로 해석하지 않습니다. 전체 체크리스트는 locale
 `docs/DOCS_GUIDE.md`가 소유합니다.
 
 ## 4. 문서·도구 소유권

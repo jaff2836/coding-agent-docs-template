@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import json
+import re
+import shlex
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -32,6 +35,11 @@ class LocaleFixtureTests(unittest.TestCase):
             REPOSITORY_ROOT / "template",
             self.root / "template",
             ignore=_ignore_generated,
+        )
+        self.root.joinpath("docs").mkdir()
+        shutil.copy2(
+            REPOSITORY_ROOT / "docs/TEMPLATE_GUIDE.md",
+            self.root / "docs/TEMPLATE_GUIDE.md",
         )
 
     def tearDown(self) -> None:
@@ -75,6 +83,206 @@ class LocaleFixtureTests(unittest.TestCase):
 
     def test_repository_locale_sources_are_consistent(self) -> None:
         self.assertEqual(self.errors(), [])
+
+    def search_pattern(self, tag: str) -> str:
+        text = self.path("locales/%s/docs/TEMPLATE_GUIDE.md" % tag).read_text(encoding="utf-8")
+        declaration = next(
+            line for line in text.splitlines()
+            if line.startswith("template_placeholder_pattern=")
+        )
+        literal = declaration.split("=", 1)[1]
+        self.assertTrue(literal.startswith("'") and literal.endswith("'"))
+        return literal[1:-1]
+
+    def test_placeholder_search_rejects_loss_of_independent_vocabulary(self) -> None:
+        tokens = {
+            "en": ("Adapt to the project", "Describe as appropriate for the project",
+                   "Customize for the project", "Briefly describe", r"\| Example",
+                   "Example decision", "Example completion", r"\*\*Example:\*\*"),
+            "ko": ("프로젝트에 맞게 작성", "간단히 작성", r"\| 예시",
+                   "예시 결정", "예시 완료", r"\*\*예시:\*\*"),
+        }
+        for tag, vocabulary in tokens.items():
+            path = self.path("locales/%s/docs/TEMPLATE_GUIDE.md" % tag)
+            original = path.read_text(encoding="utf-8")
+            pattern = self.search_pattern(tag)
+            for token in (r"\{\{", "YYYY-MM-DD", "template-example:project-invariant", *vocabulary):
+                with self.subTest(tag=tag, token=token):
+                    # Remove one alternative while keeping all other declarations/references valid.
+                    alternatives = re.split(r"(?<!\\)\|", pattern)
+                    self.assertIn(token, alternatives)
+                    altered = "|".join(part for part in alternatives if part != token)
+                    path.write_text(original.replace(pattern, altered, 1), encoding="utf-8", newline="\n")
+                    self.assert_error("%s:docs/TEMPLATE_GUIDE.md placeholder search misses sentinel" % tag)
+                    path.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_placeholder_search_requires_one_literal_declaration(self) -> None:
+        for tag in ("en", "ko"):
+            path = self.path("locales/%s/docs/TEMPLATE_GUIDE.md" % tag)
+            original = path.read_text(encoding="utf-8")
+            declaration = "template_placeholder_pattern='%s'" % self.search_pattern(tag)
+            for replacement in ("", declaration + "\n" + declaration,
+                                declaration.replace("|", "|\\\n", 1),
+                                "template_placeholder_pattern=$OTHER_PATTERN"):
+                with self.subTest(tag=tag, replacement=replacement):
+                    path.write_text(original.replace(declaration, replacement, 1), encoding="utf-8", newline="\n")
+                    self.assert_error("must declare template_placeholder_pattern exactly once")
+                    path.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_placeholder_search_rejects_empty_or_invalid_regex(self) -> None:
+        path = self.path("locales/en/docs/TEMPLATE_GUIDE.md")
+        original = path.read_text(encoding="utf-8")
+        pattern = self.search_pattern("en")
+        for replacement, expected in (("", "must not match empty text"),
+                                      ("[", "invalid placeholder search pattern")):
+            with self.subTest(pattern=replacement):
+                path.write_text(original.replace(pattern, replacement, 1), encoding="utf-8", newline="\n")
+                self.assert_error(expected)
+
+    def test_both_search_commands_require_the_quoted_shared_regex_operand(self) -> None:
+        reference = '"$template_placeholder_pattern"'
+        for tag in ("en", "ko"):
+            path = self.path("locales/%s/docs/TEMPLATE_GUIDE.md" % tag)
+            original = path.read_text(encoding="utf-8")
+            for command, occurrence in (("rg", 0), ("grep", 1)):
+                for replacement in ('"YYYY-MM-DD"', "$template_placeholder_pattern"):
+                    with self.subTest(tag=tag, command=command, replacement=replacement):
+                        parts = original.split(reference)
+                        self.assertEqual(len(parts), 3)
+                        altered = (reference.join(parts[:occurrence + 1]) + replacement
+                                   + reference.join(parts[occurrence + 1:]))
+                        path.write_text(altered, encoding="utf-8", newline="\n")
+                        self.assert_error("%s must use the quoted shared pattern" % command)
+                        path.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_search_declaration_must_precede_commands(self) -> None:
+        path = self.path("locales/en/docs/TEMPLATE_GUIDE.md")
+        original = path.read_text(encoding="utf-8")
+        declaration = "template_placeholder_pattern='%s'" % self.search_pattern("en")
+        altered = original.replace(declaration, "", 1).replace(
+            'grep -rnE', declaration + '\ngrep -rnE', 1
+        )
+        path.write_text(altered, encoding="utf-8", newline="\n")
+        self.assert_error("rg must use the quoted shared pattern")
+
+    def test_search_contract_cannot_be_satisfied_by_comments_or_other_fences(self) -> None:
+        path = self.path("locales/en/docs/TEMPLATE_GUIDE.md")
+        original = path.read_text(encoding="utf-8")
+        declaration = "```bash\ntemplate_placeholder_pattern='%s'\n```" % self.search_pattern("en")
+        for replacement in ("<!--\n" + declaration + "\n-->",
+                            declaration.replace("```bash", "```text"),
+                            "````text\n" + declaration + "\n````"):
+            with self.subTest(replacement=replacement):
+                path.write_text(original.replace(declaration, replacement, 1), encoding="utf-8", newline="\n")
+                self.assert_error("must declare template_placeholder_pattern exactly once")
+
+        for command in ("rg", "grep"):
+            altered = original.replace(command + " ", "# " + command + " ", 1)
+            path.write_text(altered, encoding="utf-8", newline="\n")
+            self.assert_error(command + " must use the quoted shared pattern")
+
+    def test_root_search_delegation_rejects_missing_or_decoy_links(self) -> None:
+        path = self.path("docs/TEMPLATE_GUIDE.md")
+        original = path.read_text(encoding="utf-8")
+        for label, tag in (("영문 가이드", "en"), ("한국어 가이드", "ko")):
+            link = "[%s](../locales/%s/docs/TEMPLATE_GUIDE.md)" % (label, tag)
+            for replacement in ("", "<!-- " + link + " -->", "\n```md\n" + link + "\n```\n"):
+                with self.subTest(tag=tag, replacement=replacement):
+                    self.assertEqual(original.count(link), 1)
+                    path.write_text(original.replace(link, replacement, 1), encoding="utf-8", newline="\n")
+                    self.assert_error("search section must delegate to ../locales/%s/" % tag)
+
+    def test_root_guide_cannot_own_an_independent_search_pattern(self) -> None:
+        path = self.path("docs/TEMPLATE_GUIDE.md")
+        original = path.read_text(encoding="utf-8")
+        for snippet in (
+            "```sh\nrg 'YYYY-MM-DD|Customize for the project' .\n```\n",
+            "```sh\nrg 'YYYY-MM-DD' .\n",
+            "```bash\ngrep -rnE 'YYYY-MM-DD' .\n```\n",
+            "```sh\ntemplate_placeholder_pattern='YYYY-MM-DD'\n```\n",
+            "```regex\nYYYY-MM-DD|Customize for the project\n```\n",
+        ):
+            with self.subTest(snippet=snippet):
+                path.write_text(original + "\n" + snippet, encoding="utf-8", newline="\n")
+                self.assert_error("maintainer guide must not define an independent placeholder search")
+        path.write_text(original + "\nrg 또는 grep의 정본은 locale 가이드입니다.\n", encoding="utf-8", newline="\n")
+        self.assertEqual(self.errors(), [])
+
+    def test_root_search_gate_does_not_skip_a_missing_or_non_file_guide(self) -> None:
+        path = self.path("docs/TEMPLATE_GUIDE.md")
+        path.unlink()
+        self.assert_error("cannot read maintainer docs/TEMPLATE_GUIDE.md")
+        path.mkdir()
+        self.assert_error("cannot read maintainer docs/TEMPLATE_GUIDE.md")
+
+    def assert_search_engine(self, engine: str) -> None:
+        program = shutil.which(engine)
+        if program is None:
+            self.skipTest("%s is unavailable; no search tool is installed by this test" % engine)
+        if engine == "grep":
+            version = subprocess.run([program, "--version"], capture_output=True, timeout=5)
+            if b"GNU grep" not in version.stdout:
+                self.skipTest("GNU grep is required for the documented fallback")
+        common = ["{{PROJECT_NAME}}", "unfinished {{", "- **Last reviewed:** YYYY-MM-DD",
+                  "<!-- template-example:project-invariant -->"]
+        vocabulary = {
+            "en": ["- **Owner:** Adapt to the project", "- **Owner:** Customize for the project",
+                   "Describe as appropriate for the project", "Briefly describe the boundaries",
+                   "| Example |", "Example decision", "Example completion", "**Example:**"],
+            "ko": ["- **Owner:** 프로젝트에 맞게 작성", "간단히 작성", "| 예시 |",
+                   "예시 결정", "예시 완료", "**예시:**"],
+        }
+        filled = ["# Project overview", "- **Owner:** Chae Sangwon", "- **Last reviewed:** 2026-09-28"]
+        for tag in ("en", "ko"):
+            with self.subTest(tag=tag, engine=engine):
+                expected = common + vocabulary[tag]
+                guide = self.path("locales/%s/docs/TEMPLATE_GUIDE.md" % tag).read_text(encoding="utf-8")
+                lines = guide.splitlines()
+                start = next(index for index, line in enumerate(lines) if line.startswith(engine + " "))
+                command = lines[start]
+                for continuation in lines[start + 1:]:
+                    if not command.endswith("\\"):
+                        break
+                    command = command[:-1] + continuation
+                # Invoke only the chosen executable with data arguments; never evaluate shell code.
+                arguments = [self.search_pattern(tag) if value == "$template_placeholder_pattern" else value
+                             for value in shlex.split(command)]
+                matches = {
+                    "README.md": expected,
+                    ".cursor/BUGBOT.md": ["{{PROJECT_NAME}}"],
+                    "docs/changes/_template/01-CHANGE.md": ["{{PROJECT_NAME}}"],
+                }
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    for relative, content in {
+                        "README.md": filled + expected,
+                        ".cursor/BUGBOT.md": ["{{PROJECT_NAME}}"],
+                        "docs/changes/_template/01-CHANGE.md": ["{{PROJECT_NAME}}"],
+                        "docs/TEMPLATE_GUIDE.md": ["YYYY-MM-DD"],
+                        "docs/DOCS_GUIDE.md": ["YYYY-MM-DD"],
+                        ".git/IGNORED.md": ["YYYY-MM-DD"],
+                        "IGNORED.txt": ["YYYY-MM-DD"],
+                    }.items():
+                        path = root / relative
+                        path.parent.mkdir(parents=True, exist_ok=True)
+                        path.write_text("\n".join(content) + "\n", encoding="utf-8", newline="\n")
+                    result = subprocess.run(
+                        [program, "--color=never", *arguments[1:]], cwd=root,
+                        capture_output=True, text=True, encoding="utf-8", timeout=5,
+                    )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                actual = {}
+                for line in result.stdout.splitlines():
+                    relative, _, value = line.split(":", 2)
+                    relative = relative.replace("\\", "/").removeprefix("./")
+                    actual.setdefault(relative, []).append(value)
+                self.assertEqual(actual, matches)
+
+    def test_declared_patterns_match_ripgrep_sentinels_and_exclude_filled_values(self) -> None:
+        self.assert_search_engine("rg")
+
+    def test_declared_patterns_match_gnu_grep_sentinels_and_exclude_filled_values(self) -> None:
+        self.assert_search_engine("grep")
 
     def test_adoption_policy_covers_exactly_the_artifact_inventory(self) -> None:
         manifest = self.load_manifest()

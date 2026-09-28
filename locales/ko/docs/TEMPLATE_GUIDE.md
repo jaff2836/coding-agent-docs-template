@@ -205,15 +205,21 @@ gh api graphql \
 
 교체 대상은 `{{...}}` 형식만이 아닙니다. 안내 문구형 placeholder도 함께 남아 있으므로 다음 명령으로 한 번에 찾으세요.
 
+아래 검색 명령은 **Bash**용이며 Windows에서는 Git Bash 또는 WSL을 사용합니다. 저장소 root에서 선언을 먼저 실행하고 **같은 shell**에서 두 검색 명령 중 하나를 실행하세요. 이 선언 하나가 두 명령의 패턴 정본입니다.
+
 ```bash
-rg --hidden -n --glob '*.md' --glob '!**/.git/**' --glob '!docs/TEMPLATE_GUIDE.md' --glob '!docs/DOCS_GUIDE.md' \
-  "\{\{|프로젝트에 맞게 작성|간단히 작성|YYYY-MM-DD|\| 예시|예시 결정|예시 완료|\*\*예시:\*\*|template-example:project-invariant" .
+template_placeholder_pattern='\{\{|프로젝트에 맞게 작성|간단히 작성|YYYY-MM-DD|\| 예시|예시 결정|예시 완료|\*\*예시:\*\*|template-example:project-invariant'
 ```
 
-`rg`가 없으면 다음을 사용하세요.
+```bash
+rg --hidden -n --glob '*.md' --glob '!**/.git/**' --glob '!docs/TEMPLATE_GUIDE.md' --glob '!docs/DOCS_GUIDE.md' \
+  "$template_placeholder_pattern" .
+```
+
+`rg`가 없으면 선언을 실행한 같은 shell에서 다음을 사용하세요.
 
 ```bash
-grep -rnE "\{\{|프로젝트에 맞게 작성|간단히 작성|YYYY-MM-DD|\| 예시|예시 결정|예시 완료|\*\*예시:\*\*|template-example:project-invariant" \
+grep -rnE "$template_placeholder_pattern" \
   --include='*.md' --exclude=TEMPLATE_GUIDE.md --exclude=DOCS_GUIDE.md \
   --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv .
 ```
@@ -303,7 +309,7 @@ Claude Code는 `CLAUDE.md`와 그 import 대상에서 `@`로 시작하는 토큰
 - 일상적인 문서 관리 방법과 문서별 수정 권한은 [문서 운영 안내](./DOCS_GUIDE.md)를 기준으로 합니다.
 - [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 이름은 의도적으로 `README.md`가 아닙니다. 루트 README의 번역본을 `docs/README.ko.md`처럼 `docs/`에 두는 관행과 파일명이 충돌하기 때문입니다. `docs/README.md`로 되돌리지 마세요.
 - 모든 저장소 내부 Markdown 링크는 해당 파일을 기준으로 한 상대 경로를 사용합니다. 파일을 옮기거나 이름을 바꾸면 참조하는 링크도 함께 수정하세요.
-- 이 문서는 템플릿 적용 기록으로 남겨도 됩니다. 적용 후 필요 없어 삭제한다면 적용 프로젝트 [README.md](../README.md)와 [문서 운영 안내](./DOCS_GUIDE.md)에 있는 이 문서 링크도 함께 제거하세요.
+- 이 문서는 템플릿 적용 기록으로 남겨도 됩니다. 적용 후 필요 없어 삭제한다면 적용 프로젝트 [README.md](../README.md)와 [문서 운영 안내](./DOCS_GUIDE.md)에 있는 이 문서 링크도 함께 제거하세요. 삭제 전에 `template_placeholder_pattern` 선언과 두 검색 명령을 [DOCS_GUIDE.md](./DOCS_GUIDE.md) 같은 프로젝트 소유 문서에 함께 보관해 검색을 다시 실행할 수 있도록 합니다.
 - Cursor Bugbot을 사용하지 않아 [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)를, 또는 OMP를 사용하지 않아 [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)를 제거한다면 이 안내와 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 해당 링크와 구조 설명도 정리하세요.
 
 ### Git으로 복사 기준 기록하기
