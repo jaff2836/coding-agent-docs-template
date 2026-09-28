@@ -37,10 +37,12 @@
 
 - [ ] **T-022 install 대상 불변조건 등록**
   - 출처·범위: 기존 T-022와 2026-09-28 사용자의 리뷰 후 다음 작업 진행 요청에 따라 승인된 D-010을 maintainer 리뷰 불변조건으로 등록합니다. 상위 계약은 [install 대상 설계](./changes/2026-09-22-install-target-contract/01-CHANGE.md) R-001·R-002·§2.3이며 D-011의 기존 symlink·junction 경계도 유지합니다.
-  - 평가·선택: REVIEW의 일반 정확성·문서 계약 검사만으로 둘 수도 있지만, BUGBOT은 자신의 단일 파일에서 판단하므로 install 대상 보호를 두 불변조건 목록에 명시하는 안을 채택합니다. 기존 파일과 겹치지 않아도 비어 있지 않으면 거부하고, emptiness를 확인할 수 없으면 fail-closed하며, 거부 시 tree 보존과 빈 대상·읽기 전용 `adopt` 안내를 함께 적습니다.
+  - 평가·선택: REVIEW의 일반 정확성·문서 계약 검사만으로 둘 수도 있지만, BUGBOT은 자신의 단일 파일에서 판단하므로 install 대상 보호를 두 불변조건 목록에 명시하는 안을 채택합니다. 기존 파일과 겹치지 않아도 비어 있지 않으면 거부하고, emptiness를 확인할 수 없으면 fail-closed합니다. 대상 검사 거부 시 tree를 보존하며, 빈 대상·읽기 전용 `adopt` 안내는 비어 있음 검사에서 거부한 경우로 한정합니다.
   - 설계 범위: 이미 승인·구현된 계약의 문서 등록이므로 DESIGN §1의 작은 문서 변경 예외를 적용하고 새 제품 결정·설계를 만들지 않습니다. 대상 preflight의 release·archive 검증 뒤 순서와 오류 우선순위는 D-010 그대로이며, 순서 재설계는 별도 T-021입니다.
   - 변경·검사: `docs/REVIEW.md` §6과 `.cursor/BUGBOT.md`의 `Install 대상 보존` 항목을 같은 문장으로 추가합니다. 기존 checker는 example을 제외한 전체 bullet 목록의 동등성을 검사하므로 코드·규칙 변경 없이 두 목록을 비교합니다. locale payload와 공개 asset은 이 maintainer 정책 변경에 포함되지 않습니다.
-  - 로컬 검증: 기존 installer의 새·빈 대상 성공, 비어 있지 않은 대상과 `.git` 대상 거부·tree 보존, unreadable·uninspectable 대상 fail-closed 회귀를 포함한 전체 unittest 184건이 통과했습니다(Linux의 Windows 전용 2건 skip). root docs의 두 목록 5개 항목 동등성, stable locale·diff 검사도 통과했습니다. 정책 문장과 `install` → `_resolve_target_root`·`_require_empty_install_target` → `_write_members`의 실제 순서를 대조했습니다.
+  - 최초 등록 검증: PR #46 version 1 head `dc571d9677de44bc72635a8eec7e2a4b6fa08bc4`에서 전체 unittest 184건(Linux의 Windows 전용 2건 skip), root docs의 두 목록 5개 항목 동등성, stable locale·diff 검사가 통과했습니다. 새·빈 대상 성공, 비어 있지 않은 대상과 `.git` 대상 거부·tree 보존, unreadable·uninspectable 대상 fail-closed 회귀를 포함합니다. 정책 문장과 `install` → `_resolve_target_root`·`_require_empty_install_target` → `_write_members`의 실제 순서를 대조했습니다. exact head의 Windows #48·Linux #33 CI도 통과했습니다.
+  - C46-001 판정·수정: PR #46 version 1 head `dc571d9` / base `9a7764b`의 자동 리뷰와 Luna가 P3·confidence 0.90·blocking=true로 보고한 안내 범위 모호성을 수용했습니다. `_resolve_target_root`·`_link_kind`의 root·부모·검사 실패 메시지에는 `adopt` 안내가 없으므로, 두 불변조건에서 tree 보존은 대상 검사 거부에 적용하고 안내는 `_require_empty_install_target`의 비어 있음 검사 거부로 한정합니다. 기본 통과 기준은 충족하지만 이번 PR에서 문구를 수정하며, 새 head는 수동 재리뷰·필수 CI 확인 전입니다.
+  - 후속 문구 검증: root docs의 두 목록 5개 항목 일치, stable locale·docs 회귀 55건·diff 검사가 통과했습니다. installer 코드·locale payload는 수정하지 않았으며, 새 head의 전체 suite는 필수 CI에서 확인합니다.
   - PR #45 인계: version 1 head `3281f0b` / base `b423c12`의 세 리뷰가 C44-001 해소와 새 finding 없음을 확인했습니다. T-026의 실제 Origin·GitHub 통합 완료는 아래 완료 항목에 반영합니다. 다음 release 기록에서는 PROJECT Metadata Status와 Current State의 공개 기준을 함께 확인하라는 권고를 유지합니다.
   - 완료 조건: 승인된 D-010의 대상 거부·보존·안내가 두 리뷰 목록과 일치하고 관련 로컬 게이트·수동 리뷰·필수 Windows·Linux CI가 통과한 뒤 Origin·GitHub `main`에 통합되어야 합니다. 이 브랜치의 등록과 전역 통합 완료를 구분합니다.
 
@@ -73,7 +75,7 @@
 | 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
 | 13 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
 
-- [ ] **T-021 install preflight 순서 재설계** — release·archive 검증 뒤에 대상 preflight를 하는 D-010 §2.3을 유지할지, 대상 진단과 불필요한 다운로드를 우선할지 설계합니다. 신뢰 검증 순서와 오류 우선순위가 바뀌므로 설계 합의 전에는 구현하지 않습니다.
+- [ ] **T-021 install preflight 순서 재설계** — release·archive 검증 뒤에 대상 preflight를 하는 D-010 §2.3을 유지할지, 대상 진단과 불필요한 다운로드를 우선할지 설계합니다. 신뢰 검증 순서와 오류 우선순위가 바뀌므로 설계 합의 전에는 구현하지 않습니다. PR #46 version 1 head `dc571d9`의 Claude 인계를 반영해, 순서를 바꾸는 구현 PR에서는 REVIEW §6·BUGBOT의 `Install 대상 보존` 두 사본도 함께 갱신하고 기존 checker로 동등성을 검증합니다.
 
 - [ ] **T-013 D-009 운영 계약 회귀 방지** — `project-analysis`에 한정한 source root↔`locales/ko` 사본 동등성 검사, source/artifact checker CLI 경계와 source changelog의 공개 전 heading 예외, root `.gitattributes`가 maintainer checkout의 LF를 고정하는 목적, locale별 placeholder 검색 어휘의 단일 출처·검증 방식을 함께 설계합니다. `design`·`review-round` skill 사본은 같은 동등성 계약으로 일반화하지 않습니다.
 - [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다.
