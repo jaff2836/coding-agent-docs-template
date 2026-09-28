@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** Active — immutable Latest `v2.3.2` 공개·지원 검증과 T-019 기록 통합 완료
+- **Status:** Active — immutable Latest `v2.3.3` 공개와 Linux published 검증 완료
 - **Owner:** Chae Sangwon
 - **Last reviewed:** 2026-09-28
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
@@ -25,7 +25,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Current State
 
-- 공개 release 기준은 [immutable GitHub Release `v2.3.2`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.2)(2026-09-23 공개, Latest)이며 annotated tag와 당시 Origin·GitHub `main`의 commit은 `4c6a798885404fdf5170769e271f7d06f4959234`입니다. candidate·보완한 published gate에서 교체하지 않은 5개 asset, latest·exact의 en·ko install/export/adopt, `v2.3.1` base-aware upgrade 및 비어 있지 않은 install 대상 불변을 확인했습니다. 이전 release는 그대로 유지되며 exact version에 맞는 자기 installer로만 설치할 수 있습니다.
+- 공개 release 기준은 [immutable GitHub Release `v2.3.3`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.3)(2026-09-28 공개, Latest)이며 annotated tag의 exact source는 `989698d4070d7a9596117cf410362fea0b7f28bb`입니다. 공개·published 검증 시 Origin·GitHub `main`은 `da4d6aef4b817e396cf1400e912b233a66b58601`로 같았고 source는 그 조상이었습니다. Linux에서 tag source의 verifier로 기존 draft와 같은 5개 asset, latest·exact의 en·ko list/install/export/adopt, `v2.3.2` base-aware upgrade 및 비어 있지 않은 install 대상 불변을 확인했습니다. 이전 release는 그대로 유지되며 exact version에 맞는 자기 installer로만 설치할 수 있습니다.
 - W-001의 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source 분리는 Origin PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에 통합됐습니다.
 - W-002의 `locales/en`·locale별 skill S2 계약과 W-003 locale/artifact 검사는 각각 Origin PR #4·#5에 통합됐습니다. `en`·`ko` source는 모두 `complete`입니다.
 - W-004 exporter·packager는 Origin PR #6 merge commit `f60ae97`, W-005 비파괴 installer는 PR #7 merge commit `9d4637d`, W-006 적용 문서는 PR #8 merge commit `60638ed`에 통합됐습니다.
@@ -78,12 +78,14 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Data Flow
 
-exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. packager는 `locales/manifest.json`의 adoption policy도 각 member에 materialize합니다(`schema_version` 2). installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고, `install` 대상이 새 경로 또는 읽을 수 있는 빈 디렉터리인지 확인한 뒤 경로 충돌·부분 실패를 거부하거나 rollback합니다. 기존 저장소에는 `adopt`가 같은 검증 후 artifact 경로만 list·lstat·read로 분류하고, 대상 밖의 빈 output에 `artifact/`와 실험적 `adoption-plan.json`을 원자적으로 게시합니다. 선택형 base-aware 경로는 더 낮은 exact SemVer의 schema 1·2 release를 과거 코드 실행 없이 별도 검증하고 `base ∪ current` 경로를 target과 비교한 format 2 report를 만듭니다. release 검증 도구는 사람이 만든 draft와 공개된 immutable release를 package byte·ref·공개 installer 경로와 대조할 뿐 tag나 release를 변경하지 않습니다. source root 자체는 배포하지 않습니다. `v2.0.0`·`v2.1.0`·`v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`는 실제 immutable GitHub Release에서 각 계약에 맞는 원격 E2E를 검증했습니다.
+exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. packager는 `locales/manifest.json`의 adoption policy도 각 member에 materialize합니다(`schema_version` 2). installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고, `install` 대상이 새 경로 또는 읽을 수 있는 빈 디렉터리인지 확인한 뒤 경로 충돌·부분 실패를 거부하거나 rollback합니다. 기존 저장소에는 `adopt`가 같은 검증 후 artifact 경로만 list·lstat·read로 분류하고, 대상 밖의 빈 output에 `artifact/`와 실험적 `adoption-plan.json`을 원자적으로 게시합니다. 선택형 base-aware 경로는 더 낮은 exact SemVer의 schema 1·2 release를 과거 코드 실행 없이 별도 검증하고 `base ∪ current` 경로를 target과 비교한 format 2 report를 만듭니다. release 검증 도구는 사람이 만든 draft와 공개된 immutable release를 package byte·ref·공개 installer 경로와 대조할 뿐 tag나 release를 변경하지 않습니다. source root 자체는 배포하지 않습니다. `v2.0.0`·`v2.1.0`·`v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`는 실제 immutable GitHub Release에서 각 계약에 맞는 원격 E2E를 검증했습니다.
 
 ### External Boundaries
 
 - 공개 저장소 identity와 release host는 `jaff2836/coding-agent-docs-template`의 GitHub Releases로 확정했습니다. bootstrap URL과 version URL 계약은 [D-004 SPEC](./changes/2026-09-18-github-releases-publication/02-SPEC.md)이 소유합니다.
 - 파일시스템과 release asset 다운로드가 신뢰 경계입니다. manifest·archive·member hash를 모두 확인해야 합니다.
+- `v2.3.3`의 Windows installer는 Python 3.12 이상을 요구하며, 더 낮은 version에서는 release·대상 접근 전에 중단합니다. 기존 root·output·직접 부모·member 검사 지점의 symlink·junction을 거부하고, 선택 경로보다 위의 기존 상위 component는 확대 검사하지 않습니다. 상세 계약은 [D-011 경계 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)를 따릅니다.
+- 완료 메시지는 stdout 인코딩으로 표현할 수 없는 경로 문자를 escape하여 `install`·`export`·`adopt`가 끝난 뒤 출력 때문에 실패로 보고되지 않도록 합니다.
 
 ### Contracts and Core Design
 
@@ -101,7 +103,7 @@ D-006의 `adopt`·adoption policy·release manifest schema 2는 `v2.1.0`으로 �
 
 D-008의 선택형 `adopt --base-version <older-exact-semver>`과 format 2 report는 `v2.2.0`으로 구현·공개되어 §5 현재 구조로 옮겼습니다. 상세 계약과 완료 근거는 [base-aware adoption 변경](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md)과 [PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md)을 따릅니다.
 
-D-011은 Windows Python 3.12 이상에서 installer의 기존 root·output·직접 부모·member 검사 지점에 junction 거부를 추가하고 D-006 adoption SPEC §3.3의 대상 상태를 확장합니다. 선택 경로보다 위의 기존 상위 component는 확대 검사하지 않습니다. 상세 계약은 [T-017 경계 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)를 따릅니다. 구현·native 회귀는 Origin PR #38 merge `b5a9c4e`와 GitHub `main`에 반영됐고 다음 release에는 아직 포함되지 않았습니다.
+D-011의 Windows Python 3.12 하한과 junction 경계는 `v2.3.3`으로 구현·공개되어 §5 현재 구조로 옮겼습니다. D-006 adoption SPEC §3.3의 대상 상태 확장과 자세한 범위는 [T-017 경계 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)를 따릅니다.
 
 ### Target Data Flow
 
@@ -198,7 +200,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 ## 11. Open Questions
 
-`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. D-010·T-016의 `install` 대상 계약은 `v2.3.2`에 포함됐고 T-018 candidate와 T-019 공개·published 검증 및 기록 통합을 마쳤습니다. `install` 안내 T-020은 Origin PR #40 merge `f236bf2`와 GitHub `main`에 통합됐으며 다음 release 반영 전입니다. preflight 순서·리뷰 불변조건 권고는 Backlog의 독립 PR 단위로 둡니다. Windows Python 3.12 하한과 junction 경계는 [D-011](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)로 확정하고 Origin PR #38 merge `b5a9c4e` 및 GitHub `main`에 구현을 반영했습니다. Origin의 Buildkite Windows·Linux pipeline은 정확한 head에서 전체 gate를 통과했고, Windows Python 3.12.10의 PR #37 native probe로 구현 전 installer의 junction 허용을 재현했습니다. PR #37을 연 직후에는 기존 head check가 표시됐고 새 build는 관찰되지 않았지만, 이후 PR head push는 PR 정보가 연결된 두 build와 성공 check를 자동 생성했습니다. 최종 head `cc67e31`의 두 check 통과 후 Origin PR #37을 `9d53913`에 병합하고 GitHub `main`에도 fast-forward로 반영했습니다. 두 check는 Origin `main` 병합 필수 조건입니다. T-017 구현 head `42d9923`에서 Windows Buildkite #27·Linux #12가 통과했고, T-023 release 후보 회귀는 Origin PR #39 merge `b40630a`로 통합해 다음 candidate의 선행조건을 충족했습니다. 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
+`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. D-010·T-016의 `install` 대상 계약은 `v2.3.2`에 포함됐고 T-018 candidate와 T-019 공개·published 검증 및 기록 통합을 마쳤습니다. `install` 안내 T-020은 Origin PR #40 merge `f236bf2`와 GitHub `main`에 통합됐으며 `v2.3.3` asset에 포함됐습니다. preflight 순서·리뷰 불변조건 권고는 Backlog의 독립 PR 단위로 둡니다. Windows Python 3.12 하한과 junction 경계는 [D-011](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)로 확정하고 Origin PR #38 merge `b5a9c4e` 및 GitHub `main`에 구현을 반영했습니다. Origin의 Buildkite Windows·Linux pipeline은 정확한 head에서 전체 gate를 통과했고, Windows Python 3.12.10의 PR #37 native probe로 구현 전 installer의 junction 허용을 재현했습니다. PR #37을 연 직후에는 기존 head check가 표시됐고 새 build는 관찰되지 않았지만, 이후 PR head push는 PR 정보가 연결된 두 build와 성공 check를 자동 생성했습니다. 최종 head `cc67e31`의 두 check 통과 후 Origin PR #37을 `9d53913`에 병합하고 GitHub `main`에도 fast-forward로 반영했습니다. 두 check는 Origin `main` 병합 필수 조건입니다. T-017 구현 head `42d9923`에서 Windows Buildkite #27·Linux #12가 통과했고, T-023 release 후보 회귀는 Origin PR #39 merge `b40630a`로 통합해 `v2.3.3` candidate에서 실제 installer와의 계약 회귀를 통과했습니다. 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
 
 ## 12. Rejected or Deferred Ideas
 

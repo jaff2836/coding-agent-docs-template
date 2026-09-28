@@ -31,7 +31,7 @@ Move-Item -Force -ErrorAction Stop installer.py.part installer.py
 
 Continue only after the download block succeeds.
 
-This repository's installer source requires Python 3.12 or newer on Windows to check directory junctions. Published release assets retain the support range of their own version.
+On Windows, the current release installer and this repository's installer source require Python 3.12 or newer to check directory junctions. Earlier release assets retain the support range of their own version.
 
 ### 2. List the supported locales
 

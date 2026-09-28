@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-027 `v2.3.3` draft candidate 검증과 기록
-- **Goal:** T-025의 통합 source를 annotated tag·draft asset과 결합해 검증하고 리뷰 인계 항목을 반영함
-- **Target:** `codex/v233-candidate-record` (Origin·GitHub `main` `989698d` 기준)
-- **Status:** In Progress — T-025는 Origin PR #42 merge와 GitHub `main`에 통합됐습니다. `v2.3.3` tag·draft의 candidate gate는 통과했고, 이 브랜치의 기록은 리뷰·통합 전입니다. 상세 근거는 아래 T-027이 소유합니다.
-- **다음 마일스톤:** 기록 PR 통합 뒤 T-028에서 별도 명시 요청에 따라 검증된 draft asset을 공개하고 published gate를 실행합니다.
+- **Name:** T-028 `v2.3.3` 공개와 published 검증 기록
+- **Goal:** 검증된 기존 asset을 immutable Latest로 공개하고 공개 경로와 실제 지원 범위를 기록함
+- **Target:** `codex/v233-publication-record` (Origin·GitHub `main` `da4d6ae` 기준)
+- **Status:** In Progress — release 공개와 Linux published gate는 완료했습니다. 이 브랜치의 공개·지원 검증 기록은 리뷰·통합 전입니다. 상세 근거는 아래 T-028이 소유합니다.
+- **다음 마일스톤:** 기록 PR 통합 뒤 Backlog의 T-026 상태 중복 정리를 다음 독립 문서 작업으로 평가합니다.
 
 ## 운영 규칙
 
@@ -35,17 +35,18 @@
 
 ## In Progress
 
-- [ ] **T-027 `v2.3.3` draft candidate 검증과 기록**
-  - 범위·위임: 2026-09-28 사용자 대화의 다음 작업 진행 요청에 따라 D-007의 수동 release 준비 단계로 annotated tag·draft asset을 준비하고 candidate gate를 실행했습니다. 이 기록 브랜치는 source changelog·TODO만 변경하며, 공개와 published 검증은 T-028이 소유합니다.
-  - 확인한 source·ref: exact clean source `989698d4070d7a9596117cf410362fea0b7f28bb`에 local·GitHub annotated `v2.3.3` tag를 결합했습니다. candidate 실행 시 Origin·GitHub `main`도 같은 commit이었습니다. source tree는 리뷰를 통과한 PR #42 head `cdbe374465f6b676416a4ce73d29631b11ebcaf1`과 같습니다.
-  - candidate 검증: `python3 scripts/verify-release.py candidate --version 2.3.3 --source-commit 989698d4070d7a9596117cf410362fea0b7f28bb --repository jaff2836/coding-agent-docs-template`가 exit 0으로 통과했습니다. 전체 unittest·root docs·stable locale·diff 검사, 반복 package byte 동등성, 두 remote·annotated tag와 [GitHub draft](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/untagged-fa36032df7d0e1a9c78e)의 5개 asset 동등성을 확인했습니다. draft는 `isDraft=true`, `isImmutable=false`, `isPrerelease=false`, `publishedAt=null`입니다.
-  - version 선택 근거: PR #42가 준비한 `v2.3.3` patch를 유지합니다. 명령 집합·manifest schema 2·locale artifact inventory는 유지하고, D-011 경계 강제와 출력 실패·안내·검증 회귀를 묶습니다. Windows Python 3.12 미만의 실행 중단은 호환성 변화이므로 changelog와 draft notes에 명시합니다. patch 선택을 모든 기존 환경의 호환성 보장으로 해석하지 않습니다.
-  - PR #42 version 2 인계: C42-001·C42-002는 해소됐고 새 finding은 없습니다. 별도 비차단 권고였던 version 선택 근거는 이 항목에, Python 업그레이드 우선 안내와 구버전 대안의 수정 누락은 en·ko source changelog 및 draft notes에 반영했습니다. T-026은 release 완료 후의 다음 문서 정리 후보로 우선순위를 올립니다.
-  - 완료 조건: candidate 성공 근거와 인계 문서의 검증·리뷰를 확인하고 Origin·GitHub `main`에 기록 PR을 통합합니다. candidate 통과는 공개 또는 Windows의 원격 published E2E 완료를 뜻하지 않습니다.
+- [ ] **T-028 `v2.3.3` 공개와 published 검증**
+  - 범위·위임: 2026-09-28 사용자가 `v2.3.3` 공개부터 다음 기록 PR 게시까지 명시적으로 위임했습니다. D-007의 수동 게시 단계로 기존 draft를 공개하고, tag source의 읽기 전용 verifier로 published gate를 실행했습니다.
+  - 공개 결과: [immutable Latest `v2.3.3`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.3)을 2026-09-28 03:01:47 UTC(12:01:47 KST)에 공개했습니다. `isDraft=false`, `isImmutable=true`, `isPrerelease=false`이며 GitHub Latest identity도 일치합니다. 기존 draft asset 5개의 ID·SHA-256은 게시 전후 동일합니다.
+  - source·ref: annotated tag의 exact source는 `989698d4070d7a9596117cf410362fea0b7f28bb`입니다. 공개·published 실행 시 Origin·GitHub `main`은 `da4d6aef4b817e396cf1400e912b233a66b58601`로 같았고 source는 그 조상이었습니다. 기록 PR의 source와 release의 source를 구분합니다.
+  - published 검증: clean exact tag source에서 `python3 scripts/verify-release.py published --version 2.3.3 --source-commit 989698d4070d7a9596117cf410362fea0b7f28bb --repository jaff2836/coding-agent-docs-template --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --base-version 2.3.2`가 exit 0으로 통과했습니다. Linux에서 tag source 자신의 verifier로 5개 asset byte·immutable Latest, latest·exact의 en·ko list/install/export/adopt, source export와의 동등성, `v2.3.2` base-aware upgrade 및 비어 있지 않은 install 대상의 거부·tree 불변을 확인했습니다.
+  - 검증 범위: 이번 원격 published E2E는 Linux에서 실행했습니다. Windows는 tag source와 같은 tree의 PR #42 head에서 Windows #40 CI·native junction 회귀가 통과한 근거를 유지하며, native Windows published E2E를 실행했다고 표시하지 않습니다.
+  - PR #43 version 1 인계: head `cb4bd84`의 세 리뷰 모두 새 finding이 없었고 Windows #42·Linux #27 CI가 통과했습니다. PROJECT Status·현재 공개 기준·D-011 공개 범위·§11과 en·ko README·changelog를 갱신합니다. 선택 제안인 draft target 변경은 기존 annotated tag와 exact-source 검증으로 게시 대상을 확인할 수 있어 현 상태를 유지했습니다.
+  - 완료 조건: 공개·지원 검증 기록의 로컬 게이트·리뷰·필수 CI를 확인하고 Origin·GitHub `main`에 기록 PR을 통합합니다.
 
 ## Next
 
-- [ ] **T-028 `v2.3.3` 공개와 published 검증** — T-027 기록 PR 통합과 별도 공개 요청 뒤 검증된 기존 5개 draft asset을 그대로 immutable Latest로 공개합니다. 같은 exact tag source에서 `published --base-version 2.3.2`로 latest·exact의 en·ko 경로와 base-aware upgrade를 검증하고, 공개 기록은 별도 PR로 통합합니다.
+다음 권고 작업은 Backlog의 T-026 PROJECT §11 상태 중복 정리 평가입니다. 상세 범위와 완료 조건은 기존 T-026 항목이 소유하며 별도 작업으로 진행합니다.
 
 ## Blocked
 
@@ -61,11 +62,11 @@
 | 1 | `codex/t017-windows-junction-design` | T-017: native Windows에서 junction을 재현·설계 | **Integrated** — Origin PR #37 merge `9d53913`과 GitHub `main` fast-forward를 확인했습니다. Windows·Linux 전체 gate와 native 재현을 통과했고, 경계 범위는 D-011로 확정했습니다. |
 | 2 | `codex/t017-junction-boundary-implementation` | T-017: 승인된 경계와 native 회귀를 구현 | **Integrated** — Origin PR #38 merge `b5a9c4e`와 GitHub `main` fast-forward를 확인했습니다. 정확한 head의 Windows #27·Linux #12 CI가 통과했습니다. |
 | 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | **Integrated** — Origin PR #39 merge `b40630a`와 GitHub `main` fast-forward를 확인했습니다. Windows #30·Linux #15 CI가 통과했습니다. |
-| 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | **Integrated** — Origin PR #40 merge `f236bf2`와 GitHub `main` 반영 확인; 다음 patch release 후보 |
-| 5 | `codex/t024-installer-stdout-encoding` | T-024: 비-UTF-8 stdout에서 설치 후 거짓 실패 방지 | **Integrated** — Origin PR #41 merge `2901f1a`와 GitHub `main` fast-forward 확인; 다음 patch release 후보 |
+| 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | **Integrated** — Origin PR #40 merge `f236bf2`와 GitHub `main` 반영 확인; `v2.3.3` asset에 포함 |
+| 5 | `codex/t024-installer-stdout-encoding` | T-024: 비-UTF-8 stdout에서 설치 후 거짓 실패 방지 | **Integrated** — Origin PR #41 merge `2901f1a`와 GitHub `main` fast-forward 확인; `v2.3.3` asset에 포함 |
 | 6 | `codex/v233-release-prep` | T-025: `v2.3.3` version·이력·package 후보 준비 | **Integrated** — Origin PR #42 merge `989698d`와 GitHub `main` fast-forward 확인 |
-| 7 | `codex/v233-candidate-record` | T-027: tag·draft candidate 검증과 인계 기록 | **In Progress** — `989698d` candidate 통과; 기록 브랜치는 리뷰·통합 전 |
-| 8 | 공개 후 기록 PR | T-028: `v2.3.3` 공개·published 검증 | T-027 기록 통합과 별도 공개 요청; 검증된 asset 그대로 게시 |
+| 7 | `codex/v233-candidate-record` | T-027: tag·draft candidate 검증과 인계 기록 | **Integrated** — Origin PR #43 merge `da4d6ae`와 GitHub `main` fast-forward 확인 |
+| 8 | `codex/v233-publication-record` | T-028: `v2.3.3` 공개·published 검증 | **In Progress** — immutable Latest·Linux published 통과; 기록 브랜치는 리뷰·통합 전 |
 | 9 | 독립 문서 정리 PR | T-026: PROJECT §11 상태 중복 정리 평가 | release 완료 후; 반복된 상태 불일치의 원인을 문서 소유권 관점에서 평가 |
 | 10 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
 | 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
@@ -87,6 +88,14 @@
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-027 `v2.3.3` draft candidate 검증과 기록**
+  - 범위·위임: 2026-09-28 사용자 대화의 다음 작업 진행 요청에 따라 D-007의 수동 release 준비 단계로 annotated tag·draft asset을 준비하고 candidate gate를 실행했습니다. PR #43은 source changelog·TODO만 변경했고, 공개와 published 검증은 T-028이 소유합니다.
+  - 확인한 source·ref: exact clean source `989698d4070d7a9596117cf410362fea0b7f28bb`에 local·GitHub annotated `v2.3.3` tag를 결합했습니다. candidate 실행 시 Origin·GitHub `main`도 같은 commit이었습니다. source tree는 리뷰를 통과한 PR #42 head `cdbe374465f6b676416a4ce73d29631b11ebcaf1`과 같습니다.
+  - candidate 검증: `python3 scripts/verify-release.py candidate --version 2.3.3 --source-commit 989698d4070d7a9596117cf410362fea0b7f28bb --repository jaff2836/coding-agent-docs-template`가 exit 0으로 통과했습니다. 전체 unittest·root docs·stable locale·diff 검사, 반복 package byte 동등성, 두 remote·annotated tag와 [당시 GitHub draft](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.3)의 5개 asset 동등성을 확인했습니다. candidate 당시 draft는 `isDraft=true`, `isImmutable=false`, `isPrerelease=false`, `publishedAt=null`입니다.
+  - version 선택 근거: PR #42가 준비한 `v2.3.3` patch를 유지합니다. 명령 집합·manifest schema 2·locale artifact inventory는 유지하고, D-011 경계 강제와 출력 실패·안내·검증 회귀를 묶습니다. Windows Python 3.12 미만의 실행 중단은 호환성 변화이므로 changelog와 draft notes에 명시합니다. patch 선택을 모든 기존 환경의 호환성 보장으로 해석하지 않습니다.
+  - PR #42 version 2 인계: C42-001·C42-002는 해소됐고 새 finding은 없습니다. 별도 비차단 권고였던 version 선택 근거는 이 항목에, Python 업그레이드 우선 안내와 구버전 대안의 수정 누락은 en·ko source changelog 및 draft notes에 반영했습니다. T-026은 release 완료 후의 다음 문서 정리 후보로 우선순위를 올립니다.
+  - 통합 결과: PR #43 head `cb4bd842d52f1f62b065793e2d85c2df7ad01020`을 Origin merge `da4d6aef4b817e396cf1400e912b233a66b58601`에 통합하고 GitHub `main`에도 non-force fast-forward했습니다. 세 리뷰에서 새 finding이 없었고 exact head의 Windows #42·Linux #27 CI가 통과했습니다. 공개·published 검증은 T-028이 소유합니다.
 
 - [x] **T-025 `v2.3.3` release 후보 준비**
   - 통합 결과: en·ko artifact version·release history와 source changelog를 정렬한 PR #42 head `cdbe374465f6b676416a4ce73d29631b11ebcaf1`을 Origin merge `989698d4070d7a9596117cf410362fea0b7f28bb`에 통합하고 GitHub `main`에도 non-force fast-forward했습니다. tag·draft candidate 검증은 후속 T-027, 공개·published 검증은 T-028이 소유합니다.
@@ -148,8 +157,8 @@
 
 - [x] **T-008 release 검증 절차 스크립트화**
   - 변경-ID: `2026-09-20-release-verification`
-  - 통합·운영 결과: Origin PR #20 merge `40306b65fe211402090d7a11b5c3ffafcb3689eb`의 검증 CLI로 `v2.1.1`부터 `v2.3.2`까지 실제 draft candidate·immutable published 경로를 반복 확인했습니다. 각 release에서 검증한 5개 asset을 게시 전후 교체하지 않았으며 exact source는 [변경 기록](./changes/2026-09-20-release-verification/01-CHANGE.md)에 남겼습니다.
-  - 검증 근거: 최신 `v2.3.2` published는 새 install 거부 문구를 반영한 verifier에서 latest·exact의 en·ko `list-locales`·`install`·`export`·`adopt`, `v2.3.1` base-aware upgrade, source export와 비어 있지 않은 target 불변을 확인했습니다. release는 `isDraft=false`, `isImmutable=true`, Latest입니다.
+  - 통합·운영 결과: Origin PR #20 merge `40306b65fe211402090d7a11b5c3ffafcb3689eb`의 검증 CLI로 `v2.1.1`부터 `v2.3.3`까지 실제 draft candidate·immutable published 경로를 반복 확인했습니다. 각 release에서 검증한 5개 asset을 게시 전후 교체하지 않았으며 exact source는 [변경 기록](./changes/2026-09-20-release-verification/01-CHANGE.md)에 남겼습니다.
+  - 검증 근거: 최신 `v2.3.3` published는 Linux에서 tag source 자신의 verifier로 latest·exact의 en·ko `list-locales`·`install`·`export`·`adopt`, `v2.3.2` base-aware upgrade, source export와 비어 있지 않은 target 불변을 확인했습니다. release는 `isDraft=false`, `isImmutable=true`, Latest입니다.
 
 - [x] **T-009 checker·installer 확정 결함 수정**
   - 통합·공개 결과: checker의 선택 파일 경계와 installer schema mismatch 복구 진단을 포함한 exact source `0cfcc896ee92ec018d12c88f3f2638a154b35720`을 annotated tag `v2.1.1`과 immutable GitHub Release로 공개했습니다.
