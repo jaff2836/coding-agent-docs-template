@@ -200,7 +200,11 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 ## 11. Open Questions
 
-`v2.3.0` 범위는 D-009와 T-010, `v2.3.1` 범위는 T-015로 완료했습니다. D-010·T-016의 `install` 대상 계약은 `v2.3.2`에 포함됐고 T-018 candidate와 T-019 공개·published 검증 및 기록 통합을 마쳤습니다. `install` 안내 T-020은 Origin PR #40 merge `f236bf2`와 GitHub `main`에 통합됐으며 `v2.3.3` asset에 포함됐습니다. preflight 순서·리뷰 불변조건 권고는 Backlog의 독립 PR 단위로 둡니다. Windows Python 3.12 하한과 junction 경계는 [D-011](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)로 확정하고 Origin PR #38 merge `b5a9c4e` 및 GitHub `main`에 구현을 반영했습니다. Origin의 Buildkite Windows·Linux pipeline은 정확한 head에서 전체 gate를 통과했고, Windows Python 3.12.10의 PR #37 native probe로 구현 전 installer의 junction 허용을 재현했습니다. PR #37을 연 직후에는 기존 head check가 표시됐고 새 build는 관찰되지 않았지만, 이후 PR head push는 PR 정보가 연결된 두 build와 성공 check를 자동 생성했습니다. 최종 head `cc67e31`의 두 check 통과 후 Origin PR #37을 `9d53913`에 병합하고 GitHub `main`에도 fast-forward로 반영했습니다. 두 check는 Origin `main` 병합 필수 조건입니다. T-017 구현 head `42d9923`에서 Windows Buildkite #27·Linux #12가 통과했고, T-023 release 후보 회귀는 Origin PR #39 merge `b40630a`로 통합해 `v2.3.3` candidate에서 실제 installer와의 계약 회귀를 통과했습니다. 운영 회귀 방지와 `.gitattributes` 목적 문서화는 T-013, 병렬 리뷰 ID 정리는 T-014의 후속 후보입니다. `en`·`ko` 외 community locale은 구현 범위가 아니라 §12의 별도 재검토 후보입니다.
+실행 상태와 우선순위는 [전역 TODO](./02-TODO.md)가 소유합니다. 이 절에는 미해결 판단만 남기며, 확정된 계약은 §8 Decisions와 연결된 설계에서 확인합니다.
+
+- `install`의 대상 preflight를 release·archive 검증보다 먼저 수행할지, D-010의 신뢰 검증 순서와 오류 우선순위를 유지할지 결정해야 합니다. 대상 진단과 불필요한 다운로드의 trade-off는 [TODO T-021](./02-TODO.md#backlog)이 소유합니다.
+- 비어 있지 않거나 확인 불가한 install 대상에 파일을 추가하지 않는 규칙을 REVIEW·BUGBOT의 project invariant로 올릴지 평가해야 합니다. 두 사본과 checker 계약에 미치는 영향은 [TODO T-022](./02-TODO.md#backlog)이 소유합니다.
+- source/artifact checker 경계·LF·placeholder 계약의 회귀 방지 범위는 [TODO T-013](./02-TODO.md#backlog), 병렬 리뷰 finding ID 충돌 방지 정책은 [TODO T-014](./02-TODO.md#backlog)에서 합의해야 합니다.
 
 ## 12. Rejected or Deferred Ideas
 

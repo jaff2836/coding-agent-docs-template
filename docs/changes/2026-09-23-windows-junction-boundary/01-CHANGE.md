@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Change ID:** `2026-09-23-windows-junction-boundary`
-- **Status:** Accepted — 경계 설계와 구현·native 회귀 검증 통합 완료; 다음 release 반영 전
+- **Status:** Accepted
 - **Originator:** Chae Sangwon
 - **Source:** Origin PR #30 C30-002에서 이월된 T-017과 2026-09-23 사용자 요청("T-017 이후 바로 T-023")
 - **Parent:** [제품 기준](../../00-PROJECT.md) D-002·D-006·D-010 및 [install 대상 계약](../2026-09-22-install-target-contract/01-CHANGE.md)
