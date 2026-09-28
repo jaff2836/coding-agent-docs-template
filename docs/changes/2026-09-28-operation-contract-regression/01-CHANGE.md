@@ -3,12 +3,12 @@
 ## Metadata
 
 - **Change ID:** `2026-09-28-operation-contract-regression`
-- **Status:** Draft
+- **Status:** Accepted
 - **Originator:** Chae Sangwon
 - **Source:** 기존 T-013, PR #28 version 2의 비차단 운영 권고(`cmt_01m33dxsvpenytt4nndy29hwz9`), 2026-09-28 사용자의 PR #47 리뷰 후 다음 작업 진행 요청
 - **Parent:** [제품 기준](../../00-PROJECT.md) D-005·D-009, [문서 소유권 설계](../2026-09-22-documentation-ownership/01-CHANGE.md) R-001·R-002·R-004·R-005
-- **Decision:** 미확정 — 상위 결정은 유지하고, 검사 강화 범위는 사용자 합의 전 제안입니다. 새 D-ID를 미리 발급하지 않습니다.
-- **Approval:** 미승인 — 다음 설계 진행 요청을 아래 검사·문서 변경의 선택 승인으로 해석하지 않습니다.
+- **Decision:** [PROJECT D-012](../../00-PROJECT.md#8-decisions) — T-013 A 검사·회귀 강화. D-005·D-009를 보강하며 기존 source/artifact 경계는 유지합니다.
+- **Approval:** Chae Sangwon, 2026-09-28 선택 응답 “A: 검사·회귀 강화 (권고)” — PR #48 version 1 head `7af3e86c1e6d82a556c3b82efdef9d376133934e`의 A안, R-001~R-007·§2.3 구성·§2.4의 두 구현 PR 순서를 승인했습니다. B안은 미선택이며 release version·게시 시점은 별도 작업입니다.
 - **Execution:** [전역 TODO](../../02-TODO.md)의 T-013이 상세 실행·검증·통합 상태를 소유합니다.
 
 ## 1. Intent
@@ -53,26 +53,26 @@ PR #47 인계만 다루며 실행 계획은 TODO에서 추적합니다.
 모든 root↔locale skill 동등성 강제, 전체 Markdown parser, 새 dependency·CI runner,
 installer 동작·기존 immutable release 변경은 포함하지 않습니다.
 
-### 1.3 제약과 미해결 질문
+### 1.3 제약과 선택 범위
 
 - locale guide가 적용 프로젝트의 정본이며 root guide는 maintainer 보충 규칙만 소유합니다.
 - 기존 검사 실패를 숨기거나 원본 template의 의도된 placeholder를 adoption 실패로 취급하지 않습니다.
 - `.gitattributes`를 artifact에 새로 넣거나 적용 저장소의 Git 설정을 바꾸지 않습니다.
 - source의 미공개 entry를 공개 증거로 사용하지 않고 D-007 candidate/published gate를 유지합니다.
-- **아래 T-013 A 검사·회귀 강화안과 B 설명 보강안 중 선택이 필요합니다.**
+- **사용자가 T-013 A 검사·회귀 강화안을 선택했습니다.** 선택에 관한 미해결 질문은 없으며 B는 미선택 비교 근거입니다.
 
 ## 2. Spec
 
-### 2.1 대안과 권고
+### 2.1 대안과 선택 이유
 
 | 안 | 내용 | 비용·결과 |
 |---|---|---|
-| **T-013 A — 검사·회귀 강화(권고)** | 기존 source gate에 분석 스킬 연결과 placeholder 검증을 보강하고 실제 CLI 회귀·maintainer 안내를 추가 | 두 구현 PR 필요; 재현된 drift를 merge 전에 거부; CLI·schema·inventory 유지 |
-| **T-013 B — 설명 보강** | CLI·LF·미공개 heading과 수동 사본·검색 확인을 root 안내에 명시 | 구현은 작은 문서 PR; root↔ko와 rg/grep의 기계적 검사 공백은 유지 |
+| **T-013 A — 검사·회귀 강화(선택)** | 기존 source gate에 분석 스킬 연결과 placeholder 검증을 보강하고 실제 CLI 회귀·maintainer 안내를 추가 | 두 구현 PR 필요; 재현된 drift를 merge 전에 거부; CLI·schema·inventory 유지 |
+| **T-013 B — 설명 보강(미선택)** | CLI·LF·미공개 heading과 수동 사본·검색 확인을 root 안내에 명시 | 구현은 작은 문서 PR; root↔ko와 rg/grep의 기계적 검사 공백은 유지 |
 
 현재 검사는 정상 경로를 확인하지만 두 pair를 함께 바꾸거나 한 검색 어휘만 누락하면
 놓칩니다. 공개 계약을 재설계할 필요 없이 기존 gate에서 이 범위를 검사할 수 있으므로
-A를 권고합니다. B는 추가 검사 유지비를 줄이지만 같은 누락을 수동으로 찾아야 합니다.
+A를 권고했고 사용자가 이를 선택했습니다. B는 추가 검사 유지비를 줄이지만 같은 누락을 수동으로 찾아야 합니다.
 별도 공통 생성기·JSON 설정·전체 placeholder lint는 현재 규모에 필요하지 않습니다.
 
 ### 2.2 A의 요구사항과 검증
@@ -87,8 +87,8 @@ A를 권고합니다. B는 추가 검사 유지비를 줄이지만 같은 누락
 | R-006 | 검색의 기존 책임·한계 유지 | 적용 후 실제 문서, 숨김 지침, `.git`, 설명 guide·복사용 `_template`, TG 삭제 | 숨김 Markdown 확인·Git 내부 제외·guide Metadata 수동 확인 유지. `_template` 결과는 복사용으로 판정하고 실제 변경은 교체. 삭제 전에 검색 설정·명령 보존; 검색 0건을 완전 검증으로 설명하지 않음 |
 | R-007 | 변경을 source/artifact 검증으로 연결 | source 전체 gate, 두 locale export와 artifact 자체 checker·tests | 기존 Windows/Linux CI·전체 unittest, en/ko export inventory·byte 검증 통과; 소비자 CLI에 maintainer 파일 의존성 없음 |
 
-B를 선택하면 R-002~R-004·R-006의 안내를 갱신하고 사본·검색 확인은 기존 수동
-체크리스트에서 수행합니다. R-001·R-005의 새 gate와 추가 CLI 회귀는 채택하지 않습니다.
+미선택 B안은 R-002~R-004·R-006의 안내와 수동 사본·검색 확인만 보강하는 대안입니다.
+R-001·R-005의 새 gate와 추가 CLI 회귀를 제외하는 이 대안은 이번 승인·실행 범위가 아닙니다.
 
 ### 2.3 구성·책임과 실패 처리
 
@@ -127,13 +127,13 @@ root guide는 locale 정본으로 연결해 축약된 별도 검색 어휘를 �
 
 | 단위 | 예상 범위 | 선행조건·완료 조건 |
 |---|---|---|
-| 설계 PR | 이 문서, PROJECT 인덱스·질문, TODO, PR #47 fixture 표기 인계 | 사용자 A/B 합의·문서 gate·수동 리뷰·필수 CI·Origin/GitHub 통합 |
+| 설계 PR | 이 문서, PROJECT 인덱스·질문, TODO, PR #47 fixture 표기 인계 | A안 승인 기록·문서 gate·수동 리뷰·필수 CI·Origin/GitHub 통합 |
 | A 구현 1 | source wrapper·`tests/test_check_docs.py`, maintainer CLI·LF·준비 이력 안내와 필요한 attribute 회귀 | 승인 설계 통합; R-001~R-004·R-007, 기존 docs/locale/full suite와 Windows/Linux exact head |
 | A 구현 2 | en/ko 검색 선언·호출·보관 안내, source locale checker·회귀, root 검색 안내 연결 | 구현 1 통합; R-005~R-007, pattern drift 실패·전체 source gate·두 artifact export/check/tests |
 
 각 구현 PR을 먼저 통합하고 다음 PR의 기준으로 사용합니다. 단위 2가 locale payload를
 바꾸므로 실제 공개는 후속 release 후보·published gate에서 확인하며 이번 설계에서
-version이나 게시 시점을 정하지 않습니다. B라면 승인된 안내만 별도 문서 PR로 반영합니다.
+version이나 게시 시점을 정하지 않습니다. B안의 문서 PR은 실행 계획에 포함하지 않습니다.
 상세 체크박스와 각 실제 revision은 TODO만 소유합니다.
 
 ### 2.5 호환성·위험·rollback
@@ -149,9 +149,19 @@ version이나 게시 시점을 정하지 않습니다. B라면 승인된 안내�
 - 문제가 생기면 해당 source 검사·회귀와 연결된 안내를 함께 되돌립니다. 공개된 검색
   안내 수정은 새 release로 배포하고 기존 tag·asset을 교체하지 않습니다.
 
+### 2.6 완료 조건
+
+설계 PR은 승인 기록·문서 검증·exact head의 수동 리뷰와 필수 Windows/Linux CI를
+확인하고 Origin/GitHub에 통합한 뒤 완료합니다. T-013은 두 구현 PR의 R-001~R-007
+검증과 통합까지 확인해야 완료합니다. Status `Accepted`는 설계 승인 상태이며 구현이나
+통합 완료를 뜻하지 않습니다. locale 안내의 공개는 별도 release 작업에서 확인합니다.
+
 ## 3. 변경 기록
 
 - 2026-09-28: PR #47 version 2의 세 리뷰·Windows #52·Linux #37 통과와 Origin merge
   `ed3438f`·GitHub fast-forward를 확인했습니다. T-021은 A 유지로 통합됐고, 선택 권고인
   fixture 표의 `SHA256SUMS` 404 명시는 이번 문서 변경에 반영합니다. 기존 PR #28
   운영 권고를 확인하고 T-013 비교 설계를 준비했습니다. 검사 강화의 사용자 합의는 대기 중입니다.
+- 2026-09-28: 사용자가 PR #48 version 1 head `7af3e86`의 T-013 A안을 선택했습니다.
+  Status를 `Accepted`로 바꾸고 승인 범위를 D-012와 연결했습니다. source 검사·회귀
+  구현 1 뒤 placeholder 정본·검증 구현 2를 진행하며 상세 검증·통합 상태는 TODO가 소유합니다.

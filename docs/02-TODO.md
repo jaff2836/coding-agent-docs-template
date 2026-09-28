@@ -15,10 +15,10 @@
 ## Current Milestone
 
 - **Name:** T-013 문서 운영 계약 회귀 방지 설계
-- **Goal:** source 연결·CLI·LF·공개 전 이력·placeholder의 검사 강화 범위를 합의함
+- **Goal:** 승인된 A안의 범위·두 구현 PR 순서를 검증·리뷰하고 설계 문서를 통합함
 - **Target:** `codex/t013-operation-contract-design` (Origin·GitHub `main` `ed3438f` 기준)
-- **Status:** In Progress — T-021은 PR #47로 통합됐습니다. 이 브랜치는 T-013 사용자 합의 전 Draft 설계이며 상세 실행·검증·통합 조건은 아래 항목이 소유합니다.
-- **다음 마일스톤:** T-013 A를 선택하면 source 검사·회귀와 placeholder 작업을 두 구현 PR로 진행합니다. B를 선택하면 안내를 별도 문서 PR로 반영합니다.
+- **Status:** In Progress — 사용자가 PR #48 version 1의 T-013 A안을 선택해 설계는 Accepted(D-012)입니다. 승인 기록을 반영한 새 head의 수동 리뷰·필수 CI·통합은 아직 확인 전이며 구현은 후속 PR로 진행합니다.
+- **다음 마일스톤:** 설계 통합 뒤 source 검사·회귀 구현 1, 이후 placeholder 정본·검증 구현 2를 진행합니다.
 
 ## 운영 규칙
 
@@ -36,21 +36,22 @@
 ## In Progress
 
 - [ ] **T-013 D-009 운영 계약 회귀 방지**
-  - 정본·범위: [2026-09-28-operation-contract-regression](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md)가 Intent·대안·R-001~R-007·호환성·PR 순서를 소유합니다. 실행 상태는 이 항목에서 관리합니다. 현재는 미합의 Draft이며 D-005·D-009 기준을 유지합니다.
+  - 정본·범위: [2026-09-28-operation-contract-regression](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md)가 Intent·대안·R-001~R-007·호환성·PR 순서를 소유합니다. 실행 상태는 이 항목에서 관리합니다. A안이 D-012로 승인됐으며 D-005·D-009와 기존 CLI·schema·inventory를 유지합니다. 설계 승인과 구현·통합을 구분합니다.
   - [x] PR #47 version 2 head `fc186b1` / base `4c743f1`의 세 리뷰와 exact CI 통과·실제 통합을 확인하고 T-021 완료를 아래에 기록했습니다. 선택 권고인 `SHA256SUMS` 404 표기는 정본에 반영했습니다.
   - [x] PR #28 version 2의 권고 `cmt_01m33dxsvpenytt4nndy29hwz9`와 D-009를 대조했습니다. 분석 스킬 source 연결·CLI 경계·placeholder 정본·source 이력 예외·LF 목적을 이번 설계에 포함하며 finding ID 정책은 T-014에 유지합니다.
   - [x] `ed3438f45977167390fd44aeddc6227d774fbccd` 임시 source에서 root 분석 pair의 동시 drift와 en grep 어휘 누락이 기존 검사를 통과함을 재현했습니다. 실제 en/ko export·wrapper 경계·실패 전달·반복 호출·준비 heading도 관찰했고 Git의 LF attribute를 확인했습니다. 제안 검사·Windows probe는 구현 전입니다.
   - [x] T-013 A 검사·회귀 강화(권고)와 B 설명 보강을 비교한 Draft를 준비했습니다. `design`·`review-round`의 root↔ko 차이는 강제 동등성 범위에서 제외했습니다.
-  - [x] 로컬 root docs·stable locale·docs 회귀 55건·diff 검사가 통과했습니다. 새 설계의 링크·절 참조와 기존 두 불변조건 5개 항목 동등성을 확인했습니다.
-  - [ ] 사용자 선택과 승인 범위를 설계 Metadata·PROJECT §8에 기록합니다. 합의 전에는 checker·payload·검색 명령을 변경하지 않습니다.
-  - [ ] 설계 PR의 수동 리뷰·exact head 필수 Windows/Linux CI와 Origin/GitHub 통합을 확인합니다.
-  - [ ] A 선택 시 구현 1: source 분석 스킬 연결·실제 wrapper 회귀와 CLI·LF·준비 entry 안내를 별도 PR로 구현·검증·통합합니다.
-  - [ ] A 선택 시 구현 2: locale별 검색 선언·참조·보관 안내, source locale 검사·독립 sentinel 회귀를 별도 PR로 구현·검증·통합합니다. B면 승인된 안내만 별도 문서 PR로 반영합니다.
-  - 완료 경계: 선택한 안의 구현·검증과 Origin/GitHub 통합을 확인해야 T-013을 닫습니다. A의 locale payload 변경을 공개하는 후속 release·version·게시 시점은 별도 작업이며 이 Draft로 완료 처리하지 않습니다.
+  - [x] version 1 head `7af3e86c1e6d82a556c3b82efdef9d376133934e`에서 로컬 root docs·stable locale·docs 회귀 55건·diff 검사가 통과했습니다. 새 설계의 링크·절 참조와 기존 두 불변조건 5개 항목 동등성을 확인했습니다. exact head의 Windows #54·Linux #39 CI도 통과했습니다.
+  - [x] 2026-09-28 사용자 선택 응답 “A: 검사·회귀 강화 (권고)”를 근거로 설계 Metadata를 Accepted로 바꾸고 PROJECT §8의 D-012에 승인 범위를 기록했습니다. B는 미선택 비교 근거입니다.
+  - [x] 승인 기록을 반영한 작업 트리의 로컬 문서·stable locale·docs 회귀 55건·diff 검사가 통과했습니다.
+  - [ ] 설계 PR #48 새 head의 수동 리뷰·필수 Windows/Linux CI와 Origin/GitHub 통합을 확인합니다.
+  - [ ] 구현 1: source 분석 스킬 연결·실제 wrapper 회귀와 CLI·LF·준비 entry 안내를 별도 PR로 구현·검증·통합합니다.
+  - [ ] 구현 2: locale별 검색 선언·참조·보관 안내, source locale 검사·독립 sentinel 회귀를 별도 PR로 구현·검증·통합합니다.
+  - 완료 경계: 두 구현 PR의 검증과 Origin/GitHub 통합을 확인해야 T-013을 닫습니다. locale payload 변경을 공개하는 후속 release·version·게시 시점은 별도 작업이며 설계 승인으로 완료 처리하지 않습니다.
 
 ## Next
 
-T-013의 합의된 설계를 통합한 뒤 해당 구현 PR을 진행합니다. T-014 리뷰 ID 정책은 다음 독립 후보로 유지하며 이번 설계에서 변경하지 않습니다.
+PR #48의 승인된 A안 설계를 통합한 뒤 T-013 source 검사·회귀 구현 1을 진행하고, 그 통합 뒤 placeholder 정본·검증 구현 2를 진행합니다. T-014 리뷰 ID 정책은 다음 독립 후보로 유지합니다.
 
 ## Blocked
 
@@ -74,7 +75,7 @@ T-013의 합의된 설계를 통합한 뒤 해당 구현 PR을 진행합니다. 
 | 9 | `codex/t026-document-status-ownership` | T-026: PROJECT §11·설계 Status 중복 정리 | **Integrated** — Origin PR #45 merge `9a7764b`와 GitHub `main` fast-forward 확인; C44-001 해소 |
 | 10 | `codex/t022-install-target-invariant` | T-022: 승인된 install 대상 계약을 REVIEW/BUGBOT 불변조건으로 등록 | **Integrated** — Origin PR #46 merge `4c743f1`와 GitHub `main` fast-forward 확인; C46-001 해소 |
 | 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 유지·변경을 비교·합의 | **Integrated** — Origin PR #47 merge `ed3438f`와 GitHub `main` fast-forward 확인; A 유지·별도 구현 없음 |
-| 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | **In Progress** — Draft 설계·A 권고; 사용자 합의·리뷰·통합 전. 선택한 구현은 별도 PR |
+| 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | **In Progress** — A 사용자 승인·Accepted(D-012); 새 head 리뷰·필수 CI·통합 전. 두 구현은 후속 PR |
 | 13 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
 
 - [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다.
