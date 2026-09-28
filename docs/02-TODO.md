@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-022 install 대상 불변조건 등록
-- **Goal:** 승인된 install 대상 보호 계약을 maintainer REVIEW·BUGBOT에서 같은 불변조건으로 확인함
-- **Target:** `codex/t022-install-target-invariant` (Origin·GitHub `main` `9a7764b` 기준)
-- **Status:** In Progress — T-026과 C44-001은 PR #45로 통합됐습니다. 이 브랜치의 정책 등록은 리뷰·통합 전이며 상세 범위·검증·완료 조건은 아래 T-022가 소유합니다.
-- **다음 마일스톤:** 정책 PR 통합 뒤 Backlog의 T-021 preflight 순서 설계를 평가합니다.
+- **Name:** T-021 install preflight 순서 설계
+- **Goal:** A안으로 합의한 현재 순서 유지 판단을 검증·리뷰하고 설계 문서를 통합함
+- **Target:** `codex/t021-install-preflight-order-design` (Origin·GitHub `main` `4c743f1` 기준)
+- **Status:** In Progress — 사용자가 PR #47 version 1의 A안을 선택해 설계는 Accepted입니다. 승인 기록을 반영한 새 head의 수동 리뷰·필수 CI·통합은 아직 확인 전이며 상세 상태는 아래 T-021이 소유합니다.
+- **다음 마일스톤:** T-021 통합 뒤 T-013 운영 계약 설계가 다음 후보입니다.
 
 ## 운영 규칙
 
@@ -35,20 +35,20 @@
 
 ## In Progress
 
-- [ ] **T-022 install 대상 불변조건 등록**
-  - 출처·범위: 기존 T-022와 2026-09-28 사용자의 리뷰 후 다음 작업 진행 요청에 따라 승인된 D-010을 maintainer 리뷰 불변조건으로 등록합니다. 상위 계약은 [install 대상 설계](./changes/2026-09-22-install-target-contract/01-CHANGE.md) R-001·R-002·§2.3이며 D-011의 기존 symlink·junction 경계도 유지합니다.
-  - 평가·선택: REVIEW의 일반 정확성·문서 계약 검사만으로 둘 수도 있지만, BUGBOT은 자신의 단일 파일에서 판단하므로 install 대상 보호를 두 불변조건 목록에 명시하는 안을 채택합니다. 기존 파일과 겹치지 않아도 비어 있지 않으면 거부하고, emptiness를 확인할 수 없으면 fail-closed합니다. 대상 검사 거부 시 tree를 보존하며, 빈 대상·읽기 전용 `adopt` 안내는 비어 있음 검사에서 거부한 경우로 한정합니다.
-  - 설계 범위: 이미 승인·구현된 계약의 문서 등록이므로 DESIGN §1의 작은 문서 변경 예외를 적용하고 새 제품 결정·설계를 만들지 않습니다. 대상 preflight의 release·archive 검증 뒤 순서와 오류 우선순위는 D-010 그대로이며, 순서 재설계는 별도 T-021입니다.
-  - 변경·검사: `docs/REVIEW.md` §6과 `.cursor/BUGBOT.md`의 `Install 대상 보존` 항목을 같은 문장으로 추가합니다. 기존 checker는 example을 제외한 전체 bullet 목록의 동등성을 검사하므로 코드·규칙 변경 없이 두 목록을 비교합니다. locale payload와 공개 asset은 이 maintainer 정책 변경에 포함되지 않습니다.
-  - 최초 등록 검증: PR #46 version 1 head `dc571d9677de44bc72635a8eec7e2a4b6fa08bc4`에서 전체 unittest 184건(Linux의 Windows 전용 2건 skip), root docs의 두 목록 5개 항목 동등성, stable locale·diff 검사가 통과했습니다. 새·빈 대상 성공, 비어 있지 않은 대상과 `.git` 대상 거부·tree 보존, unreadable·uninspectable 대상 fail-closed 회귀를 포함합니다. 정책 문장과 `install` → `_resolve_target_root`·`_require_empty_install_target` → `_write_members`의 실제 순서를 대조했습니다. exact head의 Windows #48·Linux #33 CI도 통과했습니다.
-  - C46-001 판정·수정: PR #46 version 1 head `dc571d9` / base `9a7764b`의 자동 리뷰와 Luna가 P3·confidence 0.90·blocking=true로 보고한 안내 범위 모호성을 수용했습니다. `_resolve_target_root`·`_link_kind`의 root·부모·검사 실패 메시지에는 `adopt` 안내가 없으므로, 두 불변조건에서 tree 보존은 대상 검사 거부에 적용하고 안내는 `_require_empty_install_target`의 비어 있음 검사 거부로 한정합니다. 기본 통과 기준은 충족하지만 이번 PR에서 문구를 수정하며, 새 head는 수동 재리뷰·필수 CI 확인 전입니다.
-  - 후속 문구 검증: root docs의 두 목록 5개 항목 일치, stable locale·docs 회귀 55건·diff 검사가 통과했습니다. installer 코드·locale payload는 수정하지 않았으며, 새 head의 전체 suite는 필수 CI에서 확인합니다.
-  - PR #45 인계: version 1 head `3281f0b` / base `b423c12`의 세 리뷰가 C44-001 해소와 새 finding 없음을 확인했습니다. T-026의 실제 Origin·GitHub 통합 완료는 아래 완료 항목에 반영합니다. 다음 release 기록에서는 PROJECT Metadata Status와 Current State의 공개 기준을 함께 확인하라는 권고를 유지합니다.
-  - 완료 조건: 승인된 D-010의 대상 거부·보존·안내가 두 리뷰 목록과 일치하고 관련 로컬 게이트·수동 리뷰·필수 Windows·Linux CI가 통과한 뒤 Origin·GitHub `main`에 통합되어야 합니다. 이 브랜치의 등록과 전역 통합 완료를 구분합니다.
+- [ ] **T-021 install preflight 순서 설계**
+  - 정본·범위: [2026-09-28-install-preflight-order](./changes/2026-09-28-install-preflight-order/01-CHANGE.md)가 Intent·대안·요구·호환성·완료 조건을 소유합니다. 상세 실행 상태는 이 항목에서 관리합니다. A안이 승인됐으며 D-010의 현재 순서·오류 우선순위를 유지합니다. 별도 구현·release는 필요하지 않습니다.
+  - [x] PR #46 version 2 head `e113dd1` / base `9a7764b`의 세 재리뷰와 CI를 확인하고 T-022·C46-001의 실제 통합 결과를 아래 완료 항목에 반영했습니다.
+  - [x] 기준 `4c743f149d726c692684f8f626e31fd74db34a73`에서 installer 호출자와 기존 계약을 대조하고, Linux의 기존 합성 release fixture 6개로 오류 우선순위·대상 검사·tree 보존·새/빈 대상 성공을 관찰했습니다. B안은 구현·실측 전입니다.
+  - [x] A 현재 순서 유지와 B 대상 검사 선행·쓰기 전 재검사를 비교한 Draft를 준비했습니다. 순서 변경 시 REVIEW §6·BUGBOT의 두 불변조건을 같은 구현 PR에서 갱신한다는 PR #46 인계를 Spec R-005에 반영했습니다.
+  - [x] version 1 head `978be1788fd3e2fc15c72ac823b8c04815e5fc0e`에서 로컬 root docs·stable locale·docs 회귀 55건·diff 검사가 통과했습니다. 새 설계의 링크·절 참조와 기존 두 불변조건 5개 항목 동등성을 확인했습니다. exact head의 Windows #51·Linux #36 CI도 통과했습니다.
+  - [x] 2026-09-28 사용자 대화 “A안으로 할게.”를 근거로 승인 범위를 설계 Metadata와 PROJECT §8에 기록했습니다. D-010 §2.3의 현재 순서를 유지하고 B안은 미선택 비교 근거로 보존합니다.
+  - [x] 승인 기록을 반영한 작업 트리의 로컬 root docs·stable locale·docs 회귀 55건·diff 검사가 통과했습니다.
+  - [ ] 승인 기록을 반영한 새 head의 수동 설계 리뷰·필수 Windows/Linux CI를 확인합니다.
+  - [ ] 설계 PR #47을 Origin·GitHub `main`에 통합한 뒤 별도 구현 없이 T-021을 종료합니다.
 
 ## Next
 
-다음 권고 작업은 Backlog의 T-021 install preflight 순서 설계입니다. 기존 D-010을 유지할지 먼저 합의하고, 변경을 채택하는 경우 구현은 승인 뒤 별도 PR로 진행합니다.
+T-021의 승인된 A안 설계를 통합한 뒤 다음 권고 작업은 Backlog의 T-013 운영 계약 회귀 방지 설계입니다. B안 구현은 현재 실행 범위에 포함하지 않습니다.
 
 ## Blocked
 
@@ -70,12 +70,10 @@
 | 7 | `codex/v233-candidate-record` | T-027: tag·draft candidate 검증과 인계 기록 | **Integrated** — Origin PR #43 merge `da4d6ae`와 GitHub `main` fast-forward 확인 |
 | 8 | `codex/v233-publication-record` | T-028: `v2.3.3` 공개·published 검증 | **Integrated** — Origin PR #44 merge `b423c12`와 GitHub `main` fast-forward 확인; immutable Latest·Linux published 통과 |
 | 9 | `codex/t026-document-status-ownership` | T-026: PROJECT §11·설계 Status 중복 정리 | **Integrated** — Origin PR #45 merge `9a7764b`와 GitHub `main` fast-forward 확인; C44-001 해소 |
-| 10 | `codex/t022-install-target-invariant` | T-022: 승인된 install 대상 계약을 REVIEW/BUGBOT 불변조건으로 등록 | **In Progress** — 두 목록에 같은 항목 등록; 리뷰·통합 전 |
-| 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
+| 10 | `codex/t022-install-target-invariant` | T-022: 승인된 install 대상 계약을 REVIEW/BUGBOT 불변조건으로 등록 | **Integrated** — Origin PR #46 merge `4c743f1`와 GitHub `main` fast-forward 확인; C46-001 해소 |
+| 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 유지·변경을 비교·합의 | **In Progress** — A안 사용자 승인·Accepted 기록; 새 head 리뷰·필수 CI·통합 전. 별도 구현·release 없음 |
 | 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
 | 13 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
-
-- [ ] **T-021 install preflight 순서 재설계** — release·archive 검증 뒤에 대상 preflight를 하는 D-010 §2.3을 유지할지, 대상 진단과 불필요한 다운로드를 우선할지 설계합니다. 신뢰 검증 순서와 오류 우선순위가 바뀌므로 설계 합의 전에는 구현하지 않습니다. PR #46 version 1 head `dc571d9`의 Claude 인계를 반영해, 순서를 바꾸는 구현 PR에서는 REVIEW §6·BUGBOT의 `Install 대상 보존` 두 사본도 함께 갱신하고 기존 checker로 동등성을 검증합니다.
 
 - [ ] **T-013 D-009 운영 계약 회귀 방지** — `project-analysis`에 한정한 source root↔`locales/ko` 사본 동등성 검사, source/artifact checker CLI 경계와 source changelog의 공개 전 heading 예외, root `.gitattributes`가 maintainer checkout의 LF를 고정하는 목적, locale별 placeholder 검색 어휘의 단일 출처·검증 방식을 함께 설계합니다. `design`·`review-round` skill 사본은 같은 동등성 계약으로 일반화하지 않습니다.
 - [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다.
@@ -88,6 +86,17 @@
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-022 install 대상 불변조건 등록**
+  - 출처·범위: 기존 T-022와 2026-09-28 사용자의 리뷰 후 다음 작업 진행 요청에 따라 승인된 D-010을 maintainer 리뷰 불변조건으로 등록합니다. 상위 계약은 [install 대상 설계](./changes/2026-09-22-install-target-contract/01-CHANGE.md) R-001·R-002·§2.3이며 D-011의 기존 symlink·junction 경계도 유지합니다.
+  - 평가·선택: REVIEW의 일반 정확성·문서 계약 검사만으로 둘 수도 있지만, BUGBOT은 자신의 단일 파일에서 판단하므로 install 대상 보호를 두 불변조건 목록에 명시하는 안을 채택합니다. 기존 파일과 겹치지 않아도 비어 있지 않으면 거부하고, emptiness를 확인할 수 없으면 fail-closed합니다. 대상 검사 거부 시 tree를 보존하며, 빈 대상·읽기 전용 `adopt` 안내는 비어 있음 검사에서 거부한 경우로 한정합니다.
+  - 설계 범위: 이미 승인·구현된 계약의 문서 등록이므로 DESIGN §1의 작은 문서 변경 예외를 적용하고 새 제품 결정·설계를 만들지 않습니다. 대상 preflight의 release·archive 검증 뒤 순서와 오류 우선순위는 D-010 그대로이며, 순서 재설계는 별도 T-021입니다.
+  - 변경·검사: `docs/REVIEW.md` §6과 `.cursor/BUGBOT.md`의 `Install 대상 보존` 항목을 같은 문장으로 추가합니다. 기존 checker는 example을 제외한 전체 bullet 목록의 동등성을 검사하므로 코드·규칙 변경 없이 두 목록을 비교합니다. locale payload와 공개 asset은 이 maintainer 정책 변경에 포함되지 않습니다.
+  - 최초 등록 검증: PR #46 version 1 head `dc571d9677de44bc72635a8eec7e2a4b6fa08bc4`에서 전체 unittest 184건(Linux의 Windows 전용 2건 skip), root docs의 두 목록 5개 항목 동등성, stable locale·diff 검사가 통과했습니다. 새·빈 대상 성공, 비어 있지 않은 대상과 `.git` 대상 거부·tree 보존, unreadable·uninspectable 대상 fail-closed 회귀를 포함합니다. 정책 문장과 `install` → `_resolve_target_root`·`_require_empty_install_target` → `_write_members`의 실제 순서를 대조했습니다. exact head의 Windows #48·Linux #33 CI도 통과했습니다.
+  - C46-001 판정·수정: PR #46 version 1 head `dc571d9` / base `9a7764b`의 자동 리뷰와 Luna가 P3·confidence 0.90·blocking=true로 보고한 안내 범위 모호성을 수용했습니다. `_resolve_target_root`·`_link_kind`의 root·부모·검사 실패 메시지에는 `adopt` 안내가 없으므로, 두 불변조건에서 tree 보존은 대상 검사 거부에 적용하고 안내는 `_require_empty_install_target`의 비어 있음 검사 거부로 한정합니다. version 1은 기본 통과 기준을 충족했지만 같은 PR에서 문구를 수정했고, version 2의 세 재리뷰가 해소와 새 finding 없음을 확인했습니다.
+  - 후속 문구 검증: root docs의 두 목록 5개 항목 일치, stable locale·docs 회귀 55건·diff 검사가 통과했습니다. installer 코드·locale payload는 수정하지 않았으며, version 2 exact head의 필수 CI와 두 독립 리뷰에서 전체 unittest 184건을 확인했습니다(Linux의 Windows 전용 2건 skip).
+  - PR #45 인계: version 1 head `3281f0b` / base `b423c12`의 세 리뷰가 C44-001 해소와 새 finding 없음을 확인했습니다. T-026의 실제 Origin·GitHub 통합 완료는 아래 완료 항목에 반영합니다. 다음 release 기록에서는 PROJECT Metadata Status와 Current State의 공개 기준을 함께 확인하라는 권고를 유지합니다.
+  - 통합 결과: PR #46 version 2 head `e113dd159a986633a87544866b164bbec6b2e7e5`을 Origin merge `4c743f149d726c692684f8f626e31fd74db34a73`에 통합하고 GitHub `main`에도 non-force fast-forward했습니다. exact head의 Windows #49·Linux #34 CI가 통과했습니다. C46-001은 해소됐으며 순서 변경 시 두 불변조건을 함께 갱신한다는 인계는 T-021 설계 범위에 연결합니다.
 
 - [x] **T-026 문서 상태 중복 정리**
   - 출처·범위: PR #41 version 1 head `d86bee8`의 C41-001에서 파생한 기존 T-026과 PR #44 version 1 head `2165887a43aef91455cf7f493edc7d43282c41d3` / base `da4d6aef4b817e396cf1400e912b233a66b58601`의 C44-001을 함께 처리합니다. PROJECT §11과 T-017 설계 Metadata를 기존 [DOCS_GUIDE §2·§4](./DOCS_GUIDE.md)에 맞추는 maintainer 문서 변경입니다.
