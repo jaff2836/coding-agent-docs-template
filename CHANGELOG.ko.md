@@ -6,6 +6,14 @@
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
 
+## v2.3.3 — Windows junction 경계와 installer 출력
+
+- **호환성:** Windows의 `v2.3.3` installer는 Python 3.12 이상을 요구하며, Python 3.11 이하는 release·대상 접근 전에 중단합니다. 이전 지원 범위를 유지하려면 `v2.3.2` release의 `installer.py` asset을 받아 `--version 2.3.2`로 실행하세요.
+- Windows installer는 대상·output·직접 부모·artifact member 검사 지점의 directory junction을 거부해 의도한 tree 밖으로 따라가지 않습니다.
+- `install`·`export`·`adopt`는 출력 인코딩으로 표현할 수 없는 경로를 메시지에서 escape하여 완료된 작업을 CLI 실패로 잘못 보고하지 않습니다.
+- `en`·`ko` 적용 가이드는 `git init` 순서, 새 경로·빈 디렉터리 설치 대상, 기존 직접 부모 조건을 설명합니다.
+- release candidate verifier는 package의 installer로 새·빈·비어 있지 않은 대상을 검사하고, 거부된 대상의 불변을 확인합니다.
+
 ## [v2.3.2](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.2) — 새 경로·빈 디렉터리 install 대상
 
 - `installer.py install`은 새 경로 또는 읽을 수 있는 빈 디렉터리만 허용하고, 비어 있지 않거나 읽을 수 없는 대상은 template member를 쓰기 전에 거부합니다.

@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-024 installer stdout 인코딩 후속
-- **Goal:** 비-UTF-8 stdout에서 설치·export·adopt 완료 뒤 출력 실패가 성공한 작업을 실패로 오인시키지 않도록 수정함
-- **Target:** `codex/t024-installer-stdout-encoding` (Origin·GitHub `main` `f236bf2` 기준)
-- **Status:** In Progress — T-020은 Origin PR #40 merge `f236bf2`와 GitHub `main`에 통합했습니다. T-024 구현 head `d86bee8`의 Buildkite Windows #35·Linux #20이 통과했고 Origin 통합 결과는 남아 있습니다.
-- **다음 마일스톤:** T-024 통합 뒤 T-017·T-020·T-023·T-024를 포함하는 다음 patch release 후보를 별도 작업으로 준비합니다.
+- **Name:** T-025 `v2.3.3` release 후보 준비
+- **Goal:** 통합된 T-017·T-020·T-023·T-024를 다음 patch release의 version·이력·package 후보로 정렬함
+- **Target:** `codex/v233-release-prep` (Origin·GitHub `main` `2901f1a` 기준)
+- **Status:** In Progress — T-024는 Origin PR #41 merge `2901f1a`와 GitHub `main`에 통합됐습니다. release-prep 브랜치에서 source 정렬과 로컬 검증을 진행합니다. tag·draft·공개 release는 아직 없습니다.
+- **다음 마일스톤:** release-prep 통합 뒤 exact source의 annotated tag·draft asset을 사람이 준비하고 candidate gate로 검증합니다. 공개와 published 검증은 별도 단계입니다.
 
 ## 운영 규칙
 
@@ -35,11 +35,11 @@
 
 ## In Progress
 
-- [ ] **T-024 installer stdout 인코딩 후속** — PR #39 v2 리뷰에서 제안됐습니다. 2026-09-26 `PYTHONIOENCODING=cp1252`와 한글 `--repo-root`로 `install`을 실행해 `AGENTS.md` 생성 뒤 `UnicodeEncodeError`와 종료 코드 1을 재현했습니다. `install`·`export`·`adopt`의 완료 결과와 종료 코드를 함께 검증하고 native Windows gate를 확인합니다. 작업 기준은 Origin·GitHub `main` `f236bf2`이며 T-020 안내나 공개 release asset 수정은 범위가 아닙니다.
+- [ ] **T-025 `v2.3.3` release 후보 준비** — Origin·GitHub `main` `2901f1a`에서 en·ko artifact version, source changelog와 artifact release history를 정렬하고 로컬 package·gate를 확인합니다. 이 작업은 tag·draft·공개 release를 생성하지 않습니다.
 
 ## Next
 
-T-024 통합 뒤 다음 patch release 후보를 준비합니다.
+T-025 통합 뒤 exact source의 tag·draft asset을 준비해 candidate gate를 실행합니다. 공개와 published 검증은 별도 단계입니다.
 
 ## Blocked
 
@@ -56,17 +56,19 @@ T-024 통합 뒤 다음 patch release 후보를 준비합니다.
 | 2 | `codex/t017-junction-boundary-implementation` | T-017: 승인된 경계와 native 회귀를 구현 | **Integrated** — Origin PR #38 merge `b5a9c4e`와 GitHub `main` fast-forward를 확인했습니다. 정확한 head의 Windows #27·Linux #12 CI가 통과했습니다. |
 | 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | **Integrated** — Origin PR #39 merge `b40630a`와 GitHub `main` fast-forward를 확인했습니다. Windows #30·Linux #15 CI가 통과했습니다. |
 | 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | **Integrated** — Origin PR #40 merge `f236bf2`와 GitHub `main` 반영 확인; 다음 patch release 후보 |
-| 5 | `codex/t024-installer-stdout-encoding` | T-024: 비-UTF-8 stdout에서 설치 후 거짓 실패 방지 | **In Progress** — 구현 head `d86bee8`의 Buildkite Windows #35·Linux #20 통과; Origin 통합 결과는 미확인 |
-| 6 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
-| 7 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
-| 8 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
-| 9 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
+| 5 | `codex/t024-installer-stdout-encoding` | T-024: 비-UTF-8 stdout에서 설치 후 거짓 실패 방지 | **Integrated** — Origin PR #41 merge `2901f1a`와 GitHub `main` fast-forward 확인; 다음 patch release 후보 |
+| 6 | `codex/v233-release-prep` | T-025: `v2.3.3` version·이력·package 후보 준비 | **In Progress** — 두 remote `main` `2901f1a` 기준; tag·draft·공개는 별도 단계 |
+| 7 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
+| 8 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
+| 9 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
+| 10 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
 
 - [ ] **T-021 install preflight 순서 재설계** — release·archive 검증 뒤에 대상 preflight를 하는 D-010 §2.3을 유지할지, 대상 진단과 불필요한 다운로드를 우선할지 설계합니다. 신뢰 검증 순서와 오류 우선순위가 바뀌므로 설계 합의 전에는 구현하지 않습니다.
 - [ ] **T-022 install 대상 불변조건 등록 평가** — 비어 있지 않거나 확인 불가한 대상에 template 파일을 추가하지 않는 규칙을 `docs/REVIEW.md`와 `.cursor/BUGBOT.md`의 project invariant로 올릴지 검토합니다. 채택하면 두 사본과 checker 계약을 함께 검증합니다.
 
 - [ ] **T-013 D-009 운영 계약 회귀 방지** — `project-analysis`에 한정한 source root↔`locales/ko` 사본 동등성 검사, source/artifact checker CLI 경계와 source changelog의 공개 전 heading 예외, root `.gitattributes`가 maintainer checkout의 LF를 고정하는 목적, locale별 placeholder 검색 어휘의 단일 출처·검증 방식을 함께 설계합니다. `design`·`review-round` skill 사본은 같은 동등성 계약으로 일반화하지 않습니다.
 - [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다.
+- [ ] **T-026 PROJECT §11 상태 중복 정리 평가** — Origin PR #41 version 1 head `d86bee8` 리뷰의 C41-001에서 파생한 별도 제안입니다. C41-001 자체는 version 3 `e06e823`에서 해소됐지만, PROJECT §11이 TODO의 작업별 상태를 반복해 PR #39~#41에서 불일치를 낳았습니다. 제품 결정은 유지하면서 §11을 실제 미해결 질문과 TODO 링크로 줄일지 결정하고, 채택 시 독립 PR에서 정리하거나 기각 근거를 기록합니다.
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
 
 ## Cancelled
@@ -76,6 +78,10 @@ T-024 통합 뒤 다음 patch release 후보를 준비합니다.
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-024 installer stdout 인코딩 후속**
+  - 통합 결과: 비-UTF-8 stdout에서 `install`·`export`·`adopt` 완료 메시지가 `UnicodeEncodeError`로 거짓 실패를 일으키지 않도록 한 PR #41 head `e06e823dd5d7401c9c6a6853096a788d24afb184`을 Origin merge `2901f1a545d40a14ea95ed243231acb7f3bfab34`에 통합하고 GitHub `main`에도 non-force fast-forward했습니다. 공개 `v2.3.2` asset은 변경하지 않았습니다.
+  - 검증 근거: 정확한 PR head의 Buildkite Windows #37·Linux #22가 통과했고, 전체 unittest 184건(Linux에서 Windows 전용 2건 skip), root docs·stable locale·`git diff --check`가 통과했습니다. PR #41 version 3 재리뷰에서 C41-001·C41-002 해소와 새 finding 없음이 확인됐습니다.
 
 - [x] **T-020 install onboarding 진단·안내 평가**
   - 통합 결과: `.git`만 있는 대상의 거부 안내, 새 프로젝트의 `git init` 순서와 직접 부모 조건을 Origin PR #40 merge `f236bf2278fcde83fe0c08ae1d9aa8e422d09a32`에 통합하고 GitHub `main`에도 반영했습니다. D-010의 새·빈 대상 계약과 공개 `v2.3.2` asset은 변경하지 않았습니다.

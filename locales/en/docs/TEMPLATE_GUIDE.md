@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.3.2
+- **Template version:** 2.3.3
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -345,6 +345,13 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v2.3.3 — Windows Junction Boundary and Install Guidance
+
+- On Windows, the selected release's separate `installer.py` requires Python 3.12 or newer and rejects directory junctions at its target, output, direct-parent, and artifact-member checks. Previously published installers retain their own support range.
+- The installer escapes path characters that its output encoding cannot represent, so a successful `install`, `export`, or `adopt` does not end with a false CLI failure.
+- The functional artifact guidance changes are in `docs/TEMPLATE_GUIDE.md`: the Windows Python 3.12 requirement, Windows directory junctions in the `blocked` adoption classification, installation before `git init`, using `adopt` for existing repositories, and the requirement that a new target's immediate parent already exist and not be a symlink or junction. Both guide documents carry the new template version.
+- Verify in the adopting repository: keep its existing files, use `adopt` to inspect changes, and use the selected release's installer for the documented boundary.
 
 ### v2.3.2 — New-or-Empty Install Target
 
