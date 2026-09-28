@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-028 `v2.3.3` 공개와 published 검증 기록
-- **Goal:** 검증된 기존 asset을 immutable Latest로 공개하고 공개 경로와 실제 지원 범위를 기록함
-- **Target:** `codex/v233-publication-record` (Origin·GitHub `main` `da4d6ae` 기준)
-- **Status:** In Progress — release 공개와 Linux published gate는 완료했습니다. 이 브랜치의 공개·지원 검증 기록은 리뷰·통합 전입니다. 상세 근거는 아래 T-028이 소유합니다.
-- **다음 마일스톤:** 기록 PR 통합 뒤 Backlog의 T-026 상태 중복 정리를 다음 독립 문서 작업으로 평가합니다.
+- **Name:** T-026 문서 상태 중복 정리
+- **Goal:** 기존 문서 소유권에 맞춰 미해결 판단·설계 승인 상태와 실행·공개 기록을 정리함
+- **Target:** `codex/t026-document-status-ownership` (Origin·GitHub `main` `b423c12` 기준)
+- **Status:** In Progress — T-028 공개·지원 검증 기록은 PR #44로 통합됐습니다. 이 브랜치는 C44-001과 반복된 상태 불일치의 원인을 정리하며 리뷰·통합 전입니다. 상세 근거는 아래 T-026이 소유합니다.
+- **다음 마일스톤:** 문서 정리 PR 통합 뒤 Backlog의 T-022 install 대상 불변조건 등록을 평가합니다.
 
 ## 운영 규칙
 
@@ -35,18 +35,17 @@
 
 ## In Progress
 
-- [ ] **T-028 `v2.3.3` 공개와 published 검증**
-  - 범위·위임: 2026-09-28 사용자가 `v2.3.3` 공개부터 다음 기록 PR 게시까지 명시적으로 위임했습니다. D-007의 수동 게시 단계로 기존 draft를 공개하고, tag source의 읽기 전용 verifier로 published gate를 실행했습니다.
-  - 공개 결과: [immutable Latest `v2.3.3`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.3)을 2026-09-28 03:01:47 UTC(12:01:47 KST)에 공개했습니다. `isDraft=false`, `isImmutable=true`, `isPrerelease=false`이며 GitHub Latest identity도 일치합니다. 기존 draft asset 5개의 ID·SHA-256은 게시 전후 동일합니다.
-  - source·ref: annotated tag의 exact source는 `989698d4070d7a9596117cf410362fea0b7f28bb`입니다. 공개·published 실행 시 Origin·GitHub `main`은 `da4d6aef4b817e396cf1400e912b233a66b58601`로 같았고 source는 그 조상이었습니다. 기록 PR의 source와 release의 source를 구분합니다.
-  - published 검증: clean exact tag source에서 `python3 scripts/verify-release.py published --version 2.3.3 --source-commit 989698d4070d7a9596117cf410362fea0b7f28bb --repository jaff2836/coding-agent-docs-template --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --base-version 2.3.2`가 exit 0으로 통과했습니다. Linux에서 tag source 자신의 verifier로 5개 asset byte·immutable Latest, latest·exact의 en·ko list/install/export/adopt, source export와의 동등성, `v2.3.2` base-aware upgrade 및 비어 있지 않은 install 대상의 거부·tree 불변을 확인했습니다.
-  - 검증 범위: 이번 원격 published E2E는 Linux에서 실행했습니다. Windows는 tag source와 같은 tree의 PR #42 head에서 Windows #40 CI·native junction 회귀가 통과한 근거를 유지하며, native Windows published E2E를 실행했다고 표시하지 않습니다.
-  - PR #43 version 1 인계: head `cb4bd84`의 세 리뷰 모두 새 finding이 없었고 Windows #42·Linux #27 CI가 통과했습니다. PROJECT Status·현재 공개 기준·D-011 공개 범위·§11과 en·ko README·changelog를 갱신합니다. 선택 제안인 draft target 변경은 기존 annotated tag와 exact-source 검증으로 게시 대상을 확인할 수 있어 현 상태를 유지했습니다.
-  - 완료 조건: 공개·지원 검증 기록의 로컬 게이트·리뷰·필수 CI를 확인하고 Origin·GitHub `main`에 기록 PR을 통합합니다.
+- [ ] **T-026 문서 상태 중복 정리**
+  - 출처·범위: PR #41 version 1 head `d86bee8`의 C41-001에서 파생한 기존 T-026과 PR #44 version 1 head `2165887a43aef91455cf7f493edc7d43282c41d3` / base `da4d6aef4b817e396cf1400e912b233a66b58601`의 C44-001을 함께 처리합니다. PROJECT §11과 T-017 설계 Metadata를 기존 [DOCS_GUIDE §2·§4](./DOCS_GUIDE.md)에 맞추는 maintainer 문서 변경입니다.
+  - C44-001 판정·이관: T-017 설계 Status의 `다음 release 반영 전`은 공개 후 잘못된 현재 상태입니다. 세 리뷰가 같은 P3를 확인했고 confidence는 0.90~0.95, blocking 판정은 서로 달랐습니다. P0·P1·Blocking P2가 없어 PR #44를 통과시켰으며 이 후속 작업에서 해소합니다. 영구 review deferral을 추가하지 않습니다.
+  - 정리 선택: PROJECT §11은 T-021·T-022·T-013·T-014의 미해결 판단과 TODO 링크만 유지합니다. 완료·통합·CI 상세를 반복하는 방식은 상태 변경 시 동기화 지점을 늘리므로 채택하지 않습니다. 이미 지정된 실행·공개 기록과 확정된 제품 결정은 각 정본에서 보존합니다.
+  - 설계 Metadata: T-017 Status를 승인 상태 `Accepted`만 표시하도록 바꿉니다. D-011의 요구·승인·결정과 날짜별 변경 기록은 유지합니다. 공개 상태는 PROJECT의 현재 기준·CHANGELOG·T-028 기록에서 확인하며, Metadata를 release마다 고치는 사본으로 쓰지 않습니다.
+  - 근거 보존: §11의 제품 결정은 PROJECT §1·§5·§8에, PR #37 final head `cc67e31`과 native CI 근거는 T-017 변경 기록·CI 문서에, T-020·T-023 등의 실제 통합은 해당 TODO 완료 항목에 이미 있습니다. 중복 문장을 제거해도 이 근거와 연결은 유지합니다.
+  - 완료 조건: C44-001의 오래된 현재 상태 문구가 제거되고, §11의 미해결 질문·정본 링크와 기존 제품 계약·이력이 일치해야 합니다. root docs·stable locale·docs test·diff 검사와 수동 리뷰·필수 CI를 확인한 뒤 Origin·GitHub `main`에 통합합니다. 이 브랜치의 수정·검증과 전역 통합 완료를 구분합니다.
 
 ## Next
 
-다음 권고 작업은 Backlog의 T-026 PROJECT §11 상태 중복 정리 평가입니다. 상세 범위와 완료 조건은 기존 T-026 항목이 소유하며 별도 작업으로 진행합니다.
+다음 권고 작업은 Backlog의 T-022 install 대상 불변조건 등록 평가입니다. 상세 범위와 완료 조건은 기존 T-022 항목이 소유합니다.
 
 ## Blocked
 
@@ -66,8 +65,8 @@
 | 5 | `codex/t024-installer-stdout-encoding` | T-024: 비-UTF-8 stdout에서 설치 후 거짓 실패 방지 | **Integrated** — Origin PR #41 merge `2901f1a`와 GitHub `main` fast-forward 확인; `v2.3.3` asset에 포함 |
 | 6 | `codex/v233-release-prep` | T-025: `v2.3.3` version·이력·package 후보 준비 | **Integrated** — Origin PR #42 merge `989698d`와 GitHub `main` fast-forward 확인 |
 | 7 | `codex/v233-candidate-record` | T-027: tag·draft candidate 검증과 인계 기록 | **Integrated** — Origin PR #43 merge `da4d6ae`와 GitHub `main` fast-forward 확인 |
-| 8 | `codex/v233-publication-record` | T-028: `v2.3.3` 공개·published 검증 | **In Progress** — immutable Latest·Linux published 통과; 기록 브랜치는 리뷰·통합 전 |
-| 9 | 독립 문서 정리 PR | T-026: PROJECT §11 상태 중복 정리 평가 | release 완료 후; 반복된 상태 불일치의 원인을 문서 소유권 관점에서 평가 |
+| 8 | `codex/v233-publication-record` | T-028: `v2.3.3` 공개·published 검증 | **Integrated** — Origin PR #44 merge `b423c12`와 GitHub `main` fast-forward 확인; immutable Latest·Linux published 통과 |
+| 9 | `codex/t026-document-status-ownership` | T-026: PROJECT §11·설계 Status 중복 정리 | **In Progress** — C44-001을 기존 문서 소유권으로 해소; 리뷰·통합 전 |
 | 10 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
 | 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
 | 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
@@ -78,7 +77,6 @@
 
 - [ ] **T-013 D-009 운영 계약 회귀 방지** — `project-analysis`에 한정한 source root↔`locales/ko` 사본 동등성 검사, source/artifact checker CLI 경계와 source changelog의 공개 전 heading 예외, root `.gitattributes`가 maintainer checkout의 LF를 고정하는 목적, locale별 placeholder 검색 어휘의 단일 출처·검증 방식을 함께 설계합니다. `design`·`review-round` skill 사본은 같은 동등성 계약으로 일반화하지 않습니다.
 - [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다.
-- [ ] **T-026 PROJECT §11 상태 중복 정리 평가** — Origin PR #41 version 1 head `d86bee8` 리뷰의 C41-001에서 파생한 별도 제안입니다. C41-001 자체는 version 3 `e06e823`에서 해소됐지만, PROJECT §11이 TODO의 작업별 상태를 반복해 PR #39~#41에서 불일치를 낳았습니다. release의 후보·공개 검증을 우선하고 완료 후 다음 문서 정리 후보로 평가합니다. 제품 결정은 유지하면서 §11을 실제 미해결 질문과 TODO 링크로 줄일지 결정하고, 채택 시 독립 PR에서 정리하거나 기각 근거를 기록합니다.
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
 
 ## Cancelled
@@ -88,6 +86,15 @@
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-028 `v2.3.3` 공개와 published 검증**
+  - 범위·위임: 2026-09-28 사용자가 `v2.3.3` 공개부터 다음 기록 PR 게시까지 명시적으로 위임했습니다. D-007의 수동 게시 단계로 기존 draft를 공개하고, tag source의 읽기 전용 verifier로 published gate를 실행했습니다.
+  - 공개 결과: [immutable Latest `v2.3.3`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.3)을 2026-09-28 03:01:47 UTC(12:01:47 KST)에 공개했습니다. `isDraft=false`, `isImmutable=true`, `isPrerelease=false`이며 GitHub Latest identity도 일치합니다. 기존 draft asset 5개의 ID·SHA-256은 게시 전후 동일합니다.
+  - source·ref: annotated tag의 exact source는 `989698d4070d7a9596117cf410362fea0b7f28bb`입니다. 공개·published 실행 시 Origin·GitHub `main`은 `da4d6aef4b817e396cf1400e912b233a66b58601`로 같았고 source는 그 조상이었습니다. 기록 PR의 source와 release의 source를 구분합니다.
+  - published 검증: clean exact tag source에서 `python3 scripts/verify-release.py published --version 2.3.3 --source-commit 989698d4070d7a9596117cf410362fea0b7f28bb --repository jaff2836/coding-agent-docs-template --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --base-version 2.3.2`가 exit 0으로 통과했습니다. Linux에서 tag source 자신의 verifier로 5개 asset byte·immutable Latest, latest·exact의 en·ko list/install/export/adopt, source export와의 동등성, `v2.3.2` base-aware upgrade 및 비어 있지 않은 install 대상의 거부·tree 불변을 확인했습니다.
+  - 검증 범위: 이번 원격 published E2E는 Linux에서 실행했습니다. Windows는 tag source와 같은 tree의 PR #42 head에서 Windows #40 CI·native junction 회귀가 통과한 근거를 유지하며, native Windows published E2E를 실행했다고 표시하지 않습니다.
+  - PR #43 version 1 인계: head `cb4bd84`의 세 리뷰 모두 새 finding이 없었고 Windows #42·Linux #27 CI가 통과했습니다. PROJECT Status·현재 공개 기준·D-011 공개 범위·§11과 en·ko README·changelog를 갱신합니다. 선택 제안인 draft target 변경은 기존 annotated tag와 exact-source 검증으로 게시 대상을 확인할 수 있어 현 상태를 유지했습니다.
+  - 통합 결과: PR #44 head `2165887a43aef91455cf7f493edc7d43282c41d3`을 Origin merge `b423c12db3a4d0771272736a81b5e67789a38293`에 통합하고 GitHub `main`에도 non-force fast-forward했습니다. exact head의 Windows #44·Linux #29 CI가 통과했습니다. 리뷰의 유일한 P3 C44-001은 T-026에서 해소하며 공개·published 성공 근거는 유지합니다.
 
 - [x] **T-027 `v2.3.3` draft candidate 검증과 기록**
   - 범위·위임: 2026-09-28 사용자 대화의 다음 작업 진행 요청에 따라 D-007의 수동 release 준비 단계로 annotated tag·draft asset을 준비하고 candidate gate를 실행했습니다. PR #43은 source changelog·TODO만 변경했고, 공개와 published 검증은 T-028이 소유합니다.
