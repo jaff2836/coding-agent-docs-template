@@ -12,7 +12,7 @@
 - **Template source:** https://github.com/jaff2836/coding-agent-docs-template
 - **Template revision:** release 검증 시 exact source commit으로 확정
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-22
+- **Last reviewed:** 2026-09-28
 - **Review cadence:** source·artifact 경계 또는 배포 계약 변경 시
 
 ## 1. Source와 artifact 구조
@@ -51,6 +51,24 @@ python3 scripts/check-docs.py
 python3 -m unittest discover -s tests -p 'test_check_docs.py' -v
 python3 scripts/check-locales.py --require-stable
 ```
+
+`scripts/check-docs.py`의 **무인자 실행**이 maintainer source 검사입니다.
+root `CHANGELOG.md`에서 현재 version 이력을 확인하고, top-level `locales/`와
+`template/`은 재귀 문서 탐색에서 제외합니다. `docs/locales/` 같은 중첩 경로는
+제외하지 않습니다. 별도로 root와 `locales/ko`의 `.agents`·`.claude`
+`project-analysis/SKILL.md` 네 사본이 byte-identical한지 확인하며, 파일 누락·
+읽기 실패·저장소 밖 경로·사본 차이는 실패로 진단합니다. `design`과
+`review-round`의 root↔ko 본문 차이는 이 동등성 검사 대상이 아닙니다.
+
+CLI 인자를 하나라도 주면 canonical artifact checker에 위임합니다.
+`--root <export된 artifact 경로>`는 artifact의 `docs/TEMPLATE_GUIDE.md` 이력을
+검사하고 source 제외 범위나 root↔ko 의존성을 사용하지 않습니다.
+`--root .`도 artifact 의미이므로 source 검사를 대신하지 않습니다.
+
+root [`.gitattributes`](../.gitattributes)의 `* text=auto eol=lf`는 Windows를
+포함한 maintainer checkout에서 텍스트를 LF로 유지합니다. payload source의
+UTF-8·LF·최종 newline은 locale 검사로도 확인합니다. 이 attribute 파일은
+artifact inventory에 포함되지 않으며 적용 프로젝트의 Git 설정을 바꾸지 않습니다.
 
 템플릿을 적용한 직후 실제 변경 폴더와 프로젝트 소유 문서에 남은
 placeholder를 확인합니다. 안내 문서와 `changes/_template/`은 설명·복사용
@@ -105,3 +123,12 @@ locale 가이드의 `Template source`, `Template version`, `Template revision`�
   root `CHANGELOG.md`를 만들거나 기존 형식을 덮어쓰지 않습니다.
 - 버전별 적용 변화는 locale `TEMPLATE_GUIDE.md` §6에 유지합니다. source
   changelog와 같은 이력을 이 문서에 다시 복제하지 않습니다.
+
+**Maintainer source의 공개 준비 예외:** version을 올리는 준비 commit에서는
+현재 version의 plain heading에 `미공개 후보` 또는 `unpublished candidate`를
+명시해 entry를 만들 수 있습니다. 공개 전에는 실제 release 링크나 공개 완료로
+표시하지 않습니다. 공개 후 실제 release 링크와 검증 결과를 반영합니다.
+빈 `Unreleased` 절을 기본으로 만들지 않습니다. 이 예외는 source 공개 준비에만
+적용하며, 적용 프로젝트의 locale `CHANGELOG_GUIDE.md`가 정한 공개 후 기록
+원칙은 유지합니다. 문서 checker의 heading 통과는 구조 확인이며 게시 완료
+근거는 candidate·published release gate에서 확인합니다.

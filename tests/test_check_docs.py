@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+import contextlib
 import importlib.util
+import io
+import os
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -32,6 +37,35 @@ CheckDocsTests = COMMON_TESTS.CheckDocsTests
 
 
 class MaintainerCheckDocsTests(unittest.TestCase):
+    def write_source(self, root: Path) -> None:
+        COMMON_TESTS.write_minimal_artifact(root)
+        for path in (
+            ".claude/skills/project-analysis/SKILL.md",
+            "locales/ko/.agents/skills/project-analysis/SKILL.md",
+            "locales/ko/.claude/skills/project-analysis/SKILL.md",
+        ):
+            COMMON_TESTS.write(root, path, "# Analysis\n")
+        COMMON_TESTS.write(
+            root, "docs/TEMPLATE_GUIDE.md",
+            "# Source Guide\n\n- **Template version:** 1.0.0\n",
+        )
+        COMMON_TESTS.write(
+            root, "CHANGELOG.md",
+            "# Releases\n\n<!-- template-section:release-history -->\n\n"
+            "## v1.0.0 — unpublished candidate\n",
+        )
+
+    def run_wrapper(self, root: Path, arguments: list[str]) -> tuple[int, str, str]:
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with (
+            patch.object(MAINTAINER_CHECKER, "REPOSITORY_ROOT", root),
+            contextlib.redirect_stdout(stdout),
+            contextlib.redirect_stderr(stderr),
+        ):
+            result = MAINTAINER_CHECKER.main(arguments)
+        return result, stdout.getvalue(), stderr.getvalue()
+
     def test_no_arguments_check_source_tree_with_payload_exclusions(self) -> None:
         MAINTAINER_CHECKER.CHECK_DOCS.HISTORY_PATH = "unexpected.md"
         with patch.object(
@@ -56,6 +90,209 @@ class MaintainerCheckDocsTests(unittest.TestCase):
             "docs/TEMPLATE_GUIDE.md",
         )
         artifact_main.assert_called_once_with(arguments)
+
+    def test_matching_analysis_copies_allow_other_source_skill_differences(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_source(root)
+            for name in ("design", "review-round"):
+                COMMON_TESTS.write(
+                    root, "locales/ko/.agents/skills/%s/SKILL.md" % name,
+                    "# Different locale contract\n",
+                )
+            result, stdout, stderr = self.run_wrapper(root, [])
+            self.assertEqual(result, 0, stderr)
+            self.assertIn("All checks passed", stdout)
+
+    def test_analysis_pair_drift_is_rejected_even_when_each_pair_matches(self) -> None:
+        for prefix in ("", "locales/ko/"):
+            with self.subTest(prefix=prefix), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                self.write_source(root)
+                for adapter in (".agents", ".claude"):
+                    COMMON_TESTS.write(
+                        root, prefix + adapter + "/skills/project-analysis/SKILL.md",
+                        "# Analysis\n\n## Metadata\n\n- **Owner:** Regression\n",
+                    )
+                result, stdout, stderr = self.run_wrapper(root, [])
+                self.assertEqual(result, 1)
+                self.assertIn("Source analysis skill copies differ", stderr)
+                self.assertIn(".agents/skills/project-analysis/SKILL.md", stderr)
+                self.assertIn("locales/ko/", stderr)
+                self.assertNotIn("All checks passed", stdout)
+
+    def test_missing_or_non_file_locale_analysis_copy_is_rejected(self) -> None:
+        for state in ("missing", "directory"):
+            with self.subTest(state=state), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                self.write_source(root)
+                path = root / "locales/ko/.agents/skills/project-analysis/SKILL.md"
+                path.unlink()
+                if state == "directory":
+                    path.mkdir()
+                result, stdout, stderr = self.run_wrapper(root, [])
+                self.assertEqual(result, 1)
+                self.assertIn("Cannot read source analysis skill locales/ko/", stderr)
+                self.assertNotIn("All checks passed", stdout)
+
+    def test_unreadable_locale_analysis_copy_reports_path_without_traceback(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_source(root)
+            target = (
+                root / "locales/ko/.agents/skills/project-analysis/SKILL.md"
+            ).resolve()
+            read_bytes = Path.read_bytes
+
+            def read_with_denial(path: Path) -> bytes:
+                if path == target:
+                    raise PermissionError("fixture access denied")
+                return read_bytes(path)
+
+            with patch.object(Path, "read_bytes", read_with_denial):
+                result, stdout, stderr = self.run_wrapper(root, [])
+            self.assertEqual(result, 1)
+            self.assertIn("locales/ko/.agents/skills/project-analysis/SKILL.md", stderr)
+            self.assertIn("fixture access denied", stderr)
+            self.assertNotIn("All checks passed", stdout)
+
+    def test_external_locale_analysis_copy_is_rejected_even_with_matching_bytes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory, \
+                tempfile.TemporaryDirectory() as outside:
+            root = Path(directory)
+            self.write_source(root)
+            external = Path(outside) / "SKILL.md"
+            path = root / "locales/ko/.agents/skills/project-analysis/SKILL.md"
+            external.write_bytes(path.read_bytes())
+            path.unlink()
+            COMMON_TESTS.CheckDocsTests.symlink_or_skip(self, path, external)
+            result, stdout, stderr = self.run_wrapper(root, [])
+            self.assertEqual(result, 1)
+            self.assertIn("Cannot read source analysis skill locales/ko/", stderr)
+            self.assertNotIn("All checks passed", stdout)
+
+    @unittest.skipUnless(os.name == "nt", "native Windows junction required")
+    def test_external_locale_analysis_directory_junction_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory, \
+                tempfile.TemporaryDirectory() as outside:
+            root = Path(directory)
+            self.write_source(root)
+            external = Path(outside)
+            link = root / "locales/ko/.agents/skills/project-analysis"
+            external.joinpath("SKILL.md").write_bytes(link.joinpath("SKILL.md").read_bytes())
+            link.joinpath("SKILL.md").unlink()
+            link.rmdir()
+            subprocess.run(
+                ["cmd.exe", "/c", "mklink", "/J", str(link), str(external)],
+                check=True, capture_output=True, timeout=15,
+            )
+            try:
+                self.assertTrue(link.is_junction())
+                result, stdout, stderr = self.run_wrapper(root, [])
+                self.assertEqual(result, 1)
+                self.assertIn("Cannot read source analysis skill locales/ko/", stderr)
+                self.assertNotIn("All checks passed", stdout)
+            finally:
+                os.rmdir(link)
+
+    def test_real_wrapper_alternates_source_and_artifact_without_state_leaks(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source"
+            artifact = Path(directory) / "artifact"
+            self.write_source(source)
+            COMMON_TESTS.write_minimal_artifact(artifact)
+            COMMON_TESTS.write(
+                artifact, "docs/TEMPLATE_GUIDE.md",
+                "# Artifact Guide\n\n- **Template version:** 1.0.0\n\n"
+                "## History\n<!-- template-section:release-history -->\n\n"
+                "### v1.0.0\n",
+            )
+            for tree in ("locales", "template"):
+                COMMON_TESTS.write(source, tree + "/BROKEN.md", "[bad](MISSING.md)\n")
+            checker = MAINTAINER_CHECKER.CHECK_DOCS
+            initial_root = checker.ROOT
+            initial_exclusions = checker.EXCLUDED_TOP_LEVEL_NAMES
+            for arguments, expected in (
+                ([], 0),
+                (["--root", str(artifact)], 0),
+                (["--root", str(source)], 1),
+                ([], 0),
+            ):
+                with self.subTest(arguments=arguments):
+                    result, _, stderr = self.run_wrapper(source, arguments)
+                    self.assertEqual(result, expected, stderr)
+                    if expected:
+                        self.assertIn("docs/TEMPLATE_GUIDE.md", stderr)
+                        self.assertIn("template-section:release-history", stderr)
+                    self.assertEqual(checker.ROOT, initial_root)
+                    self.assertEqual(checker.EXCLUDED_TOP_LEVEL_NAMES, initial_exclusions)
+            for tree in ("locales", "template"):
+                broken = tree + "/BROKEN.md"
+                COMMON_TESTS.write(artifact, broken, "[bad](MISSING.md)\n")
+                result, stdout, stderr = self.run_wrapper(
+                    source, ["--root", str(artifact)]
+                )
+                self.assertEqual(result, 1)
+                self.assertIn(broken, stderr)
+                self.assertNotIn("All checks passed", stdout)
+                self.assertEqual(self.run_wrapper(source, [])[0], 0)
+                artifact.joinpath(broken).unlink()
+            self.assertEqual(self.run_wrapper(source, ["--root", str(artifact)])[0], 0)
+
+    def test_real_checker_failure_codes_are_preserved(self) -> None:
+        for state, expected in (("broken link", 1), ("missing AGENTS.md", 2)):
+            with self.subTest(state=state), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                self.write_source(root)
+                if state == "broken link":
+                    COMMON_TESTS.write(root, "docs/BROKEN.md", "[bad](MISSING.md)\n")
+                else:
+                    root.joinpath("AGENTS.md").unlink()
+                result, stdout, stderr = self.run_wrapper(root, [])
+                self.assertEqual(result, expected, stderr)
+                self.assertNotIn("All checks passed", stdout)
+
+    def test_source_candidate_heading_does_not_allow_a_different_version(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_source(root)
+            self.assertEqual(self.run_wrapper(root, [])[0], 0)
+            history = root / "CHANGELOG.md"
+            history.write_text(
+                history.read_text(encoding="utf-8").replace("v1.0.0", "v0.9.0"),
+                encoding="utf-8",
+            )
+            result, _, stderr = self.run_wrapper(root, [])
+            self.assertEqual(result, 1)
+            self.assertIn("Current version is absent from CHANGELOG.md history: 1.0.0", stderr)
+
+    def test_source_git_attributes_keep_maintainer_and_payload_paths_lf(self) -> None:
+        paths = (
+            "AGENTS.md", "scripts/check-docs.py",
+            "template/common/scripts/check-docs.py", "locales/ko/docs/TEMPLATE_GUIDE.md",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            root.joinpath(".gitattributes").write_bytes(
+                REPOSITORY_ROOT.joinpath(".gitattributes").read_bytes()
+            )
+            subprocess.run(
+                ["git", "init", "--quiet", str(root)], check=True, capture_output=True,
+            )
+            result = subprocess.run(
+                ["git", "-c", "core.attributesFile=", "check-attr", "-z",
+                 "text", "eol", "--", *paths],
+                cwd=root, env=dict(os.environ, GIT_ATTR_NOSYSTEM="1"),
+                check=True, capture_output=True,
+            )
+            fields = result.stdout.decode("utf-8").split("\0")[:-1]
+            attributes = {
+                (fields[i], fields[i + 1]): fields[i + 2]
+                for i in range(0, len(fields), 3)
+            }
+            for path in paths:
+                self.assertEqual(attributes[path, "text"], "auto")
+                self.assertEqual(attributes[path, "eol"], "lf")
 
 
 if __name__ == "__main__":
