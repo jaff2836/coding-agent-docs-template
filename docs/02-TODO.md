@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-025 `v2.3.3` release 후보 준비
-- **Goal:** 통합된 T-017·T-020·T-023·T-024를 다음 patch release의 version·이력·package 후보로 정렬함
-- **Target:** `codex/v233-release-prep` (Origin·GitHub `main` `2901f1a` 기준)
-- **Status:** In Progress — T-024는 Origin PR #41 merge `2901f1a`와 GitHub `main`에 통합됐습니다. release-prep 브랜치에서 source 정렬과 로컬 검증을 진행합니다. tag·draft·공개 release는 아직 없습니다.
-- **다음 마일스톤:** release-prep 통합 뒤 exact source의 annotated tag·draft asset을 사람이 준비하고 candidate gate로 검증합니다. 공개와 published 검증은 별도 단계입니다.
+- **Name:** T-027 `v2.3.3` draft candidate 검증과 기록
+- **Goal:** T-025의 통합 source를 annotated tag·draft asset과 결합해 검증하고 리뷰 인계 항목을 반영함
+- **Target:** `codex/v233-candidate-record` (Origin·GitHub `main` `989698d` 기준)
+- **Status:** In Progress — T-025는 Origin PR #42 merge와 GitHub `main`에 통합됐습니다. `v2.3.3` tag·draft의 candidate gate는 통과했고, 이 브랜치의 기록은 리뷰·통합 전입니다. 상세 근거는 아래 T-027이 소유합니다.
+- **다음 마일스톤:** 기록 PR 통합 뒤 T-028에서 별도 명시 요청에 따라 검증된 draft asset을 공개하고 published gate를 실행합니다.
 
 ## 운영 규칙
 
@@ -35,11 +35,17 @@
 
 ## In Progress
 
-- [ ] **T-025 `v2.3.3` release 후보 준비** — Origin·GitHub `main` `2901f1a`에서 en·ko artifact version, source changelog와 artifact release history를 정렬하고 로컬 package·gate를 확인합니다. 이 작업은 tag·draft·공개 release를 생성하지 않습니다.
+- [ ] **T-027 `v2.3.3` draft candidate 검증과 기록**
+  - 범위·위임: 2026-09-28 사용자 대화의 다음 작업 진행 요청에 따라 D-007의 수동 release 준비 단계로 annotated tag·draft asset을 준비하고 candidate gate를 실행했습니다. 이 기록 브랜치는 source changelog·TODO만 변경하며, 공개와 published 검증은 T-028이 소유합니다.
+  - 확인한 source·ref: exact clean source `989698d4070d7a9596117cf410362fea0b7f28bb`에 local·GitHub annotated `v2.3.3` tag를 결합했습니다. candidate 실행 시 Origin·GitHub `main`도 같은 commit이었습니다. source tree는 리뷰를 통과한 PR #42 head `cdbe374465f6b676416a4ce73d29631b11ebcaf1`과 같습니다.
+  - candidate 검증: `python3 scripts/verify-release.py candidate --version 2.3.3 --source-commit 989698d4070d7a9596117cf410362fea0b7f28bb --repository jaff2836/coding-agent-docs-template`가 exit 0으로 통과했습니다. 전체 unittest·root docs·stable locale·diff 검사, 반복 package byte 동등성, 두 remote·annotated tag와 [GitHub draft](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/untagged-fa36032df7d0e1a9c78e)의 5개 asset 동등성을 확인했습니다. draft는 `isDraft=true`, `isImmutable=false`, `isPrerelease=false`, `publishedAt=null`입니다.
+  - version 선택 근거: PR #42가 준비한 `v2.3.3` patch를 유지합니다. 명령 집합·manifest schema 2·locale artifact inventory는 유지하고, D-011 경계 강제와 출력 실패·안내·검증 회귀를 묶습니다. Windows Python 3.12 미만의 실행 중단은 호환성 변화이므로 changelog와 draft notes에 명시합니다. patch 선택을 모든 기존 환경의 호환성 보장으로 해석하지 않습니다.
+  - PR #42 version 2 인계: C42-001·C42-002는 해소됐고 새 finding은 없습니다. 별도 비차단 권고였던 version 선택 근거는 이 항목에, Python 업그레이드 우선 안내와 구버전 대안의 수정 누락은 en·ko source changelog 및 draft notes에 반영했습니다. T-026은 release 완료 후의 다음 문서 정리 후보로 우선순위를 올립니다.
+  - 완료 조건: candidate 성공 근거와 인계 문서의 검증·리뷰를 확인하고 Origin·GitHub `main`에 기록 PR을 통합합니다. candidate 통과는 공개 또는 Windows의 원격 published E2E 완료를 뜻하지 않습니다.
 
 ## Next
 
-T-025 통합 뒤 exact source의 tag·draft asset을 준비해 candidate gate를 실행합니다. 공개와 published 검증은 별도 단계입니다.
+- [ ] **T-028 `v2.3.3` 공개와 published 검증** — T-027 기록 PR 통합과 별도 공개 요청 뒤 검증된 기존 5개 draft asset을 그대로 immutable Latest로 공개합니다. 같은 exact tag source에서 `published --base-version 2.3.2`로 latest·exact의 en·ko 경로와 base-aware upgrade를 검증하고, 공개 기록은 별도 PR로 통합합니다.
 
 ## Blocked
 
@@ -48,7 +54,7 @@ T-025 통합 뒤 exact source의 tag·draft asset을 준비해 candidate gate를
 ## Backlog
 
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
-설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다. `v2.3.2`의 공개는 D-007 경계에 따라 수행했고, 검증·기록은 별도 PR로 분리합니다.
+설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다. `v2.3.3`의 candidate 검증과 공개·published 검증은 D-007 경계에 따라 단계와 기록 PR을 분리합니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
@@ -57,18 +63,21 @@ T-025 통합 뒤 exact source의 tag·draft asset을 준비해 candidate gate를
 | 3 | `codex/t023-release-verifier-contract-regression` | T-023: 실제 installer와 verifier의 설치 거부 계약을 release 전 회귀로 연결 | **Integrated** — Origin PR #39 merge `b40630a`와 GitHub `main` fast-forward를 확인했습니다. Windows #30·Linux #15 CI가 통과했습니다. |
 | 4 | `codex/t020-install-onboarding-guidance` | T-020: C34-001과 parent-directory 안내 권고를 진단·문서·회귀로 평가 | **Integrated** — Origin PR #40 merge `f236bf2`와 GitHub `main` 반영 확인; 다음 patch release 후보 |
 | 5 | `codex/t024-installer-stdout-encoding` | T-024: 비-UTF-8 stdout에서 설치 후 거짓 실패 방지 | **Integrated** — Origin PR #41 merge `2901f1a`와 GitHub `main` fast-forward 확인; 다음 patch release 후보 |
-| 6 | `codex/v233-release-prep` | T-025: `v2.3.3` version·이력·package 후보 준비 | **In Progress** — 두 remote `main` `2901f1a` 기준; tag·draft·공개는 별도 단계 |
-| 7 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
-| 8 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
-| 9 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
-| 10 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
+| 6 | `codex/v233-release-prep` | T-025: `v2.3.3` version·이력·package 후보 준비 | **Integrated** — Origin PR #42 merge `989698d`와 GitHub `main` fast-forward 확인 |
+| 7 | `codex/v233-candidate-record` | T-027: tag·draft candidate 검증과 인계 기록 | **In Progress** — `989698d` candidate 통과; 기록 브랜치는 리뷰·통합 전 |
+| 8 | 공개 후 기록 PR | T-028: `v2.3.3` 공개·published 검증 | T-027 기록 통합과 별도 공개 요청; 검증된 asset 그대로 게시 |
+| 9 | 독립 문서 정리 PR | T-026: PROJECT §11 상태 중복 정리 평가 | release 완료 후; 반복된 상태 불일치의 원인을 문서 소유권 관점에서 평가 |
+| 10 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
+| 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
+| 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
+| 13 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
 
 - [ ] **T-021 install preflight 순서 재설계** — release·archive 검증 뒤에 대상 preflight를 하는 D-010 §2.3을 유지할지, 대상 진단과 불필요한 다운로드를 우선할지 설계합니다. 신뢰 검증 순서와 오류 우선순위가 바뀌므로 설계 합의 전에는 구현하지 않습니다.
 - [ ] **T-022 install 대상 불변조건 등록 평가** — 비어 있지 않거나 확인 불가한 대상에 template 파일을 추가하지 않는 규칙을 `docs/REVIEW.md`와 `.cursor/BUGBOT.md`의 project invariant로 올릴지 검토합니다. 채택하면 두 사본과 checker 계약을 함께 검증합니다.
 
 - [ ] **T-013 D-009 운영 계약 회귀 방지** — `project-analysis`에 한정한 source root↔`locales/ko` 사본 동등성 검사, source/artifact checker CLI 경계와 source changelog의 공개 전 heading 예외, root `.gitattributes`가 maintainer checkout의 LF를 고정하는 목적, locale별 placeholder 검색 어휘의 단일 출처·검증 방식을 함께 설계합니다. `design`·`review-round` skill 사본은 같은 동등성 계약으로 일반화하지 않습니다.
 - [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다.
-- [ ] **T-026 PROJECT §11 상태 중복 정리 평가** — Origin PR #41 version 1 head `d86bee8` 리뷰의 C41-001에서 파생한 별도 제안입니다. C41-001 자체는 version 3 `e06e823`에서 해소됐지만, PROJECT §11이 TODO의 작업별 상태를 반복해 PR #39~#41에서 불일치를 낳았습니다. 제품 결정은 유지하면서 §11을 실제 미해결 질문과 TODO 링크로 줄일지 결정하고, 채택 시 독립 PR에서 정리하거나 기각 근거를 기록합니다.
+- [ ] **T-026 PROJECT §11 상태 중복 정리 평가** — Origin PR #41 version 1 head `d86bee8` 리뷰의 C41-001에서 파생한 별도 제안입니다. C41-001 자체는 version 3 `e06e823`에서 해소됐지만, PROJECT §11이 TODO의 작업별 상태를 반복해 PR #39~#41에서 불일치를 낳았습니다. release의 후보·공개 검증을 우선하고 완료 후 다음 문서 정리 후보로 평가합니다. 제품 결정은 유지하면서 §11을 실제 미해결 질문과 TODO 링크로 줄일지 결정하고, 채택 시 독립 PR에서 정리하거나 기각 근거를 기록합니다.
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
 
 ## Cancelled
@@ -78,6 +87,10 @@ T-025 통합 뒤 exact source의 tag·draft asset을 준비해 candidate gate를
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-025 `v2.3.3` release 후보 준비**
+  - 통합 결과: en·ko artifact version·release history와 source changelog를 정렬한 PR #42 head `cdbe374465f6b676416a4ce73d29631b11ebcaf1`을 Origin merge `989698d4070d7a9596117cf410362fea0b7f28bb`에 통합하고 GitHub `main`에도 non-force fast-forward했습니다. tag·draft candidate 검증은 후속 T-027, 공개·published 검증은 T-028이 소유합니다.
+  - 검증 근거: exact PR head의 Buildkite Windows #40·Linux #25가 통과했고, root docs·stable locale·docs test 55건·en/ko export와 artifact docs 검사를 확인했습니다. 같은 source의 package 2회가 5개 asset 모두 byte-identical했고, version 2 리뷰에서 C42-001·C42-002 해소와 새 finding 없음이 확인됐습니다.
 
 - [x] **T-024 installer stdout 인코딩 후속**
   - 통합 결과: 비-UTF-8 stdout에서 `install`·`export`·`adopt` 완료 메시지가 `UnicodeEncodeError`로 거짓 실패를 일으키지 않도록 한 PR #41 head `e06e823dd5d7401c9c6a6853096a788d24afb184`을 Origin merge `2901f1a545d40a14ea95ed243231acb7f3bfab34`에 통합하고 GitHub `main`에도 non-force fast-forward했습니다. 공개 `v2.3.2` asset은 변경하지 않았습니다.
