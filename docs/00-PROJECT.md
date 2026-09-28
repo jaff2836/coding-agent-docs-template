@@ -203,7 +203,6 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 실행 상태와 우선순위는 [전역 TODO](./02-TODO.md)가 소유합니다. 이 절에는 미해결 판단만 남기며, 확정된 계약은 §8 Decisions와 연결된 설계에서 확인합니다.
 
 - `install`의 대상 preflight를 release·archive 검증보다 먼저 수행할지, D-010의 신뢰 검증 순서와 오류 우선순위를 유지할지 결정해야 합니다. 대상 진단과 불필요한 다운로드의 trade-off는 [TODO T-021](./02-TODO.md#backlog)이 소유합니다.
-- 비어 있지 않거나 확인 불가한 install 대상에 파일을 추가하지 않는 규칙을 REVIEW·BUGBOT의 project invariant로 올릴지 평가해야 합니다. 두 사본과 checker 계약에 미치는 영향은 [TODO T-022](./02-TODO.md#backlog)이 소유합니다.
 - source/artifact checker 경계·LF·placeholder 계약의 회귀 방지 범위는 [TODO T-013](./02-TODO.md#backlog), 병렬 리뷰 finding ID 충돌 방지 정책은 [TODO T-014](./02-TODO.md#backlog)에서 합의해야 합니다.
 
 ## 12. Rejected or Deferred Ideas

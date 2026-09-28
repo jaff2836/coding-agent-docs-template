@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-026 문서 상태 중복 정리
-- **Goal:** 기존 문서 소유권에 맞춰 미해결 판단·설계 승인 상태와 실행·공개 기록을 정리함
-- **Target:** `codex/t026-document-status-ownership` (Origin·GitHub `main` `b423c12` 기준)
-- **Status:** In Progress — T-028 공개·지원 검증 기록은 PR #44로 통합됐습니다. 이 브랜치는 C44-001과 반복된 상태 불일치의 원인을 정리하며 리뷰·통합 전입니다. 상세 근거는 아래 T-026이 소유합니다.
-- **다음 마일스톤:** 문서 정리 PR 통합 뒤 Backlog의 T-022 install 대상 불변조건 등록을 평가합니다.
+- **Name:** T-022 install 대상 불변조건 등록
+- **Goal:** 승인된 install 대상 보호 계약을 maintainer REVIEW·BUGBOT에서 같은 불변조건으로 확인함
+- **Target:** `codex/t022-install-target-invariant` (Origin·GitHub `main` `9a7764b` 기준)
+- **Status:** In Progress — T-026과 C44-001은 PR #45로 통합됐습니다. 이 브랜치의 정책 등록은 리뷰·통합 전이며 상세 범위·검증·완료 조건은 아래 T-022가 소유합니다.
+- **다음 마일스톤:** 정책 PR 통합 뒤 Backlog의 T-021 preflight 순서 설계를 평가합니다.
 
 ## 운영 규칙
 
@@ -35,17 +35,18 @@
 
 ## In Progress
 
-- [ ] **T-026 문서 상태 중복 정리**
-  - 출처·범위: PR #41 version 1 head `d86bee8`의 C41-001에서 파생한 기존 T-026과 PR #44 version 1 head `2165887a43aef91455cf7f493edc7d43282c41d3` / base `da4d6aef4b817e396cf1400e912b233a66b58601`의 C44-001을 함께 처리합니다. PROJECT §11과 T-017 설계 Metadata를 기존 [DOCS_GUIDE §2·§4](./DOCS_GUIDE.md)에 맞추는 maintainer 문서 변경입니다.
-  - C44-001 판정·이관: T-017 설계 Status의 `다음 release 반영 전`은 공개 후 잘못된 현재 상태입니다. 세 리뷰가 같은 P3를 확인했고 confidence는 0.90~0.95, blocking 판정은 서로 달랐습니다. P0·P1·Blocking P2가 없어 PR #44를 통과시켰으며 이 후속 작업에서 해소합니다. 영구 review deferral을 추가하지 않습니다.
-  - 정리 선택: PROJECT §11은 T-021·T-022·T-013·T-014의 미해결 판단과 TODO 링크만 유지합니다. 완료·통합·CI 상세를 반복하는 방식은 상태 변경 시 동기화 지점을 늘리므로 채택하지 않습니다. 이미 지정된 실행·공개 기록과 확정된 제품 결정은 각 정본에서 보존합니다.
-  - 설계 Metadata: T-017 Status를 승인 상태 `Accepted`만 표시하도록 바꿉니다. D-011의 요구·승인·결정과 날짜별 변경 기록은 유지합니다. 공개 상태는 PROJECT의 현재 기준·CHANGELOG·T-028 기록에서 확인하며, Metadata를 release마다 고치는 사본으로 쓰지 않습니다.
-  - 근거 보존: §11의 제품 결정은 PROJECT §1·§5·§8에, PR #37 final head `cc67e31`과 native CI 근거는 T-017 변경 기록·CI 문서에, T-020·T-023 등의 실제 통합은 해당 TODO 완료 항목에 이미 있습니다. 중복 문장을 제거해도 이 근거와 연결은 유지합니다.
-  - 완료 조건: C44-001의 오래된 현재 상태 문구가 제거되고, §11의 미해결 질문·정본 링크와 기존 제품 계약·이력이 일치해야 합니다. root docs·stable locale·docs test·diff 검사와 수동 리뷰·필수 CI를 확인한 뒤 Origin·GitHub `main`에 통합합니다. 이 브랜치의 수정·검증과 전역 통합 완료를 구분합니다.
+- [ ] **T-022 install 대상 불변조건 등록**
+  - 출처·범위: 기존 T-022와 2026-09-28 사용자의 리뷰 후 다음 작업 진행 요청에 따라 승인된 D-010을 maintainer 리뷰 불변조건으로 등록합니다. 상위 계약은 [install 대상 설계](./changes/2026-09-22-install-target-contract/01-CHANGE.md) R-001·R-002·§2.3이며 D-011의 기존 symlink·junction 경계도 유지합니다.
+  - 평가·선택: REVIEW의 일반 정확성·문서 계약 검사만으로 둘 수도 있지만, BUGBOT은 자신의 단일 파일에서 판단하므로 install 대상 보호를 두 불변조건 목록에 명시하는 안을 채택합니다. 기존 파일과 겹치지 않아도 비어 있지 않으면 거부하고, emptiness를 확인할 수 없으면 fail-closed하며, 거부 시 tree 보존과 빈 대상·읽기 전용 `adopt` 안내를 함께 적습니다.
+  - 설계 범위: 이미 승인·구현된 계약의 문서 등록이므로 DESIGN §1의 작은 문서 변경 예외를 적용하고 새 제품 결정·설계를 만들지 않습니다. 대상 preflight의 release·archive 검증 뒤 순서와 오류 우선순위는 D-010 그대로이며, 순서 재설계는 별도 T-021입니다.
+  - 변경·검사: `docs/REVIEW.md` §6과 `.cursor/BUGBOT.md`의 `Install 대상 보존` 항목을 같은 문장으로 추가합니다. 기존 checker는 example을 제외한 전체 bullet 목록의 동등성을 검사하므로 코드·규칙 변경 없이 두 목록을 비교합니다. locale payload와 공개 asset은 이 maintainer 정책 변경에 포함되지 않습니다.
+  - 로컬 검증: 기존 installer의 새·빈 대상 성공, 비어 있지 않은 대상과 `.git` 대상 거부·tree 보존, unreadable·uninspectable 대상 fail-closed 회귀를 포함한 전체 unittest 184건이 통과했습니다(Linux의 Windows 전용 2건 skip). root docs의 두 목록 5개 항목 동등성, stable locale·diff 검사도 통과했습니다. 정책 문장과 `install` → `_resolve_target_root`·`_require_empty_install_target` → `_write_members`의 실제 순서를 대조했습니다.
+  - PR #45 인계: version 1 head `3281f0b` / base `b423c12`의 세 리뷰가 C44-001 해소와 새 finding 없음을 확인했습니다. T-026의 실제 Origin·GitHub 통합 완료는 아래 완료 항목에 반영합니다. 다음 release 기록에서는 PROJECT Metadata Status와 Current State의 공개 기준을 함께 확인하라는 권고를 유지합니다.
+  - 완료 조건: 승인된 D-010의 대상 거부·보존·안내가 두 리뷰 목록과 일치하고 관련 로컬 게이트·수동 리뷰·필수 Windows·Linux CI가 통과한 뒤 Origin·GitHub `main`에 통합되어야 합니다. 이 브랜치의 등록과 전역 통합 완료를 구분합니다.
 
 ## Next
 
-다음 권고 작업은 Backlog의 T-022 install 대상 불변조건 등록 평가입니다. 상세 범위와 완료 조건은 기존 T-022 항목이 소유합니다.
+다음 권고 작업은 Backlog의 T-021 install preflight 순서 설계입니다. 기존 D-010을 유지할지 먼저 합의하고, 변경을 채택하는 경우 구현은 승인 뒤 별도 PR로 진행합니다.
 
 ## Blocked
 
@@ -66,14 +67,13 @@
 | 6 | `codex/v233-release-prep` | T-025: `v2.3.3` version·이력·package 후보 준비 | **Integrated** — Origin PR #42 merge `989698d`와 GitHub `main` fast-forward 확인 |
 | 7 | `codex/v233-candidate-record` | T-027: tag·draft candidate 검증과 인계 기록 | **Integrated** — Origin PR #43 merge `da4d6ae`와 GitHub `main` fast-forward 확인 |
 | 8 | `codex/v233-publication-record` | T-028: `v2.3.3` 공개·published 검증 | **Integrated** — Origin PR #44 merge `b423c12`와 GitHub `main` fast-forward 확인; immutable Latest·Linux published 통과 |
-| 9 | `codex/t026-document-status-ownership` | T-026: PROJECT §11·설계 Status 중복 정리 | **In Progress** — C44-001을 기존 문서 소유권으로 해소; 리뷰·통합 전 |
-| 10 | `codex/t022-install-target-invariant` | T-022: install 대상 경계를 REVIEW/BUGBOT 불변조건으로 올릴지 결정·반영 | 리뷰 정책과 두 사본의 동시 변경·검사 필요 |
+| 9 | `codex/t026-document-status-ownership` | T-026: PROJECT §11·설계 Status 중복 정리 | **Integrated** — Origin PR #45 merge `9a7764b`와 GitHub `main` fast-forward 확인; C44-001 해소 |
+| 10 | `codex/t022-install-target-invariant` | T-022: 승인된 install 대상 계약을 REVIEW/BUGBOT 불변조건으로 등록 | **In Progress** — 두 목록에 같은 항목 등록; 리뷰·통합 전 |
 | 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 변경의 보안·진단 trade-off를 설계 | D-010 §2.3을 바꾸려면 사용자 합의; 구현은 승인 뒤 별도 PR |
 | 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | 승인 뒤 checker·문서 변경을 작은 후속 PR로 분리 |
 | 13 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
 
 - [ ] **T-021 install preflight 순서 재설계** — release·archive 검증 뒤에 대상 preflight를 하는 D-010 §2.3을 유지할지, 대상 진단과 불필요한 다운로드를 우선할지 설계합니다. 신뢰 검증 순서와 오류 우선순위가 바뀌므로 설계 합의 전에는 구현하지 않습니다.
-- [ ] **T-022 install 대상 불변조건 등록 평가** — 비어 있지 않거나 확인 불가한 대상에 template 파일을 추가하지 않는 규칙을 `docs/REVIEW.md`와 `.cursor/BUGBOT.md`의 project invariant로 올릴지 검토합니다. 채택하면 두 사본과 checker 계약을 함께 검증합니다.
 
 - [ ] **T-013 D-009 운영 계약 회귀 방지** — `project-analysis`에 한정한 source root↔`locales/ko` 사본 동등성 검사, source/artifact checker CLI 경계와 source changelog의 공개 전 heading 예외, root `.gitattributes`가 maintainer checkout의 LF를 고정하는 목적, locale별 placeholder 검색 어휘의 단일 출처·검증 방식을 함께 설계합니다. `design`·`review-round` skill 사본은 같은 동등성 계약으로 일반화하지 않습니다.
 - [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다.
@@ -86,6 +86,14 @@
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-026 문서 상태 중복 정리**
+  - 출처·범위: PR #41 version 1 head `d86bee8`의 C41-001에서 파생한 기존 T-026과 PR #44 version 1 head `2165887a43aef91455cf7f493edc7d43282c41d3` / base `da4d6aef4b817e396cf1400e912b233a66b58601`의 C44-001을 함께 처리합니다. PROJECT §11과 T-017 설계 Metadata를 기존 [DOCS_GUIDE §2·§4](./DOCS_GUIDE.md)에 맞추는 maintainer 문서 변경입니다.
+  - C44-001 판정·이관: T-017 설계 Status의 `다음 release 반영 전`은 공개 후 잘못된 현재 상태입니다. 세 리뷰가 같은 P3를 확인했고 confidence는 0.90~0.95, blocking 판정은 서로 달랐습니다. P0·P1·Blocking P2가 없어 PR #44를 통과시켰으며 T-026에서 해소했습니다. 영구 review deferral은 추가하지 않았습니다.
+  - PR #45 정리 결과: 당시 PROJECT §11을 T-021·T-022·T-013·T-014의 미해결 판단과 TODO 링크로 줄였습니다. 완료·통합·CI 상세를 반복하는 방식은 상태 변경 시 동기화 지점을 늘리므로 채택하지 않았으며, 이미 지정된 실행·공개 기록과 확정된 제품 결정은 각 정본에서 보존했습니다.
+  - 설계 Metadata: T-017 Status를 승인 상태 `Accepted`만 표시하도록 바꿉니다. D-011의 요구·승인·결정과 날짜별 변경 기록은 유지합니다. 공개 상태는 PROJECT의 현재 기준·CHANGELOG·T-028 기록에서 확인하며, Metadata를 release마다 고치는 사본으로 쓰지 않습니다.
+  - 근거 보존: §11의 제품 결정은 PROJECT §1·§5·§8에, PR #37 final head `cc67e31`과 native CI 근거는 T-017 변경 기록·CI 문서에, T-020·T-023 등의 실제 통합은 해당 TODO 완료 항목에 이미 있습니다. 중복 문장을 제거해도 이 근거와 연결은 유지합니다.
+  - 통합 결과: PR #45 version 1 head `3281f0b75b30138747e7d350704bf988b61fe056`을 Origin merge `9a7764bca550f828edad757b45150f735cb3d3f7`에 통합하고 GitHub `main`에도 non-force fast-forward했습니다. 세 리뷰 모두 새 finding이 없고 C44-001 해소를 확인했습니다. exact head의 Windows #46·Linux #31 CI가 통과했으며 root docs·stable locale·docs 회귀 55건·diff 검사도 통과했습니다. 전체 unittest 184건은 CI와 두 독립 리뷰에서 확인했습니다(Linux의 Windows 전용 2건 skip).
 
 - [x] **T-028 `v2.3.3` 공개와 published 검증**
   - 범위·위임: 2026-09-28 사용자가 `v2.3.3` 공개부터 다음 기록 PR 게시까지 명시적으로 위임했습니다. D-007의 수동 게시 단계로 기존 draft를 공개하고, tag source의 읽기 전용 verifier로 published gate를 실행했습니다.
