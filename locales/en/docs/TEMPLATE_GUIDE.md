@@ -350,7 +350,7 @@ Use this history to identify changes that an adopted repository has not yet appl
 
 - On Windows, the selected release's separate `installer.py` requires Python 3.12 or newer and rejects directory junctions at its target, output, direct-parent, and artifact-member checks. Previously published installers retain their own support range.
 - The installer escapes path characters that its output encoding cannot represent, so a successful `install`, `export`, or `adopt` does not end with a false CLI failure.
-- The functional artifact guidance change is in `docs/TEMPLATE_GUIDE.md`: it clarifies that a new Git repository runs `git init` after installation, that an existing repository uses `adopt`, and that a new target's immediate parent must already exist and must not be a symlink or junction. Both guide documents carry the new template version.
+- The functional artifact guidance changes are in `docs/TEMPLATE_GUIDE.md`: the Windows Python 3.12 requirement, Windows directory junctions in the `blocked` adoption classification, installation before `git init`, using `adopt` for existing repositories, and the requirement that a new target's immediate parent already exist and not be a symlink or junction. Both guide documents carry the new template version.
 - Verify in the adopting repository: keep its existing files, use `adopt` to inspect changes, and use the selected release's installer for the documented boundary.
 
 ### v2.3.2 — New-or-Empty Install Target

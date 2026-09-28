@@ -8,7 +8,8 @@
 
 ## v2.3.3 — Windows junction 경계와 installer 출력
 
-- Windows의 Python 3.12 이상에서 release installer는 대상·output·직접 부모·artifact member 검사 지점의 directory junction을 거부해 의도한 tree 밖으로 따라가지 않습니다.
+- **호환성:** Windows의 `v2.3.3` installer는 Python 3.12 이상을 요구하며, Python 3.11 이하는 release·대상 접근 전에 중단합니다. 이전 지원 범위를 유지하려면 `v2.3.2` release의 `installer.py` asset을 받아 `--version 2.3.2`로 실행하세요.
+- Windows installer는 대상·output·직접 부모·artifact member 검사 지점의 directory junction을 거부해 의도한 tree 밖으로 따라가지 않습니다.
 - `install`·`export`·`adopt`는 출력 인코딩으로 표현할 수 없는 경로를 메시지에서 escape하여 완료된 작업을 CLI 실패로 잘못 보고하지 않습니다.
 - `en`·`ko` 적용 가이드는 `git init` 순서, 새 경로·빈 디렉터리 설치 대상, 기존 직접 부모 조건을 설명합니다.
 - release candidate verifier는 package의 installer로 새·빈·비어 있지 않은 대상을 검사하고, 거부된 대상의 불변을 확인합니다.
