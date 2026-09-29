@@ -17,7 +17,7 @@
 - **Name:** T-031 CI 검색 도구 gate
 - **Goal:** Windows·Linux CI에서 ripgrep·GNU grep 실명령 회귀가 도구 누락 때문에 skip된 채 통과하지 않도록 함
 - **Target:** `claude/t031-ci-search-tools` (Origin·GitHub `main` `f066978fb78a1712d67ab2fd97d0a3f823079f4a` 기준)
-- **Status:** Next — T-029는 통합됐고, 2026-09-29 전체 분석의 위험 목록을 T-030~T-035로 등록했습니다. T-031은 아직 시작 전입니다.
+- **Status:** In Progress — Backlog 등록 PR #52 위에 stack해 두 pipeline의 검색 도구 확인과 CI 문서를 구현했습니다. exact head의 Windows·Linux 로그 확인, 수동 리뷰와 통합이 남았습니다.
 - **다음 마일스톤:** Backlog 순서에 따라 T-032 원격 운영 정리, T-030·T-014 기록·리뷰 계약 설계를 진행합니다.
 
 ## 운영 규칙
@@ -35,7 +35,13 @@
 
 ## In Progress
 
-없음. 다음 작업은 Current Milestone과 Backlog 순서를 따릅니다.
+- [ ] **T-031 CI 검색 도구 gate**
+  - 정본·범위: 아래 Backlog의 T-031 항목이 출처와 완료 조건을 소유합니다. 실행 상태는 이 항목에서 관리합니다. 외부 계약을 바꾸지 않는 maintainer CI 변경이므로 DESIGN §1 예외로 설계 문서를 만들지 않습니다.
+  - [x] `.buildkite/linux.yml`은 unittest 전에 `rg --version`과 `grep --version | grep 'GNU grep'`을 실행합니다. `set -eu`에서 도구가 없으면 build가 실패합니다.
+  - [x] `.buildkite/pipeline.yml`은 PATH 뒤쪽에 `C:\Program Files\Git\usr\bin`을 붙인 뒤 `rg --version`과 `(grep --version | findstr /C:"GNU grep")`을 확인합니다. System32의 `find`·`sort`는 가리지 않습니다.
+  - [x] [CI.md](./CI.md) §6에 도구 요구, 로컬 skip과 CI 실패의 구분, 테스트 전용 범위를 기록했습니다. 테스트 코드와 artifact는 바꾸지 않았습니다.
+  - [x] Linux 명령 블록을 로컬 `sh`로 실행해 두 확인과 전체 gate가 통과하고, `rg`가 없는 PATH에서는 확인 단계가 실패함을 확인했습니다. Windows 명령은 로컬에서 실행할 수 없어 exact head의 Windows CI로 확인합니다.
+  - [ ] exact head의 Windows·Linux 로그에서 ripgrep·GNU grep 회귀가 모두 `ok`인지 확인하고, 수동 리뷰·통합을 마칩니다.
 
 ## Next
 
@@ -65,7 +71,7 @@ T-031부터 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로
 | 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 유지·변경을 비교·합의 | **Integrated** — Origin PR #47 merge `ed3438f`와 GitHub `main` fast-forward 확인; A 유지·별도 구현 없음 |
 | 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | **Integrated** — Accepted A(D-012), Origin PR #48 merge `4b8ccc1`·GitHub fast-forward 확인. 구현 1 PR #49 merge `f9df2fa`, 구현 2 PR #50 merge `8d56698`·Windows #60·Linux #45 통과; T-013 구현·통합 완료 |
 | 13 | `codex/t029-root-search-command-forms` | T-029: C50-002·C51-001·C51-002 root 검색식 gate 보강 | **Integrated** — Origin PR #51 merge `f066978`·GitHub fast-forward 확인; Windows #64·Linux #49 통과 |
-| 14 | `claude/t031-ci-search-tools` | T-031: CI 검색 도구 gate | 선행조건 없음. 두 worker의 rg와 Windows의 전체 Git for Windows 준비됨 |
+| 14 | `claude/t031-ci-search-tools` | T-031: CI 검색 도구 gate | **In Progress** — #52 위에 stack; 상세는 In Progress 항목 |
 | 15 | `claude/t032-remote-operations` | T-032: GitHub `main` 보호·Origin→GitHub 동기화 절차·tag 정책 | GitHub ruleset 적용은 사용자가 실행. 다음 release 전 |
 | 16 | `claude/t030-t014-contract-design` | T-030·T-014: 기록 시점·리뷰 finding ID 계약 설계 | 같은 artifact 문서를 바꾸므로 한 설계 PR. 사용자 승인 필요 |
 | 17 | `claude/t030-t014-contract` | T-030·T-014·T-033: 승인 계약 구현과 TODO 완료 이력 보관 | 16의 승인·통합 |
