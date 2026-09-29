@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-029 root 검색식 gate 보강 (C50-002·C51-001·C51-002)
-- **Goal:** PR #50의 비차단 C50-002 인계와 PR #51 리뷰의 C51-001·C51-002를 같은 source checker의 작은 후속 PR로 보강함
-- **Target:** `codex/t029-root-search-command-forms` (Origin·GitHub `main` `8d56698033fd40a982c6cf0d6bad6dbdeaee94c1` 기준)
-- **Status:** In Progress — T-013 두 구현 PR은 통합됐습니다. PR #51 version 1 리뷰의 C51-001을 수용해 root §3 검사를 닫힌 문법으로 바꿨고, version 2 리뷰의 C51-002를 locale 선언 패턴 대조로 수정했습니다. 새 head의 수동 리뷰·필수 CI·통합을 확인해야 합니다.
-- **다음 마일스톤:** T-029 통합 뒤 2026-09-29 전체 분석의 위험 목록을 Backlog(T-030부터)로 등록하고 PR 단위 우선순위를 정합니다. T-014와 locale 문서 공개 release도 그 순서에서 정합니다.
+- **Name:** T-031 CI 검색 도구 gate
+- **Goal:** Windows·Linux CI에서 ripgrep·GNU grep 실명령 회귀가 도구 누락 때문에 skip된 채 통과하지 않도록 함
+- **Target:** `claude/t031-ci-search-tools` (Origin·GitHub `main` `f066978fb78a1712d67ab2fd97d0a3f823079f4a` 기준)
+- **Status:** Next — T-029는 통합됐고, 2026-09-29 전체 분석의 위험 목록을 T-030~T-035로 등록했습니다. T-031은 아직 시작 전입니다.
+- **다음 마일스톤:** Backlog 순서에 따라 T-032 원격 운영 정리, T-030·T-014 기록·리뷰 계약 설계를 진행합니다.
 
 ## 운영 규칙
 
@@ -35,27 +35,11 @@
 
 ## In Progress
 
-- [ ] **T-029 root 검색식 gate 보강 (C50-002·C51-001·C51-002)**
-  - 출처·판정: PR #50 version 2 head `61e730ff36f276b6a805d0c5ce240b61889c5456` / base `f9df2fac4554ef8997695122b200df576133410f`의 **C50-002**(P3·confidence 0.95·blocking=false). Claude 댓글 `cmt_01m3nnjh7afqbaqbmnfqegktsh`은 `egrep`·`fgrep`·경로·`.exe` 표기 우회를, Luna 댓글 `cmt_01m3nnv319ezy99582103nzzt8`은 같은 원인의 shell `-c` 우회를 추가 재현했습니다. 중복 finding ID나 영구 deferral은 만들지 않습니다.
-  - 우선순위·권한: 2026-09-29 사용자의 리뷰 확인 후 다음 작업 진행 요청에서 남은 인계를 우선 처리합니다. PR #50은 기본 통과 임계값을 충족해 먼저 통합했으며, 범위가 작은 같은 checker의 후속 수정을 T-014 정책 설계보다 앞에 둡니다.
-  - 상위 계약·범위: [D-012 설계](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md) R-005·R-007과 C48-001의 root 정본 위임을 보강합니다. 구조 원인이 아닌 재현된 private 모듈 버그이므로 DESIGN §1의 예외에 따라 새 설계·승인 절차를 반복하지 않습니다. 상세 실행 상태는 이 항목만 소유합니다.
-  - [x] 통합 기준 `8d56698033fd40a982c6cf0d6bad6dbdeaee94c1`의 임시 source fixture에서 두 별칭·POSIX 경로·`.exe`·`sh -c` 다섯 조건이 오류 없이 통과함을 재현했습니다. 실제 source gate가 호출되는 exporter·packager 경로도 대조했습니다.
-  - [x] version 1(`8b9d1b092f439b2f336a8ca580a64cc1bee7c27a`)은 root §3 코드 토큰의 basename·`.exe` 정규화와 Bourne shell literal `-c` 재토큰화로 다섯 조건을 거부했습니다. 이 도구 판별 방식은 아래 C51-001 수정으로 대체했습니다.
-  - [x] 기준 `8d56698`에서 시작한 작업 트리의 source docs(304 links/45 files·절 참조 77개·invariant 5개)·stable locale·문서 회귀 65건(Linux Windows 전용 1건 skip)·locale 회귀 59건·전체 unittest 210건(Linux Windows 전용 3건 skip)이 통과했습니다. rg/GNU grep 실명령 회귀도 모두 실행했습니다. en·ko의 각 30-member export inventory·byte를 기준 commit의 payload와 대조해 동일함을 확인했고 wrapper `--root`·artifact 자체 checker·tests 53건씩, maintainer 파일 미포함·diff 검사도 통과했습니다. 로컬 작업 트리 검증과 후속 exact head의 원격 CI·리뷰는 구분합니다.
-  - [x] PR #51 version 1 리뷰: 사용자 review `rev_01m3nxa3m3f5qbmhqez1x0waz6`와 Luna `cmt_01m3nxjg5ke64r5p1n0nhtkz8x`는 finding이 없고, Claude `cmt_01m3nyhpd4ewet66f1b04s77pw`는 **C51-001**(P3·confidence 0.95·blocking=false)을 보고했습니다. exact head에서 `sed`·`awk`·`python3 -c`·`ugrep`·`Select-String`·`pwsh -c`와 inline `sed` 검색식이 gate를 통과했습니다. 원인이 C50-002와 같은 도구 denylist이므로 2026-09-29 사용자 요청에 따라 이 PR에서 수용합니다.
-  - [x] C51-001: 도구 판별을 제거하고 root §3을 닫힌 문법으로 검사합니다. fenced code의 비어 있지 않은 비주석 줄은 AGENTS.md의 Docs·Docs test·Locale source 세 명령과 정확히 같아야 하고, fenced 밖 visible text는 version 2에서 모든 locale 검색식이 공유하는 `{{`·`YYYY-MM-DD`·`template-example`만 대조했습니다(아래 C51-002에서 교체). `template_placeholder_pattern=` 선언 거부는 유지하며 shell·Markdown 코드를 토큰화·실행하지 않습니다. root §3에 이 제약을 안내했습니다.
-  - [x] 회귀: C51-001 12건(fenced 다른 도구·wrapper·허용 명령 변형, inline·들여쓴 줄·본문 어휘)을 추가해 수정 전 실패·수정 후 통과를 확인했습니다. C50-001·C50-002 조건은 새 문법에서도 거부되고, 도구 이름 언급·HTML 주석·`#` 주석·다른 절 예시는 통과합니다. 잘못된 quotation은 별도 진단 대신 허용되지 않은 코드 줄로 거부합니다.
-  - [x] version 1 head에서 시작한 version 2 작업 트리의 source docs(304 links/45 files·절 참조 77개·invariant 5개)·stable locale·문서 회귀 65건(Linux Windows 전용 1건 skip)·locale 회귀 60건·전체 unittest 211건(Linux Windows 전용 3건 skip)과 diff 검사가 통과했습니다. ripgrep 14.1.1·GNU grep 실명령 회귀도 실행했습니다. en·ko의 각 30-member export는 version 1 export와 byte-identical이고 wrapper `--root` 검사가 통과했습니다. 로컬 작업 트리 검증과 version 2 exact head의 원격 CI·리뷰는 구분합니다.
-  - [x] PR #51 version 2 리뷰: 사용자 review `rev_01m3nzyt1met4amk0jtex9gpaq`는 finding이 없고, Codex review `rev_01m3p0263ee2mbjrp7bx1xa8gf`(inline `cmt_01m3p0263yfr0bt8b7y4yqynv2`)는 **C51-002**(P3·confidence 0.99·blocking=true)를, Luna 재리뷰 `cmt_01m3p0dk24fm5b46a8hh0ahe5p`는 같은 조건을 확인했습니다. version 2가 코드 밖 text를 공통 세 토큰으로만 대조해 `Customize for the project`·`프로젝트에 맞게 작성`·`Adapt to the project`만 쓴 inline 검색식이 version 1과 달리 통과했습니다. 이번 변경이 만든 회귀이므로 수용합니다.
-  - [x] C51-002: root 전용 어휘 목록을 두지 않고, locale 검사가 검증한 각 locale의 `template_placeholder_pattern` 선언을 그대로 root §3 fenced 밖 visible text에 대조합니다. 선언이 없거나 잘못된 locale은 기존 locale 오류로 실패합니다. root §3 안내 문구도 이에 맞췄습니다.
-  - [x] 회귀: C51-002의 세 inline 사례와 ko 예시 어휘 본문 사례, locale 선언에 새 대안을 추가하면 root 본문에서도 거부되는 단일 출처 회귀를 추가했습니다. 새 C51-002 사례 4건과 단일 출처 회귀는 version 2 checker에서 실패하고 수정 후 통과합니다.
-  - 검증 경계: root §3 코드 줄은 허용 목록, 코드 밖 text는 각 locale의 선언 패턴과 비교합니다. §3에 다른 명령을 두려면 이 checker 목록을 함께 갱신합니다. locale 선언 패턴에 걸리지 않는 텍스트는 placeholder 검색으로 보지 않으며, fenced 안 `#` 주석은 기존처럼 허용합니다. root §3 범위·source 전용 의존성과 artifact 공개 CLI·inventory·payload 계약은 상위 설계 그대로입니다.
-  - [x] version 2 head에서 시작한 version 3 작업 트리의 source docs(304 links/45 files·절 참조 77개·invariant 5개)·stable locale·문서 회귀 65건(Linux Windows 전용 1건 skip)·locale 회귀 61건·전체 unittest 212건(Linux Windows 전용 3건 skip)과 diff 검사가 통과했습니다. ripgrep·GNU grep 실명령 회귀도 실행했습니다. en·ko의 각 30-member export는 version 1 export와 byte-identical이고 wrapper `--root` 검사가 통과했습니다. version 2 exact head의 Windows #63·Linux #48 성공은 version 3 통과 근거로 쓰지 않습니다.
-  - [ ] version 3 exact head의 수동 리뷰·Windows/Linux CI와 Origin/GitHub 통합을 확인해 C50-002·C51-001·C51-002 해소를 확정합니다.
+없음. 다음 작업은 Current Milestone과 Backlog 순서를 따릅니다.
 
 ## Next
 
-T-029의 C50-002·C51-001·C51-002 보강을 리뷰·통합한 뒤 위험 목록을 Backlog로 등록합니다. T-014 리뷰 ID 정책은 다음 독립 설계 후보로 유지하며, locale payload 공개의 version·candidate/published gate는 별도 release 작업에서 확정합니다.
+T-031부터 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다. locale payload 공개의 version·candidate/published gate는 T-034에서 확정합니다.
 
 ## Blocked
 
@@ -80,10 +64,31 @@ T-029의 C50-002·C51-001·C51-002 보강을 리뷰·통합한 뒤 위험 목록
 | 10 | `codex/t022-install-target-invariant` | T-022: 승인된 install 대상 계약을 REVIEW/BUGBOT 불변조건으로 등록 | **Integrated** — Origin PR #46 merge `4c743f1`와 GitHub `main` fast-forward 확인; C46-001 해소 |
 | 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 유지·변경을 비교·합의 | **Integrated** — Origin PR #47 merge `ed3438f`와 GitHub `main` fast-forward 확인; A 유지·별도 구현 없음 |
 | 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | **Integrated** — Accepted A(D-012), Origin PR #48 merge `4b8ccc1`·GitHub fast-forward 확인. 구현 1 PR #49 merge `f9df2fa`, 구현 2 PR #50 merge `8d56698`·Windows #60·Linux #45 통과; T-013 구현·통합 완료 |
-| 13 | `codex/t029-root-search-command-forms` | T-029: C50-002·C51-001·C51-002 root 검색식 gate 보강 | **In Progress** — PR #50 비차단 인계를 아래 정책 설계보다 먼저 처리; 상세는 In Progress 항목 |
-| 14 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
+| 13 | `codex/t029-root-search-command-forms` | T-029: C50-002·C51-001·C51-002 root 검색식 gate 보강 | **Integrated** — Origin PR #51 merge `f066978`·GitHub fast-forward 확인; Windows #64·Linux #49 통과 |
+| 14 | `claude/t031-ci-search-tools` | T-031: CI 검색 도구 gate | 선행조건 없음. 두 worker의 rg와 Windows의 전체 Git for Windows 준비됨 |
+| 15 | `claude/t032-remote-operations` | T-032: GitHub `main` 보호·Origin→GitHub 동기화 절차·tag 정책 | GitHub ruleset 적용은 사용자가 실행. 다음 release 전 |
+| 16 | `claude/t030-t014-contract-design` | T-030·T-014: 기록 시점·리뷰 finding ID 계약 설계 | 같은 artifact 문서를 바꾸므로 한 설계 PR. 사용자 승인 필요 |
+| 17 | `claude/t030-t014-contract` | T-030·T-014·T-033: 승인 계약 구현과 TODO 완료 이력 보관 | 16의 승인·통합 |
+| 18 | `claude/<version>-release-prep` 등 | T-034: 다음 locale release | 공개 payload 변경을 한 release로 묶음. D-007에 따라 준비·candidate·published 단계 분리 |
 
-- [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다.
+- [ ] **T-030 TODO·PLAN 기록 시점 계약 (merge 결합 서술·PR 원장)**
+  - 출처: 2026-09-29 전체 분석과 후속 논의. merge된 `main`의 TODO가 한 PR씩 늦게 완료를 반영합니다. 원인은 통합 확인 뒤에만 Completed로 옮기는 규칙, 리뷰를 통과한 head의 동결, merge 뒤 기록 commit 금지([DOCS_GUIDE.md](./DOCS_GUIDE.md) §3, [REVIEW_ROUND.md](./REVIEW_ROUND.md) §9)와, 자기 PR의 CI·리뷰 결과를 그 PR 안에 기록하는 관행이 겹친 것입니다.
+  - 사용자 결정(2026-09-29): branch 문서는 그 branch의 최종 head가 merge되는 시점까지의 상태를 결합 서술할 수 있습니다. merge 이후 사건(release 공개, GitHub 동기화, 다른 PR, 외부 검증)을 서술하는 것은 기본적으로 위반이며, 사용자가 명시적으로 요청한 경우에만 허용합니다.
+  - 설계 제안(미승인): 자기 head의 CI 번호·리뷰 판정·merge SHA는 TODO에 쓰지 않고 PR을 원장으로 삼아 기록 전용 commit을 없앱니다. 최종 head 리뷰에서 새로 나온 finding은 `문서 반영 대기`로 다음 PR이 받습니다. 예외 요청의 근거를 PR 본문에 남기는 방식과 release candidate·공개 기록 PR 통합도 설계에서 검토합니다.
+  - 경계: locale `DOCS_GUIDE.md`·`02-TODO.md`·`REVIEW_ROUND.md` §9와 review-round skill은 artifact이므로 DESIGN 절차·사용자 승인·release가 필요합니다. 결정 ID는 승인 때 발급합니다.
+- [ ] **T-031 CI 검색 도구 gate**
+  - 출처: 2026-09-29 분석과 사용자 제공 CI 로그. 사용자가 두 Buildkite worker에 rg를 설치한 뒤 Linux #48·Windows #63에서 ripgrep 회귀가 실행됐습니다. Windows #63의 GNU grep 회귀는 `grep is unavailable`로 skip됐습니다. Windows worker에는 전체 Git for Windows가 설치돼 있습니다.
+  - 범위: Linux·Windows pipeline에서 unittest 전에 `rg`와 GNU grep을 확인해 없으면 build를 실패시킵니다. Windows는 Git for Windows의 `usr\bin`을 그 단계 PATH 뒤에 붙여 Git Bash와 같은 GNU grep을 쓰며 System32 도구를 가리지 않게 합니다. [CI.md](./CI.md) §6에 도구 요구를 기록하고 테스트 코드와 artifact는 바꾸지 않습니다.
+  - 완료 조건: exact head의 Windows·Linux 로그에서 ripgrep·GNU grep 회귀가 모두 실행·통과하고 통합됩니다.
+- [ ] **T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책**
+  - 출처: 2026-09-29 분석. GitHub에는 `v*` tag ruleset만 있고 `main` branch protection이 없습니다(branch protection API 404 확인). Origin→GitHub `main` non-force fast-forward 절차는 TODO 기록에만 있고 maintainer 문서에 없습니다. Origin에는 v2.2.0~v2.3.2 tag만 있으며, release verifier는 GitHub tag만 사용합니다.
+  - 범위: GitHub `main`의 force push·삭제를 막고 fast-forward push는 허용하는 ruleset(사용자 실행), root maintainer 문서의 동기화 절차와 tag 정본 명시, Origin tag 동기화 여부 결정.
+- [ ] **T-033 TODO 완료 이력 보관** — Completed에 PR별 검증 로그가 누적돼 이 문서가 커졌습니다. Completed 규칙의 "완료 이력이 길어지면 보관 문서로 연결"을 적용해 요약·링크만 남기며, TODO 구조를 함께 바꾸는 T-030 구현 PR에서 진행합니다.
+- [ ] **T-034 다음 locale release** — `v2.3.3` 이후 payload 변경은 en·ko `docs/TEMPLATE_GUIDE.md`(T-013 검색 선언)입니다. PR #50의 인계대로 release 이력에 검색 선언 단일화·Bash 전제·TEMPLATE_GUIDE 삭제 전 보관과 변경 파일을 기록합니다. T-030의 artifact 변경과 한 release로 묶는 것을 기본으로 하되, T-030 설계가 길어지면 guide 변경만 먼저 patch로 공개합니다. version·시점은 준비 PR에서 정합니다.
+- [ ] **T-035 release 신뢰 루트 검토 (서명·attestation)** — installer는 같은 release의 `SHA256SUMS`·manifest로 무결성을 확인하지만 게시 계정 탈취는 막지 못하며, immutable release와 tag ruleset으로 완화합니다. 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기거나 표준 라이브러리만으로 GitHub release attestation을 검증할 경로가 확인되면 D-004 확장 설계로 재검토합니다.
+- [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다. T-030과 같은 문서를 바꾸므로 한 설계 PR에서 다룹니다. 2026-09-29부터 Claude가 개발, Codex가 리뷰를 맡는 등 리뷰어 구성이 바뀔 수 있으므로 모델명이 아닌 고정 리뷰어 슬롯 라벨을 기준으로 검토합니다.
+
+2026-09-29 분석의 root §3 검색식 allowlist 권고는 T-029에서 해소됐고, 작업 트리의 로컬 `.swp` 파일은 저장소 작업이 아니어서 등록하지 않았습니다.
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
 
 ## Cancelled
@@ -93,6 +98,24 @@ T-029의 C50-002·C51-001·C51-002 보강을 리뷰·통합한 뒤 위험 목록
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-029 root 검색식 gate 보강 (C50-002·C51-001·C51-002)**
+  - 출처·판정: PR #50 version 2 head `61e730ff36f276b6a805d0c5ce240b61889c5456` / base `f9df2fac4554ef8997695122b200df576133410f`의 **C50-002**(P3·confidence 0.95·blocking=false). Claude 댓글 `cmt_01m3nnjh7afqbaqbmnfqegktsh`은 `egrep`·`fgrep`·경로·`.exe` 표기 우회를, Luna 댓글 `cmt_01m3nnv319ezy99582103nzzt8`은 같은 원인의 shell `-c` 우회를 추가 재현했습니다. 중복 finding ID나 영구 deferral은 만들지 않습니다.
+  - 우선순위·권한: 2026-09-29 사용자의 리뷰 확인 후 다음 작업 진행 요청에서 남은 인계를 우선 처리합니다. PR #50은 기본 통과 임계값을 충족해 먼저 통합했으며, 범위가 작은 같은 checker의 후속 수정을 T-014 정책 설계보다 앞에 둡니다.
+  - 상위 계약·범위: [D-012 설계](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md) R-005·R-007과 C48-001의 root 정본 위임을 보강합니다. 구조 원인이 아닌 재현된 private 모듈 버그이므로 DESIGN §1의 예외에 따라 새 설계·승인 절차를 반복하지 않습니다. 상세 실행 상태는 이 항목만 소유합니다.
+  - [x] 통합 기준 `8d56698033fd40a982c6cf0d6bad6dbdeaee94c1`의 임시 source fixture에서 두 별칭·POSIX 경로·`.exe`·`sh -c` 다섯 조건이 오류 없이 통과함을 재현했습니다. 실제 source gate가 호출되는 exporter·packager 경로도 대조했습니다.
+  - [x] version 1(`8b9d1b092f439b2f336a8ca580a64cc1bee7c27a`)은 root §3 코드 토큰의 basename·`.exe` 정규화와 Bourne shell literal `-c` 재토큰화로 다섯 조건을 거부했습니다. 이 도구 판별 방식은 아래 C51-001 수정으로 대체했습니다.
+  - [x] 기준 `8d56698`에서 시작한 작업 트리의 source docs(304 links/45 files·절 참조 77개·invariant 5개)·stable locale·문서 회귀 65건(Linux Windows 전용 1건 skip)·locale 회귀 59건·전체 unittest 210건(Linux Windows 전용 3건 skip)이 통과했습니다. rg/GNU grep 실명령 회귀도 모두 실행했습니다. en·ko의 각 30-member export inventory·byte를 기준 commit의 payload와 대조해 동일함을 확인했고 wrapper `--root`·artifact 자체 checker·tests 53건씩, maintainer 파일 미포함·diff 검사도 통과했습니다. 로컬 작업 트리 검증과 후속 exact head의 원격 CI·리뷰는 구분합니다.
+  - [x] PR #51 version 1 리뷰: 사용자 review `rev_01m3nxa3m3f5qbmhqez1x0waz6`와 Luna `cmt_01m3nxjg5ke64r5p1n0nhtkz8x`는 finding이 없고, Claude `cmt_01m3nyhpd4ewet66f1b04s77pw`는 **C51-001**(P3·confidence 0.95·blocking=false)을 보고했습니다. exact head에서 `sed`·`awk`·`python3 -c`·`ugrep`·`Select-String`·`pwsh -c`와 inline `sed` 검색식이 gate를 통과했습니다. 원인이 C50-002와 같은 도구 denylist이므로 2026-09-29 사용자 요청에 따라 이 PR에서 수용합니다.
+  - [x] C51-001: 도구 판별을 제거하고 root §3을 닫힌 문법으로 검사합니다. fenced code의 비어 있지 않은 비주석 줄은 AGENTS.md의 Docs·Docs test·Locale source 세 명령과 정확히 같아야 하고, fenced 밖 visible text는 version 2에서 모든 locale 검색식이 공유하는 `{{`·`YYYY-MM-DD`·`template-example`만 대조했습니다(아래 C51-002에서 교체). `template_placeholder_pattern=` 선언 거부는 유지하며 shell·Markdown 코드를 토큰화·실행하지 않습니다. root §3에 이 제약을 안내했습니다.
+  - [x] 회귀: C51-001 12건(fenced 다른 도구·wrapper·허용 명령 변형, inline·들여쓴 줄·본문 어휘)을 추가해 수정 전 실패·수정 후 통과를 확인했습니다. C50-001·C50-002 조건은 새 문법에서도 거부되고, 도구 이름 언급·HTML 주석·`#` 주석·다른 절 예시는 통과합니다. 잘못된 quotation은 별도 진단 대신 허용되지 않은 코드 줄로 거부합니다.
+  - [x] version 1 head에서 시작한 version 2 작업 트리의 source docs(304 links/45 files·절 참조 77개·invariant 5개)·stable locale·문서 회귀 65건(Linux Windows 전용 1건 skip)·locale 회귀 60건·전체 unittest 211건(Linux Windows 전용 3건 skip)과 diff 검사가 통과했습니다. ripgrep 14.1.1·GNU grep 실명령 회귀도 실행했습니다. en·ko의 각 30-member export는 version 1 export와 byte-identical이고 wrapper `--root` 검사가 통과했습니다. 로컬 작업 트리 검증과 version 2 exact head의 원격 CI·리뷰는 구분합니다.
+  - [x] PR #51 version 2 리뷰: 사용자 review `rev_01m3nzyt1met4amk0jtex9gpaq`는 finding이 없고, Codex review `rev_01m3p0263ee2mbjrp7bx1xa8gf`(inline `cmt_01m3p0263yfr0bt8b7y4yqynv2`)는 **C51-002**(P3·confidence 0.99·blocking=true)를, Luna 재리뷰 `cmt_01m3p0dk24fm5b46a8hh0ahe5p`는 같은 조건을 확인했습니다. version 2가 코드 밖 text를 공통 세 토큰으로만 대조해 `Customize for the project`·`프로젝트에 맞게 작성`·`Adapt to the project`만 쓴 inline 검색식이 version 1과 달리 통과했습니다. 이번 변경이 만든 회귀이므로 수용합니다.
+  - [x] C51-002: root 전용 어휘 목록을 두지 않고, locale 검사가 검증한 각 locale의 `template_placeholder_pattern` 선언을 그대로 root §3 fenced 밖 visible text에 대조합니다. 선언이 없거나 잘못된 locale은 기존 locale 오류로 실패합니다. root §3 안내 문구도 이에 맞췄습니다.
+  - [x] 회귀: C51-002의 세 inline 사례와 ko 예시 어휘 본문 사례, locale 선언에 새 대안을 추가하면 root 본문에서도 거부되는 단일 출처 회귀를 추가했습니다. 새 C51-002 사례 4건과 단일 출처 회귀는 version 2 checker에서 실패하고 수정 후 통과합니다.
+  - 검증 경계: root §3 코드 줄은 허용 목록, 코드 밖 text는 각 locale의 선언 패턴과 비교합니다. §3에 다른 명령을 두려면 이 checker 목록을 함께 갱신합니다. locale 선언 패턴에 걸리지 않는 텍스트는 placeholder 검색으로 보지 않으며, fenced 안 `#` 주석은 기존처럼 허용합니다. root §3 범위·source 전용 의존성과 artifact 공개 CLI·inventory·payload 계약은 상위 설계 그대로입니다.
+  - [x] version 2 head에서 시작한 version 3 작업 트리의 source docs(304 links/45 files·절 참조 77개·invariant 5개)·stable locale·문서 회귀 65건(Linux Windows 전용 1건 skip)·locale 회귀 61건·전체 unittest 212건(Linux Windows 전용 3건 skip)과 diff 검사가 통과했습니다. ripgrep·GNU grep 실명령 회귀도 실행했습니다. en·ko의 각 30-member export는 version 1 export와 byte-identical이고 wrapper `--root` 검사가 통과했습니다. version 2 exact head의 Windows #63·Linux #48 성공은 version 3 통과 근거로 쓰지 않습니다.
+  - 통합 결과: PR #51 version 3 head `d7a9f94912ac185cc8f248ff9528b99de55ce75a`을 Origin merge `f066978fb78a1712d67ab2fd97d0a3f823079f4a`에 통합하고 GitHub·로컬 `main`에도 non-force fast-forward했습니다. version 3의 사용자 review `rev_01m3p2547jevqv57eb12gc2c3e`, Codex review `rev_01m3p26k6qfwnrh5ahxem0cwx4`, Luna `cmt_01m3p28r5je3tvdt3zbsdc948k` 모두 새 finding이 없고 C50-002·C51-001·C51-002 해소를 확인했습니다. exact head의 Windows #64·Linux #49 CI가 통과했고 다섯 리뷰 스레드를 정리했습니다. Windows CI의 GNU grep 회귀 skip은 T-031이 소유합니다.
 
 - [x] **T-013 D-009 운영 계약 회귀 방지**
   - 정본·범위: [2026-09-28-operation-contract-regression](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md)가 Intent·대안·R-001~R-007·호환성·PR 순서를 소유합니다. 실행 상태는 이 항목에서 관리합니다. A안이 D-012로 승인됐으며 D-005·D-009와 기존 CLI·schema·inventory를 유지합니다. 설계 승인과 구현·통합을 구분합니다.
