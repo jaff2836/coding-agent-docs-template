@@ -8,7 +8,7 @@
 
 - **Status:** Active
 - **Owner:** Repository maintainers
-- **Last reviewed:** 2026-09-25
+- **Last reviewed:** 2026-09-29
 - **Review cadence:** 품질 게이트 구성 또는 로컬 명령이 바뀔 때
 
 명령 문자열의 정본은 루트 [AGENTS.md](../AGENTS.md)와 적용 프로젝트 README입니다. 한쪽만 바꾸지 마세요. 기계적 규칙은 리뷰 finding이 아니라 이 게이트로 강제합니다. 판정 기준은 [REVIEW.md](./REVIEW.md) §12입니다.
@@ -109,9 +109,11 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 
 필수 check가 없거나 agent 부재로 대기하면 병합을 보류합니다. agent를 복구한 뒤 Buildkite에서 정확한 head를 재실행하거나 변경된 PR head를 push하고, 두 Origin check의 성공을 확인합니다. 로컬 게이트만으로 이 저장소의 필수 check를 충족했다고 판단하지 않습니다.
 
-[`windows-ci`](https://buildkite.com/jaff2836-org/windows-ci)는 [`pipeline.yml`](../.buildkite/pipeline.yml)을 `jaff2836-worker-windows` queue에서 실행합니다. WindowsApps의 실행 불가 `python3` 별칭 대신 공식 Python 3.12.10 NuGet CI 배포본을 `%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe`에 배치했습니다. root docs·stable locale 검사와 전체 unittest 뒤 T-017 native junction probe를 실행합니다. 구현 브랜치의 probe는 junction 경계 거부와 외부 target 불변을 단언하며, 정확한 head의 Windows check로 검증합니다.
+[`windows-ci`](https://buildkite.com/jaff2836-org/windows-ci)는 [`pipeline.yml`](../.buildkite/pipeline.yml)을 `jaff2836-worker-windows` queue에서 실행합니다. WindowsApps의 실행 불가 `python3` 별칭 대신 공식 Python 3.12.10 NuGet CI 배포본을 `%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe`에 배치했습니다. root docs·stable locale 검사와 전체 unittest 뒤 T-017 native junction probe를 실행합니다. unittest 전에 PATH 뒤쪽에 Git for Windows의 `C:\Program Files\Git\usr\bin`을 붙여 Git Bash와 같은 GNU grep을 쓰며, System32 도구를 가리지 않습니다. 구현 브랜치의 probe는 junction 경계 거부와 외부 target 불변을 단언하며, 정확한 head의 Windows check로 검증합니다.
 
-[`linux-ci`](https://buildkite.com/jaff2836-org/linux-ci)는 [`linux.yml`](../.buildkite/linux.yml)을 `jaff2836-worker-linux` queue에서 실행합니다. agent의 Python 3.13.5로 같은 root docs·stable locale 검사와 전체 unittest를 실행합니다. PR #37의 [Windows build #21](https://buildkite.com/jaff2836-org/windows-ci/builds/21)과 [Linux build #6](https://buildkite.com/jaff2836-org/linux-ci/builds/6)은 같은 head `e7e12581b614685774064d57119b08a508ff5f23`에서 자동 시작해 각각 unittest 176개를 통과하고 Origin 성공 check를 게시했습니다. 두 build의 Buildkite `pull_request.id`는 `37`이며 base는 `main`입니다.
+[`linux-ci`](https://buildkite.com/jaff2836-org/linux-ci)는 [`linux.yml`](../.buildkite/linux.yml)을 `jaff2836-worker-linux` queue에서 실행합니다. agent의 Python 3.13.5로 같은 root docs·stable locale 검사와 전체 unittest를 실행합니다.
+
+locale source 회귀의 ripgrep·GNU grep 실명령 테스트는 도구가 없으면 skip합니다. 로컬에서는 skip을 허용하지만 CI에서는 skip이 통과로 보이면 안 되므로, 두 pipeline은 unittest 전에 `rg --version`과 GNU grep 여부를 확인하고 없으면 build를 실패시킵니다. 두 worker에는 ripgrep이 설치돼 있어야 하고, Windows worker에는 전체 Git for Windows가 필요합니다. 이 도구들은 테스트에만 쓰이며 artifact나 installer 실행에는 필요하지 않습니다. PR #37의 [Windows build #21](https://buildkite.com/jaff2836-org/windows-ci/builds/21)과 [Linux build #6](https://buildkite.com/jaff2836-org/linux-ci/builds/6)은 같은 head `e7e12581b614685774064d57119b08a508ff5f23`에서 자동 시작해 각각 unittest 176개를 통과하고 Origin 성공 check를 게시했습니다. 두 build의 Buildkite `pull_request.id`는 `37`이며 base는 `main`입니다.
 
 ## 7. 제공하지 않는 것
 

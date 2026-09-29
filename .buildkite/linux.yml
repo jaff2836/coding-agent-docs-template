@@ -6,6 +6,9 @@ steps:
     command: |
       set -eu
       python3 --version
+      # The search regressions skip without these tools; fail here instead.
+      rg --version
+      grep --version | grep 'GNU grep'
       python3 scripts/check-docs.py
       python3 scripts/check-locales.py --require-stable
       python3 -m unittest discover -s tests -v

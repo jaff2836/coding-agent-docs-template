@@ -4,6 +4,9 @@ agents:
 steps:
   - label: ":windows: Python 3.12+ quality gates and T-017 junction probe"
     command: >-
+      set "PATH=%PATH%;C:\Program Files\Git\usr\bin" &&
+      rg --version &&
+      (grep --version | findstr /C:"GNU grep") &&
       "%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe" --version &&
       "%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe" scripts/check-docs.py &&
       "%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe" scripts/check-locales.py --require-stable &&
