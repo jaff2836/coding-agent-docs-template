@@ -76,6 +76,9 @@ placeholder를 확인합니다. 검색 선언·rg/grep 명령의 정본은
 [한국어 가이드](../locales/ko/docs/TEMPLATE_GUIDE.md) §3입니다.
 해당 locale의 Bash·동일 shell 실행 순서와 §5의 선언·명령 보관 절차를 따릅니다.
 source locale 검사는 이 선언·참조·sentinel과 root 안내의 정본 위임을 확인합니다.
+이 절의 코드 블록에는 위 세 source 검사 명령과 `#` 주석만 둘 수 있고, 코드 블록
+밖에도 locale 검색식에 걸리는 어휘를 옮겨 적지 않습니다. 검색 도구와 관계없이
+적용됩니다.
 안내 문서와 `changes/_template/`의 설명·복사용 placeholder는 문맥에 따라
 판정하며, 검색 0건을 적용 완료로 해석하지 않습니다. 전체 체크리스트는 locale
 `docs/DOCS_GUIDE.md`가 소유합니다.

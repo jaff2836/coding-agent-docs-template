@@ -83,6 +83,14 @@ PLACEHOLDER_SEARCH_SENTINELS: Mapping[str, Tuple[str, ...]] = {
         "| 예시 |", "예시 결정", "예시 완료", "**예시:**",
     ),
 }
+# Root guide section 3 delegates placeholder searches to the locale guides. Its code
+# may hold only the maintainer checks from AGENTS.md, and its other visible text must
+# not match any locale's declared placeholder search pattern.
+ROOT_SEARCH_SECTION_COMMANDS = frozenset((
+    "python3 scripts/check-docs.py",
+    "python3 -m unittest discover -s tests -p 'test_check_docs.py' -v",
+    "python3 scripts/check-locales.py --require-stable",
+))
 
 ALLOWED_STATUSES = frozenset(("complete", "experimental", "stale"))
 ADOPTION_POLICIES = frozenset(("copy", "decide", "merge"))
@@ -1416,7 +1424,10 @@ def _fenced_code_blocks(text: str) -> List[Tuple[str, str]]:
 
 def _check_placeholder_searches(
     texts: Mapping[Tuple[str, str], str], errors: List[str]
-) -> None:
+) -> List[re.Pattern[str]]:
+    """Check each locale search declaration and return the usable patterns."""
+
+    patterns = []
     for tag, sentinels in PLACEHOLDER_SEARCH_SENTINELS.items():
         text = texts.get((tag, "docs/TEMPLATE_GUIDE.md"))
         if text is None:
@@ -1450,6 +1461,8 @@ def _check_placeholder_searches(
             continue
         if regex.search("") is not None:
             errors.append("%s placeholder search pattern must not match empty text" % label)
+        else:
+            patterns.append(regex)
         for sentinel in sentinels:
             if regex.search(sentinel) is None:
                 errors.append("%s placeholder search misses sentinel: %r" % (label, sentinel))
@@ -1481,9 +1494,12 @@ def _check_placeholder_searches(
                     "%s %s must use the quoted shared pattern as its regex operand "
                     "exactly once after the declaration" % (label, command)
                 )
+    return patterns
 
 
-def _check_root_search_delegation(root: Path, errors: List[str]) -> None:
+def _check_root_search_delegation(
+    root: Path, patterns: Sequence[re.Pattern[str]], errors: List[str]
+) -> None:
     path = root / "docs/TEMPLATE_GUIDE.md"
     try:
         resolved = path.resolve(strict=True)
@@ -1502,29 +1518,32 @@ def _check_root_search_delegation(root: Path, errors: List[str]) -> None:
         target = "../locales/%s/docs/TEMPLATE_GUIDE.md" % tag
         if target not in targets:
             errors.append("maintainer search section must delegate to %s" % target)
-    independent = bool(re.search(r"\btemplate_placeholder_pattern[ \t]*=", section))
-    blocks = _fenced_code_blocks(section)
-    for line, context in zip(section.splitlines(), _markdown_line_context(section)):
-        if all(context):
-            blocks.extend(("inline", code) for code in INLINE_CODE_RE.findall(line))
-    for language, code in blocks:
-        if language in {"regex", "regexp"}:
-            independent = True
-            break
-        # Tokenize without executing code: git options, wrappers and shell separators
-        # must not create another search recipe in this delegation section.
-        lexer = shlex.shlex(code, posix=True, punctuation_chars=True)
-        lexer.whitespace_split = True
-        try:
-            words = list(lexer)
-        except ValueError as error:
-            errors.append("maintainer search section has invalid code quotation: %s" % error)
-            continue
-        if (language != "inline" or len(words) > 1) and {"rg", "grep"}.intersection(words):
-            independent = True
-            break
-    if independent:
-        errors.append("maintainer guide must not define an independent placeholder search in section 3")
+    # A closed grammar instead of a search-tool denylist: any tool or wrapper can
+    # spell a search, so nothing is tokenized or executed here.
+    reasons = []
+    if re.search(r"\btemplate_placeholder_pattern[ \t]*=", section):
+        reasons.append("declares template_placeholder_pattern")
+    stray = [
+        line.strip()
+        for _, code in _fenced_code_blocks(section)
+        for line in code.splitlines()
+        if line.strip() and not line.strip().startswith("#")
+        and line.strip() not in ROOT_SEARCH_SECTION_COMMANDS
+    ]
+    if stray:
+        reasons.append("code line is not a maintainer check command: %s" % stray[0])
+    vocabulary = [
+        line.strip()
+        for line, context in zip(section.splitlines(), _markdown_line_context(section))
+        if all(context) and any(pattern.search(line) for pattern in patterns)
+    ]
+    if vocabulary:
+        reasons.append("text matches a locale placeholder search pattern: %s" % vocabulary[0])
+    for reason in reasons:
+        errors.append(
+            "maintainer guide must not define an independent placeholder search "
+            "in section 3; %s" % reason
+        )
 
 
 def _frontmatter_fields(text: str) -> Optional[Dict[str, List[str]]]:
@@ -1960,8 +1979,8 @@ def check_locales(root: Path = ROOT, require_stable: bool = False) -> List[str]:
     _check_structural_parity(manifest, texts, errors)
     _check_markers(manifest, texts, errors)
     _check_commands(manifest, texts, errors)
-    _check_placeholder_searches(texts, errors)
-    _check_root_search_delegation(root, errors)
+    patterns = _check_placeholder_searches(texts, errors)
+    _check_root_search_delegation(root, patterns, errors)
     _check_skills(manifest, texts, errors)
     _check_skill_fixture_observables(manifest, texts, common_texts, errors)
     _check_invariant_contract(manifest, texts, errors)
