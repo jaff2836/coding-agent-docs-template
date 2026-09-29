@@ -17,7 +17,7 @@
 - **Name:** T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책
 - **Goal:** Origin→GitHub 통합 절차와 release tag 정본을 maintainer 문서에 두고 공개 `main`의 이력을 보호함
 - **Target:** `claude/t032-remote-operations` (Origin·GitHub `main` `291ad30ecabc21623187da60f6dbf7619a0ae0df` 기준)
-- **Status:** In Progress — 동기화 절차와 tag 정책을 문서화했습니다. GitHub `main` ruleset 적용(사용자), 수동 리뷰와 통합이 남았습니다.
+- **Status:** In Progress — 동기화 절차와 tag 정책을 문서화했고 GitHub `main` ruleset은 적용됐습니다. PR #54 version 1 리뷰의 C54-001~C54-003을 반영했으며, 삭제된 tag ruleset 복원(사용자)과 version 2 리뷰·통합이 남았습니다.
 - **다음 마일스톤:** T-030·T-014 기록 시점·리뷰 finding ID 계약 설계를 진행합니다.
 
 ## 운영 규칙
@@ -38,9 +38,12 @@
 - [ ] **T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책**
   - 정본·범위: 아래 Backlog의 T-032 항목이 출처를 소유하고 실행 상태는 이 항목에서 관리합니다. 외부 계약을 바꾸지 않는 maintainer 운영 문서와 저장소 설정이므로 DESIGN §1 예외로 설계 문서를 만들지 않습니다.
   - [x] root [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §5에 원격 통합 절차를 기록했습니다. Origin merge → GitHub `main` non-force fast-forward, push 전 조상 확인과 push 뒤 `git ls-remote` 대조, stack된 PR의 base 이동과 CI 재확인 조건을 담았습니다.
-  - [x] Origin tag 정책: GitHub의 annotated `v<SemVer>` tag를 정본으로 두고 Origin에는 release tag를 동기화하지 않습니다. candidate verifier의 `_verify_remote_refs`가 두 `main`의 일치와 GitHub tag만 확인하므로 Origin tag를 맞추면 release마다 수동 단계만 늘어납니다. 기존 Origin tag는 삭제하지 않고 release 근거로 쓰지 않습니다.
-  - [ ] GitHub `main` branch ruleset을 적용합니다. 규칙은 `deletion`·`non_fast_forward`이고 bypass는 없으며 fast-forward push는 허용합니다. 2026-09-29 Claude의 API 적용 시도는 실행 권한 확인에서 거부돼 사용자가 적용합니다. 적용 뒤 `gh api repos/jaff2836/coding-agent-docs-template/rules/branches/main`에서 두 규칙을 확인합니다.
-  - [ ] 수동 리뷰·필수 CI와 Origin/GitHub 통합을 확인합니다. 통합 push가 새 ruleset 아래에서 fast-forward로 성공하는지도 확인합니다.
+  - [x] Origin tag 정책: GitHub의 annotated `v<SemVer>` tag를 정본으로 두고 Origin에는 release tag를 동기화하지 않습니다. candidate verifier의 `_verify_remote_refs`는 원격에서 두 `main`과 GitHub annotated tag만 대조하고, 로컬 annotated tag와 source의 조상 관계는 실행 checkout에서 확인합니다. Origin 원격 tag는 입력이 아니므로 맞추면 release마다 수동 단계만 늘어납니다. 기존 Origin tag는 삭제하지 않고 release 근거로 쓰지 않습니다.
+  - [x] GitHub `main` branch ruleset: 사용자가 2026-09-29에 적용했습니다. `gh api repos/jaff2836/coding-agent-docs-template/rules/branches/main`에서 `Protect main history`(id `24168373`, active, bypass 없음)의 `deletion`·`non_fast_forward` 두 규칙만 확인했습니다. 앞서 Claude의 API 적용 시도는 실행 권한 확인에서 거부됐습니다.
+  - [x] PR #54 version 1 리뷰: 사용자 review `rev_01m3p69w6se7rbyvpfj7nn4ac7`는 **C54-001**(P3·confidence 0.95·blocking=false, `main` ruleset 적용 상태 미반영)과 **C54-002**(P3·confidence 0.92·blocking=true, verifier가 로컬 annotated tag와 조상 관계도 확인)를 보고했습니다. Codex review `rev_01m3p6ftz6fr3smseyy2k5tj9g`(inline `cmt_01m3p6ftzkf04a1zr3kn0mf63y`)는 **C54-003**(P2·confidence 0.98·blocking=true)을 보고했습니다. `refs/tags/v*` 대상 ruleset이 없는데 §5가 tag 보호를 사실로 서술했다는 내용입니다. 세 건 모두 재현했고 수용합니다.
+  - [x] C54-002·C54-003: §5를 두 ruleset(`main`의 `non_fast_forward`·`deletion`, `refs/tags/v*`의 `update`·`deletion`)을 유지·확인해야 하는 운영 요구로 고쳤습니다. 설정 변경 뒤와 release candidate 전에 ruleset API로 확인하도록 했고, verifier 입력은 두 `main`, GitHub annotated tag, 로컬 annotated tag와 조상 관계로 정확히 적었습니다.
+  - [ ] tag ruleset 복원: 같은 날 Claude가 조회한 `Protect release tags`(id `23636438`, `refs/tags/v*`, `update`·`deletion`, bypass 없음)가 `main` ruleset 적용 뒤 404였습니다. tag 대상 ruleset 조회는 빈 목록입니다. 확인 시점에 GitHub의 tag ref 29개는 로컬 tag ref와 같아 바뀐 tag는 없었습니다. 복원은 사용자가 적용하고 `rulesets?targets=tag`로 `update`·`deletion`과 bypass 없음을 확인합니다.
+  - [ ] version 2 exact head의 수동 리뷰·필수 CI와 Origin/GitHub 통합을 확인해 C54-001~C54-003 해소를 확정합니다. 통합 push가 `main` ruleset 아래에서 fast-forward로 성공하는지도 확인합니다.
 
 ## Next
 
@@ -71,7 +74,7 @@ T-032부터 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로
 | 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | **Integrated** — Accepted A(D-012), Origin PR #48 merge `4b8ccc1`·GitHub fast-forward 확인. 구현 1 PR #49 merge `f9df2fa`, 구현 2 PR #50 merge `8d56698`·Windows #60·Linux #45 통과; T-013 구현·통합 완료 |
 | 13 | `codex/t029-root-search-command-forms` | T-029: C50-002·C51-001·C51-002 root 검색식 gate 보강 | **Integrated** — Origin PR #51 merge `f066978`·GitHub fast-forward 확인; Windows #64·Linux #49 통과 |
 | 14 | `claude/t031-ci-search-tools` | T-031: CI 검색 도구 gate | **Integrated** — #52 merge `05dbe80` 뒤 Origin PR #53 merge `291ad30`·GitHub fast-forward 확인; Windows #67·Linux #52 통과 |
-| 15 | `claude/t032-remote-operations` | T-032: GitHub `main` 보호·Origin→GitHub 동기화 절차·tag 정책 | **In Progress** — ruleset 적용은 사용자; 상세는 In Progress 항목 |
+| 15 | `claude/t032-remote-operations` | T-032: GitHub `main` 보호·Origin→GitHub 동기화 절차·tag 정책 | **In Progress** — `main` ruleset 적용됨, tag ruleset 복원은 사용자; 상세는 In Progress 항목 |
 | 16 | `claude/t030-t014-contract-design` | T-030·T-014: 기록 시점·리뷰 finding ID 계약 설계 | 같은 artifact 문서를 바꾸므로 한 설계 PR. 사용자 승인 필요 |
 | 17 | `claude/t030-t014-contract` | T-030·T-014·T-033: 승인 계약 구현과 TODO 완료 이력 보관 | 16의 승인·통합 |
 | 18 | `claude/<version>-release-prep` 등 | T-034: 다음 locale release | 공개 payload 변경을 한 release로 묶음. D-007에 따라 준비·candidate·published 단계 분리 |
