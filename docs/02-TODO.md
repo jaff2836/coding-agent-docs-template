@@ -14,10 +14,10 @@
 
 ## Current Milestone
 
-- **Name:** T-029 root 검색식 gate 보강 (C50-002·C51-001)
-- **Goal:** PR #50의 비차단 C50-002 인계와 PR #51 리뷰의 C51-001을 같은 source checker의 작은 후속 PR로 보강함
+- **Name:** T-029 root 검색식 gate 보강 (C50-002·C51-001·C51-002)
+- **Goal:** PR #50의 비차단 C50-002 인계와 PR #51 리뷰의 C51-001·C51-002를 같은 source checker의 작은 후속 PR로 보강함
 - **Target:** `codex/t029-root-search-command-forms` (Origin·GitHub `main` `8d56698033fd40a982c6cf0d6bad6dbdeaee94c1` 기준)
-- **Status:** In Progress — T-013 두 구현 PR은 통합됐습니다. PR #51 version 1 리뷰의 C51-001을 수용해 root §3 검사를 닫힌 문법으로 바꿨으며 새 head의 수동 리뷰·필수 CI·통합을 확인해야 합니다.
+- **Status:** In Progress — T-013 두 구현 PR은 통합됐습니다. PR #51 version 1 리뷰의 C51-001을 수용해 root §3 검사를 닫힌 문법으로 바꿨고, version 2 리뷰의 C51-002를 locale 선언 패턴 대조로 수정했습니다. 새 head의 수동 리뷰·필수 CI·통합을 확인해야 합니다.
 - **다음 마일스톤:** T-029 통합 뒤 2026-09-29 전체 분석의 위험 목록을 Backlog(T-030부터)로 등록하고 PR 단위 우선순위를 정합니다. T-014와 locale 문서 공개 release도 그 순서에서 정합니다.
 
 ## 운영 규칙
@@ -35,23 +35,27 @@
 
 ## In Progress
 
-- [ ] **T-029 root 검색식 gate 보강 (C50-002·C51-001)**
+- [ ] **T-029 root 검색식 gate 보강 (C50-002·C51-001·C51-002)**
   - 출처·판정: PR #50 version 2 head `61e730ff36f276b6a805d0c5ce240b61889c5456` / base `f9df2fac4554ef8997695122b200df576133410f`의 **C50-002**(P3·confidence 0.95·blocking=false). Claude 댓글 `cmt_01m3nnjh7afqbaqbmnfqegktsh`은 `egrep`·`fgrep`·경로·`.exe` 표기 우회를, Luna 댓글 `cmt_01m3nnv319ezy99582103nzzt8`은 같은 원인의 shell `-c` 우회를 추가 재현했습니다. 중복 finding ID나 영구 deferral은 만들지 않습니다.
   - 우선순위·권한: 2026-09-29 사용자의 리뷰 확인 후 다음 작업 진행 요청에서 남은 인계를 우선 처리합니다. PR #50은 기본 통과 임계값을 충족해 먼저 통합했으며, 범위가 작은 같은 checker의 후속 수정을 T-014 정책 설계보다 앞에 둡니다.
   - 상위 계약·범위: [D-012 설계](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md) R-005·R-007과 C48-001의 root 정본 위임을 보강합니다. 구조 원인이 아닌 재현된 private 모듈 버그이므로 DESIGN §1의 예외에 따라 새 설계·승인 절차를 반복하지 않습니다. 상세 실행 상태는 이 항목만 소유합니다.
   - [x] 통합 기준 `8d56698033fd40a982c6cf0d6bad6dbdeaee94c1`의 임시 source fixture에서 두 별칭·POSIX 경로·`.exe`·`sh -c` 다섯 조건이 오류 없이 통과함을 재현했습니다. 실제 source gate가 호출되는 exporter·packager 경로도 대조했습니다.
   - [x] version 1(`8b9d1b092f439b2f336a8ca580a64cc1bee7c27a`)은 root §3 코드 토큰의 basename·`.exe` 정규화와 Bourne shell literal `-c` 재토큰화로 다섯 조건을 거부했습니다. 이 도구 판별 방식은 아래 C51-001 수정으로 대체했습니다.
-  - [x] PR #51 version 1 리뷰: 사용자 review `rev_01m3nxa3m3f5qbmhqez1x0waz6`와 Luna `cmt_01m3nxjg5ke64r5p1n0nhtkz8x`는 finding이 없고, Claude `cmt_01m3nyhpd4ewet66f1b04s77pw`는 **C51-001**(P3·confidence 0.95·blocking=false)을 보고했습니다. exact head에서 `sed`·`awk`·`python3 -c`·`ugrep`·`Select-String`·`pwsh -c`와 inline `sed` 검색식이 gate를 통과했습니다. 원인이 C50-002와 같은 도구 denylist이므로 2026-09-29 사용자 요청에 따라 이 PR에서 수용합니다.
-  - [x] C51-001: 도구 판별을 제거하고 root §3을 닫힌 문법으로 검사합니다. fenced code의 비어 있지 않은 비주석 줄은 AGENTS.md의 Docs·Docs test·Locale source 세 명령과 정확히 같아야 하고, fenced 밖 visible text는 모든 locale 검색식이 공유하는 `{{`·`YYYY-MM-DD`·`template-example`을 반복하지 않습니다. `template_placeholder_pattern=` 선언 거부는 유지하며 shell·Markdown 코드를 토큰화·실행하지 않습니다. root §3에 이 제약을 안내했습니다.
-  - [x] 회귀: C51-001 12건(fenced 다른 도구·wrapper·허용 명령 변형, inline·들여쓴 줄·본문 어휘)을 추가해 수정 전 실패·수정 후 통과를 확인했습니다. C50-001·C50-002 조건은 새 문법에서도 거부되고, 도구 이름 언급·HTML 주석·`#` 주석·다른 절 예시는 통과합니다. 잘못된 quotation은 별도 진단 대신 허용되지 않은 코드 줄로 거부합니다.
-  - 검증 경계: root §3 코드 줄은 허용 목록, 코드 밖 text는 공통 placeholder 어휘와 비교합니다. §3에 다른 명령을 두려면 이 checker 목록을 함께 갱신합니다. 공통 어휘가 없는 텍스트는 placeholder 검색으로 보지 않습니다. root §3 범위·source 전용 의존성과 artifact 공개 CLI·inventory·payload 계약은 상위 설계 그대로입니다.
   - [x] 기준 `8d56698`에서 시작한 작업 트리의 source docs(304 links/45 files·절 참조 77개·invariant 5개)·stable locale·문서 회귀 65건(Linux Windows 전용 1건 skip)·locale 회귀 59건·전체 unittest 210건(Linux Windows 전용 3건 skip)이 통과했습니다. rg/GNU grep 실명령 회귀도 모두 실행했습니다. en·ko의 각 30-member export inventory·byte를 기준 commit의 payload와 대조해 동일함을 확인했고 wrapper `--root`·artifact 자체 checker·tests 53건씩, maintainer 파일 미포함·diff 검사도 통과했습니다. 로컬 작업 트리 검증과 후속 exact head의 원격 CI·리뷰는 구분합니다.
+  - [x] PR #51 version 1 리뷰: 사용자 review `rev_01m3nxa3m3f5qbmhqez1x0waz6`와 Luna `cmt_01m3nxjg5ke64r5p1n0nhtkz8x`는 finding이 없고, Claude `cmt_01m3nyhpd4ewet66f1b04s77pw`는 **C51-001**(P3·confidence 0.95·blocking=false)을 보고했습니다. exact head에서 `sed`·`awk`·`python3 -c`·`ugrep`·`Select-String`·`pwsh -c`와 inline `sed` 검색식이 gate를 통과했습니다. 원인이 C50-002와 같은 도구 denylist이므로 2026-09-29 사용자 요청에 따라 이 PR에서 수용합니다.
+  - [x] C51-001: 도구 판별을 제거하고 root §3을 닫힌 문법으로 검사합니다. fenced code의 비어 있지 않은 비주석 줄은 AGENTS.md의 Docs·Docs test·Locale source 세 명령과 정확히 같아야 하고, fenced 밖 visible text는 version 2에서 모든 locale 검색식이 공유하는 `{{`·`YYYY-MM-DD`·`template-example`만 대조했습니다(아래 C51-002에서 교체). `template_placeholder_pattern=` 선언 거부는 유지하며 shell·Markdown 코드를 토큰화·실행하지 않습니다. root §3에 이 제약을 안내했습니다.
+  - [x] 회귀: C51-001 12건(fenced 다른 도구·wrapper·허용 명령 변형, inline·들여쓴 줄·본문 어휘)을 추가해 수정 전 실패·수정 후 통과를 확인했습니다. C50-001·C50-002 조건은 새 문법에서도 거부되고, 도구 이름 언급·HTML 주석·`#` 주석·다른 절 예시는 통과합니다. 잘못된 quotation은 별도 진단 대신 허용되지 않은 코드 줄로 거부합니다.
   - [x] version 1 head에서 시작한 version 2 작업 트리의 source docs(304 links/45 files·절 참조 77개·invariant 5개)·stable locale·문서 회귀 65건(Linux Windows 전용 1건 skip)·locale 회귀 60건·전체 unittest 211건(Linux Windows 전용 3건 skip)과 diff 검사가 통과했습니다. ripgrep 14.1.1·GNU grep 실명령 회귀도 실행했습니다. en·ko의 각 30-member export는 version 1 export와 byte-identical이고 wrapper `--root` 검사가 통과했습니다. 로컬 작업 트리 검증과 version 2 exact head의 원격 CI·리뷰는 구분합니다.
-  - [ ] version 2 exact head의 수동 리뷰·Windows/Linux CI와 Origin/GitHub 통합을 확인해 C50-002·C51-001 해소를 확정합니다.
+  - [x] PR #51 version 2 리뷰: 사용자 review `rev_01m3nzyt1met4amk0jtex9gpaq`는 finding이 없고, Codex review `rev_01m3p0263ee2mbjrp7bx1xa8gf`(inline `cmt_01m3p0263yfr0bt8b7y4yqynv2`)는 **C51-002**(P3·confidence 0.99·blocking=true)를, Luna 재리뷰 `cmt_01m3p0dk24fm5b46a8hh0ahe5p`는 같은 조건을 확인했습니다. version 2가 코드 밖 text를 공통 세 토큰으로만 대조해 `Customize for the project`·`프로젝트에 맞게 작성`·`Adapt to the project`만 쓴 inline 검색식이 version 1과 달리 통과했습니다. 이번 변경이 만든 회귀이므로 수용합니다.
+  - [x] C51-002: root 전용 어휘 목록을 두지 않고, locale 검사가 검증한 각 locale의 `template_placeholder_pattern` 선언을 그대로 root §3 fenced 밖 visible text에 대조합니다. 선언이 없거나 잘못된 locale은 기존 locale 오류로 실패합니다. root §3 안내 문구도 이에 맞췄습니다.
+  - [x] 회귀: C51-002의 세 inline 사례와 ko 예시 어휘 본문 사례, locale 선언에 새 대안을 추가하면 root 본문에서도 거부되는 단일 출처 회귀를 추가했습니다. 새 C51-002 사례 4건과 단일 출처 회귀는 version 2 checker에서 실패하고 수정 후 통과합니다.
+  - 검증 경계: root §3 코드 줄은 허용 목록, 코드 밖 text는 각 locale의 선언 패턴과 비교합니다. §3에 다른 명령을 두려면 이 checker 목록을 함께 갱신합니다. locale 선언 패턴에 걸리지 않는 텍스트는 placeholder 검색으로 보지 않으며, fenced 안 `#` 주석은 기존처럼 허용합니다. root §3 범위·source 전용 의존성과 artifact 공개 CLI·inventory·payload 계약은 상위 설계 그대로입니다.
+  - [x] version 2 head에서 시작한 version 3 작업 트리의 source docs(304 links/45 files·절 참조 77개·invariant 5개)·stable locale·문서 회귀 65건(Linux Windows 전용 1건 skip)·locale 회귀 61건·전체 unittest 212건(Linux Windows 전용 3건 skip)과 diff 검사가 통과했습니다. ripgrep·GNU grep 실명령 회귀도 실행했습니다. en·ko의 각 30-member export는 version 1 export와 byte-identical이고 wrapper `--root` 검사가 통과했습니다. version 2 exact head의 Windows #63·Linux #48 성공은 version 3 통과 근거로 쓰지 않습니다.
+  - [ ] version 3 exact head의 수동 리뷰·Windows/Linux CI와 Origin/GitHub 통합을 확인해 C50-002·C51-001·C51-002 해소를 확정합니다.
 
 ## Next
 
-T-029의 C50-002·C51-001 보강을 리뷰·통합한 뒤 위험 목록을 Backlog로 등록합니다. T-014 리뷰 ID 정책은 다음 독립 설계 후보로 유지하며, locale payload 공개의 version·candidate/published gate는 별도 release 작업에서 확정합니다.
+T-029의 C50-002·C51-001·C51-002 보강을 리뷰·통합한 뒤 위험 목록을 Backlog로 등록합니다. T-014 리뷰 ID 정책은 다음 독립 설계 후보로 유지하며, locale payload 공개의 version·candidate/published gate는 별도 release 작업에서 확정합니다.
 
 ## Blocked
 
@@ -76,7 +80,7 @@ T-029의 C50-002·C51-001 보강을 리뷰·통합한 뒤 위험 목록을 Backl
 | 10 | `codex/t022-install-target-invariant` | T-022: 승인된 install 대상 계약을 REVIEW/BUGBOT 불변조건으로 등록 | **Integrated** — Origin PR #46 merge `4c743f1`와 GitHub `main` fast-forward 확인; C46-001 해소 |
 | 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 유지·변경을 비교·합의 | **Integrated** — Origin PR #47 merge `ed3438f`와 GitHub `main` fast-forward 확인; A 유지·별도 구현 없음 |
 | 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | **Integrated** — Accepted A(D-012), Origin PR #48 merge `4b8ccc1`·GitHub fast-forward 확인. 구현 1 PR #49 merge `f9df2fa`, 구현 2 PR #50 merge `8d56698`·Windows #60·Linux #45 통과; T-013 구현·통합 완료 |
-| 13 | `codex/t029-root-search-command-forms` | T-029: C50-002·C51-001 root 검색식 gate 보강 | **In Progress** — PR #50 비차단 인계를 아래 정책 설계보다 먼저 처리; 상세는 In Progress 항목 |
+| 13 | `codex/t029-root-search-command-forms` | T-029: C50-002·C51-001·C51-002 root 검색식 gate 보강 | **In Progress** — PR #50 비차단 인계를 아래 정책 설계보다 먼저 처리; 상세는 In Progress 항목 |
 | 14 | `codex/t014-review-id-policy` | T-014: reviewer-qualified ID와 canonical ID 정책을 합의·반영 | REVIEW/REVIEW_ROUND 영향 검토 후 단일 정책 PR |
 
 - [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다.

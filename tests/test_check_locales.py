@@ -302,10 +302,16 @@ class LocaleFixtureTests(unittest.TestCase):
             ('```sh\npwsh -c "grep -rn x ."\n```\n', "code line"),
             ("```sh\nsh -c \"printf '%s' release\"\n```\n", "code line"),
             ("```sh\npython3 scripts/check-docs.py --root .\n```\n", "code line"),
-            ("적용 뒤 `sed -n '/YYYY-MM-DD/p' README.md`를 실행합니다.\n", "vocabulary"),
-            ("    sed -n '/YYYY-MM-DD/p' README.md\n", "vocabulary"),
-            ("`{{PROJECT_NAME}}`과 날짜를 root에서 따로 확인합니다.\n", "vocabulary"),
-            ("`template-example` 표식도 root에서 찾습니다.\n", "vocabulary"),
+            ("적용 뒤 `sed -n '/YYYY-MM-DD/p' README.md`를 실행합니다.\n", "search pattern"),
+            ("    sed -n '/YYYY-MM-DD/p' README.md\n", "search pattern"),
+            ("`{{PROJECT_NAME}}`과 날짜를 root에서 따로 확인합니다.\n", "search pattern"),
+            ("`template-example:project-invariant` 표식도 root에서 찾습니다.\n", "search pattern"),
+            # C51-002: locale-only vocabulary without the shared tokens.
+            ("적용 뒤 `grep -rn 'Customize for the project' --include='*.md' .`를 실행합니다.\n",
+             "search pattern"),
+            ("적용 뒤 `grep -rn '프로젝트에 맞게 작성' --include='*.md' .`를 실행합니다.\n", "search pattern"),
+            ("`rg 'Adapt to the project' .`\n", "search pattern"),
+            ("root에서도 예시 결정 행을 따로 찾습니다.\n", "search pattern"),
         ):
             with self.subTest(snippet=snippet):
                 path.write_text(original.replace("## 4. ", snippet + "\n## 4. ", 1),
@@ -313,6 +319,19 @@ class LocaleFixtureTests(unittest.TestCase):
                 errors = self.errors()
                 self.assert_error("independent placeholder search in section 3", errors)
                 self.assertTrue(any(reason in error for error in errors), errors)
+
+    def test_root_search_gate_follows_the_declared_locale_patterns(self) -> None:
+        # The root text check reads each locale declaration instead of a copied word list.
+        guide = self.path("locales/en/docs/TEMPLATE_GUIDE.md")
+        pattern = self.search_pattern("en")
+        guide.write_text(guide.read_text(encoding="utf-8").replace(pattern, pattern + "|Fill in later", 1),
+                         encoding="utf-8", newline="\n")
+        self.assertEqual(self.errors(), [])
+        path = self.path("docs/TEMPLATE_GUIDE.md")
+        original = path.read_text(encoding="utf-8")
+        path.write_text(original.replace("## 4. ", "root에서 `Fill in later`도 찾습니다.\n\n## 4. ", 1),
+                        encoding="utf-8", newline="\n")
+        self.assert_error("text matches a locale placeholder search pattern: root에서 `Fill in later`")
 
     def test_root_search_gate_allows_only_maintainer_checks_in_code(self) -> None:
         path = self.path("docs/TEMPLATE_GUIDE.md")

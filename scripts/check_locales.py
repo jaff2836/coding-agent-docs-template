@@ -85,13 +85,12 @@ PLACEHOLDER_SEARCH_SENTINELS: Mapping[str, Tuple[str, ...]] = {
 }
 # Root guide section 3 delegates placeholder searches to the locale guides. Its code
 # may hold only the maintainer checks from AGENTS.md, and its other visible text must
-# not repeat the placeholder tokens that every locale search pattern shares.
+# not match any locale's declared placeholder search pattern.
 ROOT_SEARCH_SECTION_COMMANDS = frozenset((
     "python3 scripts/check-docs.py",
     "python3 -m unittest discover -s tests -p 'test_check_docs.py' -v",
     "python3 scripts/check-locales.py --require-stable",
 ))
-ROOT_SEARCH_VOCABULARY = ("{{", "YYYY-MM-DD", "template-example")
 
 ALLOWED_STATUSES = frozenset(("complete", "experimental", "stale"))
 ADOPTION_POLICIES = frozenset(("copy", "decide", "merge"))
@@ -1425,7 +1424,10 @@ def _fenced_code_blocks(text: str) -> List[Tuple[str, str]]:
 
 def _check_placeholder_searches(
     texts: Mapping[Tuple[str, str], str], errors: List[str]
-) -> None:
+) -> List[re.Pattern[str]]:
+    """Check each locale search declaration and return the usable patterns."""
+
+    patterns = []
     for tag, sentinels in PLACEHOLDER_SEARCH_SENTINELS.items():
         text = texts.get((tag, "docs/TEMPLATE_GUIDE.md"))
         if text is None:
@@ -1459,6 +1461,8 @@ def _check_placeholder_searches(
             continue
         if regex.search("") is not None:
             errors.append("%s placeholder search pattern must not match empty text" % label)
+        else:
+            patterns.append(regex)
         for sentinel in sentinels:
             if regex.search(sentinel) is None:
                 errors.append("%s placeholder search misses sentinel: %r" % (label, sentinel))
@@ -1490,9 +1494,12 @@ def _check_placeholder_searches(
                     "%s %s must use the quoted shared pattern as its regex operand "
                     "exactly once after the declaration" % (label, command)
                 )
+    return patterns
 
 
-def _check_root_search_delegation(root: Path, errors: List[str]) -> None:
+def _check_root_search_delegation(
+    root: Path, patterns: Sequence[re.Pattern[str]], errors: List[str]
+) -> None:
     path = root / "docs/TEMPLATE_GUIDE.md"
     try:
         resolved = path.resolve(strict=True)
@@ -1528,10 +1535,10 @@ def _check_root_search_delegation(root: Path, errors: List[str]) -> None:
     vocabulary = [
         line.strip()
         for line, context in zip(section.splitlines(), _markdown_line_context(section))
-        if all(context) and any(token in line for token in ROOT_SEARCH_VOCABULARY)
+        if all(context) and any(pattern.search(line) for pattern in patterns)
     ]
     if vocabulary:
-        reasons.append("text repeats locale search vocabulary: %s" % vocabulary[0])
+        reasons.append("text matches a locale placeholder search pattern: %s" % vocabulary[0])
     for reason in reasons:
         errors.append(
             "maintainer guide must not define an independent placeholder search "
@@ -1972,8 +1979,8 @@ def check_locales(root: Path = ROOT, require_stable: bool = False) -> List[str]:
     _check_structural_parity(manifest, texts, errors)
     _check_markers(manifest, texts, errors)
     _check_commands(manifest, texts, errors)
-    _check_placeholder_searches(texts, errors)
-    _check_root_search_delegation(root, errors)
+    patterns = _check_placeholder_searches(texts, errors)
+    _check_root_search_delegation(root, patterns, errors)
     _check_skills(manifest, texts, errors)
     _check_skill_fixture_observables(manifest, texts, common_texts, errors)
     _check_invariant_contract(manifest, texts, errors)
