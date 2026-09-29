@@ -1483,6 +1483,42 @@ def _check_placeholder_searches(
                 )
 
 
+def _root_code_has_search(code: str, *, inline: bool) -> bool:
+    """Inspect literal search tools and Bourne shell -c strings without execution."""
+
+    pending = [code]
+    while pending:
+        lexer = shlex.shlex(pending.pop(), posix=True, punctuation_chars=True)
+        lexer.whitespace_split = True
+        words = list(lexer)  # Invalid outer or nested quotations reach the caller.
+        if inline and len(words) == 1:
+            return False  # An inline tool name is a mention, not a search recipe.
+        inline = False
+        names = []
+        for word in words:
+            name = word.replace("\\", "/").rsplit("/", 1)[-1].lower()
+            names.append(name[:-4] if name.endswith(".exe") else name)
+        if {"rg", "grep", "egrep", "fgrep"}.intersection(names):
+            return True
+        for index, name in enumerate(names):
+            if name not in {"sh", "bash", "dash", "ash", "ksh", "zsh"}:
+                continue
+            cursor = index + 1
+            while cursor < len(words) - 1:
+                option = words[cursor]
+                if re.fullmatch(r"-[A-Za-z]*c[A-Za-z]*", option):
+                    pending.append(words[cursor + 1])
+                    break
+                if option == "--" or not option.startswith(("-", "+")):
+                    break
+                # Bash option values must not hide a later -c operand.
+                takes_value = option in {"--rcfile", "--init-file"} or re.fullmatch(
+                    r"[-+][A-Za-z]*[oO]", option
+                )
+                cursor += 2 if takes_value else 1
+    return False
+
+
 def _check_root_search_delegation(root: Path, errors: List[str]) -> None:
     path = root / "docs/TEMPLATE_GUIDE.md"
     try:
@@ -1511,18 +1547,12 @@ def _check_root_search_delegation(root: Path, errors: List[str]) -> None:
         if language in {"regex", "regexp"}:
             independent = True
             break
-        # Tokenize without executing code: git options, wrappers and shell separators
-        # must not create another search recipe in this delegation section.
-        lexer = shlex.shlex(code, posix=True, punctuation_chars=True)
-        lexer.whitespace_split = True
         try:
-            words = list(lexer)
+            if _root_code_has_search(code, inline=language == "inline"):
+                independent = True
+                break
         except ValueError as error:
             errors.append("maintainer search section has invalid code quotation: %s" % error)
-            continue
-        if (language != "inline" or len(words) > 1) and {"rg", "grep"}.intersection(words):
-            independent = True
-            break
     if independent:
         errors.append("maintainer guide must not define an independent placeholder search in section 3")
 

@@ -256,6 +256,53 @@ class LocaleFixtureTests(unittest.TestCase):
         path.write_text(altered + "\n" + unrelated, encoding="utf-8", newline="\n")
         self.assertEqual(self.errors(), [])
 
+    def test_root_search_gate_normalizes_search_tool_names(self) -> None:
+        path = self.path("docs/TEMPLATE_GUIDE.md")
+        original = path.read_text(encoding="utf-8")
+        for tool in ("egrep", "fgrep", "/usr/bin/grep", "/usr/bin/egrep", "grep.exe",
+                     "RG.EXE", '"C:\\Tools\\grep.exe"', "'/opt/search tools/rg'",
+                     "'/opt/search tools/FGREP.EXE'"):
+            command = tool + " -n YYYY-MM-DD README.md"
+            for snippet in ("```sh\n" + command + "\n```\n", "`" + command + "`\n"):
+                with self.subTest(tool=tool, snippet=snippet):
+                    path.write_text(original.replace("## 4. ", snippet + "\n## 4. ", 1),
+                                    encoding="utf-8", newline="\n")
+                    self.assert_error("maintainer guide must not define an independent placeholder search")
+
+    def test_root_search_gate_checks_literal_shell_c_commands(self) -> None:
+        path = self.path("docs/TEMPLATE_GUIDE.md")
+        original = path.read_text(encoding="utf-8")
+        for command in (
+            '''sh -c "git grep -nE 'YYYY-MM-DD|Customize for the project' -- '*.md'"''',
+            '''bash -lc "grep -rnE 'YYYY-MM-DD' ."''',
+            '''/bin/bash --norc -euo pipefail -c "grep -rnE 'YYYY-MM-DD' ."''',
+            '''bash --rcfile /tmp/bashrc -c "grep -rnE 'YYYY-MM-DD' ."''',
+            '''env LC_ALL=C SH.EXE -c "grep.exe -rnE 'YYYY-MM-DD' ."''',
+            '''"C:\\Tools\\bash.exe" -c "egrep -rn 'YYYY-MM-DD' ."''',
+            '''sh -c "bash -c 'git grep -nE YYYY-MM-DD'"''',
+            '''sh -c "grep"''',
+        ):
+            for snippet in ("```sh\n" + command + "\n```\n", "`" + command + "`\n"):
+                with self.subTest(command=command, snippet=snippet):
+                    path.write_text(original.replace("## 4. ", snippet + "\n## 4. ", 1),
+                                    encoding="utf-8", newline="\n")
+                    self.assert_error("maintainer guide must not define an independent placeholder search")
+
+    def test_root_search_gate_keeps_benign_shell_wrappers_and_reports_nested_bad_quotes(self) -> None:
+        path = self.path("docs/TEMPLATE_GUIDE.md")
+        original = path.read_text(encoding="utf-8")
+        benign = (
+            "`egrep`·`fgrep`·`grep.exe` 이름 언급입니다.\n"
+            '''```sh\nsh -c "printf '%s' release"\nbash -c "# grep -rnE 'YYYY-MM-DD' ."\n```\n'''
+        )
+        path.write_text(original.replace("## 4. ", benign + "\n## 4. ", 1),
+                        encoding="utf-8", newline="\n")
+        self.assertEqual(self.errors(), [])
+        malformed = '''```sh\nsh -c "grep -rnE 'YYYY-MM-DD ."\n```\n'''
+        path.write_text(original.replace("## 4. ", malformed + "\n## 4. ", 1),
+                        encoding="utf-8", newline="\n")
+        self.assert_error("maintainer search section has invalid code quotation")
+
     def assert_search_engine(self, engine: str) -> None:
         program = shutil.which(engine)
         if program is None:
