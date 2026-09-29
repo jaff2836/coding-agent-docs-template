@@ -131,6 +131,10 @@ class ExportTemplateTests(unittest.TestCase):
         shutil.copytree(
             REPOSITORY_ROOT / "template", fixture / "template", ignore=_ignore_generated
         )
+        fixture.joinpath("docs").mkdir()
+        shutil.copy2(
+            REPOSITORY_ROOT / "docs/TEMPLATE_GUIDE.md", fixture / "docs/TEMPLATE_GUIDE.md"
+        )
         (fixture / "locales/en/README.md").unlink()
         output = self.temp_root / "failed-output"
         with self.assertRaisesRegex(EXPORT_TEMPLATE.ExportError, "missing source file"):
