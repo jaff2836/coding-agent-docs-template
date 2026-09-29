@@ -9,7 +9,7 @@
 - **Project:** coding-agent-docs-template
 - **Status:** Active — immutable Latest `v2.3.3` 공개와 Linux published 검증 완료
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-28
+- **Last reviewed:** 2026-09-29
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
 
 ## 1. Context
@@ -208,6 +208,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 실행 상태와 우선순위는 [전역 TODO](./02-TODO.md)가 소유합니다. 이 절에는 미해결 판단만 남기며, 확정된 계약은 §8 Decisions와 연결된 설계에서 확인합니다.
 
 - 병렬 리뷰 finding ID 충돌 방지 정책은 [TODO T-014](./02-TODO.md#backlog)에서 합의해야 합니다.
+- TODO·PLAN의 merge 결합 서술 범위와 PR 원장 방식은 [TODO T-030](./02-TODO.md#backlog)에서 합의해야 합니다.
 
 ## 12. Rejected or Deferred Ideas
 
