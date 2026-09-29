@@ -203,7 +203,8 @@ class LocaleFixtureTests(unittest.TestCase):
             "```regex\nYYYY-MM-DD|Customize for the project\n```\n",
         ):
             with self.subTest(snippet=snippet):
-                path.write_text(original + "\n" + snippet, encoding="utf-8", newline="\n")
+                altered = original.replace("## 4. ", snippet + "\n## 4. ", 1)
+                path.write_text(altered, encoding="utf-8", newline="\n")
                 self.assert_error("maintainer guide must not define an independent placeholder search")
         path.write_text(original + "\nrg 또는 grep의 정본은 locale 가이드입니다.\n", encoding="utf-8", newline="\n")
         self.assertEqual(self.errors(), [])
@@ -214,6 +215,46 @@ class LocaleFixtureTests(unittest.TestCase):
         self.assert_error("cannot read maintainer docs/TEMPLATE_GUIDE.md")
         path.mkdir()
         self.assert_error("cannot read maintainer docs/TEMPLATE_GUIDE.md")
+
+    def test_root_search_gate_rejects_git_grep_and_command_wrappers(self) -> None:
+        path = self.path("docs/TEMPLATE_GUIDE.md")
+        original = path.read_text(encoding="utf-8")
+        for command in (
+            "git grep -nE 'YYYY-MM-DD|Customize for the project' -- '*.md'",
+            "git -C . --no-pager grep -nE 'YYYY-MM-DD' -- '*.md'",
+            "git \\" + "\n  grep -nE 'YYYY-MM-DD' -- '*.md'",
+            "command rg 'YYYY-MM-DD' .",
+            "env LC_ALL=C grep -rnE 'YYYY-MM-DD' .",
+            "cd .;grep -rnE 'YYYY-MM-DD' .",
+        ):
+            snippets = ["```sh\n" + command + "\n```\n"]
+            if "\n" not in command:
+                snippets.append("`" + command + "`\n")
+            for snippet in snippets:
+                with self.subTest(snippet=snippet):
+                    altered = original.replace("## 4. ", snippet + "\n## 4. ", 1)
+                    path.write_text(altered, encoding="utf-8", newline="\n")
+                    self.assert_error("maintainer guide must not define an independent placeholder search")
+        malformed = "```sh\ngit grep -nE 'YYYY-MM-DD .\n```\n"
+        path.write_text(original.replace("## 4. ", malformed + "\n## 4. ", 1),
+                        encoding="utf-8", newline="\n")
+        self.assert_error("maintainer search section has invalid code quotation")
+
+    def test_root_search_gate_allows_unrelated_sections_and_search_mentions(self) -> None:
+        path = self.path("docs/TEMPLATE_GUIDE.md")
+        original = path.read_text(encoding="utf-8")
+        mention = (
+            "`rg` 또는 `grep`의 정본은 locale 가이드입니다.\n"
+            "<!--\n```sh\ngit grep -nE 'YYYY-MM-DD'\n```\n-->\n"
+            "```sh\n# git grep -nE 'YYYY-MM-DD'\n```\n"
+        )
+        unrelated = (
+            "```sh\ngit grep -n 'release' -- '*.md'\ngrep -n 'release' CHANGELOG.md\n```\n"
+            "```regex\nrelease-[0-9]+\n```\n"
+        )
+        altered = original.replace("## 4. ", mention + "\n## 4. ", 1)
+        path.write_text(altered + "\n" + unrelated, encoding="utf-8", newline="\n")
+        self.assertEqual(self.errors(), [])
 
     def assert_search_engine(self, engine: str) -> None:
         program = shutil.which(engine)

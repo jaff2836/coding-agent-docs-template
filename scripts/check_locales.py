@@ -1496,21 +1496,35 @@ def _check_root_search_delegation(root: Path, errors: List[str]) -> None:
     text = _check_utf8_lf_file(resolved, "maintainer", errors)
     if text is None:
         return
-    section = _replacement_section(text)
-    targets = _relative_link_target_sequence(section or "")
+    section = _mask_html_comments(_replacement_section(text) or "")
+    targets = _relative_link_target_sequence(section)
     for tag in PLACEHOLDER_SEARCH_SENTINELS:
         target = "../locales/%s/docs/TEMPLATE_GUIDE.md" % tag
         if target not in targets:
             errors.append("maintainer search section must delegate to %s" % target)
-    independent = re.search(
-        r"\btemplate_placeholder_pattern[ \t]*=", _mask_html_comments(text)
-    ) or any(
-        language in {"regex", "regexp"}
-        or re.search(r"(?m)^[ \t]*(?:rg|grep)(?:[ \t]|$)", code)
-        for language, code in _fenced_code_blocks(text)
-    )
+    independent = bool(re.search(r"\btemplate_placeholder_pattern[ \t]*=", section))
+    blocks = _fenced_code_blocks(section)
+    for line, context in zip(section.splitlines(), _markdown_line_context(section)):
+        if all(context):
+            blocks.extend(("inline", code) for code in INLINE_CODE_RE.findall(line))
+    for language, code in blocks:
+        if language in {"regex", "regexp"}:
+            independent = True
+            break
+        # Tokenize without executing code: git options, wrappers and shell separators
+        # must not create another search recipe in this delegation section.
+        lexer = shlex.shlex(code, posix=True, punctuation_chars=True)
+        lexer.whitespace_split = True
+        try:
+            words = list(lexer)
+        except ValueError as error:
+            errors.append("maintainer search section has invalid code quotation: %s" % error)
+            continue
+        if (language != "inline" or len(words) > 1) and {"rg", "grep"}.intersection(words):
+            independent = True
+            break
     if independent:
-        errors.append("maintainer guide must not define an independent placeholder search")
+        errors.append("maintainer guide must not define an independent placeholder search in section 3")
 
 
 def _frontmatter_fields(text: str) -> Optional[Dict[str, List[str]]]:

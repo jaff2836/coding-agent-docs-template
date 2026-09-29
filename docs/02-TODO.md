@@ -8,7 +8,7 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-28 (KST)
+- **Last reviewed:** 2026-09-29 (KST)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
 - **Integration target:** local `main`; 공개 저장소 target `jaff2836/coding-agent-docs-template`; v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
@@ -17,7 +17,7 @@
 - **Name:** T-013 placeholder 정본·검증 구현 2
 - **Goal:** 승인된 D-012의 R-005~R-007과 C48-001 인계를 구현·검증하고 별도 PR로 통합함
 - **Target:** `codex/t013-placeholder-contract-regression` (Origin·GitHub `main` `f9df2fac4554ef8997695122b200df576133410f` 기준)
-- **Status:** In Progress — 구현 1 PR #49의 세 수동 리뷰·필수 Windows/Linux CI와 Origin/GitHub 통합을 확인했습니다. 구현 2의 브랜치 작업·로컬 검증·후속 PR 통합은 아래에서 구분합니다.
+- **Status:** In Progress — 구현 1 PR #49는 통합됐습니다. 구현 2 PR #50 version 1의 차단 finding C50-001을 수용해 수정했으며 새 head의 수동 리뷰·필수 CI·통합을 확인해야 합니다.
 - **다음 마일스톤:** 구현 2 통합 뒤 T-013을 닫습니다. locale 문서 공개는 별도 release 작업으로 진행하며 T-014는 다음 독립 후보입니다.
 
 ## 운영 규칙
@@ -58,7 +58,11 @@
     - [x] 기존 locale 검사에 선언·순서·regex operand·독립 sentinel과 root 정본 위임 검사를 연결했습니다. 전체 regex 복제나 shell 실행 없이 확인하며 source export·package에도 같은 gate가 적용됩니다. source fixture에 필요한 root 안내를 포함했습니다.
     - [x] 회귀 11건을 추가해 어휘 누락·missing/duplicate/dynamic 선언·잘못된 참조·주석/fence decoy·root 독립 검색식·missing guide를 거부합니다. 실제 rg/GNU grep 명령을 인자 배열로 실행해 Owner 교체 후 남은 날짜·숨김 Markdown·Git 내부 제외·guide 제외·복사용 `_template` 결과를 확인합니다. 도구가 없는 환경은 명시적으로 skip하며 설치하거나 다른 도구로 통과를 가정하지 않습니다.
     - [x] 기준 `f9df2fa`에서 시작한 현재 브랜치 작업 트리의 source docs(303 links/45 files·절 참조 76개·invariant 5개)·stable locale·문서 회귀 65건·locale 회귀 54건·전체 unittest 205건이 통과했습니다. Linux에서는 Windows 전용 3건 skip이며 rg/GNU grep 실제 명령 회귀는 모두 실행했습니다. en/ko의 30-member export는 기준과 같은 inventory이고 `docs/TEMPLATE_GUIDE.md`만 byte가 달라졌습니다. 각 export에서 wrapper `--root`·artifact 자체 checker·tests 53건, maintainer 파일 미포함과 diff 검사를 확인했습니다. PR exact head의 원격 Windows/Linux CI·수동 리뷰·통합은 후속 확인합니다.
-    - [ ] 구현 2 PR의 수동 리뷰·exact head Windows/Linux CI와 Origin/GitHub 통합을 확인합니다.
+    - [x] PR #50 version 1 head `9bb68d2c786195e23cb25a13e772c01d76eb058d` / base `f9df2fa`의 세 수동 리뷰와 Windows #59·Linux #44 CI를 확인했습니다. 두 리뷰는 finding이 없고 Luna 댓글 `cmt_01m3nb0mf6f9f9zq9zbdy7pcm8`은 **C50-001**(P2·confidence 0.98·blocking=true)을 보고했습니다. root 검색 절에 `git grep`을 추가해도 통과하는 조건을 재현했으므로 병합하지 않고 수정합니다.
+    - [x] C50-001: root 독립 검색 검사를 실제 §3으로 한정하고 shell 코드를 실행하지 않는 토큰 검사로 바꿨습니다. fenced·inline의 `git grep`, Git 옵션·줄 이어짐·wrapper·shell separator 형태를 거부하며 주석·단순 도구 이름 언급·다른 절의 무관한 검색 예시는 허용합니다. 잘못된 quotation은 오류로 진단합니다. 추가 회귀 2건은 수정 전 실패·수정 후 통과를 확인했습니다.
+    - [x] 수정 작업 트리의 source docs·stable locale·문서 회귀 65건(Linux Windows 전용 1건 skip)·locale 회귀 56건·전체 unittest 207건(Linux Windows 전용 3건 skip)이 통과했습니다. rg/GNU grep 실명령 회귀는 모두 실행했으며 version 1 이후 locale·common payload byte와 inventory는 변경하지 않았습니다. 새 head의 원격 CI·재리뷰 결과는 이전 head의 성공과 구분합니다.
+    - PR #50 Claude의 비finding 인계(`cmt_01m3nar359fxebfbewtjep1f39`): root 검사 범위 권고는 C50-001 수정에 반영합니다. 다음 release-prep의 locale guide 이력에 검색 선언 단일화·Bash 전제·TG 삭제 전 보관을 기록하고 artifact 변경 파일이 locale별 `docs/TEMPLATE_GUIDE.md`뿐임을 명시합니다. 공개 version·시점은 아직 확정하지 않았습니다.
+    - [ ] 구현 2 수정 head의 수동 재리뷰·exact head Windows/Linux CI와 Origin/GitHub 통합을 확인하고 C48-001·C50-001 해소를 확정합니다.
   - 완료 경계: 두 구현 PR의 검증과 Origin/GitHub 통합을 확인해야 T-013을 닫습니다. locale payload 변경을 공개하는 후속 release·version·게시 시점은 별도 작업이며 설계 승인으로 완료 처리하지 않습니다.
 
 ## Next
