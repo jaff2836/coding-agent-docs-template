@@ -238,7 +238,7 @@ class LocaleFixtureTests(unittest.TestCase):
         malformed = "```sh\ngit grep -nE 'YYYY-MM-DD .\n```\n"
         path.write_text(original.replace("## 4. ", malformed + "\n## 4. ", 1),
                         encoding="utf-8", newline="\n")
-        self.assert_error("maintainer search section has invalid code quotation")
+        self.assert_error("not a maintainer check command: git grep -nE 'YYYY-MM-DD .")
 
     def test_root_search_gate_allows_unrelated_sections_and_search_mentions(self) -> None:
         path = self.path("docs/TEMPLATE_GUIDE.md")
@@ -256,7 +256,7 @@ class LocaleFixtureTests(unittest.TestCase):
         path.write_text(altered + "\n" + unrelated, encoding="utf-8", newline="\n")
         self.assertEqual(self.errors(), [])
 
-    def test_root_search_gate_normalizes_search_tool_names(self) -> None:
+    def test_root_search_gate_rejects_search_tool_spellings(self) -> None:
         path = self.path("docs/TEMPLATE_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         for tool in ("egrep", "fgrep", "/usr/bin/grep", "/usr/bin/egrep", "grep.exe",
@@ -269,7 +269,7 @@ class LocaleFixtureTests(unittest.TestCase):
                                     encoding="utf-8", newline="\n")
                     self.assert_error("maintainer guide must not define an independent placeholder search")
 
-    def test_root_search_gate_checks_literal_shell_c_commands(self) -> None:
+    def test_root_search_gate_rejects_shell_wrapped_searches(self) -> None:
         path = self.path("docs/TEMPLATE_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         for command in (
@@ -280,7 +280,7 @@ class LocaleFixtureTests(unittest.TestCase):
             '''env LC_ALL=C SH.EXE -c "grep.exe -rnE 'YYYY-MM-DD' ."''',
             '''"C:\\Tools\\bash.exe" -c "egrep -rn 'YYYY-MM-DD' ."''',
             '''sh -c "bash -c 'git grep -nE YYYY-MM-DD'"''',
-            '''sh -c "grep"''',
+            '''sh -c "grep -rnE 'YYYY-MM-DD ."''',
         ):
             for snippet in ("```sh\n" + command + "\n```\n", "`" + command + "`\n"):
                 with self.subTest(command=command, snippet=snippet):
@@ -288,20 +288,44 @@ class LocaleFixtureTests(unittest.TestCase):
                                     encoding="utf-8", newline="\n")
                     self.assert_error("maintainer guide must not define an independent placeholder search")
 
-    def test_root_search_gate_keeps_benign_shell_wrappers_and_reports_nested_bad_quotes(self) -> None:
+    def test_root_search_gate_rejects_other_search_tools_and_vocabulary(self) -> None:
+        # C51-001: no search-tool list can be complete, so any spelling must be rejected.
         path = self.path("docs/TEMPLATE_GUIDE.md")
         original = path.read_text(encoding="utf-8")
-        benign = (
-            "`egrep`·`fgrep`·`grep.exe` 이름 언급입니다.\n"
-            '''```sh\nsh -c "printf '%s' release"\nbash -c "# grep -rnE 'YYYY-MM-DD' ."\n```\n'''
+        for snippet, reason in (
+            ("```sh\nsed -n '/YYYY-MM-DD\\|Customize for the project/p' README.md\n```\n", "code line"),
+            ("```sh\nawk '/YYYY-MM-DD|Customize for the project/' README.md\n```\n", "code line"),
+            ('```sh\npython3 -c "import re, sys; print(re.findall(\'x\', sys.argv[1]))" README.md\n```\n',
+             "code line"),
+            ("```sh\nugrep -rn 'Customize for the project' --include='*.md' .\n```\n", "code line"),
+            ("```powershell\nGet-ChildItem -Recurse -Filter *.md | Select-String 'x'\n```\n", "code line"),
+            ('```sh\npwsh -c "grep -rn x ."\n```\n', "code line"),
+            ("```sh\nsh -c \"printf '%s' release\"\n```\n", "code line"),
+            ("```sh\npython3 scripts/check-docs.py --root .\n```\n", "code line"),
+            ("적용 뒤 `sed -n '/YYYY-MM-DD/p' README.md`를 실행합니다.\n", "vocabulary"),
+            ("    sed -n '/YYYY-MM-DD/p' README.md\n", "vocabulary"),
+            ("`{{PROJECT_NAME}}`과 날짜를 root에서 따로 확인합니다.\n", "vocabulary"),
+            ("`template-example` 표식도 root에서 찾습니다.\n", "vocabulary"),
+        ):
+            with self.subTest(snippet=snippet):
+                path.write_text(original.replace("## 4. ", snippet + "\n## 4. ", 1),
+                                encoding="utf-8", newline="\n")
+                errors = self.errors()
+                self.assert_error("independent placeholder search in section 3", errors)
+                self.assertTrue(any(reason in error for error in errors), errors)
+
+    def test_root_search_gate_allows_only_maintainer_checks_in_code(self) -> None:
+        path = self.path("docs/TEMPLATE_GUIDE.md")
+        original = path.read_text(encoding="utf-8")
+        allowed = (
+            "`egrep`·`fgrep`·`grep.exe`·`sh -c` 이름 언급입니다.\n"
+            "```sh\n# Run each check from the repository root.\n\n"
+            "python3 scripts/check-locales.py --require-stable\n"
+            "  python3 scripts/check-docs.py\n```\n"
         )
-        path.write_text(original.replace("## 4. ", benign + "\n## 4. ", 1),
+        path.write_text(original.replace("## 4. ", allowed + "\n## 4. ", 1),
                         encoding="utf-8", newline="\n")
         self.assertEqual(self.errors(), [])
-        malformed = '''```sh\nsh -c "grep -rnE 'YYYY-MM-DD ."\n```\n'''
-        path.write_text(original.replace("## 4. ", malformed + "\n## 4. ", 1),
-                        encoding="utf-8", newline="\n")
-        self.assert_error("maintainer search section has invalid code quotation")
 
     def assert_search_engine(self, engine: str) -> None:
         program = shutil.which(engine)
