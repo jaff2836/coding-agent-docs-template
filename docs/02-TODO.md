@@ -16,8 +16,8 @@
 
 - **Name:** T-030·T-014 기록 시점·리뷰 finding ID 계약 설계
 - **Goal:** merge 결합 서술·PR 원장과 리뷰어 슬롯 finding ID·리뷰 근거의 head 결합을 한 설계로 합의함
-- **Target:** `claude/t030-t014-contract-design` (T-032 PR #54 위에 stack)
-- **Status:** In Progress — [설계](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md)가 D-013·D-014로 승인됐습니다. 설계 PR #55의 리뷰·통합이 남았습니다. T-032는 PR #54의 재리뷰·통합이 남았습니다.
+- **Target:** `claude/t030-t014-contract-design` (Origin·GitHub `main` `e55fcd991d5cf368d6467d842f02f35ff707107c` 기준)
+- **Status:** In Progress — [설계](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md)가 D-013·D-014로 승인됐습니다. 설계 PR #55의 리뷰·통합이 남았습니다. T-032는 PR #54로 통합됐습니다.
 - **다음 마일스톤:** 승인된 계약의 구현과 T-033 TODO 완료 이력 보관, 이어서 T-034 release를 진행합니다.
 
 ## 운영 규칙
@@ -39,23 +39,13 @@
   - 정본·범위: [2026-09-30-record-timing-and-review-ids](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md)가 Intent·요구사항 R-001~R-009·대안·PR 순서를 소유합니다. 실행 상태는 이 항목에서 관리합니다. 2026-09-29 사용자 결정(merge 결합 서술 범위와 사용자 요청 예외)은 승인된 제약이고, 2026-09-30 사용자가 Q1~Q4 모두 권고안을 선택해 D-013·D-014로 승인됐습니다.
   - [x] 근거를 정리했습니다. merge된 `main`의 상태 지연(#50→#51, #51→#52, #53→#54), 기록 전용 commit(#54 version 3), finding ID 충돌(#28·#29), exact head와 다른 리뷰 근거(#53)입니다. locale `DOCS_GUIDE`·`02-TODO`·`REVIEW`·`REVIEW_ROUND`·`BUGBOT`에서 바뀔 절도 특정했습니다.
   - [x] 2026-09-30 사용자 선택 응답(PR #55 version 1 head `150ebc9`: Q1 채택, Q2 PR 본문, Q3 슬롯 ID+대표 ID, Q4 채택)을 근거로 설계를 `Accepted`로 바꾸고 PROJECT §8에 D-013·D-014를 등재했습니다. §11의 미해결 판단을 정리했습니다.
-  - [x] PR #55 version 2 리뷰: 사용자 review `rev_01m3r4bzxxez4aq8cfmvtdmye1`는 finding이 없었습니다. Codex review `rev_01m3r4c4fqegmvmv22trdc8pw9`(inline `cmt_01m3r4c4g8edzaw7tmp6kenbp5`)는 **C55-001**(P2·confidence 0.94·blocking=true)을 보고했고, Luna `cmt_01m3r4dfysfeh9e8kvew23s507`가 같은 조건을 재현했습니다. 미등록 리뷰어 두 명이 같은 라벨을 고르면 슬롯 ID가 겹치는 문제입니다. 수용해 등록 슬롯만 ID를 발급하고 미등록 리뷰어는 플랫폼 식별자로 가리키도록 설계 R-006·R-007과 D-014를 보완했습니다. Q3 선택은 유지합니다.
+  - [x] PR #55 version 2 리뷰: 사용자 review `rev_01m3r4bzxxez4aq8cfmvtdmye1`는 finding이 없었습니다. Codex review `rev_01m3r4c4fqegmvmv22trdc8pw9`(inline `cmt_01m3r4c4g8edzaw7tmp6kenbp5`)는 **C55-001**(P2·confidence 0.94·blocking=true)을 보고했고, 같은 사용자 review의 후속 댓글 `cmt_01m3r4dfysfeh9e8kvew23s507`가 같은 조건을 재현하고 그 approve의 누락을 정정했습니다. 미등록 리뷰어 두 명이 같은 라벨을 고르면 슬롯 ID가 겹치는 문제입니다. 수용해 등록 슬롯만 ID를 발급하고 미등록 리뷰어는 플랫폼 식별자로 가리키도록 설계 R-006·R-007과 D-014를 보완했습니다. Q3 선택은 유지합니다.
+  - [x] PR #55 version 3 리뷰: 사용자 review `rev_01m3rcyqd7fh99b3f86sgtp9db`와 Codex review `rev_01m3rd1vm9exsa8ha5qvfpgd2f`(inline `cmt_01m3rd1vmfeb9s6j974tca27ea`의 스레드)는 C55-001 해소를 확인했습니다. 그런데 두 리뷰가 서로 다른 finding에 같은 `C55-002`를 붙여 설계의 ID 충돌 근거에 추가했습니다. Codex의 C55-002(P2·confidence 0.96·blocking=true: 한 본문의 여러 finding이 플랫폼 식별자만으로 구별되지 않음)를 수용해 미등록 리뷰어의 원 ID를 `<플랫폼 게시 식별자>/<항목 번호>`로 정했습니다. 사용자 review의 C55-002(P3, 재현 댓글 작성자 표기)와 C55-003(P3, `REVIEW_ROUND` §7 목록의 원 ID 형식)도 수용해 고쳤습니다.
   - [ ] 최신 exact head의 리뷰·필수 CI와 통합을 확인합니다. 구현은 설계 통합 뒤 별도 PR에서 진행하며, 새 규칙은 구현 PR의 다음 PR부터 적용합니다.
-
-- [ ] **T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책**
-  - 정본·범위: 아래 Backlog의 T-032 항목이 출처를 소유하고 실행 상태는 이 항목에서 관리합니다. 외부 계약을 바꾸지 않는 maintainer 운영 문서와 저장소 설정이므로 DESIGN §1 예외로 설계 문서를 만들지 않습니다.
-  - [x] root [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §5에 원격 통합 절차를 기록했습니다. Origin merge → GitHub `main` non-force fast-forward, push 전 조상 확인과 push 뒤 `git ls-remote` 대조, stack된 PR의 base 이동과 CI 재확인 조건을 담았습니다.
-  - [x] Origin tag 정책: GitHub의 annotated `v<SemVer>` tag를 정본으로 두고 Origin에는 release tag를 동기화하지 않습니다. candidate verifier의 `_verify_remote_refs`는 원격에서 두 `main`과 GitHub annotated tag만 대조하고, 로컬 annotated tag와 source의 조상 관계는 실행 checkout에서 확인합니다. Origin 원격 tag는 입력이 아니므로 맞추면 release마다 수동 단계만 늘어납니다. 기존 Origin tag는 삭제하지 않고 release 근거로 쓰지 않습니다.
-  - [x] GitHub `main` branch ruleset: 사용자가 2026-09-29에 적용했습니다. `gh api repos/jaff2836/coding-agent-docs-template/rules/branches/main`에서 `Protect main history`(id `24168373`, active, bypass 없음)의 `deletion`·`non_fast_forward` 두 규칙만 확인했습니다. 앞서 Claude의 API 적용 시도는 실행 권한 확인에서 거부됐습니다.
-  - [x] PR #54 version 1 리뷰: 사용자 review `rev_01m3p69w6se7rbyvpfj7nn4ac7`는 **C54-001**(P3·confidence 0.95·blocking=false, `main` ruleset 적용 상태 미반영)과 **C54-002**(P3·confidence 0.92·blocking=true, verifier가 로컬 annotated tag와 조상 관계도 확인)를 보고했습니다. Codex review `rev_01m3p6ftz6fr3smseyy2k5tj9g`(inline `cmt_01m3p6ftzkf04a1zr3kn0mf63y`)는 **C54-003**(P2·confidence 0.98·blocking=true)을 보고했습니다. `refs/tags/v*` 대상 ruleset이 없는데 §5가 tag 보호를 사실로 서술했다는 내용입니다. 세 건 모두 재현했고 수용합니다.
-  - [x] C54-002·C54-003: §5를 두 ruleset(`main`의 `non_fast_forward`·`deletion`, `refs/tags/v*`의 `update`·`deletion`)을 유지·확인해야 하는 운영 요구로 고쳤습니다. 설정 변경 뒤와 release candidate 전에 ruleset API로 확인하도록 했고, verifier 입력은 두 `main`, GitHub annotated tag, 로컬 annotated tag와 조상 관계로 정확히 적었습니다.
-  - [x] tag ruleset 복원: 같은 날 Claude가 조회한 `Protect release tags`(id `23636438`, `refs/tags/v*`, `update`·`deletion`, bypass 없음)가 `main` ruleset 적용 뒤 404였습니다. 그 사이 GitHub의 tag 18개(`git ls-remote` 29줄, annotated tag의 peel 포함)는 로컬 tag와 같아 바뀐 tag는 없었습니다. 사용자가 2026-09-30에 같은 설정으로 복원했습니다. ruleset API에서 `Protect release tags`(id `24222109`, active, `refs/tags/v*`, `update`·`deletion`, bypass 없음)와 `Protect main history`(id `24168373`)가 함께 active인 것과 tag ref 불변을 다시 확인했습니다.
-  - [x] PR #54 version 3 리뷰: Codex review `rev_01m3r4bhctekyrb57tkqe034vr`는 finding이 없고 C54-001~C54-003 해소를 확인했습니다. 사용자 review `rev_01m3r4bz36edvvkahrhwme69ah`는 같은 해소와 **C54-004**(P2·confidence 0.97·blocking=true)를 보고했습니다. §5의 목록 API가 `rules`·`bypass_actors`·`conditions`를 주지 않는다는 내용으로, 응답 key를 확인해 수용했습니다. §5 확인 절차를 id별 조회와 확인 필드로 고쳤고, tag 수 표기(18개, `ls-remote` 29줄)도 바로잡았습니다.
-  - [ ] 최신 exact head의 수동 리뷰·필수 CI와 Origin/GitHub 통합을 확인해 C54-001~C54-004 해소를 확정합니다. 통합 push가 `main` ruleset 아래에서 fast-forward로 성공하는지도 확인합니다.
 
 ## Next
 
-T-032부터 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다. locale payload 공개의 version·candidate/published gate는 T-034에서 확정합니다.
+T-030·T-014 설계 통합 뒤 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다. locale payload 공개의 version·candidate/published gate는 T-034에서 확정합니다.
 
 ## Blocked
 
@@ -82,8 +72,8 @@ T-032부터 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로
 | 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | **Integrated** — Accepted A(D-012), Origin PR #48 merge `4b8ccc1`·GitHub fast-forward 확인. 구현 1 PR #49 merge `f9df2fa`, 구현 2 PR #50 merge `8d56698`·Windows #60·Linux #45 통과; T-013 구현·통합 완료 |
 | 13 | `codex/t029-root-search-command-forms` | T-029: C50-002·C51-001·C51-002 root 검색식 gate 보강 | **Integrated** — Origin PR #51 merge `f066978`·GitHub fast-forward 확인; Windows #64·Linux #49 통과 |
 | 14 | `claude/t031-ci-search-tools` | T-031: CI 검색 도구 gate | **Integrated** — #52 merge `05dbe80` 뒤 Origin PR #53 merge `291ad30`·GitHub fast-forward 확인; Windows #67·Linux #52 통과 |
-| 15 | `claude/t032-remote-operations` | T-032: GitHub `main` 보호·Origin→GitHub 동기화 절차·tag 정책 | **In Progress** — `main`·tag ruleset 적용 확인; 상세는 In Progress 항목 |
-| 16 | `claude/t030-t014-contract-design` | T-030·T-014: 기록 시점·리뷰 finding ID 계약 설계 | **In Progress** — [설계](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) Accepted(D-013·D-014), #54 위에 stack; 리뷰·통합 대기 |
+| 15 | `claude/t032-remote-operations` | T-032: GitHub `main` 보호·Origin→GitHub 동기화 절차·tag 정책 | **Integrated** — Origin PR #54 merge `e55fcd9`·ruleset 아래 GitHub fast-forward 확인; Windows #75·Linux #60 통과 |
+| 16 | `claude/t030-t014-contract-design` | T-030·T-014: 기록 시점·리뷰 finding ID 계약 설계 | **In Progress** — [설계](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) Accepted(D-013·D-014), base `main`; 리뷰·통합 대기 |
 | 17 | `claude/t030-t014-contract` | T-030·T-014·T-033: 승인 계약 구현과 TODO 완료 이력 보관 | 16의 승인·통합 |
 | 18 | `claude/<version>-release-prep` 등 | T-034: 다음 locale release | 공개 payload 변경을 한 release로 묶음. D-007에 따라 준비·candidate·published 단계 분리 |
 
@@ -114,6 +104,17 @@ T-032부터 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책**
+  - 정본·범위: 아래 Backlog의 T-032 항목이 출처를 소유하고 실행 상태는 이 항목에서 관리합니다. 외부 계약을 바꾸지 않는 maintainer 운영 문서와 저장소 설정이므로 DESIGN §1 예외로 설계 문서를 만들지 않습니다.
+  - [x] root [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §5에 원격 통합 절차를 기록했습니다. Origin merge → GitHub `main` non-force fast-forward, push 전 조상 확인과 push 뒤 `git ls-remote` 대조, stack된 PR의 base 이동과 CI 재확인 조건을 담았습니다.
+  - [x] Origin tag 정책: GitHub의 annotated `v<SemVer>` tag를 정본으로 두고 Origin에는 release tag를 동기화하지 않습니다. candidate verifier의 `_verify_remote_refs`는 원격에서 두 `main`과 GitHub annotated tag만 대조하고, 로컬 annotated tag와 source의 조상 관계는 실행 checkout에서 확인합니다. Origin 원격 tag는 입력이 아니므로 맞추면 release마다 수동 단계만 늘어납니다. 기존 Origin tag는 삭제하지 않고 release 근거로 쓰지 않습니다.
+  - [x] GitHub `main` branch ruleset: 사용자가 2026-09-29에 적용했습니다. `gh api repos/jaff2836/coding-agent-docs-template/rules/branches/main`에서 `Protect main history`(id `24168373`, active, bypass 없음)의 `deletion`·`non_fast_forward` 두 규칙만 확인했습니다. 앞서 Claude의 API 적용 시도는 실행 권한 확인에서 거부됐습니다.
+  - [x] PR #54 version 1 리뷰: 사용자 review `rev_01m3p69w6se7rbyvpfj7nn4ac7`는 **C54-001**(P3·confidence 0.95·blocking=false, `main` ruleset 적용 상태 미반영)과 **C54-002**(P3·confidence 0.92·blocking=true, verifier가 로컬 annotated tag와 조상 관계도 확인)를 보고했습니다. Codex review `rev_01m3p6ftz6fr3smseyy2k5tj9g`(inline `cmt_01m3p6ftzkf04a1zr3kn0mf63y`)는 **C54-003**(P2·confidence 0.98·blocking=true)을 보고했습니다. `refs/tags/v*` 대상 ruleset이 없는데 §5가 tag 보호를 사실로 서술했다는 내용입니다. 세 건 모두 재현했고 수용합니다.
+  - [x] C54-002·C54-003: §5를 두 ruleset(`main`의 `non_fast_forward`·`deletion`, `refs/tags/v*`의 `update`·`deletion`)을 유지·확인해야 하는 운영 요구로 고쳤습니다. 설정 변경 뒤와 release candidate 전에 ruleset API로 확인하도록 했고, verifier 입력은 두 `main`, GitHub annotated tag, 로컬 annotated tag와 조상 관계로 정확히 적었습니다.
+  - [x] tag ruleset 복원: 같은 날 Claude가 조회한 `Protect release tags`(id `23636438`, `refs/tags/v*`, `update`·`deletion`, bypass 없음)가 `main` ruleset 적용 뒤 404였습니다. 그 사이 GitHub의 tag 18개(`git ls-remote` 29줄, annotated tag의 peel 포함)는 로컬 tag와 같아 바뀐 tag는 없었습니다. 사용자가 2026-09-30에 같은 설정으로 복원했습니다. ruleset API에서 `Protect release tags`(id `24222109`, active, `refs/tags/v*`, `update`·`deletion`, bypass 없음)와 `Protect main history`(id `24168373`)가 함께 active인 것과 tag ref 불변을 다시 확인했습니다.
+  - [x] PR #54 version 3 리뷰: Codex review `rev_01m3r4bhctekyrb57tkqe034vr`는 finding이 없고 C54-001~C54-003 해소를 확인했습니다. 사용자 review `rev_01m3r4bz36edvvkahrhwme69ah`는 같은 해소와 **C54-004**(P2·confidence 0.97·blocking=true)를 보고했습니다. §5의 목록 API가 `rules`·`bypass_actors`·`conditions`를 주지 않는다는 내용으로, 응답 key를 확인해 수용했습니다. §5 확인 절차를 id별 조회와 확인 필드로 고쳤고, tag 수 표기(18개, `ls-remote` 29줄)도 바로잡았습니다.
+  - 통합 결과: PR #54 version 4 head `f77c94f4a589c1d3725fc25c9426cc9919846439`을 Origin merge `e55fcd991d5cf368d6467d842f02f35ff707107c`에 통합했습니다. GitHub `main`은 `Protect main history` ruleset 아래에서 non-force fast-forward push(`291ad30..e55fcd9`)가 성공했고, 로컬 `main`도 같은 commit으로 맞췄습니다. merge tree는 CI가 검증한 head tree와 같습니다. version 4의 사용자 review `rev_01m3rcypmpe6gtkq08g1arm705`와 Codex review `rev_01m3rd0n3meg4ahztw5tcq6mkn` 모두 finding이 없고 C54-001~C54-004 해소를 확인했습니다. exact head의 Windows #75·Linux #60 CI가 통과했습니다.
 
 - [x] **T-031 CI 검색 도구 gate**
   - 정본·범위: 아래 Backlog의 T-031 항목이 출처와 완료 조건을 소유합니다. 실행 상태는 이 항목에서 관리합니다. 외부 계약을 바꾸지 않는 maintainer CI 변경이므로 DESIGN §1 예외로 설계 문서를 만들지 않습니다.
