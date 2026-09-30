@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-030·T-014 기록 시점·리뷰 finding ID 계약 설계
-- **Goal:** merge 결합 서술·PR 원장과 리뷰어 슬롯 finding ID·리뷰 근거의 head 결합을 한 설계로 합의함
-- **Target:** `claude/t030-t014-contract-design` (Origin·GitHub `main` `e55fcd991d5cf368d6467d842f02f35ff707107c` 기준)
-- **Status:** In Progress — [설계](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md)가 D-013·D-014로 승인됐습니다. 설계 PR #55의 리뷰·통합이 남았습니다. T-032는 PR #54로 통합됐습니다.
-- **다음 마일스톤:** 승인된 계약의 구현과 T-033 TODO 완료 이력 보관, 이어서 T-034 release를 진행합니다.
+- **Name:** T-030·T-014 기록 시점·리뷰 finding ID 계약 구현
+- **Goal:** 승인된 D-013·D-014를 en·ko locale 문서와 root maintainer 사본에 같은 내용으로 반영함
+- **Target:** `claude/t030-t014-contract` (Origin·GitHub `main` `a6086270bc2e31d8c2b6a8ed81d0084d741274dc` 기준)
+- **Status:** In Progress — 설계 PR #55는 통합됐습니다. locale 문서·BUGBOT·root 사본을 고쳤고, 수동 리뷰와 통합이 남았습니다.
+- **다음 마일스톤:** T-033 TODO 완료 이력 보관을 새 기록 규칙의 첫 적용으로 진행하고, 이어서 T-034 release를 준비합니다.
 
 ## 운영 규칙
 
@@ -27,7 +27,8 @@
 - `In Progress`는 프로젝트가 선택한 진행 작업입니다. 다른 브랜치나 열린 PR의 실시간 상태를 보장하지 않습니다. 작업 시작 시 실제 Git·PR 상태와 해당 변경의 PLAN을 확인합니다.
 - 각 브랜치는 자기 변경의 상세 기록을 갱신합니다. 다른 브랜치 작업을 오래된 사본만 보고 완료·미완료로 되돌리지 않습니다.
 - 공통 항목은 범위·의존성·통합 결과가 달라질 때만 수정합니다. 충돌은 최신 기준과 변경-ID를 대조해 해결하고, 영향받은 계약·검증 전제를 재확인합니다.
-- `Completed`는 필요한 검증과 지정한 대상에의 반영을 확인한 항목만 담습니다. 브랜치 구현 완료·리뷰 통과·병합·릴리스·지원 검증을 구분하고 해당 작업의 완료 조건으로 판단합니다.
+- `Completed`는 필요한 검증과 지정한 대상에의 반영을 확인한 항목, 또는 작업 브랜치에서 자기 최종 head의 통합과 동시에 완료되는 항목(결합 서술)을 담습니다. 릴리스·지원 검증처럼 통합 뒤에 일어나는 완료는 그 일이 끝난 뒤에만 기록합니다. 브랜치 구현 완료·리뷰 통과·병합·릴리스·지원 검증을 구분하고 해당 작업의 완료 조건으로 판단합니다.
+- 자기 PR의 CI build·리뷰 판정·merge SHA는 PR을 원장으로 두고 이 문서에는 PR 참조만 둡니다. 상세 규칙과 사용자 요청 예외는 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 로컬 Git과 병렬 브랜치 절을 따릅니다.
 - `T-nnn`은 이 문서의 전역 작업 ID입니다. 변경-ID·PROJECT의 `D-nnn`·변경 폴더의 `R-nnn`/`W-nnn`과 범위가 다릅니다. 발급·충돌 처리는 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 식별자 범위를 따릅니다. 아래 `T-001` 등은 자리 표시입니다.
 - 취소한 변경은 Cancelled에 두고 변경 폴더는 유지합니다. 완료된 SPEC을 현재 제품 기준으로 읽지 않으며, 구현된 계약은 통합 후 PROJECT에 반영합니다.
 - 원격 저장소나 PR은 필수가 아닙니다. 로컬 작업은 기준 revision과 대상 브랜치 또는 검토한 작업 트리 범위로 근거를 남깁니다. 미커밋 결과를 commit SHA로 재현된다고 표현하지 않습니다.
@@ -35,17 +36,19 @@
 
 ## In Progress
 
-- [ ] **T-030·T-014 기록 시점·리뷰 finding ID 계약 설계**
-  - 정본·범위: [2026-09-30-record-timing-and-review-ids](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md)가 Intent·요구사항 R-001~R-009·대안·PR 순서를 소유합니다. 실행 상태는 이 항목에서 관리합니다. 2026-09-29 사용자 결정(merge 결합 서술 범위와 사용자 요청 예외)은 승인된 제약이고, 2026-09-30 사용자가 Q1~Q4 모두 권고안을 선택해 D-013·D-014로 승인됐습니다.
-  - [x] 근거를 정리했습니다. merge된 `main`의 상태 지연(#50→#51, #51→#52, #53→#54), 기록 전용 commit(#54 version 3), finding ID 충돌(#28·#29), exact head와 다른 리뷰 근거(#53)입니다. locale `DOCS_GUIDE`·`02-TODO`·`REVIEW`·`REVIEW_ROUND`·`BUGBOT`에서 바뀔 절도 특정했습니다.
-  - [x] 2026-09-30 사용자 선택 응답(PR #55 version 1 head `150ebc9`: Q1 채택, Q2 PR 본문, Q3 슬롯 ID+대표 ID, Q4 채택)을 근거로 설계를 `Accepted`로 바꾸고 PROJECT §8에 D-013·D-014를 등재했습니다. §11의 미해결 판단을 정리했습니다.
-  - [x] PR #55 version 2 리뷰: 사용자 review `rev_01m3r4bzxxez4aq8cfmvtdmye1`는 finding이 없었습니다. Codex review `rev_01m3r4c4fqegmvmv22trdc8pw9`(inline `cmt_01m3r4c4g8edzaw7tmp6kenbp5`)는 **C55-001**(P2·confidence 0.94·blocking=true)을 보고했고, 같은 사용자 review의 후속 댓글 `cmt_01m3r4dfysfeh9e8kvew23s507`가 같은 조건을 재현하고 그 approve의 누락을 정정했습니다. 미등록 리뷰어 두 명이 같은 라벨을 고르면 슬롯 ID가 겹치는 문제입니다. 수용해 등록 슬롯만 ID를 발급하고 미등록 리뷰어는 플랫폼 식별자로 가리키도록 설계 R-006·R-007과 D-014를 보완했습니다. Q3 선택은 유지합니다.
-  - [x] PR #55 version 3 리뷰: 사용자 review `rev_01m3rcyqd7fh99b3f86sgtp9db`와 Codex review `rev_01m3rd1vm9exsa8ha5qvfpgd2f`(inline `cmt_01m3rd1vmfeb9s6j974tca27ea`의 스레드)는 C55-001 해소를 확인했습니다. 그런데 두 리뷰가 서로 다른 finding에 같은 `C55-002`를 붙여 설계의 ID 충돌 근거에 추가했습니다. Codex의 C55-002(P2·confidence 0.96·blocking=true: 한 본문의 여러 finding이 플랫폼 식별자만으로 구별되지 않음)를 수용해 미등록 리뷰어의 원 ID를 `<플랫폼 게시 식별자>/<항목 번호>`로 정했습니다. 사용자 review의 C55-002(P3, 재현 댓글 작성자 표기)와 C55-003(P3, `REVIEW_ROUND` §7 목록의 원 ID 형식)도 수용해 고쳤습니다.
-  - [ ] 최신 exact head의 리뷰·필수 CI와 통합을 확인합니다. 구현은 설계 통합 뒤 별도 PR에서 진행하며, 새 규칙은 구현 PR의 다음 PR부터 적용합니다.
+- [ ] **T-030·T-014 기록 시점·리뷰 finding ID 계약 구현**
+  - 정본·범위: [승인 설계](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) R-001~R-009와 PROJECT §8의 D-013·D-014를 구현합니다. 승인된 설계의 구현이므로 설계 절차를 반복하지 않고, 실행 상태는 이 항목에서 관리합니다.
+  - [x] en·ko locale `docs/DOCS_GUIDE.md`(결합 서술, 통합 뒤 사건의 사용자 요청 예외와 근거 기록, PR 원장), `docs/02-TODO.md` 운영 규칙(`Completed` 조건과 PR 원장), `docs/REVIEW.md` §5·§7·§10(완료 서술 점검, finding ID, 결론의 head·CI 근거), `docs/REVIEW_ROUND.md` §2.1·§4·§6·§7·§9(슬롯 열, 대표 ID, CI 주장의 head 결합, 원 ID 열과 인계), `.cursor/BUGBOT.md`를 같은 내용으로 고쳤습니다. review-round skill 문구는 새 규칙에서도 그대로 유효해 바꾸지 않았습니다.
+  - [x] root maintainer 사본을 맞췄습니다. `docs/REVIEW_ROUND.md`(ko와 동일), `docs/REVIEW.md`, `.cursor/BUGBOT.md`, 이 문서의 운영 규칙, root `docs/DOCS_GUIDE.md` §2·§3(이 저장소의 finding ID 형식, 통합 대상과 PR 원장)입니다.
+  - [x] 설계의 구현 위치 두 곳을 정정해 변경 기록에 남겼습니다. R-002 점검 항목은 `REVIEW.md` §5에 두고, 실행 주체·작성자 슬롯은 §2.1 표 아래 한 줄로 적습니다.
+  - 적용 시점: 이 PR은 base 정책으로 리뷰하므로 새 규칙을 자신에게 적용하지 않습니다. 다음 PR부터 적용합니다.
+  - 남은 결정: root `docs/REVIEW_ROUND.md` §2.1의 리뷰어 슬롯 등록은 실제 리뷰어 구성을 아는 사용자의 확인이 필요해 비워 두었습니다. 등록 전에는 모든 리뷰어가 `<플랫폼 게시 식별자>/<항목 번호>`로 finding을 가리킵니다.
+  - [x] 기준 `a608627`에서 시작한 작업 트리의 source docs(328 links/46 files·절 참조 115개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 기준과 같은 30-member이고 locale마다 `.cursor/BUGBOT.md`·`docs/02-TODO.md`·`docs/DOCS_GUIDE.md`·`docs/REVIEW.md`·`docs/REVIEW_ROUND.md` 다섯 파일만 바뀌었으며, 각 artifact의 자체 checker가 통과했습니다.
+  - [ ] exact head의 수동 리뷰·필수 CI와 Origin 통합을 확인합니다. 공개는 T-034가 소유합니다.
 
 ## Next
 
-T-030·T-014 설계 통합 뒤 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다. locale payload 공개의 version·candidate/published gate는 T-034에서 확정합니다.
+T-030·T-014 구현 통합 뒤 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다. locale payload 공개의 version·candidate/published gate는 T-034에서 확정합니다.
 
 ## Blocked
 
@@ -73,9 +76,10 @@ T-030·T-014 설계 통합 뒤 아래 Backlog 순서로 진행합니다. 각 항
 | 13 | `codex/t029-root-search-command-forms` | T-029: C50-002·C51-001·C51-002 root 검색식 gate 보강 | **Integrated** — Origin PR #51 merge `f066978`·GitHub fast-forward 확인; Windows #64·Linux #49 통과 |
 | 14 | `claude/t031-ci-search-tools` | T-031: CI 검색 도구 gate | **Integrated** — #52 merge `05dbe80` 뒤 Origin PR #53 merge `291ad30`·GitHub fast-forward 확인; Windows #67·Linux #52 통과 |
 | 15 | `claude/t032-remote-operations` | T-032: GitHub `main` 보호·Origin→GitHub 동기화 절차·tag 정책 | **Integrated** — Origin PR #54 merge `e55fcd9`·ruleset 아래 GitHub fast-forward 확인; Windows #75·Linux #60 통과 |
-| 16 | `claude/t030-t014-contract-design` | T-030·T-014: 기록 시점·리뷰 finding ID 계약 설계 | **In Progress** — [설계](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) Accepted(D-013·D-014), base `main`; 리뷰·통합 대기 |
-| 17 | `claude/t030-t014-contract` | T-030·T-014·T-033: 승인 계약 구현과 TODO 완료 이력 보관 | 16의 승인·통합 |
-| 18 | `claude/<version>-release-prep` 등 | T-034: 다음 locale release | 공개 payload 변경을 한 release로 묶음. D-007에 따라 준비·candidate·published 단계 분리 |
+| 16 | `claude/t030-t014-contract-design` | T-030·T-014: 기록 시점·리뷰 finding ID 계약 설계 | **Integrated** — Accepted D-013·D-014, Origin PR #55 merge `a608627`·GitHub fast-forward 확인; Windows #78·Linux #63 통과 |
+| 17 | `claude/t030-t014-contract` | T-030·T-014: 승인 계약 구현 | **In Progress** — 상세는 In Progress 항목 |
+| 18 | `claude/t033-todo-history-archive` | T-033: TODO 완료 이력 보관 | 17 통합 뒤. 새 기록 규칙의 첫 적용 |
+| 19 | `claude/<version>-release-prep` 등 | T-034: 다음 locale release | 공개 payload 변경을 한 release로 묶음. D-007에 따라 준비·candidate·published 단계 분리 |
 
 - [ ] **T-030 TODO·PLAN 기록 시점 계약 (merge 결합 서술·PR 원장)**
   - 출처: 2026-09-29 전체 분석과 후속 논의. merge된 `main`의 TODO가 한 PR씩 늦게 완료를 반영합니다. 원인은 통합 확인 뒤에만 Completed로 옮기는 규칙, 리뷰를 통과한 head의 동결, merge 뒤 기록 commit 금지([DOCS_GUIDE.md](./DOCS_GUIDE.md) §3, [REVIEW_ROUND.md](./REVIEW_ROUND.md) §9)와, 자기 PR의 CI·리뷰 결과를 그 PR 안에 기록하는 관행이 겹친 것입니다.
@@ -89,7 +93,7 @@ T-030·T-014 설계 통합 뒤 아래 Backlog 순서로 진행합니다. 각 항
 - [ ] **T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책**
   - 출처: 2026-09-29 분석. GitHub에는 `v*` tag ruleset만 있고 `main` branch protection이 없습니다(branch protection API 404 확인). Origin→GitHub `main` non-force fast-forward 절차는 TODO 기록에만 있고 maintainer 문서에 없습니다. Origin에는 v2.2.0~v2.3.2 tag만 있으며, release verifier는 GitHub tag만 사용합니다.
   - 범위: GitHub `main`의 force push·삭제를 막고 fast-forward push는 허용하는 ruleset(사용자 실행), root maintainer 문서의 동기화 절차와 tag 정본 명시, Origin tag 동기화 여부 결정.
-- [ ] **T-033 TODO 완료 이력 보관** — Completed에 PR별 검증 로그가 누적돼 이 문서가 커졌습니다. Completed 규칙의 "완료 이력이 길어지면 보관 문서로 연결"을 적용해 요약·링크만 남기며, TODO 구조를 함께 바꾸는 T-030 구현 PR에서 진행합니다.
+- [ ] **T-033 TODO 완료 이력 보관** — Completed에 PR별 검증 로그가 누적돼 이 문서가 커졌습니다. Completed 규칙의 "완료 이력이 길어지면 보관 문서로 연결"을 적용해 요약·링크만 남기며, T-030·T-014 구현 PR의 diff가 커서 그 다음 PR로 나눠 진행합니다.
 - [ ] **T-034 다음 locale release** — `v2.3.3` 이후 payload 변경은 en·ko `docs/TEMPLATE_GUIDE.md`(T-013 검색 선언)입니다. PR #50의 인계대로 release 이력에 검색 선언 단일화·Bash 전제·TEMPLATE_GUIDE 삭제 전 보관과 변경 파일을 기록합니다. T-030의 artifact 변경과 한 release로 묶는 것을 기본으로 하되, T-030 설계가 길어지면 guide 변경만 먼저 patch로 공개합니다. version·시점은 준비 PR에서 정합니다.
 - [ ] **T-035 release 신뢰 루트 검토 (서명·attestation)** — installer는 같은 release의 `SHA256SUMS`·manifest로 무결성을 확인하지만 게시 계정 탈취는 막지 못하며, immutable release와 tag ruleset으로 완화합니다. 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기거나 표준 라이브러리만으로 GitHub release attestation을 검증할 경로가 확인되면 D-004 확장 설계로 재검토합니다.
 - [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다. T-030과 같은 문서를 바꾸므로 한 설계 PR에서 다룹니다. 2026-09-29부터 Claude가 개발, Codex가 리뷰를 맡는 등 리뷰어 구성이 바뀔 수 있으므로 모델명이 아닌 고정 리뷰어 슬롯 라벨을 기준으로 검토합니다. PR #53 리뷰에서 CI 재실행 전 상태나 다른 revision의 결과가 근거로 쓰인 사례가 있어, 리뷰 본문에 exact head·CI build를 확인하는 절차도 함께 검토합니다.
@@ -104,6 +108,14 @@ T-030·T-014 설계 통합 뒤 아래 Backlog 순서로 진행합니다. 각 항
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-030·T-014 기록 시점·리뷰 finding ID 계약 설계**
+  - 정본·범위: [2026-09-30-record-timing-and-review-ids](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md)가 Intent·요구사항 R-001~R-009·대안·PR 순서를 소유합니다. 실행 상태는 이 항목에서 관리합니다. 2026-09-29 사용자 결정(merge 결합 서술 범위와 사용자 요청 예외)은 승인된 제약이고, 2026-09-30 사용자가 Q1~Q4 모두 권고안을 선택해 D-013·D-014로 승인됐습니다.
+  - [x] 근거를 정리했습니다. merge된 `main`의 상태 지연(#50→#51, #51→#52, #53→#54), 기록 전용 commit(#54 version 3), finding ID 충돌(#28·#29), exact head와 다른 리뷰 근거(#53)입니다. locale `DOCS_GUIDE`·`02-TODO`·`REVIEW`·`REVIEW_ROUND`·`BUGBOT`에서 바뀔 절도 특정했습니다.
+  - [x] 2026-09-30 사용자 선택 응답(PR #55 version 1 head `150ebc9`: Q1 채택, Q2 PR 본문, Q3 슬롯 ID+대표 ID, Q4 채택)을 근거로 설계를 `Accepted`로 바꾸고 PROJECT §8에 D-013·D-014를 등재했습니다. §11의 미해결 판단을 정리했습니다.
+  - [x] PR #55 version 2 리뷰: 사용자 review `rev_01m3r4bzxxez4aq8cfmvtdmye1`는 finding이 없었습니다. Codex review `rev_01m3r4c4fqegmvmv22trdc8pw9`(inline `cmt_01m3r4c4g8edzaw7tmp6kenbp5`)는 **C55-001**(P2·confidence 0.94·blocking=true)을 보고했고, 같은 사용자 review의 후속 댓글 `cmt_01m3r4dfysfeh9e8kvew23s507`가 같은 조건을 재현하고 그 approve의 누락을 정정했습니다. 미등록 리뷰어 두 명이 같은 라벨을 고르면 슬롯 ID가 겹치는 문제입니다. 수용해 등록 슬롯만 ID를 발급하고 미등록 리뷰어는 플랫폼 식별자로 가리키도록 설계 R-006·R-007과 D-014를 보완했습니다. Q3 선택은 유지합니다.
+  - [x] PR #55 version 3 리뷰: 사용자 review `rev_01m3rcyqd7fh99b3f86sgtp9db`와 Codex review `rev_01m3rd1vm9exsa8ha5qvfpgd2f`(inline `cmt_01m3rd1vmfeb9s6j974tca27ea`의 스레드)는 C55-001 해소를 확인했습니다. 그런데 두 리뷰가 서로 다른 finding에 같은 `C55-002`를 붙여 설계의 ID 충돌 근거에 추가했습니다. Codex의 C55-002(P2·confidence 0.96·blocking=true: 한 본문의 여러 finding이 플랫폼 식별자만으로 구별되지 않음)를 수용해 미등록 리뷰어의 원 ID를 `<플랫폼 게시 식별자>/<항목 번호>`로 정했습니다. 사용자 review의 C55-002(P3, 재현 댓글 작성자 표기)와 C55-003(P3, `REVIEW_ROUND` §7 목록의 원 ID 형식)도 수용해 고쳤습니다.
+  - 통합 결과: PR #55 version 4 head `420e506bb3bb4d6e99eb11f271884c90e18de93f`을 Origin merge `a6086270bc2e31d8c2b6a8ed81d0084d741274dc`에 통합하고 GitHub·로컬 `main`에도 non-force fast-forward했습니다. merge tree는 CI가 검증한 head tree와 같습니다. version 4의 Codex review `rev_01m3rh9437fq2rr4x2z4fv2qqs`는 새 finding이 없고 C55-001, Codex의 C55-002, 사용자 review의 C55-002·C55-003 해소를 확인했습니다. 같은 version의 사용자 계정 review `rev_01m3rh5yptfmrt3v5ncg5bzf11`은 본문과 스레드가 없어 보고된 finding이 없습니다. exact head의 Windows #78·Linux #63 CI가 통과했고 세 리뷰 스레드를 정리했습니다.
 
 - [x] **T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책**
   - 정본·범위: 아래 Backlog의 T-032 항목이 출처를 소유하고 실행 상태는 이 항목에서 관리합니다. 외부 계약을 바꾸지 않는 maintainer 운영 문서와 저장소 설정이므로 DESIGN §1 예외로 설계 문서를 만들지 않습니다.

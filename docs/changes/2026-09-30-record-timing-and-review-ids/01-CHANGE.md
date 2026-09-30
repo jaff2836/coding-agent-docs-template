@@ -59,7 +59,7 @@
 ### 1.3 범위와 비범위
 
 **범위:**
-- en·ko locale의 `docs/DOCS_GUIDE.md`, `docs/02-TODO.md` 운영 규칙, `docs/REVIEW.md` §7·§10, `docs/REVIEW_ROUND.md` §2.1·§4·§6·§7·§9
+- en·ko locale의 `docs/DOCS_GUIDE.md`, `docs/02-TODO.md` 운영 규칙, `docs/REVIEW.md` §5·§7·§10, `docs/REVIEW_ROUND.md` §2.1·§4·§6·§7·§9
 - `.cursor/BUGBOT.md`의 해당 복제 규칙과 review-round skill 사본(문구가 바뀌는 경우)
 - 같은 내용을 쓰는 root maintainer 문서
 
@@ -97,7 +97,7 @@
 | ID | 요구사항 | 상황·입력 | 관찰 가능한 결과 | 검증 |
 |---|---|---|---|---|
 | R-001 | merge 결합 서술 | 작업 branch가 자기 T 항목을 `Completed`로 옮기고 근거를 "이 변경의 PR"로 적음 | merge 직후 통합 대상의 TODO가 완료를 보여 줌. PR이 닫혀 merge되지 않거나 revert되면 서술도 함께 사라짐 | locale 두 guide·TODO 규칙 문구, 구현 PR 다음 PR에서의 적용 |
-| R-002 | merge 이후 사건의 서술 금지와 예외 | 사용자 요청 없이 release 공개나 다른 원격 동기화를 완료로 적음 | 리뷰에서 위반 finding이 됨. 사용자 요청이 있으면 요청 근거(요청자·시점·범위)가 PR 본문에 있어야 허용됨 | REVIEW §7 점검 항목, 시나리오 대조 |
+| R-002 | merge 이후 사건의 서술 금지와 예외 | 사용자 요청 없이 release 공개나 다른 원격 동기화를 완료로 적음 | 리뷰에서 위반 finding이 됨. 사용자 요청이 있으면 요청 근거(요청자·시점·범위)가 PR 본문에 있어야 허용됨 | REVIEW §5 점검 항목, 시나리오 대조 |
 | R-003 | PR 원장 (Q1) | fix commit 뒤 CI·재리뷰가 끝남 | 그 결과를 기록하려고 commit하지 않음. TODO에는 "근거: PR"만 두고, 실제 수정이 있는 commit에서만 이전 version의 판정을 기록할 수 있음 | DOCS_GUIDE·TODO 규칙, PR 사례 대조 |
 | R-004 | 최종 head finding 인계 | 통과한 최종 head의 리뷰에서 새 비차단 finding이 나옴 | 기존 §9처럼 `문서 반영 대기`로 다음 관련 작업이 받음. 통과 head를 바꾸지 않음 | REVIEW_ROUND §6·§9 |
 | R-005 | PR 없는 작업 | 로컬 통합 대상에 직접 반영 | 결합 서술의 조건은 그 통합 commit이고, 근거는 기준 revision과 변경 범위. 가상의 PR·SHA를 만들지 않음 | DOCS_GUIDE 로컬 Git 절 |
@@ -153,7 +153,7 @@
 
 - **§7 Finding Requirements:** 게시하는 finding에 ID를 붙일 때는 대상 식별자와 자기 슬롯을 포함해 같은 대상의 다른 리뷰어와 겹치지 않게 합니다. 대상 식별자의 형식은 프로젝트가 정하며, 이 저장소의 root 문서는 `C<PR>-<슬롯>-<nnn>`를 예로 둡니다. 슬롯은 리뷰어 목록에 등록된 것만 씁니다. 등록되지 않은 리뷰어는 ID를 발급하지 않고, 게시물 안의 finding마다 항목 번호를 붙여 `<플랫폼 게시 식별자>/<항목 번호>`로 가리키게 합니다. 변경 폴더 ID를 `<변경-ID>/R-001`로 가리키는 기존 규칙과 같은 방식입니다.
 - **§10 Review Conclusion:** 결론에 검토한 head·base를 적고, 인용한 CI·검증 결과마다 build와 그 head를 적습니다. 읽지 못했거나 아직 끝나지 않은 결과는 그렇다고 적습니다.
-- **§7 점검 항목:** 문서 변경 리뷰에서 R-002 위반(요청 근거 없는 merge 이후 서술)을 점검합니다.
+- **§5 Tests and Documentation:** 문서 변경 리뷰에서 R-002 위반(요청 근거 없는 merge 이후 서술)을 점검합니다.
 - Bugbot은 BUGBOT.md만 읽으므로 ID·근거 규칙을 같은 문장으로 복제합니다. WATCHDOG은 REVIEW.md를 import하므로 바꾸지 않습니다.
 
 ### 2.4 상위 설계에 미치는 영향
@@ -191,3 +191,6 @@
   - 사용자 review `rev_01m3rcyqd7fh99b3f86sgtp9db`의 C55-002(P3): 재현 댓글의 작성자 표기를 정정했습니다.
   - 같은 review의 C55-003(P3): §2.3의 `REVIEW_ROUND` §7 목록에 원 ID 형식과 인계를 반영했습니다.
   - Q3 선택(B1)과 다른 결정은 유지하며, 사용자의 "리뷰 확인하고 결정해 봐" 위임에 따라 보완했습니다.
+- 2026-09-30: 구현하면서 두 가지 위치를 정정했습니다. 요구사항 내용은 같습니다.
+  - R-002 점검 항목은 [REVIEW.md](../../REVIEW.md) §7이 아니라 §5 Tests and Documentation에 둡니다. §7은 finding의 필수 항목 목록이고, 리뷰 점검 항목은 §5가 소유합니다.
+  - 대표 ID를 발급하는 실행 주체·PR 작성자의 슬롯은 §2.1 표의 리뷰어 행이 아니라 표 아래 한 줄로 적습니다. 리뷰어 정족수 집계에 섞이지 않게 하기 위해서입니다.

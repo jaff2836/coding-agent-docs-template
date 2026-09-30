@@ -100,13 +100,16 @@ The normal flow is to inspect the product and parent designs → agree on necess
 A remote repository, PR, and CI are optional. Record the adopting project's integration branch or local completion target in the global TODO.
 
 - The global TODO at the integration target reflects plans and results integrated into that revision. It does not provide real-time status for a work branch copy or an unmerged PR.
+- A work branch's TODO and PLAN may describe the state that becomes true when that branch's final head is integrated into the integration target (a merge-bound description). For example, move the branch's own item to `Completed` and cite this change's PR or integration commit as evidence. The only condition a merge-bound description may assume is the integration of its own final head; do not read an unintegrated branch copy as the current state.
+- Events that happen after integration (release publication, synchronization of another remote, other PRs, external or support verification) are recorded by the task that performs them, after they finish. Describing them as complete in advance is allowed only when the user explicitly requests it; record the requester, time, and scope in the PR description (or in the task report when there is no PR).
+- Keep facts that arise after a head is fixed (its CI builds, review decisions and comment IDs, and the merge SHA) in the PR (or the task report when there is no PR) as the ledger, and keep only a reference in the documents. Do not create a record-only commit for these facts; record an earlier version's decisions only in a commit that carries an actual fix.
 - Each branch updates its own change folder. Use a non-duplicated change-ID for new work, and do not restate another branch's detailed status in the shared TODO. Resolve global `D-` and `T-` number collisions according to Identifier Scope above.
 - Update the global TODO only when scope, priority, prerequisites, or integration results change. Inspect open PRs, actual branches, and commit status with the relevant Git tools.
 - Before starting or integrating work, compare the latest inspected baseline with your own baseline. Leave the status of inaccessible work unverified.
 - If another change has been integrated first, inspect not only file conflicts but also changes to shared contracts, completion criteria, and verification assumptions. Rerun only affected checks. This rule does not grant authority for automatic rebase or merge.
 - Resolve conflicts in baseline documents or the shared TODO by preserving both changes' IDs, decisions, and evidence. Do not overwrite the entire file with one side's copy.
 - Local verification may record a baseline revision and the changed worktree scope. Do not invent PRs, merge SHAs, or approvers, and do not claim an uncommitted result is reproducible from one SHA.
-- If a post-pass documentation update is deferred to the next task, hand it off as `Documentation update pending`. Until it is applied, inspect both the actual integration result and the handoff report when determining current status.
+- Hand off records that a merge-bound description could not carry, and findings newly raised on the final head, to the next relevant task as `Documentation update pending`. Until it is applied, inspect both the actual integration result and the handoff report when determining current status.
 
 ## Metadata Convention
 

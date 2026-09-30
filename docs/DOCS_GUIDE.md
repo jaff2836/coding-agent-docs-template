@@ -43,6 +43,9 @@ locale source의 가이드는 artifact 정본입니다. root maintainer 가이�
   실행 상태는 PLAN(없으면 TODO 항목), 공개 이력은 CHANGELOG가 소유합니다.
 - README는 현재 사용법, TODO·PLAN은 미래 작업을 소유합니다. 같은 체크리스트나
   릴리스 이력을 여러 문서에 복제하지 않습니다.
+- 리뷰 finding ID는 `C<PR>-<슬롯>-<nnn>` 형식이며, 슬롯은
+  [REVIEW_ROUND.md](./REVIEW_ROUND.md) §2.1에 등록된 것만 씁니다. 등록되지 않은
+  리뷰어의 finding은 `<플랫폼 게시 식별자>/<항목 번호>`로 가리킵니다(D-014).
 
 ## 3. 실행·통합·인계
 
@@ -55,6 +58,11 @@ locale source의 가이드는 artifact 정본입니다. root maintainer 가이�
   대조합니다. 관련 없는 사용자 변경을 덮어쓰지 않습니다.
 - 리뷰 라운드 통과 후 tracked head는 동결하고, 후속 기록은 다음 관련 작업의
   인계 절차에 따라 반영합니다.
+- 기록 시점은 locale `DOCS_GUIDE.md`의 로컬 Git과 병렬 브랜치 절을 따릅니다(D-013).
+  이 저장소의 통합 대상은 Origin `main`입니다. GitHub `main` 동기화와 release
+  공개는 통합 뒤 사건이므로, 끝난 뒤 해당 작업이 기록합니다.
+- PR의 CI build·리뷰 판정·merge SHA는 Origin PR을 원장으로 두고, TODO에는 PR
+  참조만 둡니다.
 
 ## 4. Root와 locale 가이드 소유권
 

@@ -116,6 +116,7 @@ A P2 finding with `blocking=true` is called a **Blocking P2**. The default pass 
 - Code and validation supporting completion claims in the global TODO or a change-specific PLAN; distinguish implementation and validation on a branch from integration, release, and support validation
 - Whether documented commands, configuration keys, environment variables, and credential formats match the actual implementation — in particular, whether a setup followed from documentation alone would fail to start
 - Whether behavior declared by the documentation as an invariant or safeguard is actually enforced in code
+- Whether completion statements in documents depend only on this change's integration — if they describe a later release, synchronization, or external verification as complete in advance, whether the user's request is recorded in the PR description or task report
 
 ## 6. Project-specific Invariants
 <!-- template-section:project-invariants -->
@@ -142,6 +143,8 @@ Every finding must include:
 - The exact lines of code that provide the evidence
 
 Preserve code identifiers, paths, configuration keys, and code quotations in their original form.
+
+When you post findings with IDs, keep them from colliding with other reviewers' IDs. A reviewer whose slot is registered in the [REVIEW_ROUND.md](./REVIEW_ROUND.md) §2.1 table or in the project's reviewer list uses IDs that contain the review target and its own slot (for example, `<target>-<slot>-001`). An unregistered reviewer does not mint IDs; it numbers the findings within its post so that each can be cited as `<platform post identifier>/<item number>`. A post with a single finding may be cited by the post identifier alone.
 
 ## 8. Do Not Report
 
@@ -172,6 +175,8 @@ Derive the conclusion from the `blocking` values.
 - **request_changes:** At least one blocking P0 or P1 remains.
 - **comment:** Only non-blocking findings or P2/P3 findings remain.
 - **approve:** There are no findings to report.
+
+State the head and base you reviewed in the conclusion. When you cite a CI or test result, name the build or run and the head it ran on, and say so when a result could not be read or has not finished. Do not use a result that does not match the current head, or that does not name its head, as evidence for passing.
 
 Write the review conclusion in English. If the execution environment requires a separate status value or output schema, express the result consistently with the decision above, but do not interpret the review output itself as authority to approve, publish, or merge. If the review scope was insufficient, an absence of identified defects does not guarantee safety.
 

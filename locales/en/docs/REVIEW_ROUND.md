@@ -79,11 +79,12 @@ Reviewers are classified by **arrival cadence**. This distinction determines **o
 - **Standing reviewer:** Leaves a result for every change. Included in the §4 quorum.
 - **Intermittent reviewer:** Leaves a result only for some changes, or only once per PR. Not included in the quorum; add it to the pool only in rounds where a result arrives. If a reviewer that runs once per PR is included in the quorum, the quorum can never be reached from the second round onward.
 
-| Reviewer | Publication location | Head identification method | Arrival cadence | Behavior when no problems exist | Rereview request method |
-|---|---|---|---|---|---|
+| Reviewer | Slot | Publication location | Head identification method | Arrival cadence | Behavior when no problems exist | Rereview request method |
+|---|---|---|---|---|---|---|
 
 Record the following in each column.
 
+- **Slot:** The role label used in finding IDs (for example, `A`, `B`). Keep it when the model or tool changes, and use each label only once in the table. When a model changes, edit the `Reviewer` cell, not the label. Record the slot that the round executor or PR author uses to issue representative IDs on one line below the table; it is not counted as a reviewer row. A reviewer without a slot cites findings as `<platform post identifier>/<item number>` according to [REVIEW.md](./REVIEW.md) §7.
 - **Publication location:** Whether results appear in a PR comment, PR review body, or inline thread. **If a reviewer writes in multiple places, list all of them.** For PR comments, state whether it creates a new comment for each head or overwrites one comment (sticky). Reviewers that overwrite have different ledger rules under §7
 - **Head identification method:** How to determine which commit a result examined, such as a marker comment, SHA in the body, or round number
 - **Arrival cadence:** Standing or intermittent. For an intermittent reviewer, state the condition under which it runs
@@ -135,7 +136,7 @@ The purpose of multiple reviewers is for one to catch what another misses. There
 
 The unresolved-thread list is itself a signal. Check it both when starting a round and when making the pass decision.
 
-**Head alignment:** Determine which head each result reviewed. Do not use a result for a different head to decide the current round. As an exception, for a reviewer that leaves no head identifier and runs only once per PR, directly verify whether its findings are resolved at the current head and record the evidence. Do not discard them merely because they are old.
+**Head alignment:** Determine which head each result reviewed. Do not use a result for a different head to decide the current round. As an exception, for a reviewer that leaves no head identifier and runs only once per PR, directly verify whether its findings are resolved at the current head and record the evidence. Do not discard them merely because they are old. Apply the same rule to CI and test results cited in a review body. If a claim does not say which build and head it came from, or that head differs from the current head, treat it as unverified and verify it yourself before using it as evidence for passing.
 
 **Base changes:** If the PR base changes — through retargeting to another branch, merging or rebasing the base branch, or merging the lower PR in a stacked PR — the diff examined by reviewers differs from the current diff. Even if the head SHA appears unchanged, do not use prior results as decision evidence; count a new round. The only base update the executor may perform is to **merge** the base branch into the target branch, within the non-force-push authority in §1. Rebasing requires a force push and is not delegated; retargeting and merging the lower PR happen outside the round. Every such case consumes one round.
 
@@ -157,6 +158,7 @@ Do not automatically declare a pass when a standing reviewer has `no result`. Ev
 - Use the **highest severity**.
 - Set `blocking` to `true` **if any instance is `true`**.
 - Record what each reviewer reported and how it classified the finding.
+- Use the earliest posted slot ID as the representative ID, and keep every original ID of the combined findings. When no slot ID exists, the executor may issue a representative ID under its own slot and keep the original ID as `<platform post identifier>/<item number>`.
 
 **Do not combine verdicts.** A reviewer's `approve` or `request_changes` verdict is only a reference signal and is not used in threshold calculation. Divergent reviewer verdicts are not a decision conflict; they mean one side has a finding the other did not see. Decide that finding under §5 and the conflict disappears.
 
@@ -203,7 +205,7 @@ When a finding with the same root cause recurs, compare it against the prior dec
 
 **When the round passes:**
 
-1. **Freeze the passing head.** Treat the review used for the pass decision as the final review of this head. After the pass, do not modify code, add a record-only commit or push, or request another rereview.
+1. **Freeze the passing head.** Treat the review used for the pass decision as the final review of this head. After the pass, do not modify code, add a record-only commit or push, or request another rereview. A task's completion statement may already be carried as a merge-bound description (Local Git and Parallel Branches in [DOCS_GUIDE.md](./DOCS_GUIDE.md)) in the last fix before the pass; hand off only the records it could not carry according to §9.
 2. **Record remaining valid findings in the session handoff list.** Items may be handed off only when the confirmed threshold allows them to remain. Under the default these are non-blocking P2 and every P3; a user-specified threshold may differ. Do not modify tracked files such as [02-TODO.md](./02-TODO.md) or [REVIEW.md](./REVIEW.md), and do not post a PR decision comment at this stage. Follow §7 for the handoff format.
 
 With `on_pass = do not merge`, report the passing revision, validation results, invalidity evidence, missing and partial reviews, and handoff list; then finish with **pass without merge**. If there is no PR, also state the comparison baseline revision and the scope of local changes reviewed. If merge is requested later, recheck the target state and merge conditions then; do not interpret this result as approval to merge.
@@ -243,13 +245,13 @@ However, a reviewer that overwrites one comment for every head (sticky) removes 
 
 The decision record includes the target, confirmed parameters and the history of user-requested changes, current and maximum round counts, each round's head and base, reviewers whose results arrived (including `partial result` and `no result` labels), reviewers requested in each round and the acceptance confirmation when `rereview = request`, and validation results. Summarize findings in the following format.
 
-| ID | Round | head | Reviewer | Severity | confidence | blocking | Decision | Evidence | Handling | commit |
-|---|---|---|---|---|---|---|---|---|---|---|
-| F-001 | 1 | `abc123` | A, B | P1 | 0.9 | true | Valid | Evidence | Fixed | SHA |
+| ID | Original ID | Round | head | Reviewer | Severity | confidence | blocking | Decision | Evidence | Handling | commit |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| F-001 | `12-A-001`, `12-B-001` | 1 | `abc123` | A, B | P1 | 0.9 | true | Valid | Evidence | Fixed | SHA |
 
-In the `Reviewer` column, list every reviewer that reported the same finding; if their severities differed, preserve each value.
+In the `Reviewer` column, list every reviewer that reported the same finding; if their severities differed, preserve each value. In the `Original ID` column, list every slot ID or `<platform post identifier>/<item number>` that reviewers posted. `F-nnn` is used only inside this session ledger; when handing off to another document, use the representative ID and the original IDs.
 
-**Session handoff list:** Include the original PR, head, and base (or the comparison baseline and changed scope for a local review), the threshold actually applied, original finding link or ID, severity, `blocking`, decision evidence, remaining work, and completion conditions. Mark every item as `documentation update pending`, and link an existing tracking item when present. At exit, also record whether a merge occurred and the actual merge SHA. Creating a handoff list or merging does not start the next task or complete the repository documentation update.
+**Session handoff list:** Include the original PR, head, and base (or the comparison baseline and changed scope for a local review), the threshold actually applied, the representative ID and original IDs (slot IDs or `<platform post identifier>/<item number>`), severity, `blocking`, decision evidence, remaining work, and completion conditions. Mark every item as `documentation update pending`, and link an existing tracking item when present. At exit, also record whether a merge occurred and the actual merge SHA. Creating a handoff list or merging does not start the next task or complete the repository documentation update.
 
 ## 8. Early Stop
 
@@ -267,7 +269,7 @@ Stop and await direction even if rounds remain when:
 - **The current round ends with the final session report.** Do not automatically create another branch, PR, or issue for documentation updates, and do not add a post-merge commit or push.
 - When the user starts the next related implementation or documentation task, inspect the session handoff list first and incorporate it into that task's documentation changes. In a different session, receive the prior final report as input. If the handoff details are unavailable, restore only items verifiable from sources such as the original GitHub content and state which decision evidence is missing. Do not modify documentation when the user requests only analysis, an ordinary review, or an answer to a question.
 - Link remaining items as change units in the `Backlog` of [02-TODO.md](./02-TODO.md). Record the original PR or local baseline revision, finding ID, decision evidence, remaining work, and completion conditions exactly once: in an existing change-specific PLAN when one exists, otherwise in the TODO item. Do not create duplicates of existing items. Add an item to [REVIEW.md](./REVIEW.md) §9 Accepted Deferrals only when it meets that policy's approval requirements. Do not turn one round's threshold change into a permanent deferral.
-- Update global TODO completion only after verifying the previous task's actual integration and completion conditions. In a change-specific PLAN, record implementation and validation state on the verified branch; do not interpret it as merged or released. For work without a PR, verify against the agreed local target and the reviewed revision or worktree scope. Do not mark `pass without merge` as integration complete or a handoff item as resolved.
+- For completion that a work branch already carried as a merge-bound description, only verify that it matches the actual integration result. Update any other global TODO completion only after verifying the previous task's actual integration and completion conditions. In a change-specific PLAN, record implementation and validation state on the verified branch; do not interpret it as merged or released. For work without a PR, verify against the agreed local target and the reviewed revision or worktree scope. Do not mark `pass without merge` as integration complete or a handoff item as resolved.
 - Update [00-PROJECT.md](./00-PROJECT.md) only when actual decisions, implementation, or supported scope changed. Review documentation updates as part of the next PR or local review unit; do not reopen the previous review's passing state. If there is no follow-up task yet, keep the handoff item as `documentation update pending`.
 
 ## 10. Final Report
