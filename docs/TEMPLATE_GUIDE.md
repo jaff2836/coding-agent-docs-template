@@ -109,6 +109,36 @@ locale 가이드의 `Template source`, `Template version`, `Template revision`�
 실제 복사 기준을 기록하며 미커밋 또는 일부 반영을 exact release처럼 표시하지
 않습니다.
 
+### 원격 저장소와 통합
+
+개발 PR·리뷰·필수 CI는 private Origin([CI.md](./CI.md) §6)에서, 공개 `main`·
+release tag·GitHub Release는 `jaff2836/coding-agent-docs-template`에서
+관리합니다. 두 저장소는 mirror가 아니며 release verifier의 기본 remote 이름은
+각각 `origin`과 `github`입니다.
+
+- PR은 Origin에서 merge한 뒤 같은 merge commit을 GitHub `main`에 non-force
+  fast-forward로 push합니다(`git push github <merge-commit>:refs/heads/main`).
+  push 전에 GitHub `main`이 그 commit의 조상인지 확인하고, push 뒤 두 remote의
+  `main`을 `git ls-remote`로 대조합니다.
+- GitHub에는 두 ruleset을 active로 유지합니다. `refs/heads/main` 대상은
+  `non_fast_forward`·`deletion`으로 force push와 삭제를 막고 fast-forward push는
+  허용합니다. `refs/tags/v*` 대상은 `update`·`deletion`으로 tag 갱신과 삭제를
+  막으며 게시 전 candidate tag도 이 ruleset이 보호합니다. 설정을 바꾼 뒤와
+  release candidate 전에 두 ruleset을 확인합니다. 목록 API
+  `gh api repos/jaff2836/coding-agent-docs-template/rulesets`는 id와
+  `enforcement`만 주므로, 각 id를
+  `gh api repos/jaff2836/coding-agent-docs-template/rulesets/<id>`로 조회해
+  `enforcement`·`conditions.ref_name`·`rules`·`bypass_actors`를 확인합니다.
+- release tag의 정본은 GitHub의 annotated `v<SemVer>` tag입니다. candidate
+  verifier는 원격에서 두 `main`의 일치와 GitHub annotated tag를 확인하고,
+  실행하는 checkout의 로컬 annotated tag도 같은 source commit을 가리키며
+  source가 동기화된 `main`의 조상이어야 합니다. Origin 원격 tag는 verifier
+  입력이 아니므로 Origin에는 release tag를 동기화하지 않고, Origin에 남은 과거
+  tag를 release 근거로 쓰지 않습니다.
+- stack된 PR은 부모가 merge돼도 base가 자동으로 바뀌지 않습니다. 부모를
+  통합한 뒤 base를 `main`으로 옮기고, 새 base에 부모 외의 변경이 있으면 head를
+  갱신해 필수 CI를 다시 받습니다.
+
 ## 6. 릴리스 노트 소유권
 
 - source 저장소의 공개 이력 정본은 [CHANGELOG.md](../CHANGELOG.md)와

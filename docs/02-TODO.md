@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-031 CI 검색 도구 gate
-- **Goal:** Windows·Linux CI에서 ripgrep·GNU grep 실명령 회귀가 도구 누락 때문에 skip된 채 통과하지 않도록 함
-- **Target:** `claude/t031-ci-search-tools` (Origin·GitHub `main` `f066978fb78a1712d67ab2fd97d0a3f823079f4a` 기준)
-- **Status:** In Progress — Backlog 등록 PR #52 위에 stack해 두 pipeline의 검색 도구 확인과 CI 문서를 구현했습니다. exact head의 Windows·Linux 로그 확인, 수동 리뷰와 통합이 남았습니다.
-- **다음 마일스톤:** Backlog 순서에 따라 T-032 원격 운영 정리, T-030·T-014 기록·리뷰 계약 설계를 진행합니다.
+- **Name:** T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책
+- **Goal:** Origin→GitHub 통합 절차와 release tag 정본을 maintainer 문서에 두고 공개 `main`의 이력을 보호함
+- **Target:** `claude/t032-remote-operations` (Origin·GitHub `main` `291ad30ecabc21623187da60f6dbf7619a0ae0df` 기준)
+- **Status:** In Progress — 동기화 절차와 tag 정책을 문서화했고 GitHub `main` ruleset은 적용됐습니다. PR #54 version 1 리뷰의 C54-001~C54-003을 반영했고 사용자가 tag ruleset을 복원했습니다. 재리뷰·통합이 남았습니다.
+- **다음 마일스톤:** T-030·T-014 기록 시점·리뷰 finding ID 계약 설계를 진행합니다.
 
 ## 운영 규칙
 
@@ -35,17 +35,20 @@
 
 ## In Progress
 
-- [ ] **T-031 CI 검색 도구 gate**
-  - 정본·범위: 아래 Backlog의 T-031 항목이 출처와 완료 조건을 소유합니다. 실행 상태는 이 항목에서 관리합니다. 외부 계약을 바꾸지 않는 maintainer CI 변경이므로 DESIGN §1 예외로 설계 문서를 만들지 않습니다.
-  - [x] `.buildkite/linux.yml`은 unittest 전에 `rg --version`과 `grep --version | grep 'GNU grep'`을 실행합니다. `set -eu`에서 도구가 없으면 build가 실패합니다.
-  - [x] `.buildkite/pipeline.yml`은 PATH 뒤쪽에 `C:\Program Files\Git\usr\bin`을 붙인 뒤 `rg --version`과 `(grep --version | findstr /C:"GNU grep")`을 확인합니다. System32의 `find`·`sort`는 가리지 않습니다.
-  - [x] [CI.md](./CI.md) §6에 도구 요구, 로컬 skip과 CI 실패의 구분, 테스트 전용 범위를 기록했습니다. 테스트 코드와 artifact는 바꾸지 않았습니다.
-  - [x] Linux 명령 블록을 로컬 `sh`로 실행해 두 확인과 전체 gate가 통과하고, `rg`가 없는 PATH에서는 확인 단계가 실패함을 확인했습니다. Windows 명령은 로컬에서 실행할 수 없어 exact head의 Windows CI로 확인합니다.
-  - [ ] exact head의 Windows·Linux 로그에서 ripgrep·GNU grep 회귀가 모두 `ok`인지 확인하고, 수동 리뷰·통합을 마칩니다.
+- [ ] **T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책**
+  - 정본·범위: 아래 Backlog의 T-032 항목이 출처를 소유하고 실행 상태는 이 항목에서 관리합니다. 외부 계약을 바꾸지 않는 maintainer 운영 문서와 저장소 설정이므로 DESIGN §1 예외로 설계 문서를 만들지 않습니다.
+  - [x] root [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §5에 원격 통합 절차를 기록했습니다. Origin merge → GitHub `main` non-force fast-forward, push 전 조상 확인과 push 뒤 `git ls-remote` 대조, stack된 PR의 base 이동과 CI 재확인 조건을 담았습니다.
+  - [x] Origin tag 정책: GitHub의 annotated `v<SemVer>` tag를 정본으로 두고 Origin에는 release tag를 동기화하지 않습니다. candidate verifier의 `_verify_remote_refs`는 원격에서 두 `main`과 GitHub annotated tag만 대조하고, 로컬 annotated tag와 source의 조상 관계는 실행 checkout에서 확인합니다. Origin 원격 tag는 입력이 아니므로 맞추면 release마다 수동 단계만 늘어납니다. 기존 Origin tag는 삭제하지 않고 release 근거로 쓰지 않습니다.
+  - [x] GitHub `main` branch ruleset: 사용자가 2026-09-29에 적용했습니다. `gh api repos/jaff2836/coding-agent-docs-template/rules/branches/main`에서 `Protect main history`(id `24168373`, active, bypass 없음)의 `deletion`·`non_fast_forward` 두 규칙만 확인했습니다. 앞서 Claude의 API 적용 시도는 실행 권한 확인에서 거부됐습니다.
+  - [x] PR #54 version 1 리뷰: 사용자 review `rev_01m3p69w6se7rbyvpfj7nn4ac7`는 **C54-001**(P3·confidence 0.95·blocking=false, `main` ruleset 적용 상태 미반영)과 **C54-002**(P3·confidence 0.92·blocking=true, verifier가 로컬 annotated tag와 조상 관계도 확인)를 보고했습니다. Codex review `rev_01m3p6ftz6fr3smseyy2k5tj9g`(inline `cmt_01m3p6ftzkf04a1zr3kn0mf63y`)는 **C54-003**(P2·confidence 0.98·blocking=true)을 보고했습니다. `refs/tags/v*` 대상 ruleset이 없는데 §5가 tag 보호를 사실로 서술했다는 내용입니다. 세 건 모두 재현했고 수용합니다.
+  - [x] C54-002·C54-003: §5를 두 ruleset(`main`의 `non_fast_forward`·`deletion`, `refs/tags/v*`의 `update`·`deletion`)을 유지·확인해야 하는 운영 요구로 고쳤습니다. 설정 변경 뒤와 release candidate 전에 ruleset API로 확인하도록 했고, verifier 입력은 두 `main`, GitHub annotated tag, 로컬 annotated tag와 조상 관계로 정확히 적었습니다.
+  - [x] tag ruleset 복원: 같은 날 Claude가 조회한 `Protect release tags`(id `23636438`, `refs/tags/v*`, `update`·`deletion`, bypass 없음)가 `main` ruleset 적용 뒤 404였습니다. 그 사이 GitHub의 tag 18개(`git ls-remote` 29줄, annotated tag의 peel 포함)는 로컬 tag와 같아 바뀐 tag는 없었습니다. 사용자가 2026-09-30에 같은 설정으로 복원했습니다. ruleset API에서 `Protect release tags`(id `24222109`, active, `refs/tags/v*`, `update`·`deletion`, bypass 없음)와 `Protect main history`(id `24168373`)가 함께 active인 것과 tag ref 불변을 다시 확인했습니다.
+  - [x] PR #54 version 3 리뷰: Codex review `rev_01m3r4bhctekyrb57tkqe034vr`는 finding이 없고 C54-001~C54-003 해소를 확인했습니다. 사용자 review `rev_01m3r4bz36edvvkahrhwme69ah`는 같은 해소와 **C54-004**(P2·confidence 0.97·blocking=true)를 보고했습니다. §5의 목록 API가 `rules`·`bypass_actors`·`conditions`를 주지 않는다는 내용으로, 응답 key를 확인해 수용했습니다. §5 확인 절차를 id별 조회와 확인 필드로 고쳤고, tag 수 표기(18개, `ls-remote` 29줄)도 바로잡았습니다.
+  - [ ] 최신 exact head의 수동 리뷰·필수 CI와 Origin/GitHub 통합을 확인해 C54-001~C54-004 해소를 확정합니다. 통합 push가 `main` ruleset 아래에서 fast-forward로 성공하는지도 확인합니다.
 
 ## Next
 
-T-031부터 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다. locale payload 공개의 version·candidate/published gate는 T-034에서 확정합니다.
+T-032부터 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다. locale payload 공개의 version·candidate/published gate는 T-034에서 확정합니다.
 
 ## Blocked
 
@@ -71,8 +74,8 @@ T-031부터 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로
 | 11 | `codex/t021-install-preflight-order-design` | T-021: preflight 순서 유지·변경을 비교·합의 | **Integrated** — Origin PR #47 merge `ed3438f`와 GitHub `main` fast-forward 확인; A 유지·별도 구현 없음 |
 | 12 | `codex/t013-operation-contract-design` | T-013: source/artifact checker·LF·placeholder 회귀 방지 범위를 설계 | **Integrated** — Accepted A(D-012), Origin PR #48 merge `4b8ccc1`·GitHub fast-forward 확인. 구현 1 PR #49 merge `f9df2fa`, 구현 2 PR #50 merge `8d56698`·Windows #60·Linux #45 통과; T-013 구현·통합 완료 |
 | 13 | `codex/t029-root-search-command-forms` | T-029: C50-002·C51-001·C51-002 root 검색식 gate 보강 | **Integrated** — Origin PR #51 merge `f066978`·GitHub fast-forward 확인; Windows #64·Linux #49 통과 |
-| 14 | `claude/t031-ci-search-tools` | T-031: CI 검색 도구 gate | **In Progress** — #52 위에 stack; 상세는 In Progress 항목 |
-| 15 | `claude/t032-remote-operations` | T-032: GitHub `main` 보호·Origin→GitHub 동기화 절차·tag 정책 | GitHub ruleset 적용은 사용자가 실행. 다음 release 전 |
+| 14 | `claude/t031-ci-search-tools` | T-031: CI 검색 도구 gate | **Integrated** — #52 merge `05dbe80` 뒤 Origin PR #53 merge `291ad30`·GitHub fast-forward 확인; Windows #67·Linux #52 통과 |
+| 15 | `claude/t032-remote-operations` | T-032: GitHub `main` 보호·Origin→GitHub 동기화 절차·tag 정책 | **In Progress** — `main`·tag ruleset 적용 확인; 상세는 In Progress 항목 |
 | 16 | `claude/t030-t014-contract-design` | T-030·T-014: 기록 시점·리뷰 finding ID 계약 설계 | 같은 artifact 문서를 바꾸므로 한 설계 PR. 사용자 승인 필요 |
 | 17 | `claude/t030-t014-contract` | T-030·T-014·T-033: 승인 계약 구현과 TODO 완료 이력 보관 | 16의 승인·통합 |
 | 18 | `claude/<version>-release-prep` 등 | T-034: 다음 locale release | 공개 payload 변경을 한 release로 묶음. D-007에 따라 준비·candidate·published 단계 분리 |
@@ -92,7 +95,7 @@ T-031부터 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로
 - [ ] **T-033 TODO 완료 이력 보관** — Completed에 PR별 검증 로그가 누적돼 이 문서가 커졌습니다. Completed 규칙의 "완료 이력이 길어지면 보관 문서로 연결"을 적용해 요약·링크만 남기며, TODO 구조를 함께 바꾸는 T-030 구현 PR에서 진행합니다.
 - [ ] **T-034 다음 locale release** — `v2.3.3` 이후 payload 변경은 en·ko `docs/TEMPLATE_GUIDE.md`(T-013 검색 선언)입니다. PR #50의 인계대로 release 이력에 검색 선언 단일화·Bash 전제·TEMPLATE_GUIDE 삭제 전 보관과 변경 파일을 기록합니다. T-030의 artifact 변경과 한 release로 묶는 것을 기본으로 하되, T-030 설계가 길어지면 guide 변경만 먼저 patch로 공개합니다. version·시점은 준비 PR에서 정합니다.
 - [ ] **T-035 release 신뢰 루트 검토 (서명·attestation)** — installer는 같은 release의 `SHA256SUMS`·manifest로 무결성을 확인하지만 게시 계정 탈취는 막지 못하며, immutable release와 tag ruleset으로 완화합니다. 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기거나 표준 라이브러리만으로 GitHub release attestation을 검증할 경로가 확인되면 D-004 확장 설계로 재검토합니다.
-- [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다. T-030과 같은 문서를 바꾸므로 한 설계 PR에서 다룹니다. 2026-09-29부터 Claude가 개발, Codex가 리뷰를 맡는 등 리뷰어 구성이 바뀔 수 있으므로 모델명이 아닌 고정 리뷰어 슬롯 라벨을 기준으로 검토합니다.
+- [ ] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다. T-030과 같은 문서를 바꾸므로 한 설계 PR에서 다룹니다. 2026-09-29부터 Claude가 개발, Codex가 리뷰를 맡는 등 리뷰어 구성이 바뀔 수 있으므로 모델명이 아닌 고정 리뷰어 슬롯 라벨을 기준으로 검토합니다. PR #53 리뷰에서 CI 재실행 전 상태나 다른 revision의 결과가 근거로 쓰인 사례가 있어, 리뷰 본문에 exact head·CI build를 확인하는 절차도 함께 검토합니다.
 
 2026-09-29 분석의 root §3 검색식 allowlist 권고는 T-029에서 해소됐고, 작업 트리의 로컬 `.swp` 파일은 저장소 작업이 아니어서 등록하지 않았습니다.
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
@@ -104,6 +107,16 @@ T-031부터 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로
 ## Completed
 
 실제 완료 항목만 추가합니다. 변경-ID, 통합 대상, 확인한 revision 또는 작업 트리 범위, 검증 근거의 위치를 남깁니다. 변경 폴더는 유지하고, 구현된 계약이 현재 지원 범위가 되면 PROJECT를 갱신합니다. PR이 있으면 실제 병합 결과를 확인하며, 로컬 작업에 가상의 PR·merge SHA를 만들지 않습니다.
+
+- [x] **T-031 CI 검색 도구 gate**
+  - 정본·범위: 아래 Backlog의 T-031 항목이 출처와 완료 조건을 소유합니다. 실행 상태는 이 항목에서 관리합니다. 외부 계약을 바꾸지 않는 maintainer CI 변경이므로 DESIGN §1 예외로 설계 문서를 만들지 않습니다.
+  - [x] `.buildkite/linux.yml`은 unittest 전에 `rg --version`과 `grep --version | grep 'GNU grep'`을 실행합니다. `set -eu`에서 도구가 없으면 build가 실패합니다.
+  - [x] `.buildkite/pipeline.yml`은 PATH 뒤쪽에 `C:\Program Files\Git\usr\bin`을 붙인 뒤 `rg --version`과 `(grep --version | findstr /C:"GNU grep")`을 확인합니다. System32의 `find`·`sort`는 가리지 않습니다.
+  - [x] [CI.md](./CI.md) §6에 도구 요구, 로컬 skip과 CI 실패의 구분, 테스트 전용 범위를 기록했습니다. 테스트 코드와 artifact는 바꾸지 않았습니다.
+  - [x] Linux 명령 블록을 로컬 `sh`로 실행해 두 확인과 전체 gate가 통과하고, `rg`가 없는 PATH에서는 확인 단계가 실패함을 확인했습니다. Windows 명령은 로컬에서 실행할 수 없어 exact head의 Windows CI로 확인합니다.
+  - CI 확인: exact head `69b18091fca1e6a35b4f7403c3886b82d427ed2f`의 Linux #52·Windows #67 로그에서 사전 확인이 ripgrep 14.1.1·GNU grep 3.11(Linux)과 ripgrep 15.2.0·GNU grep 3.0(Windows)을 출력했고, 두 search 회귀가 모두 `ok`였습니다. 전체 212건 중 Linux는 Windows 전용 3건을 skip했고 Windows는 skip이 없었습니다. Windows 첫 실행(#66·#67)은 worker의 git·ssh 설정 변경으로 checkout 단계에서 `Host key verification failed`로 실패했고, 사용자가 worker를 고친 뒤 rebuild가 통과했습니다.
+  - 통합 결과: Backlog 등록 PR #52를 Origin merge `05dbe8016f361810817cdadc12a8c169ee2af9d0`로 통합한 뒤 PR #53의 base를 `main`으로 옮겼고, head `69b1809`를 Origin merge `291ad30ecabc21623187da60f6dbf7619a0ae0df`에 통합했습니다. merge tree는 CI가 검증한 head tree와 같습니다. GitHub·로컬 `main`도 두 merge에 non-force fast-forward했습니다. 사용자 review `rev_01m3p4ex7xfk3sezsn97kaykfj`, Codex review `rev_01m3p4qt3cfe7s9dgs6vf1ph99`, Luna `cmt_01m3p51k6kem29zzf5wxprz7df` 모두 finding이 없었습니다.
+  - 리뷰 관찰: 일부 리뷰 agent는 Windows rebuild 이전의 CI 상태나 exact head와 다른 테스트 수(210건)를 근거로 적었습니다. 결론에는 영향이 없었으며, exact head 확인 절차는 T-014 설계에서 함께 검토합니다.
 
 - [x] **T-029 root 검색식 gate 보강 (C50-002·C51-001·C51-002)**
   - 출처·판정: PR #50 version 2 head `61e730ff36f276b6a805d0c5ce240b61889c5456` / base `f9df2fac4554ef8997695122b200df576133410f`의 **C50-002**(P3·confidence 0.95·blocking=false). Claude 댓글 `cmt_01m3nnjh7afqbaqbmnfqegktsh`은 `egrep`·`fgrep`·경로·`.exe` 표기 우회를, Luna 댓글 `cmt_01m3nnv319ezy99582103nzzt8`은 같은 원인의 shell `-c` 우회를 추가 재현했습니다. 중복 finding ID나 영구 deferral은 만들지 않습니다.
