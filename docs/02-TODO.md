@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책
-- **Goal:** Origin→GitHub 통합 절차와 release tag 정본을 maintainer 문서에 두고 공개 `main`의 이력을 보호함
-- **Target:** `claude/t032-remote-operations` (Origin·GitHub `main` `291ad30ecabc21623187da60f6dbf7619a0ae0df` 기준)
-- **Status:** In Progress — 동기화 절차와 tag 정책을 문서화했고 GitHub `main` ruleset은 적용됐습니다. PR #54 version 1 리뷰의 C54-001~C54-003을 반영했고 사용자가 tag ruleset을 복원했습니다. 재리뷰·통합이 남았습니다.
-- **다음 마일스톤:** T-030·T-014 기록 시점·리뷰 finding ID 계약 설계를 진행합니다.
+- **Name:** T-030·T-014 기록 시점·리뷰 finding ID 계약 설계
+- **Goal:** merge 결합 서술·PR 원장과 리뷰어 슬롯 finding ID·리뷰 근거의 head 결합을 한 설계로 합의함
+- **Target:** `claude/t030-t014-contract-design` (T-032 PR #54 위에 stack)
+- **Status:** In Progress — [설계 Draft](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md)의 Q1~Q4에 대한 사용자 선택을 기다립니다. T-032는 PR #54의 재리뷰·통합이 남았습니다.
+- **다음 마일스톤:** 승인된 계약의 구현과 T-033 TODO 완료 이력 보관, 이어서 T-034 release를 진행합니다.
 
 ## 운영 규칙
 
@@ -34,6 +34,11 @@
 - 문서 갱신은 commit·push·merge 권한이 아닙니다. 리뷰 라운드 통과 후 반영은 [REVIEW_ROUND.md](./REVIEW_ROUND.md) §9를 따릅니다.
 
 ## In Progress
+
+- [ ] **T-030·T-014 기록 시점·리뷰 finding ID 계약 설계**
+  - 정본·범위: [2026-09-30-record-timing-and-review-ids](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md)가 Intent·요구사항 R-001~R-009·대안·PR 순서를 소유합니다. 실행 상태는 이 항목에서 관리합니다. 2026-09-29 사용자 결정(merge 결합 서술 범위와 사용자 요청 예외)은 승인된 제약이고, Q1~Q4(PR 원장, 예외 기록 위치, 리뷰어 슬롯 ID·대표 ID, 리뷰 근거의 head 결합)는 합의 전입니다.
+  - [x] 근거를 정리했습니다. merge된 `main`의 상태 지연(#50→#51, #51→#52, #53→#54), 기록 전용 commit(#54 version 3), finding ID 충돌(#28·#29), exact head와 다른 리뷰 근거(#53)입니다. locale `DOCS_GUIDE`·`02-TODO`·`REVIEW`·`REVIEW_ROUND`·`BUGBOT`에서 바뀔 절도 특정했습니다.
+  - [ ] Q1~Q4에 대한 사용자 선택을 받아 Status를 `Accepted`로 바꾸고 PROJECT §8에 두 결정을 등재합니다. 이어서 설계 PR의 리뷰·필수 CI·통합을 확인합니다.
 
 - [ ] **T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책**
   - 정본·범위: 아래 Backlog의 T-032 항목이 출처를 소유하고 실행 상태는 이 항목에서 관리합니다. 외부 계약을 바꾸지 않는 maintainer 운영 문서와 저장소 설정이므로 DESIGN §1 예외로 설계 문서를 만들지 않습니다.
@@ -75,7 +80,7 @@ T-032부터 아래 Backlog 순서로 진행합니다. 각 항목은 PR 단위로
 | 13 | `codex/t029-root-search-command-forms` | T-029: C50-002·C51-001·C51-002 root 검색식 gate 보강 | **Integrated** — Origin PR #51 merge `f066978`·GitHub fast-forward 확인; Windows #64·Linux #49 통과 |
 | 14 | `claude/t031-ci-search-tools` | T-031: CI 검색 도구 gate | **Integrated** — #52 merge `05dbe80` 뒤 Origin PR #53 merge `291ad30`·GitHub fast-forward 확인; Windows #67·Linux #52 통과 |
 | 15 | `claude/t032-remote-operations` | T-032: GitHub `main` 보호·Origin→GitHub 동기화 절차·tag 정책 | **In Progress** — `main`·tag ruleset 적용 확인; 상세는 In Progress 항목 |
-| 16 | `claude/t030-t014-contract-design` | T-030·T-014: 기록 시점·리뷰 finding ID 계약 설계 | 같은 artifact 문서를 바꾸므로 한 설계 PR. 사용자 승인 필요 |
+| 16 | `claude/t030-t014-contract-design` | T-030·T-014: 기록 시점·리뷰 finding ID 계약 설계 | **In Progress** — [설계 Draft](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md), #54 위에 stack; 사용자 선택 대기 |
 | 17 | `claude/t030-t014-contract` | T-030·T-014·T-033: 승인 계약 구현과 TODO 완료 이력 보관 | 16의 승인·통합 |
 | 18 | `claude/<version>-release-prep` 등 | T-034: 다음 locale release | 공개 payload 변경을 한 release로 묶음. D-007에 따라 준비·candidate·published 단계 분리 |
 

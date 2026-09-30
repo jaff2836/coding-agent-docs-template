@@ -207,8 +207,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 실행 상태와 우선순위는 [전역 TODO](./02-TODO.md)가 소유합니다. 이 절에는 미해결 판단만 남기며, 확정된 계약은 §8 Decisions와 연결된 설계에서 확인합니다.
 
-- 병렬 리뷰 finding ID 충돌 방지 정책은 [TODO T-014](./02-TODO.md#backlog)에서 합의해야 합니다.
-- TODO·PLAN의 merge 결합 서술 범위와 PR 원장 방식은 [TODO T-030](./02-TODO.md#backlog)에서 합의해야 합니다.
+- TODO·PLAN의 PR 원장 방식, 사용자 요청 예외의 기록 위치, 리뷰어 슬롯 finding ID·대표 ID와 리뷰 근거의 head 결합은 [기록 시점·리뷰 ID 설계](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) §1.5(T-030·T-014)에서 합의해야 합니다. merge 결합 서술 범위는 2026-09-29 사용자가 정했습니다.
 
 ## 12. Rejected or Deferred Ideas
 
@@ -230,5 +229,6 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | 새 프로젝트 install 대상 계약 | [2026-09-22-install-target-contract](./changes/2026-09-22-install-target-contract/01-CHANGE.md) | D-010이 D-002·D-006의 `install`·`adopt` 역할 경계를 새 경로·빈 디렉터리 preflight로 명확화 | installer·root README·locale 적용 가이드 변경 |
 | install preflight 순서 평가 | [2026-09-28-install-preflight-order](./changes/2026-09-28-install-preflight-order/01-CHANGE.md) | Accepted A — D-010 §2.3의 현재 순서·오류 우선순위를 재확인 | 현재 순서 유지 판단과 비교 근거; 별도 구현·release 없음 |
 | 문서 운영 계약 회귀 방지 | [2026-09-28-operation-contract-regression](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md) | Accepted A — D-012가 D-005·D-009의 source 연결·CLI·LF·placeholder 검증을 보강 | 승인 설계; 구현·통합 상태는 TODO, 두 후속 구현 PR |
+| 기록 시점·리뷰 finding ID 계약 | [2026-09-30-record-timing-and-review-ids](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) | Draft — D-009 정본 문서의 기록·리뷰 계약을 확장하는 제안, 결정 미발급 | 합의 전 비교 근거; 실행 상태는 TODO T-030·T-014 |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.
