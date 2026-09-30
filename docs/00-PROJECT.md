@@ -153,6 +153,8 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | D-010 | 2026-09-23 | Accepted | 새 프로젝트용 `install`은 존재하지 않는 경로나 빈 디렉터리만 허용하고 비어 있지 않거나 emptiness를 확인할 수 없는 대상은 쓰기 전에 거부하며 기존 저장소에는 `adopt`를 안내 | [install 대상 계약 변경](./changes/2026-09-22-install-target-contract/01-CHANGE.md), [T-021 순서 유지 판단](./changes/2026-09-28-install-preflight-order/01-CHANGE.md) | artifact 경로 충돌만 거부하는 기존 구현과 문서 완화를 기각. 겹치지 않는 파일이 있는 대상도 실패하지만 D-006의 `install`·`adopt` 역할과 사용자 tree 보존을 강제; T-021에서 §2.3의 검증 뒤 대상 검사 순서를 유지 | Chae Sangwon, 2026-09-23 대화 — A안 권고 뒤 계속 진행 승인; 2026-09-28 대화 — T-021 A안 선택으로 현재 순서 유지 재확인 |
 | D-011 | 2026-09-25 | Accepted | Windows installer는 Python 3.12 이상에서 현재 검사하는 root·output 자체, 직접 부모와 member 경로의 symlink·junction을 거부하고, 더 위의 상위 경로 검사는 확대하지 않음 | [T-017 경계 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md) R-001~R-005 | 기존 POSIX symlink 경로와 Windows 사용자 프로필 junction의 호환성을 보존; 더 넓은 상위 경로 차단은 이번 범위에서 제외. 구현·native 회귀는 별도 PR | Chae Sangwon, 2026-09-25 대화 — 1번 안 선택 |
 | D-012 | 2026-09-28 | Accepted | T-013 A로 `project-analysis`의 root↔ko source 연결·실제 wrapper 회귀·maintainer LF와 준비 이력 안내를 보강하고, locale별 단일 placeholder 검색 선언과 source 검증을 도입 | [문서 운영 계약 회귀 방지](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md) R-001~R-007 | 설명만 보강하는 B를 기각. D-005·D-009와 기존 CLI·schema·inventory 유지; `design`·`review-round`의 root↔ko 차이는 허용. 승인 설계 통합 뒤 두 구현 PR로 진행 | Chae Sangwon, 2026-09-28 선택 응답 — PR #48 version 1 head `7af3e86`의 A 검사·회귀 강화안 승인 |
+| D-013 | 2026-09-30 | Accepted | T-030 A2·E1: 작업 branch 문서는 최종 head가 통합되는 시점까지의 상태를 결합 서술할 수 있습니다. merge 이후 사건은 사용자 명시 요청이 있고 그 근거를 PR 본문(PR이 없으면 작업 보고)에 남긴 경우에만 적습니다. 자기 head의 CI·리뷰 판정·merge SHA는 PR을 원장으로 두고 기록 전용 commit을 만들지 않습니다 | [기록 시점·리뷰 ID 설계](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) R-001~R-005·R-009 | 현행 유지(A0), 결합 서술만(A1), merge 뒤 자동·수동 기록 commit(A3), 근거 없는 예외(E2)를 기각. 통과 head 동결과 최종 head finding의 `문서 반영 대기` 인계는 유지. locale artifact 계약 변경이므로 구현 PR의 다음 PR부터 적용하고 release로 공개 | Chae Sangwon, 2026-09-30 선택 응답 — PR #55 version 1 head `150ebc94ba4d4518b75464d299cdd7887f305668`의 Q1 “채택”, Q2 “PR 본문”, Q3 “슬롯 ID+대표 ID”, Q4 “채택” |
+| D-014 | 2026-09-30 | Accepted | T-014 B1·C1: 리뷰어 목록에 한 번씩 등록된 역할 슬롯을 가진 리뷰어는 게시하는 finding ID에 대상과 슬롯을 넣고, 등록되지 않은 리뷰어는 ID를 발급하지 않고 `<플랫폼 게시 식별자>/<항목 번호>`로 finding을 가리킵니다. 같은 원인은 가장 먼저 게시된 슬롯 ID를 대표 ID로 쓰고, 슬롯 ID가 없으면 종합하는 쪽이 발급합니다. 리뷰 본문에는 검토한 head·base와 인용한 CI·검증의 build·head를 적고, head가 맞지 않는 주장은 미확인으로 다룹니다 | [기록 시점·리뷰 ID 설계](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) R-006~R-009 | 비공식 조율 유지(B0), ID 예약 댓글(B2), 실행 주체 단독 부여(B3), finding 한정 head 정렬 유지(C0)를 기각. REVIEW_ROUND 위임 범위·임계값은 유지하고 모델명 대신 역할 슬롯을 씀 | Chae Sangwon, 2026-09-30 선택 응답 — PR #55 version 1 head `150ebc94ba4d4518b75464d299cdd7887f305668`의 Q1 “채택”, Q2 “PR 본문”, Q3 “슬롯 ID+대표 ID”, Q4 “채택” |
 
 [T-021 preflight 순서 평가](./changes/2026-09-28-install-preflight-order/01-CHANGE.md)에서 사용자는 2026-09-28 PR #47 version 1 head `978be17`의 A안을 선택했습니다. D-010 §2.3의 현재 순서·오류 우선순위를 유지하며 별도 구현·release는 필요하지 않습니다. 기존 결정의 재확인이므로 새 결정 ID를 발급하지 않습니다.
 
@@ -207,8 +209,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 실행 상태와 우선순위는 [전역 TODO](./02-TODO.md)가 소유합니다. 이 절에는 미해결 판단만 남기며, 확정된 계약은 §8 Decisions와 연결된 설계에서 확인합니다.
 
-- 병렬 리뷰 finding ID 충돌 방지 정책은 [TODO T-014](./02-TODO.md#backlog)에서 합의해야 합니다.
-- TODO·PLAN의 merge 결합 서술 범위와 PR 원장 방식은 [TODO T-030](./02-TODO.md#backlog)에서 합의해야 합니다.
+현재 미해결 판단은 없습니다.
 
 ## 12. Rejected or Deferred Ideas
 
@@ -230,5 +231,6 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | 새 프로젝트 install 대상 계약 | [2026-09-22-install-target-contract](./changes/2026-09-22-install-target-contract/01-CHANGE.md) | D-010이 D-002·D-006의 `install`·`adopt` 역할 경계를 새 경로·빈 디렉터리 preflight로 명확화 | installer·root README·locale 적용 가이드 변경 |
 | install preflight 순서 평가 | [2026-09-28-install-preflight-order](./changes/2026-09-28-install-preflight-order/01-CHANGE.md) | Accepted A — D-010 §2.3의 현재 순서·오류 우선순위를 재확인 | 현재 순서 유지 판단과 비교 근거; 별도 구현·release 없음 |
 | 문서 운영 계약 회귀 방지 | [2026-09-28-operation-contract-regression](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md) | Accepted A — D-012가 D-005·D-009의 source 연결·CLI·LF·placeholder 검증을 보강 | 승인 설계; 구현·통합 상태는 TODO, 두 후속 구현 PR |
+| 기록 시점·리뷰 finding ID 계약 | [2026-09-30-record-timing-and-review-ids](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) | Accepted — D-013·D-014가 D-009 정본 문서의 기록·리뷰 계약을 확장 | 승인 설계; 구현·통합 상태는 TODO T-030·T-014 |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.
