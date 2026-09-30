@@ -124,8 +124,11 @@ release tag·GitHub Release는 `jaff2836/coding-agent-docs-template`에서
   `non_fast_forward`·`deletion`으로 force push와 삭제를 막고 fast-forward push는
   허용합니다. `refs/tags/v*` 대상은 `update`·`deletion`으로 tag 갱신과 삭제를
   막으며 게시 전 candidate tag도 이 ruleset이 보호합니다. 설정을 바꾼 뒤와
-  release candidate 전에 `gh api repos/jaff2836/coding-agent-docs-template/rulesets`로
-  두 ruleset의 규칙과 bypass를 확인합니다.
+  release candidate 전에 두 ruleset을 확인합니다. 목록 API
+  `gh api repos/jaff2836/coding-agent-docs-template/rulesets`는 id와
+  `enforcement`만 주므로, 각 id를
+  `gh api repos/jaff2836/coding-agent-docs-template/rulesets/<id>`로 조회해
+  `enforcement`·`conditions.ref_name`·`rules`·`bypass_actors`를 확인합니다.
 - release tag의 정본은 GitHub의 annotated `v<SemVer>` tag입니다. candidate
   verifier는 원격에서 두 `main`의 일치와 GitHub annotated tag를 확인하고,
   실행하는 checkout의 로컬 annotated tag도 같은 source commit을 가리키며
