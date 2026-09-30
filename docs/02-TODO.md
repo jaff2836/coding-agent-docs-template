@@ -39,7 +39,8 @@
   - 정본·범위: [2026-09-30-record-timing-and-review-ids](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md)가 Intent·요구사항 R-001~R-009·대안·PR 순서를 소유합니다. 실행 상태는 이 항목에서 관리합니다. 2026-09-29 사용자 결정(merge 결합 서술 범위와 사용자 요청 예외)은 승인된 제약이고, 2026-09-30 사용자가 Q1~Q4 모두 권고안을 선택해 D-013·D-014로 승인됐습니다.
   - [x] 근거를 정리했습니다. merge된 `main`의 상태 지연(#50→#51, #51→#52, #53→#54), 기록 전용 commit(#54 version 3), finding ID 충돌(#28·#29), exact head와 다른 리뷰 근거(#53)입니다. locale `DOCS_GUIDE`·`02-TODO`·`REVIEW`·`REVIEW_ROUND`·`BUGBOT`에서 바뀔 절도 특정했습니다.
   - [x] 2026-09-30 사용자 선택 응답(PR #55 version 1 head `150ebc9`: Q1 채택, Q2 PR 본문, Q3 슬롯 ID+대표 ID, Q4 채택)을 근거로 설계를 `Accepted`로 바꾸고 PROJECT §8에 D-013·D-014를 등재했습니다. §11의 미해결 판단을 정리했습니다.
-  - [ ] 설계 PR의 리뷰·필수 CI와 통합을 확인합니다. 구현은 설계 통합 뒤 별도 PR에서 진행하며, 새 규칙은 구현 PR의 다음 PR부터 적용합니다.
+  - [x] PR #55 version 2 리뷰: 사용자 review `rev_01m3r4bzxxez4aq8cfmvtdmye1`는 finding이 없었습니다. Codex review `rev_01m3r4c4fqegmvmv22trdc8pw9`(inline `cmt_01m3r4c4g8edzaw7tmp6kenbp5`)는 **C55-001**(P2·confidence 0.94·blocking=true)을 보고했고, Luna `cmt_01m3r4dfysfeh9e8kvew23s507`가 같은 조건을 재현했습니다. 미등록 리뷰어 두 명이 같은 라벨을 고르면 슬롯 ID가 겹치는 문제입니다. 수용해 등록 슬롯만 ID를 발급하고 미등록 리뷰어는 플랫폼 식별자로 가리키도록 설계 R-006·R-007과 D-014를 보완했습니다. Q3 선택은 유지합니다.
+  - [ ] 최신 exact head의 리뷰·필수 CI와 통합을 확인합니다. 구현은 설계 통합 뒤 별도 PR에서 진행하며, 새 규칙은 구현 PR의 다음 PR부터 적용합니다.
 
 - [ ] **T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책**
   - 정본·범위: 아래 Backlog의 T-032 항목이 출처를 소유하고 실행 상태는 이 항목에서 관리합니다. 외부 계약을 바꾸지 않는 maintainer 운영 문서와 저장소 설정이므로 DESIGN §1 예외로 설계 문서를 만들지 않습니다.
