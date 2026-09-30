@@ -3,12 +3,12 @@
 ## Metadata
 
 - **Change ID:** `2026-09-30-record-timing-and-review-ids`
-- **Status:** Draft
+- **Status:** Accepted
 - **Originator:** Chae Sangwon
 - **Source:** 2026-09-29 전체 분석 뒤 사용자 논의에서 TODO 지연을 구조 문제로 보고 해결 방안을 요청했습니다. 같은 날 사용자가 merge 결합 서술 범위를 결정했습니다(§1.4). T-014는 PR #28 version 2 권고 `cmt_01m33dxsvpenytt4nndy29hwz9`에서 출발했습니다. 2026-09-30 사용자의 다음 작업 진행 요청으로 T-030과 함께 설계합니다.
 - **Parent:** [제품 기준](../../00-PROJECT.md) §11, [문서 소유권 설계](../2026-09-22-documentation-ownership/01-CHANGE.md)(D-009), locale `DOCS_GUIDE.md`·`02-TODO.md`·`REVIEW.md`·`REVIEW_ROUND.md`의 현재 계약
-- **Decision:** 미발급 — 승인 시 PROJECT §8에 T-030(기록 시점)과 T-014(리뷰 ID·근거) 결정을 각각 등재합니다.
-- **Approval:** 미승인 — §1.4의 사용자 결정은 승인된 제약이며, §1.5의 선택과 이 설계 전체는 아직 합의 전입니다.
+- **Decision:** PROJECT §8의 D-013(T-030 기록 시점: A2·E1)과 D-014(T-014 리뷰 finding ID·근거: B1·C1)
+- **Approval:** Chae Sangwon, 2026-09-30 선택 응답 — PR #55 version 1 head `150ebc94ba4d4518b75464d299cdd7887f305668`의 Q1 “채택”, Q2 “PR 본문”, Q3 “슬롯 ID+대표 ID”, Q4 “채택”. 요구사항 R-001~R-009, §2.3 설계, §2.6 순서를 함께 승인했습니다. §1.4는 2026-09-29 사용자 결정입니다.
 - **Execution:** [전역 TODO](../../02-TODO.md)의 T-030·T-014가 실행 상태를 소유합니다. 정리 작업 T-033과 release 작업 T-034는 §2.6의 PR 순서를 따릅니다.
 
 ## 1. Intent
@@ -79,7 +79,10 @@
 - **기존 규칙 유지:** [REVIEW_ROUND.md](../../REVIEW_ROUND.md) §1의 위임 범위(재리뷰 요청 외 PR 댓글 금지)와 통과 head 동결은 그대로 둡니다.
 - **구현 조건:** en·ko 구조 parity와 기존 문서 검사를 통과해야 하며, 새 의존성이나 CI 제품을 추가하지 않습니다.
 
-### 1.5 합의가 필요한 선택
+### 1.5 합의한 선택
+
+2026-09-30 사용자가 네 질문 모두 권고안을 선택했습니다. 비교한 대안은 §2.2에 근거로 남깁니다.
+
 
 1. **Q1 — PR 원장:** 자기 head의 사후 사실(CI build, 리뷰 판정, merge SHA)을 TODO·PLAN에 쓰지 않고 PR을 근거로 삼을지 정해야 합니다. 권고는 채택입니다(§2.2 A2).
 2. **Q2 — 예외 기록:** 사용자가 요청한 merge 이후 서술의 근거를 어디에 남길지 정해야 합니다. 권고는 PR 본문(PR이 없으면 작업 보고)입니다.
@@ -180,3 +183,4 @@
 ## 3. 변경 기록
 
 - 2026-09-30: 초안 작성. §1.4는 2026-09-29 사용자 결정이고, Q1~Q4는 합의 전입니다.
+- 2026-09-30: Chae Sangwon, 2026-09-30 선택 응답 — PR #55 version 1 head `150ebc94ba4d4518b75464d299cdd7887f305668`의 Q1 “채택”, Q2 “PR 본문”, Q3 “슬롯 ID+대표 ID”, Q4 “채택”. Status를 `Accepted`로 바꾸고 D-013·D-014를 PROJECT §8에 등재했습니다. 요구사항·설계 본문은 바꾸지 않았습니다.
