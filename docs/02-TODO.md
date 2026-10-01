@@ -44,6 +44,11 @@
   - 적용 시점: 이 PR은 base 정책으로 리뷰하므로 새 규칙을 자신에게 적용하지 않습니다. 다음 PR부터 적용합니다.
   - 남은 결정: root `docs/REVIEW_ROUND.md` §2.1의 리뷰어 슬롯 등록은 실제 리뷰어 구성을 아는 사용자의 확인이 필요해 비워 두었습니다. 등록 전에는 모든 리뷰어가 `<플랫폼 게시 식별자>/<항목 번호>`로 finding을 가리킵니다.
   - [x] 기준 `a608627`에서 시작한 작업 트리의 source docs(328 links/46 files·절 참조 115개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 기준과 같은 30-member이고 locale마다 `.cursor/BUGBOT.md`·`docs/02-TODO.md`·`docs/DOCS_GUIDE.md`·`docs/REVIEW.md`·`docs/REVIEW_ROUND.md` 다섯 파일만 바뀌었으며, 각 artifact의 자체 checker가 통과했습니다.
+  - [x] PR #56 version 1 리뷰: 사용자 review `rev_01m3rm714afajs2y14gqnewvdp`와 Codex review `rev_01m3rmcrpgebtsdrpph29rrkz3`(스레드 `cth_01m3rmcrpsec09fjkn54h3ca8r`)가 서로 다른 finding에 같은 `C56-001`을 붙였습니다. 세 건 모두 유효해 수용했습니다.
+    - 사용자 review의 C56-001(P2): #55 version 4 사용자 계정 review 기록을 정정하고, 그 review의 C55-004(설계 §1.1 순서)를 고쳤습니다.
+    - 사용자 review의 C56-002(P3)와 C55-005: 한 건짜리 게시물도 원 ID를 `/1`로 통일했습니다.
+    - Codex의 C56-001(P2): PR 없는 리뷰는 세션 종료 보고를 게시물로 보고 `<branch>@<head 12자리>/<항목 번호>`를 원 ID로 쓰도록 en·ko `REVIEW.md` §7·`REVIEW_ROUND.md` §7·BUGBOT과 root 사본, 설계 R-006과 D-014에 반영했습니다.
+  - [x] version 2 작업 트리의 source docs(331 links/46 files·절 참조 120개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 30-member이고 기준 대비 바뀐 파일은 같은 다섯 파일이며, 각 artifact의 자체 checker가 통과했습니다.
   - [ ] exact head의 수동 리뷰·필수 CI와 Origin 통합을 확인합니다. 공개는 T-034가 소유합니다.
 
 ## Next
@@ -115,7 +120,7 @@ T-030·T-014 구현 통합 뒤 아래 Backlog 순서로 진행합니다. 각 항
   - [x] 2026-09-30 사용자 선택 응답(PR #55 version 1 head `150ebc9`: Q1 채택, Q2 PR 본문, Q3 슬롯 ID+대표 ID, Q4 채택)을 근거로 설계를 `Accepted`로 바꾸고 PROJECT §8에 D-013·D-014를 등재했습니다. §11의 미해결 판단을 정리했습니다.
   - [x] PR #55 version 2 리뷰: 사용자 review `rev_01m3r4bzxxez4aq8cfmvtdmye1`는 finding이 없었습니다. Codex review `rev_01m3r4c4fqegmvmv22trdc8pw9`(inline `cmt_01m3r4c4g8edzaw7tmp6kenbp5`)는 **C55-001**(P2·confidence 0.94·blocking=true)을 보고했고, 같은 사용자 review의 후속 댓글 `cmt_01m3r4dfysfeh9e8kvew23s507`가 같은 조건을 재현하고 그 approve의 누락을 정정했습니다. 미등록 리뷰어 두 명이 같은 라벨을 고르면 슬롯 ID가 겹치는 문제입니다. 수용해 등록 슬롯만 ID를 발급하고 미등록 리뷰어는 플랫폼 식별자로 가리키도록 설계 R-006·R-007과 D-014를 보완했습니다. Q3 선택은 유지합니다.
   - [x] PR #55 version 3 리뷰: 사용자 review `rev_01m3rcyqd7fh99b3f86sgtp9db`와 Codex review `rev_01m3rd1vm9exsa8ha5qvfpgd2f`(inline `cmt_01m3rd1vmfeb9s6j974tca27ea`의 스레드)는 C55-001 해소를 확인했습니다. 그런데 두 리뷰가 서로 다른 finding에 같은 `C55-002`를 붙여 설계의 ID 충돌 근거에 추가했습니다. Codex의 C55-002(P2·confidence 0.96·blocking=true: 한 본문의 여러 finding이 플랫폼 식별자만으로 구별되지 않음)를 수용해 미등록 리뷰어의 원 ID를 `<플랫폼 게시 식별자>/<항목 번호>`로 정했습니다. 사용자 review의 C55-002(P3, 재현 댓글 작성자 표기)와 C55-003(P3, `REVIEW_ROUND` §7 목록의 원 ID 형식)도 수용해 고쳤습니다.
-  - 통합 결과: PR #55 version 4 head `420e506bb3bb4d6e99eb11f271884c90e18de93f`을 Origin merge `a6086270bc2e31d8c2b6a8ed81d0084d741274dc`에 통합하고 GitHub·로컬 `main`에도 non-force fast-forward했습니다. merge tree는 CI가 검증한 head tree와 같습니다. version 4의 Codex review `rev_01m3rh9437fq2rr4x2z4fv2qqs`는 새 finding이 없고 C55-001, Codex의 C55-002, 사용자 review의 C55-002·C55-003 해소를 확인했습니다. 같은 version의 사용자 계정 review `rev_01m3rh5yptfmrt3v5ncg5bzf11`은 본문과 스레드가 없어 보고된 finding이 없습니다. exact head의 Windows #78·Linux #63 CI가 통과했고 세 리뷰 스레드를 정리했습니다.
+  - 통합 결과: PR #55 version 4 head `420e506bb3bb4d6e99eb11f271884c90e18de93f`을 Origin merge `a6086270bc2e31d8c2b6a8ed81d0084d741274dc`에 통합하고 GitHub·로컬 `main`에도 non-force fast-forward했습니다. merge tree는 CI가 검증한 head tree와 같습니다. version 4의 Codex review `rev_01m3rh9437fq2rr4x2z4fv2qqs`는 새 finding이 없고 C55-001, Codex의 C55-002, 사용자 review의 C55-002·C55-003 해소를 확인했습니다. 같은 version의 사용자 계정 review `rev_01m3rh5yptfmrt3v5ncg5bzf11`은 C55-004(P3·confidence 0.96·blocking=true, 설계 §1.1 충돌 근거의 시간 순서)와 C55-005(P3·confidence 0.86·blocking=true, 한 건짜리 게시물의 원 ID 두 형식)를 보고했습니다. 통합 직전 조회 결과에서는 본문이 보이지 않아 finding 없음으로 잘못 기록했고, PR #56 리뷰가 이를 바로잡았습니다. 두 P3은 기본 임계값에서 통과를 막지 않으며 T-030·T-014 구현 PR #56에서 해소했습니다. exact head의 Windows #78·Linux #63 CI가 통과했고 세 리뷰 스레드를 정리했습니다.
 
 - [x] **T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책**
   - 정본·범위: 아래 Backlog의 T-032 항목이 출처를 소유하고 실행 상태는 이 항목에서 관리합니다. 외부 계약을 바꾸지 않는 maintainer 운영 문서와 저장소 설정이므로 DESIGN §1 예외로 설계 문서를 만들지 않습니다.

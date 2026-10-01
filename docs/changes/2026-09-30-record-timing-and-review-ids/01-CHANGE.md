@@ -38,8 +38,9 @@
 
 - PR #28에서는 한 리뷰어의 `C28-00x`가 먼저 게시된 리뷰와 겹쳐 정정 댓글이 필요했습니다.
 - PR #29에서는 `C29-001`이 두 리뷰에서 서로 다른 항목에 붙었습니다.
-- 이 설계 PR #55 version 3에서도 사용자 review `rev_01m3rcyqd7fh99b3f86sgtp9db`(05:35:16Z)와 Codex review `rev_01m3rd1vm9exsa8ha5qvfpgd2f`(05:36:59Z)가 서로 다른 finding에 같은 `C55-002`를 붙였습니다.
 - 그 뒤로는 리뷰어들이 앞 리뷰를 읽고 "새 ID를 만들지 않는다"는 식으로 비공식 조율만 하고 있습니다. #46·#50·#51·#54에서 확인됩니다.
+- 이 설계 PR #55 version 3에서도 사용자 review `rev_01m3rcyqd7fh99b3f86sgtp9db`(05:35:16Z)와 Codex review `rev_01m3rd1vm9exsa8ha5qvfpgd2f`(05:36:59Z)가 서로 다른 finding에 같은 `C55-002`를 붙였습니다.
+- 구현 PR #56 version 1에서도 사용자 review `rev_01m3rm714afajs2y14gqnewvdp`와 Codex review `rev_01m3rmcrpgebtsdrpph29rrkz3`가 서로 다른 finding에 같은 `C56-001`을 붙였습니다.
 - locale 계약에는 게시되는 finding ID의 형식이 없고, 세션 원장의 `F-nnn`만 있습니다([REVIEW_ROUND.md](../../REVIEW_ROUND.md) §7).
 
 **리뷰 근거가 exact head와 어긋납니다.**
@@ -101,7 +102,7 @@
 | R-003 | PR 원장 (Q1) | fix commit 뒤 CI·재리뷰가 끝남 | 그 결과를 기록하려고 commit하지 않음. TODO에는 "근거: PR"만 두고, 실제 수정이 있는 commit에서만 이전 version의 판정을 기록할 수 있음 | DOCS_GUIDE·TODO 규칙, PR 사례 대조 |
 | R-004 | 최종 head finding 인계 | 통과한 최종 head의 리뷰에서 새 비차단 finding이 나옴 | 기존 §9처럼 `문서 반영 대기`로 다음 관련 작업이 받음. 통과 head를 바꾸지 않음 | REVIEW_ROUND §6·§9 |
 | R-005 | PR 없는 작업 | 로컬 통합 대상에 직접 반영 | 결합 서술의 조건은 그 통합 commit이고, 근거는 기준 revision과 변경 범위. 가상의 PR·SHA를 만들지 않음 | DOCS_GUIDE 로컬 Git 절 |
-| R-006 | 리뷰어 슬롯이 붙은 finding ID (Q3) | 병렬 리뷰어가 같은 PR에 finding을 게시함. 등록되지 않은 두 리뷰어가 같은 라벨을 고르는 경우도 포함 | 슬롯 ID는 리뷰어 목록(§2.1 표 또는 프로젝트가 정한 목록)에 한 번씩만 등록된 역할 라벨을 가진 리뷰어만 발급하므로 대상 안에서 겹치지 않음. 등록되지 않은 리뷰어는 슬롯 ID를 발급하지 않음. 대신 게시물 안의 finding마다 항목 번호(1, 2, …)를 붙이고 `<플랫폼 게시 식별자>/<항목 번호>`로 가리킴. finding이 하나뿐인 게시물은 플랫폼 식별자만으로 가리킬 수 있음 | REVIEW §7, REVIEW_ROUND §2.1 열, BUGBOT 복제, 미등록 리뷰어 두 명이 같은 라벨을 고르는 시나리오, 한 리뷰 본문에 finding 두 건이 있는 시나리오 |
+| R-006 | 리뷰어 슬롯이 붙은 finding ID (Q3) | 병렬 리뷰어가 같은 PR에 finding을 게시함. 등록되지 않은 두 리뷰어가 같은 라벨을 고르는 경우도 포함 | 슬롯 ID는 리뷰어 목록(§2.1 표 또는 프로젝트가 정한 목록)에 한 번씩만 등록된 역할 라벨을 가진 리뷰어만 발급하므로 대상 안에서 겹치지 않음. 등록되지 않은 리뷰어는 슬롯 ID를 발급하지 않음. 대신 게시물 안의 finding마다 항목 번호(1, 2, …)를 붙이고 `<플랫폼 게시 식별자>/<항목 번호>`로 가리킴. finding이 하나뿐이어도 원 ID는 `/1`이며, 게시 식별자만 쓴 인용은 `/1`과 같음. PR 게시물이 없는 리뷰는 세션 종료 보고를 게시물로 보고 `<branch>@<마지막 리뷰 head 12자리>/<항목 번호>`를 씀 | REVIEW §7, REVIEW_ROUND §2.1 열, BUGBOT 복제, 미등록 리뷰어 두 명이 같은 라벨을 고르는 시나리오, 한 리뷰 본문에 finding 두 건이 있는 시나리오, PR 없는 `reviewers = self` 리뷰의 인계 시나리오 |
 | R-007 | 대표 ID | 두 리뷰어가 같은 원인을 보고하거나, 인계할 finding에 슬롯 ID가 없음 | 가장 먼저 게시된 슬롯 ID를 대표 ID로 쓰고, 원장과 인계 목록이 원 ID(슬롯 ID 또는 `<플랫폼 게시 식별자>/<항목 번호>`)를 모두 남김. 슬롯 ID가 하나도 없으면 결과를 종합하는 쪽(라운드 실행 주체 또는 PR 작성자)이 자기 등록 슬롯으로 대표 ID를 발급함. 세션 원장의 `F-nnn`은 세션 안에서만 씀 | REVIEW_ROUND §4 중복 통합·§7 표 |
 | R-008 | 리뷰 근거의 head 결합 (Q4) | 리뷰 본문이 CI 성공·테스트 수를 인용함 | 검토한 head·base와 인용한 CI build의 head를 밝힘. head가 다르거나 밝히지 않은 주장은 판정 근거로 쓰지 않고 미확인으로 다룸 | REVIEW §10, REVIEW_ROUND §4 |
 | R-009 | 기존 계약 보존 | 리뷰 라운드 위임·통과 head 동결·임계값 | 바뀌지 않음. 추가 PR 댓글이나 ID 예약 댓글을 요구하지 않음 | 해당 절 diff 대조 |
@@ -194,3 +195,8 @@
 - 2026-09-30: 구현하면서 두 가지 위치를 정정했습니다. 요구사항 내용은 같습니다.
   - R-002 점검 항목은 [REVIEW.md](../../REVIEW.md) §7이 아니라 §5 Tests and Documentation에 둡니다. §7은 finding의 필수 항목 목록이고, 리뷰 점검 항목은 §5가 소유합니다.
   - 대표 ID를 발급하는 실행 주체·PR 작성자의 슬롯은 §2.1 표의 리뷰어 행이 아니라 표 아래 한 줄로 적습니다. 리뷰어 정족수 집계에 섞이지 않게 하기 위해서입니다.
+- 2026-09-30: 구현 PR #56 version 1 리뷰를 반영했습니다. 두 리뷰가 서로 다른 finding에 같은 `C56-001`을 붙였으므로 게시 식별자로 구분하고, 이 사례를 §1.1 근거에 추가했습니다.
+  - 사용자 review `rev_01m3rm714afajs2y14gqnewvdp`의 C56-001(P2): #55 version 4 사용자 계정 review `rev_01m3rh5yptfmrt3v5ncg5bzf11`를 본문 없음으로 잘못 기록했습니다. 그 review에는 C55-004(P3, §1.1 근거 순서)와 C55-005(P3, 한 건짜리 게시물의 원 ID 두 형식)가 있습니다. TODO 기록을 정정하고, C55-004는 §1.1 순서를 바로잡아 해소했습니다.
+  - 같은 review의 C56-002(P3)와 C55-005: 한 건짜리 게시물도 원 ID를 `/1`로 두고, 식별자만 쓴 인용은 `/1`과 같다고 R-006·`REVIEW.md`·BUGBOT에 맞췄습니다.
+  - Codex review `rev_01m3rmcrpgebtsdrpph29rrkz3`의 C56-001(P2): PR 없는 `reviewers = self` 리뷰에는 원 ID를 만들 게시물이 없습니다. 세션 종료 보고를 게시물로 보고 `<branch>@<마지막 리뷰 head 12자리>/<항목 번호>`를 원 ID로 쓰도록 R-006·[REVIEW_ROUND.md](../../REVIEW_ROUND.md) §7·[REVIEW.md](../../REVIEW.md) §7에 정의했습니다.
+  - Q3 선택(B1)과 다른 결정은 유지하며, 사용자의 위임에 따른 보완입니다.

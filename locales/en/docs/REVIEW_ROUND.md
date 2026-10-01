@@ -251,6 +251,8 @@ The decision record includes the target, confirmed parameters and the history of
 
 In the `Reviewer` column, list every reviewer that reported the same finding; if their severities differed, preserve each value. In the `Original ID` column, list every slot ID or `<platform post identifier>/<item number>` that reviewers posted. `F-nnn` is used only inside this session ledger; when handing off to another document, use the representative ID and the original IDs.
 
+**Reviews without a PR post:** When findings are not left as PR posts, as with `reviewers = self` or a local review without a PR, the final session report serves as the post. The executor numbers each finding in the report and writes its original ID as `<report identifier>/<item number>`. The report identifier is the target branch plus the first 12 characters of the last reviewed head (for example, `feature-x@0123456789ab/2`). The next session uses the original IDs from the handed-off report unchanged.
+
 **Session handoff list:** Include the original PR, head, and base (or the comparison baseline and changed scope for a local review), the threshold actually applied, the representative ID and original IDs (slot IDs or `<platform post identifier>/<item number>`), severity, `blocking`, decision evidence, remaining work, and completion conditions. Mark every item as `documentation update pending`, and link an existing tracking item when present. At exit, also record whether a merge occurred and the actual merge SHA. Creating a handoff list or merging does not start the next task or complete the repository documentation update.
 
 ## 8. Early Stop
