@@ -38,8 +38,9 @@
 
 - PR #28에서는 한 리뷰어의 `C28-00x`가 먼저 게시된 리뷰와 겹쳐 정정 댓글이 필요했습니다.
 - PR #29에서는 `C29-001`이 두 리뷰에서 서로 다른 항목에 붙었습니다.
-- 이 설계 PR #55 version 3에서도 사용자 review `rev_01m3rcyqd7fh99b3f86sgtp9db`(05:35:16Z)와 Codex review `rev_01m3rd1vm9exsa8ha5qvfpgd2f`(05:36:59Z)가 서로 다른 finding에 같은 `C55-002`를 붙였습니다.
 - 그 뒤로는 리뷰어들이 앞 리뷰를 읽고 "새 ID를 만들지 않는다"는 식으로 비공식 조율만 하고 있습니다. #46·#50·#51·#54에서 확인됩니다.
+- 이 설계 PR #55 version 3에서도 사용자 review `rev_01m3rcyqd7fh99b3f86sgtp9db`(05:35:16Z)와 Codex review `rev_01m3rd1vm9exsa8ha5qvfpgd2f`(05:36:59Z)가 서로 다른 finding에 같은 `C55-002`를 붙였습니다.
+- 구현 PR #56 version 1에서도 사용자 review `rev_01m3rm714afajs2y14gqnewvdp`와 Codex review `rev_01m3rmcrpgebtsdrpph29rrkz3`가 서로 다른 finding에 같은 `C56-001`을 붙였습니다.
 - locale 계약에는 게시되는 finding ID의 형식이 없고, 세션 원장의 `F-nnn`만 있습니다([REVIEW_ROUND.md](../../REVIEW_ROUND.md) §7).
 
 **리뷰 근거가 exact head와 어긋납니다.**
@@ -59,7 +60,7 @@
 ### 1.3 범위와 비범위
 
 **범위:**
-- en·ko locale의 `docs/DOCS_GUIDE.md`, `docs/02-TODO.md` 운영 규칙, `docs/REVIEW.md` §7·§10, `docs/REVIEW_ROUND.md` §2.1·§4·§6·§7·§9
+- en·ko locale의 `docs/DOCS_GUIDE.md`, `docs/02-TODO.md` 운영 규칙, `docs/REVIEW.md` §5·§7·§10, `docs/REVIEW_ROUND.md` §2.1·§4·§6·§7·§9
 - `.cursor/BUGBOT.md`의 해당 복제 규칙과 review-round skill 사본(문구가 바뀌는 경우)
 - 같은 내용을 쓰는 root maintainer 문서
 
@@ -97,12 +98,12 @@
 | ID | 요구사항 | 상황·입력 | 관찰 가능한 결과 | 검증 |
 |---|---|---|---|---|
 | R-001 | merge 결합 서술 | 작업 branch가 자기 T 항목을 `Completed`로 옮기고 근거를 "이 변경의 PR"로 적음 | merge 직후 통합 대상의 TODO가 완료를 보여 줌. PR이 닫혀 merge되지 않거나 revert되면 서술도 함께 사라짐 | locale 두 guide·TODO 규칙 문구, 구현 PR 다음 PR에서의 적용 |
-| R-002 | merge 이후 사건의 서술 금지와 예외 | 사용자 요청 없이 release 공개나 다른 원격 동기화를 완료로 적음 | 리뷰에서 위반 finding이 됨. 사용자 요청이 있으면 요청 근거(요청자·시점·범위)가 PR 본문에 있어야 허용됨 | REVIEW §7 점검 항목, 시나리오 대조 |
+| R-002 | merge 이후 사건의 서술 금지와 예외 | 사용자 요청 없이 release 공개나 다른 원격 동기화를 완료로 적음 | 리뷰에서 위반 finding이 됨. 사용자 요청이 있으면 요청 근거(요청자·시점·범위)가 PR 본문에 있어야 허용됨 | REVIEW §5 점검 항목, 시나리오 대조 |
 | R-003 | PR 원장 (Q1) | fix commit 뒤 CI·재리뷰가 끝남 | 그 결과를 기록하려고 commit하지 않음. TODO에는 "근거: PR"만 두고, 실제 수정이 있는 commit에서만 이전 version의 판정을 기록할 수 있음 | DOCS_GUIDE·TODO 규칙, PR 사례 대조 |
 | R-004 | 최종 head finding 인계 | 통과한 최종 head의 리뷰에서 새 비차단 finding이 나옴 | 기존 §9처럼 `문서 반영 대기`로 다음 관련 작업이 받음. 통과 head를 바꾸지 않음 | REVIEW_ROUND §6·§9 |
 | R-005 | PR 없는 작업 | 로컬 통합 대상에 직접 반영 | 결합 서술의 조건은 그 통합 commit이고, 근거는 기준 revision과 변경 범위. 가상의 PR·SHA를 만들지 않음 | DOCS_GUIDE 로컬 Git 절 |
-| R-006 | 리뷰어 슬롯이 붙은 finding ID (Q3) | 병렬 리뷰어가 같은 PR에 finding을 게시함. 등록되지 않은 두 리뷰어가 같은 라벨을 고르는 경우도 포함 | 슬롯 ID는 리뷰어 목록(§2.1 표 또는 프로젝트가 정한 목록)에 한 번씩만 등록된 역할 라벨을 가진 리뷰어만 발급하므로 대상 안에서 겹치지 않음. 등록되지 않은 리뷰어는 슬롯 ID를 발급하지 않음. 대신 게시물 안의 finding마다 항목 번호(1, 2, …)를 붙이고 `<플랫폼 게시 식별자>/<항목 번호>`로 가리킴. finding이 하나뿐인 게시물은 플랫폼 식별자만으로 가리킬 수 있음 | REVIEW §7, REVIEW_ROUND §2.1 열, BUGBOT 복제, 미등록 리뷰어 두 명이 같은 라벨을 고르는 시나리오, 한 리뷰 본문에 finding 두 건이 있는 시나리오 |
-| R-007 | 대표 ID | 두 리뷰어가 같은 원인을 보고하거나, 인계할 finding에 슬롯 ID가 없음 | 가장 먼저 게시된 슬롯 ID를 대표 ID로 쓰고, 원장과 인계 목록이 원 ID(슬롯 ID 또는 `<플랫폼 게시 식별자>/<항목 번호>`)를 모두 남김. 슬롯 ID가 하나도 없으면 결과를 종합하는 쪽(라운드 실행 주체 또는 PR 작성자)이 자기 등록 슬롯으로 대표 ID를 발급함. 세션 원장의 `F-nnn`은 세션 안에서만 씀 | REVIEW_ROUND §4 중복 통합·§7 표 |
+| R-006 | 리뷰어 슬롯이 붙은 finding ID (Q3) | 병렬 리뷰어가 같은 PR에 finding을 게시함. 등록되지 않은 두 리뷰어가 같은 라벨을 고르는 경우도 포함 | 슬롯 ID는 리뷰어 목록(§2.1 표 또는 프로젝트가 정한 목록)에 한 번씩만 등록된 역할 라벨을 가진 리뷰어만 발급하므로 대상 안에서 겹치지 않음. 등록되지 않은 리뷰어는 슬롯 ID를 발급하지 않음. 대신 게시물 안의 finding마다 항목 번호(1, 2, …)를 붙이고 `<플랫폼 게시 식별자>/<항목 번호>`로 가리킴. finding이 하나뿐이어도 원 ID는 `/1`이며, 게시 식별자만 쓴 인용은 `/1`과 같음. 같은 게시물을 head마다 덮어쓰는(sticky) 리뷰어는 `<게시 식별자>@<head 12자리>/<항목 번호>`를 씀. PR 게시물이 없는 리뷰는 세션 종료 보고를 게시물로 보고 `<branch>@<마지막 리뷰 head 12자리>@<보고 UTC 시각>-<보고별 무작위 16진수 8자리>/<항목 번호>`를 씀. 같은 head 재리뷰, 미커밋 변경, 같은 초의 다른 세션도 무작위 값으로 구별됨 | REVIEW §7, REVIEW_ROUND §2.1 열, BUGBOT 복제, 미등록 리뷰어 두 명이 같은 라벨을 고르는 시나리오, 한 리뷰 본문에 finding 두 건이 있는 시나리오, PR 없는 `reviewers = self` 리뷰의 인계 시나리오, 같은 branch·head를 다른 세션이나 미커밋 변경으로 다시 리뷰하는 시나리오, 두 세션이 같은 UTC 초에 보고를 만드는 시나리오, sticky 게시물이 head마다 다른 finding을 싣는 시나리오 |
+| R-007 | 대표 ID | 두 리뷰어가 같은 원인을 보고하거나, 인계할 finding에 슬롯 ID가 없음 | 대표 ID는 원 ID 중 가장 먼저 게시된 슬롯 ID이고, 슬롯 ID가 없으면 가장 먼저 게시된 원 ID임. 게시 순서가 같으면 원 ID 문자열의 사전순으로 가장 앞선 것을 고름. 대표 ID를 따로 발급하지 않으므로 슬롯이 하나도 없는 `reviewers = self` 인계에서도 항상 존재함. 원장과 인계 목록이 원 ID(슬롯 ID 또는 `<플랫폼 게시 식별자>/<항목 번호>`)를 모두 남김. 세션 원장의 `F-nnn`은 세션 안에서만 씀 | REVIEW_ROUND §4 중복 통합·§7 표 |
 | R-008 | 리뷰 근거의 head 결합 (Q4) | 리뷰 본문이 CI 성공·테스트 수를 인용함 | 검토한 head·base와 인용한 CI build의 head를 밝힘. head가 다르거나 밝히지 않은 주장은 판정 근거로 쓰지 않고 미확인으로 다룸 | REVIEW §10, REVIEW_ROUND §4 |
 | R-009 | 기존 계약 보존 | 리뷰 라운드 위임·통과 head 동결·임계값 | 바뀌지 않음. 추가 PR 댓글이나 ID 예약 댓글을 요구하지 않음 | 해당 절 diff 대조 |
 
@@ -145,7 +146,7 @@
 
 - **§6:** 통과 head 동결과 기록 commit 금지는 그대로 둡니다. 완료 서술은 통과 전 최종 수정에 결합 서술로 포함할 수 있다고 적고, 포함하지 못한 경우에만 §9로 인계합니다.
 - **§9:** 인계 대상을 "최종 head 리뷰에서 새로 나온 finding과 결합 서술로 담지 못한 기록"으로 좁힙니다.
-- **§2.1:** 리뷰어 표에 `슬롯` 열을 추가합니다. 라벨은 모델·도구가 바뀌어도 유지되는 역할 라벨이며, 예시로 `A`·`B`·`owner`를 둡니다. 한 라벨은 표에 한 번만 둡니다. 대표 ID를 발급하는 라운드 실행 주체나 PR 작성자에게도 슬롯을 둡니다. 모델이 바뀌면 라벨이 아니라 표의 리뷰어 칸을 고칩니다.
+- **§2.1:** 리뷰어 표에 `슬롯` 열을 추가합니다. 라벨은 모델·도구가 바뀌어도 유지되는 역할 라벨이며, 예시로 `A`·`B`·`owner`를 둡니다. 한 라벨은 표에 한 번만 둡니다. 모델이 바뀌면 라벨이 아니라 표의 리뷰어 칸을 고칩니다.
 - **§4:** "중복 통합"에 대표 ID 규칙(R-007)을, "head 정렬"에 CI·검증 주장의 head 결합(R-008)을 추가합니다.
 - **§7:** 판정 표에 `원 ID` 열을 추가합니다. 원 ID는 슬롯 ID이고, 슬롯 ID가 없으면 `<플랫폼 게시 식별자>/<항목 번호>`입니다. 인계 목록에는 대표 ID와 원 ID를 모두 적습니다.
 
@@ -153,7 +154,7 @@
 
 - **§7 Finding Requirements:** 게시하는 finding에 ID를 붙일 때는 대상 식별자와 자기 슬롯을 포함해 같은 대상의 다른 리뷰어와 겹치지 않게 합니다. 대상 식별자의 형식은 프로젝트가 정하며, 이 저장소의 root 문서는 `C<PR>-<슬롯>-<nnn>`를 예로 둡니다. 슬롯은 리뷰어 목록에 등록된 것만 씁니다. 등록되지 않은 리뷰어는 ID를 발급하지 않고, 게시물 안의 finding마다 항목 번호를 붙여 `<플랫폼 게시 식별자>/<항목 번호>`로 가리키게 합니다. 변경 폴더 ID를 `<변경-ID>/R-001`로 가리키는 기존 규칙과 같은 방식입니다.
 - **§10 Review Conclusion:** 결론에 검토한 head·base를 적고, 인용한 CI·검증 결과마다 build와 그 head를 적습니다. 읽지 못했거나 아직 끝나지 않은 결과는 그렇다고 적습니다.
-- **§7 점검 항목:** 문서 변경 리뷰에서 R-002 위반(요청 근거 없는 merge 이후 서술)을 점검합니다.
+- **§5 Tests and Documentation:** 문서 변경 리뷰에서 R-002 위반(요청 근거 없는 merge 이후 서술)을 점검합니다.
 - Bugbot은 BUGBOT.md만 읽으므로 ID·근거 규칙을 같은 문장으로 복제합니다. WATCHDOG은 REVIEW.md를 import하므로 바꾸지 않습니다.
 
 ### 2.4 상위 설계에 미치는 영향
@@ -167,7 +168,7 @@
 - **적용 프로젝트:** locale 문서는 `adopt` report의 merge·decide 대상이므로 자동으로 덮어쓰이지 않습니다. 기존 TODO 기록은 소급해서 바꾸지 않습니다.
 - **규칙 변화의 성격:** 제약을 완화하는 부분(R-001)과 강화하는 부분(R-003·R-006·R-008)이 함께 있습니다. release notes에 두 가지를 구분해 적습니다.
 - **위험 1:** 결합 서술을 merge 이후 사건으로 확대 해석할 수 있습니다. 완화책은 R-002 점검 항목과 리뷰 finding입니다.
-- **위험 2:** 등록되지 않은 리뷰어가 있을 수 있습니다. 이들은 슬롯 ID를 발급하지 않고 `<플랫폼 게시 식별자>/<항목 번호>`로 finding을 가리키므로, 한 게시물에 finding이 여럿이어도 겹치지 않습니다. 인계에 짧은 ID가 필요하면 종합하는 쪽이 대표 ID를 발급합니다(C55-001, Codex의 C55-002).
+- **위험 2:** 등록되지 않은 리뷰어가 있을 수 있습니다. 이들은 슬롯 ID를 발급하지 않고 `<플랫폼 게시 식별자>/<항목 번호>`로 finding을 가리키므로, 한 게시물에 finding이 여럿이어도 겹치지 않습니다. 대표 ID는 원 ID 중에서 고르므로 슬롯이 없어도 인계할 수 있습니다(C55-001, Codex의 C55-002, #56 version 4 리뷰).
 - **rollback:** 다음 release에서 문서를 되돌리면 됩니다. 데이터나 코드 migration은 없습니다.
 
 ### 2.6 완료 조건과 실행 순서
@@ -191,3 +192,18 @@
   - 사용자 review `rev_01m3rcyqd7fh99b3f86sgtp9db`의 C55-002(P3): 재현 댓글의 작성자 표기를 정정했습니다.
   - 같은 review의 C55-003(P3): §2.3의 `REVIEW_ROUND` §7 목록에 원 ID 형식과 인계를 반영했습니다.
   - Q3 선택(B1)과 다른 결정은 유지하며, 사용자의 "리뷰 확인하고 결정해 봐" 위임에 따라 보완했습니다.
+- 2026-09-30: 구현하면서 두 가지 위치를 정정했습니다. 요구사항 내용은 같습니다.
+  - R-002 점검 항목은 [REVIEW.md](../../REVIEW.md) §7이 아니라 §5 Tests and Documentation에 둡니다. §7은 finding의 필수 항목 목록이고, 리뷰 점검 항목은 §5가 소유합니다.
+  - 대표 ID를 발급하는 실행 주체·PR 작성자의 슬롯은 §2.1 표의 리뷰어 행이 아니라 표 아래 한 줄로 적습니다. 리뷰어 정족수 집계에 섞이지 않게 하기 위해서입니다.
+- 2026-09-30: 구현 PR #56 version 1 리뷰를 반영했습니다. 두 리뷰가 서로 다른 finding에 같은 `C56-001`을 붙였으므로 게시 식별자로 구분하고, 이 사례를 §1.1 근거에 추가했습니다.
+  - 사용자 review `rev_01m3rm714afajs2y14gqnewvdp`의 C56-001(P2): #55 version 4 사용자 계정 review `rev_01m3rh5yptfmrt3v5ncg5bzf11`를 본문 없음으로 잘못 기록했습니다. 그 review에는 C55-004(P3, §1.1 근거 순서)와 C55-005(P3, 한 건짜리 게시물의 원 ID 두 형식)가 있습니다. TODO 기록을 정정하고, C55-004는 §1.1 순서를 바로잡아 해소했습니다.
+  - 같은 review의 C56-002(P3)와 C55-005: 한 건짜리 게시물도 원 ID를 `/1`로 두고, 식별자만 쓴 인용은 `/1`과 같다고 R-006·`REVIEW.md`·BUGBOT에 맞췄습니다.
+  - Codex review `rev_01m3rmcrpgebtsdrpph29rrkz3`의 C56-001(P2): PR 없는 `reviewers = self` 리뷰에는 원 ID를 만들 게시물이 없습니다. 세션 종료 보고를 게시물로 보고 `<branch>@<마지막 리뷰 head 12자리>/<항목 번호>`를 원 ID로 쓰도록 R-006·[REVIEW_ROUND.md](../../REVIEW_ROUND.md) §7·[REVIEW.md](../../REVIEW.md) §7에 정의했습니다.
+  - Q3 선택(B1)과 다른 결정은 유지하며, 사용자의 위임에 따른 보완입니다.
+- 2026-10-01: 구현 PR #56 version 2 리뷰를 반영했습니다. 사용자 review `rev_01m3tmj3nyf7ct24jt2rarmx4g`의 C56-003(P3·confidence 0.82·blocking=true)과 Codex review `rev_01m3tn29k9fpdt4875a2xz1799`의 Finding 1(새 규칙으로는 `rev_01m3tn29k9fpdt4875a2xz1799/1`, P2·confidence 0.97·blocking=true)은 같은 원인입니다. 로컬 보고 식별자 `<branch>@<head>`는 같은 head를 다시 리뷰하거나 미커밋 변경을 리뷰할 때, 또는 다른 세션이 같은 head를 리뷰할 때 보고마다 유일하지 않습니다. 보고 식별자에 보고를 만든 UTC 시각(초 단위)을 넣어 보고마다 유일하게 하고, 인계받은 원 ID는 유지하도록 R-006과 en·ko·root [REVIEW_ROUND.md](../../REVIEW_ROUND.md) §7을 고쳤습니다. 번호를 이어 쓰는 대안은 이전 보고를 알아야 해서 택하지 않았습니다. 다른 결정은 유지하며, 사용자의 위임에 따른 보완입니다.
+- 2026-10-01: 구현 PR #56 version 3 리뷰를 반영했습니다. 사용자 review `rev_01m3ttw7zxfgktgpr7p7g8f7xs`는 finding이 없었습니다. Codex review `rev_01m3tv6t2pfk4s6v7e5mxn1sc8`의 Finding 1(새 규칙으로는 `rev_01m3tv6t2pfk4s6v7e5mxn1sc8/1`, P2·confidence 0.98·blocking=true)은 두 로컬 세션이 같은 초에 보고를 만들면 시각만으로는 보고를 구별하지 못한다는 지적입니다. 시각을 더 잘게 나누는 대신 보고마다 새로 만드는 무작위 16진수 8자리를 보고 식별자에 붙여 R-006과 en·ko·root [REVIEW_ROUND.md](../../REVIEW_ROUND.md) §7을 고쳤습니다. 다른 결정은 유지하며, 사용자의 위임에 따른 보완입니다.
+- 2026-10-01: 구현 PR #56 version 4 리뷰를 반영했습니다. 사용자 review `rev_01m3tzb8ndfmva74y4r1209kbc`는 finding이 없었습니다. Codex review `rev_01m3tzqb7re6yv8r62artz61wp`의 Finding 1(새 규칙으로는 `rev_01m3tzqb7re6yv8r62artz61wp/1`, P2·confidence 0.96·blocking=true)은 다음 경우를 지적했습니다: 슬롯이 하나도 없는 `reviewers = self` 인계는 대표 ID를 요구받지만, 대표 ID를 발급할 실행 주체 슬롯이 없습니다. fallback 단계를 더 붙이는 대신 발급 단계를 없앴습니다. 대표 ID는 원 ID 중 가장 먼저 게시된 슬롯 ID, 없으면 가장 먼저 게시된 원 ID이며, 실행 주체·작성자 슬롯 개념을 삭제했습니다(앞의 표 아래 한 줄 정정은 대체됨). R-007, §2.3, §2.5, D-014, en·ko·root [REVIEW_ROUND.md](../../REVIEW_ROUND.md) §2.1·§4·§7을 맞췄습니다. Q3에서 고른 "가장 먼저 게시된 ID를 대표 ID로"에 더 가깝습니다.
+- 2026-10-01: 구현 PR #56 version 5 리뷰를 반영했습니다.
+  - 사용자 review `rev_01m3v5sjwrfkrvtnyvk26sk2v9`의 C56-004(P3·confidence 0.8·blocking=true): 같은 시각의 원 ID 사이에서 대표 ID를 정할 기준이 없습니다. 원 ID 문자열의 사전순으로 정하도록 R-007과 §4를 고쳤습니다.
+  - Codex review `rev_01m3v6kv4dfmm9jphxn12kmzmk`의 Finding 1(새 규칙으로는 `…/1`, P2·confidence 0.96·blocking=true): 같은 게시물을 head마다 덮어쓰는 sticky 리뷰어는 head가 달라도 원 ID가 재사용됩니다. sticky 게시물의 원 ID에 그 내용이 다룬 head 앞 12자리를 붙이도록 R-006, [REVIEW.md](../../REVIEW.md) §7, BUGBOT, en·ko·root [REVIEW_ROUND.md](../../REVIEW_ROUND.md) §7을 고쳤습니다.
+  - 다른 결정은 유지하며, 사용자의 위임에 따른 보완입니다.
