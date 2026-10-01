@@ -47,8 +47,10 @@
   - [x] PR #56 version 1 리뷰: 사용자 review `rev_01m3rm714afajs2y14gqnewvdp`와 Codex review `rev_01m3rmcrpgebtsdrpph29rrkz3`(스레드 `cth_01m3rmcrpsec09fjkn54h3ca8r`)가 서로 다른 finding에 같은 `C56-001`을 붙였습니다. 세 건 모두 유효해 수용했습니다.
     - 사용자 review의 C56-001(P2): #55 version 4 사용자 계정 review 기록을 정정하고, 그 review의 C55-004(설계 §1.1 순서)를 고쳤습니다.
     - 사용자 review의 C56-002(P3)와 C55-005: 한 건짜리 게시물도 원 ID를 `/1`로 통일했습니다.
-    - Codex의 C56-001(P2): PR 없는 리뷰는 세션 종료 보고를 게시물로 보고 `<branch>@<head 12자리>/<항목 번호>`를 원 ID로 쓰도록 en·ko `REVIEW.md` §7·`REVIEW_ROUND.md` §7·BUGBOT과 root 사본, 설계 R-006과 D-014에 반영했습니다.
+    - Codex의 C56-001(P2): PR 없는 리뷰는 세션 종료 보고를 게시물로 보고 `<branch>@<head 12자리>/<항목 번호>`를 원 ID로 쓰도록(version 3에서 보고 UTC 시각 추가) en·ko `REVIEW.md` §7·`REVIEW_ROUND.md` §7·BUGBOT과 root 사본, 설계 R-006과 D-014에 반영했습니다.
   - [x] version 2 작업 트리의 source docs(331 links/46 files·절 참조 120개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 30-member이고 기준 대비 바뀐 파일은 같은 다섯 파일이며, 각 artifact의 자체 checker가 통과했습니다.
+  - [x] PR #56 version 2 리뷰: 사용자 review `rev_01m3tmj3nyf7ct24jt2rarmx4g`는 version 1의 세 finding과 C55-004·C55-005 해소를 확인했습니다. 앞선 충돌을 피하려고 번호를 건너뛰어 **C56-003**(P3·confidence 0.82·blocking=true)을 보고했습니다. Codex review `rev_01m3tn29k9fpdt4875a2xz1799`는 항목 번호 방식으로 Finding 1(P2·confidence 0.97·blocking=true)을 보고했습니다. 두 finding은 같은 원인입니다. 로컬 보고 식별자 `<branch>@<head>`가 같은 head 재리뷰·미커밋 변경·다른 세션에서 보고마다 유일하지 않다는 점입니다. 이를 수용해 보고 식별자에 보고 UTC 시각(초 단위)을 넣고, 인계받은 원 ID는 유지하도록 en·ko·root `REVIEW_ROUND.md` §7, 설계 R-006, D-014를 고쳤습니다.
+  - [x] version 3 작업 트리의 source docs(332 links/46 files·절 참조 122개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 30-member이고 바뀐 파일은 같은 다섯 파일이며, 각 artifact의 자체 checker가 통과했습니다.
   - [ ] exact head의 수동 리뷰·필수 CI와 Origin 통합을 확인합니다. 공개는 T-034가 소유합니다.
 
 ## Next
