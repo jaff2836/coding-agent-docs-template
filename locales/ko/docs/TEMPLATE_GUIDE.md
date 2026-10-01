@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.3.3
+- **Template version:** 2.4.0
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -351,6 +351,14 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v2.4.0 — 기록 시점, 리뷰 finding ID와 placeholder 검색 선언
+
+- `docs/DOCS_GUIDE.md`와 `docs/02-TODO.md` 운영 규칙: 작업 브랜치는 자기 최종 head가 통합되는 시점의 상태를 결합 서술할 수 있습니다. 통합 뒤 사건을 미리 완료로 적으려면 사용자의 명시 요청과 PR 본문의 근거가 필요합니다. 자기 head의 CI build·리뷰 판정·merge SHA는 PR을 원장으로 둡니다.
+- `docs/REVIEW.md` §5·§7·§10과 `.cursor/BUGBOT.md`: 완료 서술을 점검합니다. finding ID에는 리뷰 대상과 등록된 리뷰어 슬롯을 넣고, 등록되지 않은 리뷰어는 `<플랫폼 게시 식별자>/<항목 번호>`를 씁니다. 리뷰 결론에는 검토한 head와 인용한 CI·테스트 결과의 build·head를 적습니다.
+- `docs/REVIEW_ROUND.md` §2.1·§4·§6·§7·§9: `슬롯` 열, 원 ID 중에서 고르는 대표 ID, 인용한 CI 결과의 head 정렬, PR 게시물이 없는 리뷰의 보고 식별자, 좁아진 통과 후 인계를 다룹니다.
+- `docs/TEMPLATE_GUIDE.md` §3·§5: placeholder 검색 어휘를 single-quoted `template_placeholder_pattern` 선언 하나로 두고 `rg`·GNU `grep` 명령이 그 변수를 참조합니다. 선언과 명령은 같은 Bash shell(Windows는 Git Bash 또는 WSL)에서 실행하고, 이 가이드를 삭제하기 전에 선언과 명령을 보관합니다.
+- 적용 저장소에서 확인할 것: `adopt`로 바뀐 절을 기존 문서에 병합하세요(자동으로 덮어쓰는 파일은 없습니다). 병렬 리뷰어를 쓰면 `docs/REVIEW_ROUND.md` §2.1에 슬롯을 등록하고, 새 선언으로 placeholder 검색을 다시 실행하세요.
 
 ### v2.3.3 — Windows junction 경계와 install 안내
 

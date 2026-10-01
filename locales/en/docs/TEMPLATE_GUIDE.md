@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.3.3
+- **Template version:** 2.4.0
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -351,6 +351,14 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v2.4.0 — Record Timing, Review Finding IDs, and the Placeholder Search Declaration
+
+- `docs/DOCS_GUIDE.md` and the `docs/02-TODO.md` operating rules: a work branch may describe the state that holds when its own final head is integrated (a merge-bound description). Describing post-integration events as complete in advance requires an explicit user request recorded in the PR description. The PR is the ledger for a head's CI builds, review decisions, and merge SHA.
+- `docs/REVIEW.md` §5, §7, and §10 and `.cursor/BUGBOT.md`: completion statements are checked. Finding IDs carry the review target and a registered reviewer slot, and unregistered reviewers cite `<platform post identifier>/<item number>`. Review conclusions name the reviewed head and the build and head behind every cited CI or test result.
+- `docs/REVIEW_ROUND.md` §2.1, §4, §6, §7, and §9: a `Slot` column, representative IDs chosen from original IDs, head alignment for cited CI results, report identifiers for reviews without a PR post, and a narrower post-pass handoff.
+- `docs/TEMPLATE_GUIDE.md` §3 and §5: the placeholder search vocabulary is declared once as a single-quoted `template_placeholder_pattern`, and the `rg` and GNU `grep` commands reference it. Run the declaration and the commands in the same Bash shell (Git Bash or WSL on Windows), and keep them before deleting this guide.
+- Verify in the adopting repository: merge the changed sections into existing documents with `adopt` (no file is overwritten automatically). If you use parallel reviewers, register their slots in `docs/REVIEW_ROUND.md` §2.1, and rerun the placeholder search with the new declaration.
 
 ### v2.3.3 — Windows Junction Boundary and Install Guidance
 

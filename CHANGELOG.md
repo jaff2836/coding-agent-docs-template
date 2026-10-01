@@ -6,6 +6,14 @@
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
 
+## v2.4.0 — Record timing and review finding IDs
+
+- Work branches may describe the state that holds when their final head is integrated, and the PR is the ledger for its own CI, review decisions, and merge SHA. Integration therefore no longer leaves the TODO one change behind (`docs/DOCS_GUIDE.md`, the `docs/02-TODO.md` rules, `docs/REVIEW_ROUND.md`).
+- Review finding IDs do not collide across parallel reviewers. Registered reviewers use slot IDs, unregistered reviewers cite `<platform post identifier>/<item number>`, reviews without a PR post use report identifiers, and representative IDs are chosen from original IDs (`docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `.cursor/BUGBOT.md`).
+- Reviews state the reviewed head and base and name the build and head behind each cited CI or test result.
+- The application guides declare the placeholder search pattern once and reference it from the `rg` and GNU `grep` commands, with Bash execution and archive guidance (`docs/TEMPLATE_GUIDE.md`).
+- The installer, release manifest schema, and artifact inventory are unchanged.
+
 ## [v2.3.3](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.3) — Windows junction boundary and installer output
 
 - **Compatibility:** On Windows, the `v2.3.3` installer requires Python 3.12 or newer; Python 3.11 or older stops before release or target access. Upgrade Python and use `v2.3.3` to receive the junction boundary and output fixes below. If upgrading is currently impossible, download the `installer.py` asset from the `v2.3.2` release and run it with the exact `--version 2.3.2`; this fallback does not include those fixes.
