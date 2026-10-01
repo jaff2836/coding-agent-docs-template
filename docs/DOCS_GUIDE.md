@@ -22,6 +22,7 @@
 | [00-PROJECT.md](./00-PROJECT.md) | 현재 제품 기준, 결정과 상세 설계 인덱스 |
 | [01-DESIGN.md](./01-DESIGN.md) | 구조·공개 계약 변경의 합의 절차 |
 | [02-TODO.md](./02-TODO.md) | 전역 변경·마일스톤·통합 상태 |
+| [TODO_ARCHIVE.md](./TODO_ARCHIVE.md) | TODO에서 옮긴 완료 작업의 상세 기록 보관 |
 | `docs/changes/<change-ID>/` | 변경별 Intent·Spec과 필요한 PLAN |
 | [REVIEW.md](./REVIEW.md) | PR 리뷰 판단 기준 |
 | [REVIEW_ROUND.md](./REVIEW_ROUND.md) | 명시적으로 시작한 리뷰 라운드 절차 |

@@ -9,7 +9,7 @@
 - **Project:** coding-agent-docs-template
 - **Status:** Active — immutable Latest `v2.3.3` 공개와 Linux published 검증 완료
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-29
+- **Last reviewed:** 2026-10-01
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
 
 ## 1. Context
@@ -35,6 +35,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 - D-009의 locale artifact guide 정본화, root maintainer addendum, 선택형 프로젝트 changelog 안내와 skill Metadata 제거는 Origin PR #28 merge `5066d821084545554588182f5250cc9dea12e444`와 `v2.3.0` artifact에 통합됐습니다.
 - T-015의 Windows artifact 정렬·materialized mode·LF checkout·symlink fixture 보완은 Origin PR #30 merge `3b4bf674da8f7e8c13b2a69c45b2cf1f8ce54756`에 통합됐습니다. PR head `a64a8897673924abe1c110baad3b2a6ecc8aa811`의 native Windows·Python 3.14.7에서 전체 unittest 174개(16개 skip)와 en·ko package·export artifact 검증이 통과했습니다. exact `v2.3.1` source `3460e4ccd0065bcd8a24fd64a6cd7135293926a0`의 published E2E도 Linux와 native Windows에서 모두 통과해 T-015를 완료했습니다.
 - D-010의 새 경로·빈 디렉터리 `install` 계약(T-016)은 Origin PR #34 merge commit `a105740ca16ea3e0b6092a7331bf60b89b06f4a3`에 통합됐고, PR #35 merge `4c6a798885404fdf5170769e271f7d06f4959234`의 `v2.3.2` asset으로 공개됐습니다. 두 remote `main`, annotated tag, draft candidate와 immutable published 검증이 통과했습니다. 공개 검증기의 새 거부 문구 대응과 지원 검증 기록은 Origin PR #36 merge `cc791be2370e76930184e473061312518d5fe221`에 통합하고 GitHub `main`에도 fast-forward로 반영했습니다.
+- D-013(기록 시점: merge 결합 서술·PR 원장)과 D-014(리뷰 finding ID와 근거)는 PR #56으로 source에 통합됐고 2026-10-01부터 이 저장소의 운영에 적용합니다. locale artifact 공개는 T-034가 소유합니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -231,6 +232,6 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | 새 프로젝트 install 대상 계약 | [2026-09-22-install-target-contract](./changes/2026-09-22-install-target-contract/01-CHANGE.md) | D-010이 D-002·D-006의 `install`·`adopt` 역할 경계를 새 경로·빈 디렉터리 preflight로 명확화 | installer·root README·locale 적용 가이드 변경 |
 | install preflight 순서 평가 | [2026-09-28-install-preflight-order](./changes/2026-09-28-install-preflight-order/01-CHANGE.md) | Accepted A — D-010 §2.3의 현재 순서·오류 우선순위를 재확인 | 현재 순서 유지 판단과 비교 근거; 별도 구현·release 없음 |
 | 문서 운영 계약 회귀 방지 | [2026-09-28-operation-contract-regression](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md) | Accepted A — D-012가 D-005·D-009의 source 연결·CLI·LF·placeholder 검증을 보강 | 승인 설계; 구현·통합 상태는 TODO, 두 후속 구현 PR |
-| 기록 시점·리뷰 finding ID 계약 | [2026-09-30-record-timing-and-review-ids](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) | Accepted — D-013·D-014가 D-009 정본 문서의 기록·리뷰 계약을 확장 | 승인 설계; 구현·통합 상태는 TODO T-030·T-014 |
+| 기록 시점·리뷰 finding ID 계약 | [2026-09-30-record-timing-and-review-ids](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) | Accepted — D-013·D-014가 D-009 정본 문서의 기록·리뷰 계약을 확장 | 구현 PR #56 통합; 공개는 TODO T-034 |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.
