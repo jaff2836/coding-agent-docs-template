@@ -39,10 +39,10 @@
 - [ ] **T-030·T-014 기록 시점·리뷰 finding ID 계약 구현**
   - 정본·범위: [승인 설계](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) R-001~R-009와 PROJECT §8의 D-013·D-014를 구현합니다. 승인된 설계의 구현이므로 설계 절차를 반복하지 않고, 실행 상태는 이 항목에서 관리합니다.
   - [x] en·ko locale `docs/DOCS_GUIDE.md`(결합 서술, 통합 뒤 사건의 사용자 요청 예외와 근거 기록, PR 원장), `docs/02-TODO.md` 운영 규칙(`Completed` 조건과 PR 원장), `docs/REVIEW.md` §5·§7·§10(완료 서술 점검, finding ID, 결론의 head·CI 근거), `docs/REVIEW_ROUND.md` §2.1·§4·§6·§7·§9(슬롯 열, 대표 ID, CI 주장의 head 결합, 원 ID 열과 인계), `.cursor/BUGBOT.md`를 같은 내용으로 고쳤습니다. review-round skill 문구는 새 규칙에서도 그대로 유효해 바꾸지 않았습니다.
-  - [x] root maintainer 사본을 맞췄습니다. `docs/REVIEW_ROUND.md`(ko와 동일), `docs/REVIEW.md`, `.cursor/BUGBOT.md`, 이 문서의 운영 규칙, root `docs/DOCS_GUIDE.md` §2·§3(이 저장소의 finding ID 형식, 통합 대상과 PR 원장)입니다.
+  - [x] root maintainer 사본을 맞췄습니다. `docs/REVIEW_ROUND.md`(ko와 같은 계약에 이 저장소의 리뷰어 등록 두 행을 더함), `docs/REVIEW.md`, `.cursor/BUGBOT.md`, 이 문서의 운영 규칙, root `docs/DOCS_GUIDE.md` §2·§3(이 저장소의 finding ID 형식, 통합 대상과 PR 원장)입니다.
   - [x] 설계의 구현 위치 두 곳을 정정해 변경 기록에 남겼습니다. R-002 점검 항목은 `REVIEW.md` §5에 둡니다. 실행 주체·작성자 슬롯은 처음에 §2.1 표 아래 한 줄로 적었으나, version 5에서 대표 ID 발급 단계와 함께 삭제했습니다.
   - 적용 시점: 이 PR은 base 정책으로 리뷰하므로 새 규칙을 자신에게 적용하지 않습니다. 다음 PR부터 적용합니다.
-  - 남은 결정: root `docs/REVIEW_ROUND.md` §2.1의 리뷰어 슬롯 등록은 실제 리뷰어 구성을 아는 사용자의 확인이 필요해 비워 두었습니다. 등록 전에는 모든 리뷰어가 `<플랫폼 게시 식별자>/<항목 번호>`로 finding을 가리킵니다.
+  - [x] 리뷰어 슬롯 등록: 2026-10-01 사용자 결정에 따라 root `docs/REVIEW_ROUND.md` §2.1에 Cursor(`A`, 제목에 `(Cursor)`와 모델명 표기)와 Codex(`B`)를 등록했습니다. OMP Luna는 등록하지 않아 `<플랫폼 게시 식별자>/<항목 번호>`를 씁니다. root `docs/DOCS_GUIDE.md` §2에 `C57-A-001` 형식 예와 배정을 적었습니다. locale artifact의 표는 빈 양식 그대로입니다.
   - [x] 기준 `a608627`에서 시작한 작업 트리의 source docs(328 links/46 files·절 참조 115개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 기준과 같은 30-member이고 locale마다 `.cursor/BUGBOT.md`·`docs/02-TODO.md`·`docs/DOCS_GUIDE.md`·`docs/REVIEW.md`·`docs/REVIEW_ROUND.md` 다섯 파일만 바뀌었으며, 각 artifact의 자체 checker가 통과했습니다.
   - [x] PR #56 version 1 리뷰: 사용자 review `rev_01m3rm714afajs2y14gqnewvdp`와 Codex review `rev_01m3rmcrpgebtsdrpph29rrkz3`(스레드 `cth_01m3rmcrpsec09fjkn54h3ca8r`)가 서로 다른 finding에 같은 `C56-001`을 붙였습니다. 세 건 모두 유효해 수용했습니다.
     - 사용자 review의 C56-001(P2): #55 version 4 사용자 계정 review 기록을 정정하고, 그 review의 C55-004(설계 §1.1 순서)를 고쳤습니다.

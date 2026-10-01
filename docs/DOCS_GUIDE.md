@@ -43,8 +43,9 @@ locale source의 가이드는 artifact 정본입니다. root maintainer 가이�
   실행 상태는 PLAN(없으면 TODO 항목), 공개 이력은 CHANGELOG가 소유합니다.
 - README는 현재 사용법, TODO·PLAN은 미래 작업을 소유합니다. 같은 체크리스트나
   릴리스 이력을 여러 문서에 복제하지 않습니다.
-- 리뷰 finding ID는 `C<PR>-<슬롯>-<nnn>` 형식이며, 슬롯은
-  [REVIEW_ROUND.md](./REVIEW_ROUND.md) §2.1에 등록된 것만 씁니다. 등록되지 않은
+- 리뷰 finding ID는 `C<PR>-<슬롯>-<nnn>` 형식이며(예: `C57-A-001`), 슬롯은
+  [REVIEW_ROUND.md](./REVIEW_ROUND.md) §2.1에 등록된 것만 씁니다. 2026-10-01부터 Cursor가
+  `A`, Codex가 `B`입니다. 등록되지 않은
   리뷰어의 finding은 `<플랫폼 게시 식별자>/<항목 번호>`로 가리킵니다(D-014).
 
 ## 3. 실행·통합·인계
