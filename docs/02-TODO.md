@@ -51,6 +51,8 @@
   - [x] version 2 작업 트리의 source docs(331 links/46 files·절 참조 120개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 30-member이고 기준 대비 바뀐 파일은 같은 다섯 파일이며, 각 artifact의 자체 checker가 통과했습니다.
   - [x] PR #56 version 2 리뷰: 사용자 review `rev_01m3tmj3nyf7ct24jt2rarmx4g`는 version 1의 세 finding과 C55-004·C55-005 해소를 확인했습니다. 앞선 충돌을 피하려고 번호를 건너뛰어 **C56-003**(P3·confidence 0.82·blocking=true)을 보고했습니다. Codex review `rev_01m3tn29k9fpdt4875a2xz1799`는 항목 번호 방식으로 Finding 1(P2·confidence 0.97·blocking=true)을 보고했습니다. 두 finding은 같은 원인입니다. 로컬 보고 식별자 `<branch>@<head>`가 같은 head 재리뷰·미커밋 변경·다른 세션에서 보고마다 유일하지 않다는 점입니다. 이를 수용해 보고 식별자에 보고 UTC 시각(초 단위)을 넣고, 인계받은 원 ID는 유지하도록 en·ko·root `REVIEW_ROUND.md` §7, 설계 R-006, D-014를 고쳤습니다.
   - [x] version 3 작업 트리의 source docs(332 links/46 files·절 참조 122개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 30-member이고 바뀐 파일은 같은 다섯 파일이며, 각 artifact의 자체 checker가 통과했습니다.
+  - [x] PR #56 version 3 리뷰: 사용자 review `rev_01m3ttw7zxfgktgpr7p7g8f7xs`는 finding이 없고 C56-003 해소를 확인했습니다. Codex review `rev_01m3tv6t2pfk4s6v7e5mxn1sc8`는 Finding 1(P2·confidence 0.98·blocking=true)을 보고했습니다. 두 로컬 세션이 같은 UTC 초에 보고를 만들면 식별자가 겹친다는 내용이고, 수용했습니다. 보고 식별자에 보고별 무작위 16진수 8자리를 붙이도록 en·ko·root `REVIEW_ROUND.md` §7, 설계 R-006, D-014를 고쳤습니다.
+  - [x] version 4 작업 트리의 source docs(333 links/46 files·절 참조 124개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 30-member이고 바뀐 파일은 같은 다섯 파일이며, 각 artifact의 자체 checker가 통과했습니다.
   - [ ] exact head의 수동 리뷰·필수 CI와 Origin 통합을 확인합니다. 공개는 T-034가 소유합니다.
 
 ## Next
