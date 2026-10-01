@@ -158,7 +158,7 @@ Do not automatically declare a pass when a standing reviewer has `no result`. Ev
 - Use the **highest severity**.
 - Set `blocking` to `true` **if any instance is `true`**.
 - Record what each reviewer reported and how it classified the finding.
-- The representative ID is the earliest posted slot ID among the combined findings' original IDs, or the earliest posted original ID when there is no slot ID. Do not issue a separate representative ID; keep every original ID of the combined findings.
+- The representative ID is the earliest posted slot ID among the combined findings' original IDs, or the earliest posted original ID when there is no slot ID. When posting order cannot be determined because the times are identical, choose the original ID that sorts first as a string. Do not issue a separate representative ID; keep every original ID of the combined findings.
 
 **Do not combine verdicts.** A reviewer's `approve` or `request_changes` verdict is only a reference signal and is not used in threshold calculation. Divergent reviewer verdicts are not a decision conflict; they mean one side has a finding the other did not see. Decide that finding under §5 and the conflict disappears.
 
@@ -249,7 +249,7 @@ The decision record includes the target, confirmed parameters and the history of
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | F-001 | `12-A-001`, `12-B-001` | 1 | `abc123` | A, B | P1 | 0.9 | true | Valid | Evidence | Fixed | SHA |
 
-In the `Reviewer` column, list every reviewer that reported the same finding; if their severities differed, preserve each value. In the `Original ID` column, list every slot ID or `<platform post identifier>/<item number>` that reviewers posted. For a finding that was not combined, its original ID is also its representative ID. `F-nnn` is used only inside this session ledger; when handing off to another document, use the representative ID and the original IDs.
+In the `Reviewer` column, list every reviewer that reported the same finding; if their severities differed, preserve each value. In the `Original ID` column, list every slot ID or `<platform post identifier>/<item number>` (for an overwritten post, `<platform post identifier>@<head, 12 chars>/<item number>`) that reviewers posted. For a finding that was not combined, its original ID is also its representative ID. `F-nnn` is used only inside this session ledger; when handing off to another document, use the representative ID and the original IDs.
 
 **Reviews without a PR post:** When findings are not left as PR posts, as with `reviewers = self` or a local review without a PR, the final session report serves as the post. The executor numbers each finding in the report and writes its original ID as `<report identifier>/<item number>`. The report identifier combines the target branch, the first 12 characters of the last reviewed head, the UTC time the report was created (to the second), and a random 8-digit hexadecimal value generated anew for each report (for example, `feature-x@0123456789ab@20261001T023531Z-3f9a1c2e/2`). Generate the random value with `uuid4` or similar; it tells reports apart even when the same head is reviewed again, uncommitted changes are reviewed, or another session creates a report in the same second. The next session keeps handed-off original IDs unchanged and uses the new report's identifier for findings in a new report.
 

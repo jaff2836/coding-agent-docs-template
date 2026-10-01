@@ -55,6 +55,8 @@
   - [x] version 4 작업 트리의 source docs(333 links/46 files·절 참조 124개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 30-member이고 바뀐 파일은 같은 다섯 파일이며, 각 artifact의 자체 checker가 통과했습니다.
   - [x] PR #56 version 4 리뷰: 사용자 review `rev_01m3tzb8ndfmva74y4r1209kbc`는 finding이 없고 같은 초 충돌 해소를 확인했습니다. Codex review `rev_01m3tzqb7re6yv8r62artz61wp`는 Finding 1(P2·confidence 0.96·blocking=true)을 보고했습니다. 슬롯이 없는 `reviewers = self` 인계는 대표 ID를 발급할 슬롯이 없다는 내용이고, 수용했습니다. 대표 ID를 원 ID 중에서 고르게 바꾸고 실행 주체 슬롯을 삭제해 en·ko·root `REVIEW_ROUND.md` §2.1·§4·§7, 설계 R-007, D-014를 맞췄습니다.
   - [x] version 5 작업 트리의 source docs(334 links/46 files·절 참조 126개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 30-member이고 바뀐 파일은 같은 다섯 파일이며, 각 artifact의 자체 checker가 통과했습니다. 실행 주체 슬롯 문구가 en·ko·root에 남지 않았음을 확인했습니다.
+  - [x] PR #56 version 5 리뷰: 두 리뷰 모두 대표 ID 누락의 해소를 확인했습니다. 사용자 review `rev_01m3v5sjwrfkrvtnyvk26sk2v9`의 C56-004(P3: 같은 시각의 대표 ID 선택 기준 없음)와 Codex review `rev_01m3v6kv4dfmm9jphxn12kmzmk`의 Finding 1(P2: sticky 게시물의 원 ID 재사용)을 수용했습니다. 사전순 동점 기준과 sticky 게시물의 `@<head 12자리>`를 en·ko·root `REVIEW.md`·`REVIEW_ROUND.md`·BUGBOT, 설계 R-006·R-007, D-014에 반영했습니다.
+  - [x] version 6 작업 트리의 source docs·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 30-member이고 바뀐 파일은 같은 다섯 파일이며, 각 artifact의 자체 checker가 통과했습니다.
   - [ ] exact head의 수동 리뷰·필수 CI와 Origin 통합을 확인합니다. 공개는 T-034가 소유합니다.
 
 ## Next

@@ -51,7 +51,7 @@ Duplicate here the items from `docs/REVIEW.md` §9 Accepted Deferrals and `docs/
 
 Severity, confidence, blocking status and rationale, exact changed location, reproducible triggering condition, impact, minimal safe fix direction, and exact lines of code that provide the evidence.
 
-When you attach IDs to findings, keep them from colliding with other reviewers' IDs. If a slot is registered for you in the project's reviewer list, use IDs that contain the review target and that slot; otherwise do not mint IDs, and number each finding (starting at `1`, even for a single finding) so it can be cited as `<platform post identifier>/<item number>`. State the head and base you reviewed in the conclusion, and name the build and head for every CI or test result you cite.
+When you attach IDs to findings, keep them from colliding with other reviewers' IDs. If a slot is registered for you in the project's reviewer list, use IDs that contain the review target and that slot; otherwise do not mint IDs, and number each finding (starting at `1`, even for a single finding) so it can be cited as `<platform post identifier>/<item number>`. If you overwrite the same post for each head, append `@<head, 12 chars>` to the post identifier. State the head and base you reviewed in the conclusion, and name the build and head for every CI or test result you cite.
 
 ## Do Not Report
 
