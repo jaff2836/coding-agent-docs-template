@@ -84,7 +84,7 @@ Reviewers are classified by **arrival cadence**. This distinction determines **o
 
 Record the following in each column.
 
-- **Slot:** The role label used in finding IDs (for example, `A`, `B`). Keep it when the model or tool changes, and use each label only once in the table. When a model changes, edit the `Reviewer` cell, not the label. Record the slot that the round executor or PR author uses to issue representative IDs on one line below the table; it is not counted as a reviewer row. A reviewer without a slot cites findings as `<platform post identifier>/<item number>` according to [REVIEW.md](./REVIEW.md) §7.
+- **Slot:** The role label used in finding IDs (for example, `A`, `B`). Keep it when the model or tool changes, and use each label only once in the table. When a model changes, edit the `Reviewer` cell, not the label. A reviewer without a slot cites findings as `<platform post identifier>/<item number>` according to [REVIEW.md](./REVIEW.md) §7.
 - **Publication location:** Whether results appear in a PR comment, PR review body, or inline thread. **If a reviewer writes in multiple places, list all of them.** For PR comments, state whether it creates a new comment for each head or overwrites one comment (sticky). Reviewers that overwrite have different ledger rules under §7
 - **Head identification method:** How to determine which commit a result examined, such as a marker comment, SHA in the body, or round number
 - **Arrival cadence:** Standing or intermittent. For an intermittent reviewer, state the condition under which it runs
@@ -158,7 +158,7 @@ Do not automatically declare a pass when a standing reviewer has `no result`. Ev
 - Use the **highest severity**.
 - Set `blocking` to `true` **if any instance is `true`**.
 - Record what each reviewer reported and how it classified the finding.
-- Use the earliest posted slot ID as the representative ID, and keep every original ID of the combined findings. When no slot ID exists, the executor may issue a representative ID under its own slot and keep the original ID as `<platform post identifier>/<item number>`.
+- The representative ID is the earliest posted slot ID among the combined findings' original IDs, or the earliest posted original ID when there is no slot ID. Do not issue a separate representative ID; keep every original ID of the combined findings.
 
 **Do not combine verdicts.** A reviewer's `approve` or `request_changes` verdict is only a reference signal and is not used in threshold calculation. Divergent reviewer verdicts are not a decision conflict; they mean one side has a finding the other did not see. Decide that finding under §5 and the conflict disappears.
 
@@ -249,7 +249,7 @@ The decision record includes the target, confirmed parameters and the history of
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | F-001 | `12-A-001`, `12-B-001` | 1 | `abc123` | A, B | P1 | 0.9 | true | Valid | Evidence | Fixed | SHA |
 
-In the `Reviewer` column, list every reviewer that reported the same finding; if their severities differed, preserve each value. In the `Original ID` column, list every slot ID or `<platform post identifier>/<item number>` that reviewers posted. `F-nnn` is used only inside this session ledger; when handing off to another document, use the representative ID and the original IDs.
+In the `Reviewer` column, list every reviewer that reported the same finding; if their severities differed, preserve each value. In the `Original ID` column, list every slot ID or `<platform post identifier>/<item number>` that reviewers posted. For a finding that was not combined, its original ID is also its representative ID. `F-nnn` is used only inside this session ledger; when handing off to another document, use the representative ID and the original IDs.
 
 **Reviews without a PR post:** When findings are not left as PR posts, as with `reviewers = self` or a local review without a PR, the final session report serves as the post. The executor numbers each finding in the report and writes its original ID as `<report identifier>/<item number>`. The report identifier combines the target branch, the first 12 characters of the last reviewed head, the UTC time the report was created (to the second), and a random 8-digit hexadecimal value generated anew for each report (for example, `feature-x@0123456789ab@20261001T023531Z-3f9a1c2e/2`). Generate the random value with `uuid4` or similar; it tells reports apart even when the same head is reviewed again, uncommitted changes are reviewed, or another session creates a report in the same second. The next session keeps handed-off original IDs unchanged and uses the new report's identifier for findings in a new report.
 

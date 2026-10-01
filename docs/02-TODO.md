@@ -40,7 +40,7 @@
   - 정본·범위: [승인 설계](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) R-001~R-009와 PROJECT §8의 D-013·D-014를 구현합니다. 승인된 설계의 구현이므로 설계 절차를 반복하지 않고, 실행 상태는 이 항목에서 관리합니다.
   - [x] en·ko locale `docs/DOCS_GUIDE.md`(결합 서술, 통합 뒤 사건의 사용자 요청 예외와 근거 기록, PR 원장), `docs/02-TODO.md` 운영 규칙(`Completed` 조건과 PR 원장), `docs/REVIEW.md` §5·§7·§10(완료 서술 점검, finding ID, 결론의 head·CI 근거), `docs/REVIEW_ROUND.md` §2.1·§4·§6·§7·§9(슬롯 열, 대표 ID, CI 주장의 head 결합, 원 ID 열과 인계), `.cursor/BUGBOT.md`를 같은 내용으로 고쳤습니다. review-round skill 문구는 새 규칙에서도 그대로 유효해 바꾸지 않았습니다.
   - [x] root maintainer 사본을 맞췄습니다. `docs/REVIEW_ROUND.md`(ko와 동일), `docs/REVIEW.md`, `.cursor/BUGBOT.md`, 이 문서의 운영 규칙, root `docs/DOCS_GUIDE.md` §2·§3(이 저장소의 finding ID 형식, 통합 대상과 PR 원장)입니다.
-  - [x] 설계의 구현 위치 두 곳을 정정해 변경 기록에 남겼습니다. R-002 점검 항목은 `REVIEW.md` §5에 두고, 실행 주체·작성자 슬롯은 §2.1 표 아래 한 줄로 적습니다.
+  - [x] 설계의 구현 위치 두 곳을 정정해 변경 기록에 남겼습니다. R-002 점검 항목은 `REVIEW.md` §5에 둡니다. 실행 주체·작성자 슬롯은 처음에 §2.1 표 아래 한 줄로 적었으나, version 5에서 대표 ID 발급 단계와 함께 삭제했습니다.
   - 적용 시점: 이 PR은 base 정책으로 리뷰하므로 새 규칙을 자신에게 적용하지 않습니다. 다음 PR부터 적용합니다.
   - 남은 결정: root `docs/REVIEW_ROUND.md` §2.1의 리뷰어 슬롯 등록은 실제 리뷰어 구성을 아는 사용자의 확인이 필요해 비워 두었습니다. 등록 전에는 모든 리뷰어가 `<플랫폼 게시 식별자>/<항목 번호>`로 finding을 가리킵니다.
   - [x] 기준 `a608627`에서 시작한 작업 트리의 source docs(328 links/46 files·절 참조 115개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 기준과 같은 30-member이고 locale마다 `.cursor/BUGBOT.md`·`docs/02-TODO.md`·`docs/DOCS_GUIDE.md`·`docs/REVIEW.md`·`docs/REVIEW_ROUND.md` 다섯 파일만 바뀌었으며, 각 artifact의 자체 checker가 통과했습니다.
@@ -53,6 +53,8 @@
   - [x] version 3 작업 트리의 source docs(332 links/46 files·절 참조 122개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 30-member이고 바뀐 파일은 같은 다섯 파일이며, 각 artifact의 자체 checker가 통과했습니다.
   - [x] PR #56 version 3 리뷰: 사용자 review `rev_01m3ttw7zxfgktgpr7p7g8f7xs`는 finding이 없고 C56-003 해소를 확인했습니다. Codex review `rev_01m3tv6t2pfk4s6v7e5mxn1sc8`는 Finding 1(P2·confidence 0.98·blocking=true)을 보고했습니다. 두 로컬 세션이 같은 UTC 초에 보고를 만들면 식별자가 겹친다는 내용이고, 수용했습니다. 보고 식별자에 보고별 무작위 16진수 8자리를 붙이도록 en·ko·root `REVIEW_ROUND.md` §7, 설계 R-006, D-014를 고쳤습니다.
   - [x] version 4 작업 트리의 source docs(333 links/46 files·절 참조 124개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 30-member이고 바뀐 파일은 같은 다섯 파일이며, 각 artifact의 자체 checker가 통과했습니다.
+  - [x] PR #56 version 4 리뷰: 사용자 review `rev_01m3tzb8ndfmva74y4r1209kbc`는 finding이 없고 같은 초 충돌 해소를 확인했습니다. Codex review `rev_01m3tzqb7re6yv8r62artz61wp`는 Finding 1(P2·confidence 0.96·blocking=true)을 보고했습니다. 슬롯이 없는 `reviewers = self` 인계는 대표 ID를 발급할 슬롯이 없다는 내용이고, 수용했습니다. 대표 ID를 원 ID 중에서 고르게 바꾸고 실행 주체 슬롯을 삭제해 en·ko·root `REVIEW_ROUND.md` §2.1·§4·§7, 설계 R-007, D-014를 맞췄습니다.
+  - [x] version 5 작업 트리의 source docs(334 links/46 files·절 참조 126개·invariant 5개)·stable locale·전체 unittest 212건(Linux에서 Windows 전용 3건 skip)·diff 검사가 통과했습니다. en·ko export는 30-member이고 바뀐 파일은 같은 다섯 파일이며, 각 artifact의 자체 checker가 통과했습니다. 실행 주체 슬롯 문구가 en·ko·root에 남지 않았음을 확인했습니다.
   - [ ] exact head의 수동 리뷰·필수 CI와 Origin 통합을 확인합니다. 공개는 T-034가 소유합니다.
 
 ## Next
