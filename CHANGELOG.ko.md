@@ -6,13 +6,14 @@
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
 
-## v2.4.0 — 기록 시점과 리뷰 finding ID
+## [v2.4.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.4.0) — 기록 시점과 리뷰 finding ID
 
 - 작업 브랜치는 자기 최종 head가 통합되는 시점의 상태를 서술할 수 있고, 자기 CI·리뷰 판정·merge SHA는 PR을 원장으로 둡니다. 그래서 통합 뒤 TODO가 한 변경씩 늦어지지 않습니다(`docs/DOCS_GUIDE.md`, `docs/02-TODO.md` 규칙, `docs/REVIEW_ROUND.md`).
 - 병렬 리뷰어의 finding ID가 겹치지 않습니다. 등록된 리뷰어는 슬롯 ID를, 등록되지 않은 리뷰어는 `<플랫폼 게시 식별자>/<항목 번호>`를 쓰고, PR 게시물이 없는 리뷰는 보고 식별자를 씁니다. 대표 ID는 원 ID 중에서 고릅니다(`docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `.cursor/BUGBOT.md`).
 - 리뷰는 검토한 head·base를 적고, 인용한 CI·테스트 결과마다 build와 head를 적습니다.
 - 적용 가이드는 placeholder 검색 패턴을 한 번 선언하고 `rg`·GNU `grep` 명령이 이를 참조하며, Bash 실행과 보관 안내를 둡니다(`docs/TEMPLATE_GUIDE.md`).
 - installer, release manifest schema, artifact inventory는 바뀌지 않습니다.
+- 검증된 draft asset 5개를 그대로 immutable Latest로 공개했습니다. Linux의 published 검증에서 latest·exact의 두 locale 경로, `v2.3.3` base-aware upgrade와 비어 있지 않은 install 대상의 거부·tree 불변을 확인했습니다.
 
 ## [v2.3.3](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.3.3) — Windows junction 경계와 installer 출력
 
