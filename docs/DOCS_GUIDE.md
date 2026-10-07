@@ -27,6 +27,7 @@
 | [REVIEW.md](./REVIEW.md) | PR 리뷰 판단 기준 |
 | [REVIEW_ROUND.md](./REVIEW_ROUND.md) | 명시적으로 시작한 리뷰 라운드 절차 |
 | [CI.md](./CI.md) | runner 불문의 품질 게이트와 연결 확인 |
+| [DOC_FILTER.md](./DOC_FILTER.md) | 추적 문서·코드 주석 필터 시범(T-040) |
 | [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) | source·artifact·배포 유지관리 보충 규칙 |
 | [CHANGELOG.md](../CHANGELOG.md) | 공개 완료된 영문 릴리스 이력 |
 | [CHANGELOG.ko.md](../CHANGELOG.ko.md) | 공개 완료된 한국어 릴리스 이력 |

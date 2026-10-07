@@ -31,6 +31,14 @@ Move-Item -Force -ErrorAction Stop installer.py.part installer.py
 
 다운로드 블록이 성공한 경우에만 다음 단계로 진행하세요.
 
+GitHub CLI가 있다면 받은 파일을 GitHub가 release마다 서명하는 attestation과 대조할 수 있습니다(선택):
+
+```sh
+gh release verify-asset installer.py --repo jaff2836/coding-agent-docs-template
+```
+
+tag를 생략하면 latest release와 대조합니다. 특정 release와 대조하려면 파일 이름 앞에 정확한 tag(예: `v2.5.0`)를 넣으세요. 통과하면 그 파일이 release 공개 시점에 GitHub가 기록한 파일과 같다는 뜻입니다. 게시 계정이 탈취된 경우는 막지 못합니다. 그 계정으로 공개한 release에도 GitHub가 서명하기 때문입니다.
+
 Windows에서 현재 release installer와 이 저장소의 installer source를 실행하려면 directory junction 검사를 위해 Python 3.12 이상이 필요합니다. 이전 release asset의 지원 범위는 해당 버전의 계약을 따릅니다.
 
 ### 2. 지원 locale 확인
