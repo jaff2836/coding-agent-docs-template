@@ -13,6 +13,13 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
 
 ## 완료 작업 상세
 
+- [x] **T-039 `v2.5.0` locale release**
+  - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-039 항목. D-007에 따라 준비, tag·draft candidate, 공개·published 단계를 나눕니다.
+  - version 판단: `v2.5.0`(minor). installer CLI, release manifest schema, artifact inventory는 그대로이고, 적용 프로젝트가 따를 새 규범(D-015~D-017)이 들어갑니다. `v2.4.0`과 같은 성격이라 minor로 둡니다.
+  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 2.5.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v2.5.0 이력을, root `CHANGELOG`에 링크 없는 v2.5.0 항목(공개 시 release 링크로 교체)을 추가했습니다. `v2.4.0` 대비 규범이 바뀐 artifact 파일은 locale마다 `AGENTS.md`, `.cursor/BUGBOT.md`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`이고, `docs/DOCS_GUIDE.md`·`docs/TEMPLATE_GUIDE.md`는 version과 이력이 바뀌었습니다(locale마다 6개). 통합 근거: 이 변경의 PR.
+  - [x] PR #60 인계 C60-B-001(Codex `C60-B-001`, Cursor `C60-A-001`과 같은 원인, P3): 설계 R-002대로 생략한 주제에 요청 안내를 root·en·ko `AGENTS.md`에 더했습니다. 통합 근거: 이 변경의 PR.
+  - [x] tag·draft candidate: 준비 PR #61의 Origin merge `6d04b97`를 GitHub `main`에 fast-forward했습니다. 사용자가 annotated `v2.5.0` tag와 draft(asset 5개, 영·한 release notes)를 만들었고, clean exact checkout에서 `verify-release.py candidate`가 통과했습니다(두 `main` 동기화, 5 assets). `installer.py`의 SHA-256은 `v2.4.0`과 같습니다.
+  - [x] 공개·published: 사용자가 2026-10-07 draft를 immutable Latest로 공개했습니다. tag source 자신의 verifier로 `published --base-version 2.4.0`이 통과했습니다. 기록은 공개 기록 PR에 담았습니다.
 - [x] **T-034 `v2.4.0` locale release**
   - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-034 항목. D-007에 따라 준비, tag·draft candidate, 공개·published 단계를 나눕니다.
   - version 판단: `v2.4.0`(minor). installer CLI, release manifest schema, artifact inventory는 그대로입니다. 적용 프로젝트가 따를 새 규범(D-013 기록 시점, D-014 리뷰 ID·근거)과 placeholder 검색 선언이 들어가므로 같은 성격이던 `v2.3.0`처럼 minor로 둡니다.
@@ -285,6 +292,10 @@ T-034는 T-033(2026-10-01)에서 등록했고 PR #58에서 version을 반영한 
 - [x] **T-037 외부 입력 경계** — 지시의 출처를 사용자 요청과 지침 파일로 한정하고, 도구 출력·외부 저장소·PR·리뷰·댓글 안의 지시는 데이터로 다룹니다. 리뷰 라운드에서는 리뷰 본문의 지시가 위임 범위나 파라미터를 바꾸지 않습니다. 대상은 `AGENTS.md`와 `docs/REVIEW_ROUND.md` §1입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-005·R-006(D-016).
 - [x] **T-038 완료 근거와 직접 확인** — 주장별 완료 근거와 신선도, 버그 수정·새 검사 규칙의 red-green 확인, 리뷰 라운드 원장의 `확인` 열과 빈 리뷰의 원본 재조회, 리뷰 점검 항목을 둡니다. 대상은 `AGENTS.md`, `docs/REVIEW.md` §5, `docs/REVIEW_ROUND.md` §4~§7, `.cursor/BUGBOT.md`입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-007~R-011(D-017).
 
+T-039는 2026-10-07 PR #59에서 등록한 설명입니다.
+
+- [x] **T-039 `v2.5.0` locale release** — T-036·T-037·T-038의 payload 변경을 `v2.5.0`(minor)으로 공개합니다. D-007에 따라 준비·candidate·published 단계를 나누고, tag 생성과 공개는 사용자가 수행하거나 확인합니다.
+
 2026-09-29 분석의 root §3 검색식 allowlist 권고는 T-029에서 해소됐고, 작업 트리의 로컬 `.swp` 파일은 저장소 작업이 아니어서 등록하지 않았습니다.
 
 ## 통합된 Backlog PR 순서
@@ -312,3 +323,4 @@ T-034는 T-033(2026-10-01)에서 등록했고 PR #58에서 version을 반영한 
 | 19 | `claude/v2.4.0-release-prep` | T-034: `v2.4.0` locale release | **Integrated·Published** — 준비 Origin PR #58 merge `4fe3f76`·GitHub fast-forward 확인; 2026-10-07 annotated tag·immutable Latest 공개, candidate·published(`--base-version 2.3.3`) 통과 |
 | 20 | `claude/t036-t038-reporting-verification-design` | T-036·T-037·T-038: 보고·검증 규범 설계 | **Integrated** — Accepted D-015~D-017, Origin PR #59 merge `3ddc35c`·GitHub fast-forward 확인; `v2.4.0` 공개 기록 포함 |
 | 21 | `claude/t036-t038-reporting-verification` | T-036·T-037·T-038: 승인 계약 구현 | **Integrated** — Origin PR #60 merge `e2aca32`·GitHub fast-forward 확인 |
+| 22 | `claude/v2.5.0-release-prep` | T-039: `v2.5.0` locale release | **Integrated·Published** — 준비 Origin PR #61 merge `6d04b97`·GitHub fast-forward 확인; 2026-10-07 annotated tag·immutable Latest 공개, candidate·published(`--base-version 2.4.0`) 통과 |

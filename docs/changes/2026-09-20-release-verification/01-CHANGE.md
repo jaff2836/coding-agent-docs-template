@@ -37,7 +37,7 @@
 
 ### 1.5 미해결 질문
 
-없습니다. candidate의 실제 draft 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`에서 운영 검증했습니다.
+없습니다. candidate의 실제 draft 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`·`v2.5.0`에서 운영 검증했습니다.
 
 ## 2. Spec
 
@@ -83,7 +83,7 @@ D-004의 transport·source identity·게시 순서는 유지합니다. D-004가 
 
 ### 2.6 완료 조건과 미해결 사항
 
-브랜치 구현 완료는 새 unit test, 전체 unittest, root docs, stable locale, Python compile과 `git diff --check` 통과입니다. 공개 경로는 immutable `v2.1.0`의 exact checkout에서 최초 실환경 `published` 검증으로 확인했고, 실제 `candidate`와 `published` 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`에서 반복 검증했습니다. `v2.2.0`부터는 각각 직전 release를 `--base-version`으로 지정해 모든 공식 locale의 base-aware 공개 E2E를 확인했습니다. Origin 통합과 공개는 각각 실제 remote 상태로 확인합니다.
+브랜치 구현 완료는 새 unit test, 전체 unittest, root docs, stable locale, Python compile과 `git diff --check` 통과입니다. 공개 경로는 immutable `v2.1.0`의 exact checkout에서 최초 실환경 `published` 검증으로 확인했고, 실제 `candidate`와 `published` 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`·`v2.5.0`에서 반복 검증했습니다. `v2.2.0`부터는 각각 직전 release를 `--base-version`으로 지정해 모든 공식 locale의 base-aware 공개 E2E를 확인했습니다. Origin 통합과 공개는 각각 실제 remote 상태로 확인합니다.
 
 ## 3. 변경 기록
 
@@ -97,3 +97,4 @@ D-004의 transport·source identity·게시 순서는 유지합니다. D-004가 
 - 2026-09-23: synchronized Origin·GitHub `main`과 annotated tag가 가리키는 `v2.3.2` exact source `4c6a798885404fdf5170769e271f7d06f4959234`에서 candidate가 통과한 5개 asset을 교체 없이 immutable Latest로 공개했습니다. 공개 직후 tag source의 verifier는 새 `install` 거부 문구를 구형 문구로만 판정해 실패했고, T-019 verifier 보완 뒤 clean exact source를 `--root`로 지정한 `published --base-version 2.3.1`이 통과했습니다. 이 gate는 en·ko의 latest·exact 경로, artifact와 겹치거나 무관한 파일이 있는 install 대상의 거부·tree 불변을 확인합니다.
 - 2026-09-28: `v2.3.3` exact source `989698d4070d7a9596117cf410362fea0b7f28bb`에서 통과한 candidate의 기존 5개 asset을 그대로 immutable Latest로 공개했습니다. 공개·published 실행 시 Origin·GitHub `main`은 `da4d6aef4b817e396cf1400e912b233a66b58601`로 같았고 tag source는 그 조상이었습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 2.3.2`가 통과해 asset byte·immutable Latest, latest·exact의 en·ko 경로, base-aware upgrade와 비어 있지 않은 install 대상 불변을 확인했습니다. native Windows의 published E2E는 이번 실행에 포함하지 않았습니다.
 - 2026-10-07: 사용자가 `v2.4.0` exact source `4fe3f76f97c7ea3c1ff19f0854023f887a618e05`에 annotated tag와 draft를 만들었고, candidate가 통과한 5개 asset을 교체 없이 immutable Latest로 공개했습니다. candidate·공개·published 실행 시 Origin·GitHub `main`은 같은 source commit이었습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 2.3.3`이 통과해 asset byte·immutable Latest, latest·exact의 en·ko 경로, base-aware upgrade와 비어 있지 않은 install 대상 불변을 확인했습니다. native Windows의 published E2E는 이번 실행에 포함하지 않았습니다.
+- 2026-10-07: 사용자가 `v2.5.0` exact source `6d04b97a2e2fc3da0f007b11a4cc1539bb2b57db`에 annotated tag와 draft를 만들었고, candidate가 통과한 5개 asset을 교체 없이 immutable Latest로 공개했습니다. candidate·공개·published 실행 시 Origin·GitHub `main`은 같은 source commit이었습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 2.4.0`이 통과해 asset byte·immutable Latest, latest·exact의 en·ko 경로, base-aware upgrade와 비어 있지 않은 install 대상 불변을 확인했습니다. native Windows의 published E2E는 이번 실행에 포함하지 않았습니다.
