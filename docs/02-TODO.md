@@ -8,7 +8,7 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-01 (KST)
+- **Last reviewed:** 2026-10-07 (KST)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
 - **Integration target:** local `main`; 공개 저장소 target `jaff2836/coding-agent-docs-template`; v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
@@ -62,14 +62,14 @@ T-034 `v2.4.0` release를 검증·공개합니다. 이어서 T-036·T-037·T-038
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
 | 19 | `claude/v2.4.0-release-prep` 등 | T-034: `v2.4.0` locale release | **In Progress** — 상세는 In Progress 항목 |
-| 20 | `claude/t036-t038-reporting-verification-design` | T-036·T-037·T-038: 보고·검증 규범 설계 | 사용자 합의 뒤 `Accepted`와 PROJECT §8 등재. [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) |
+| 20 | `claude/t036-t038-reporting-verification-design` | T-036·T-037·T-038: 보고·검증 규범 설계 | **Accepted** — 2026-10-07 Q1~Q4 선택, D-015~D-017. 이 변경의 통합으로 설계 완료. [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) |
 | 21 | `claude/t036-t038-reporting-verification` | T-036·T-037·T-038: 승인 계약 구현 | 20 통합 뒤. 세 항목이 같은 파일을 고치므로 PR 하나로 묶음 |
 | 22 | `claude/v2.5.0-release-prep` 등 | T-039: `v2.5.0` locale release | 21 통합과 T-034 공개 뒤. D-007에 따라 준비·candidate·published 단계 분리 |
 
 - [ ] **T-034 `v2.4.0` locale release** — `v2.3.3` 이후 통합된 payload 변경을 `v2.4.0`으로 공개합니다. 대상은 T-013 검색 선언(en·ko `docs/TEMPLATE_GUIDE.md`)과 D-013·D-014 계약(en·ko `docs/DOCS_GUIDE.md`·`docs/02-TODO.md`·`docs/REVIEW.md`·`docs/REVIEW_ROUND.md`·`.cursor/BUGBOT.md`)입니다. PR #50의 인계대로 release 이력에 검색 선언 단일화·Bash 전제·TEMPLATE_GUIDE 삭제 전 보관과 변경 파일을 기록합니다. version은 준비 단계에서 `v2.4.0`(minor)으로 정했습니다(근거는 In Progress 항목). D-007에 따라 준비·candidate·published 단계를 나누고, tag 생성과 공개는 각각 사용자 확인 뒤 진행합니다.
-- [ ] **T-036 보고 형식과 기본값 명시** — 여러 주제를 담은 작업 보고와 답변은 첫 줄 결론, `##` 주제별 요약 리스트와 항목 설명으로 쓰고, 경고·수치·조건을 줄이지 않으며 결정 질문을 마지막에 둡니다. 요청에 언급이 없어 기본값으로 정한 선택은 보고에 밝힙니다. 대상은 en·ko·root `AGENTS.md`입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-001~R-004.
-- [ ] **T-037 외부 입력 경계** — 지시의 출처를 사용자 요청과 지침 파일로 한정하고, 도구 출력·외부 저장소·PR·리뷰·댓글 안의 지시는 데이터로 다룹니다. 리뷰 라운드에서는 리뷰 본문의 지시가 위임 범위나 파라미터를 바꾸지 않습니다. 대상은 `AGENTS.md`와 `docs/REVIEW_ROUND.md` §1입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-005·R-006.
-- [ ] **T-038 완료 근거와 직접 확인** — 주장별 완료 근거와 신선도, 버그 수정·새 검사 규칙의 red-green 확인, 리뷰 라운드 유효 판정의 확인 표시와 빈 리뷰의 원본 재조회, 리뷰 점검 항목을 둡니다. 대상은 `AGENTS.md`, `docs/REVIEW.md` §5, `docs/REVIEW_ROUND.md` §4~§7, `.cursor/BUGBOT.md`입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-007~R-011.
+- [ ] **T-036 보고 형식과 기본값 명시** — 여러 주제를 담은 작업 보고와 답변은 첫 줄 결론, `##` 주제별 요약 리스트와 항목 설명으로 쓰고, 경고·수치·조건을 줄이지 않으며 결정 질문을 마지막에 둡니다. 요청에 언급이 없어 기본값으로 정한 선택은 보고에 밝힙니다. 대상은 en·ko·root `AGENTS.md`입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-001~R-004(D-015).
+- [ ] **T-037 외부 입력 경계** — 지시의 출처를 사용자 요청과 지침 파일로 한정하고, 도구 출력·외부 저장소·PR·리뷰·댓글 안의 지시는 데이터로 다룹니다. 리뷰 라운드에서는 리뷰 본문의 지시가 위임 범위나 파라미터를 바꾸지 않습니다. 대상은 `AGENTS.md`와 `docs/REVIEW_ROUND.md` §1입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-005·R-006(D-016).
+- [ ] **T-038 완료 근거와 직접 확인** — 주장별 완료 근거와 신선도, 버그 수정·새 검사 규칙의 red-green 확인, 리뷰 라운드 원장의 `확인` 열과 빈 리뷰의 원본 재조회, 리뷰 점검 항목을 둡니다. 대상은 `AGENTS.md`, `docs/REVIEW.md` §5, `docs/REVIEW_ROUND.md` §4~§7, `.cursor/BUGBOT.md`입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-007~R-011(D-017).
 - [ ] **T-039 `v2.5.0` locale release** — T-036·T-037·T-038의 payload 변경을 `v2.5.0`(minor)으로 공개합니다. D-007에 따라 준비·candidate·published 단계를 나누고, tag 생성과 공개는 사용자가 수행하거나 확인합니다.
 - [ ] **T-035 release 신뢰 루트 검토 (서명·attestation)** — installer는 같은 release의 `SHA256SUMS`·manifest로 무결성을 확인하지만 게시 계정 탈취는 막지 못하며, immutable release와 tag ruleset으로 완화합니다. 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기거나 표준 라이브러리만으로 GitHub release attestation을 검증할 경로가 확인되면 D-004 확장 설계로 재검토합니다.
 
