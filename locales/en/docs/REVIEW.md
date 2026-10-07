@@ -117,6 +117,8 @@ A P2 finding with `blocking=true` is called a **Blocking P2**. The default pass 
 - Whether documented commands, configuration keys, environment variables, and credential formats match the actual implementation — in particular, whether a setup followed from documentation alone would fail to start
 - Whether behavior declared by the documentation as an invariant or safeguard is actually enforced in code
 - Whether completion statements in documents depend only on this change's integration — if they describe a later release, synchronization, or external verification as complete in advance, whether the user's request is recorded in the PR description or task report
+- Whether completion, passing, or fix claims have the completion evidence in [AGENTS.md](../AGENTS.md), meaning evidence run or retrieved after the last change
+- Whether a bug fix's regression check actually exercises the bug path, rather than passing even without the fix
 
 ## 6. Project-specific Invariants
 <!-- template-section:project-invariants -->

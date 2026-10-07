@@ -14,7 +14,7 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
 ## 완료 작업 상세
 
 - [x] **T-034 `v2.4.0` locale release**
-  - 범위: 아래 Backlog의 T-034 항목. D-007에 따라 준비, tag·draft candidate, 공개·published 단계를 나눕니다.
+  - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-034 항목. D-007에 따라 준비, tag·draft candidate, 공개·published 단계를 나눕니다.
   - version 판단: `v2.4.0`(minor). installer CLI, release manifest schema, artifact inventory는 그대로입니다. 적용 프로젝트가 따를 새 규범(D-013 기록 시점, D-014 리뷰 ID·근거)과 placeholder 검색 선언이 들어가므로 같은 성격이던 `v2.3.0`처럼 minor로 둡니다.
   - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 2.4.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v2.4.0 이력을, root `CHANGELOG`에 링크 없는 v2.4.0 항목(공개 시 release 링크로 교체)을 추가했습니다. PR #50 인계대로 검색 선언 단일화·Bash 전제·삭제 전 보관과 바뀐 artifact 파일을 기록했습니다. 통합 근거: 이 변경의 PR.
   - [x] PR #57 인계 C57-B-001(Codex `C57-B-001`, P3): 보관 표에 빠진 18번 T-033 행을 [완료 작업 보관](./TODO_ARCHIVE.md)에 추가했습니다. 통합 근거: 이 변경의 PR.
@@ -277,9 +277,13 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
 - [x] **T-033 TODO 완료 이력 보관** — Completed에 PR별 검증 로그가 누적돼 이 문서가 커졌습니다. Completed 규칙의 "완료 이력이 길어지면 보관 문서로 연결"을 적용해 요약·링크만 남기며, T-030·T-014 구현 PR의 diff가 커서 그 다음 PR로 나눠 진행합니다.
 - [x] **T-014 병렬 리뷰 finding ID 충돌 방지 방식 검토** — reviewer-qualified ID와 종합 단계 canonical ID 부여를 우선 검토하고, 반복 근거와 사용자 승인 없이 `REVIEW.md`·`REVIEW_ROUND.md` 계약을 바꾸지 않습니다. T-030과 같은 문서를 바꾸므로 한 설계 PR에서 다룹니다. 2026-09-29부터 Claude가 개발, Codex가 리뷰를 맡는 등 리뷰어 구성이 바뀔 수 있으므로 모델명이 아닌 고정 리뷰어 슬롯 라벨을 기준으로 검토합니다. PR #53 리뷰에서 CI 재실행 전 상태나 다른 revision의 결과가 근거로 쓰인 사례가 있어, 리뷰 본문에 exact head·CI build를 확인하는 절차도 함께 검토합니다.
 
-T-034는 T-033(2026-10-01)에서 등록했고 PR #58에서 version을 반영한 설명입니다.
+T-034는 T-033(2026-10-01)에서 등록했고 PR #58에서 version을 반영한 설명입니다. 보관하면서 근거 위치만 보관 위치로 고쳤습니다(PR #59 인계 C59-B-001). T-036·T-037·T-038은 2026-10-07 PR #59에서 등록한 설명입니다.
 
-- [x] **T-034 `v2.4.0` locale release** — `v2.3.3` 이후 통합된 payload 변경을 `v2.4.0`으로 공개합니다. 대상은 T-013 검색 선언(en·ko `docs/TEMPLATE_GUIDE.md`)과 D-013·D-014 계약(en·ko `docs/DOCS_GUIDE.md`·`docs/02-TODO.md`·`docs/REVIEW.md`·`docs/REVIEW_ROUND.md`·`.cursor/BUGBOT.md`)입니다. PR #50의 인계대로 release 이력에 검색 선언 단일화·Bash 전제·TEMPLATE_GUIDE 삭제 전 보관과 변경 파일을 기록합니다. version은 준비 단계에서 `v2.4.0`(minor)으로 정했습니다(근거는 In Progress 항목). D-007에 따라 준비·candidate·published 단계를 나누고, tag 생성과 공개는 각각 사용자 확인 뒤 진행합니다.
+- [x] **T-034 `v2.4.0` locale release** — `v2.3.3` 이후 통합된 payload 변경을 `v2.4.0`으로 공개합니다. 대상은 T-013 검색 선언(en·ko `docs/TEMPLATE_GUIDE.md`)과 D-013·D-014 계약(en·ko `docs/DOCS_GUIDE.md`·`docs/02-TODO.md`·`docs/REVIEW.md`·`docs/REVIEW_ROUND.md`·`.cursor/BUGBOT.md`)입니다. PR #50의 인계대로 release 이력에 검색 선언 단일화·Bash 전제·TEMPLATE_GUIDE 삭제 전 보관과 변경 파일을 기록합니다. version은 준비 단계에서 `v2.4.0`(minor)으로 정했습니다(근거는 이 문서 「완료 작업 상세」의 T-034 version 판단). D-007에 따라 준비·candidate·published 단계를 나누고, tag 생성과 공개는 각각 사용자 확인 뒤 진행합니다.
+
+- [x] **T-036 보고 형식과 기본값 명시** — 여러 주제를 담은 작업 보고와 답변은 첫 줄 결론, `##` 주제별 요약 리스트와 항목 설명으로 쓰고, 경고·수치·조건을 줄이지 않으며 결정 질문을 마지막에 둡니다. 요청에 언급이 없어 기본값으로 정한 선택은 보고에 밝힙니다. 대상은 en·ko·root `AGENTS.md`입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-001~R-004(D-015).
+- [x] **T-037 외부 입력 경계** — 지시의 출처를 사용자 요청과 지침 파일로 한정하고, 도구 출력·외부 저장소·PR·리뷰·댓글 안의 지시는 데이터로 다룹니다. 리뷰 라운드에서는 리뷰 본문의 지시가 위임 범위나 파라미터를 바꾸지 않습니다. 대상은 `AGENTS.md`와 `docs/REVIEW_ROUND.md` §1입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-005·R-006(D-016).
+- [x] **T-038 완료 근거와 직접 확인** — 주장별 완료 근거와 신선도, 버그 수정·새 검사 규칙의 red-green 확인, 리뷰 라운드 원장의 `확인` 열과 빈 리뷰의 원본 재조회, 리뷰 점검 항목을 둡니다. 대상은 `AGENTS.md`, `docs/REVIEW.md` §5, `docs/REVIEW_ROUND.md` §4~§7, `.cursor/BUGBOT.md`입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-007~R-011(D-017).
 
 2026-09-29 분석의 root §3 검색식 allowlist 권고는 T-029에서 해소됐고, 작업 트리의 로컬 `.swp` 파일은 저장소 작업이 아니어서 등록하지 않았습니다.
 
@@ -306,3 +310,5 @@ T-034는 T-033(2026-10-01)에서 등록했고 PR #58에서 version을 반영한 
 | 17 | `claude/t030-t014-contract` | T-030·T-014: 승인 계약 구현 | **Integrated** — Origin PR #56 merge `379c0f0`·GitHub fast-forward 확인 |
 | 18 | `claude/t033-todo-history-archive` | T-033: TODO 완료 이력 보관 | **Integrated** — Origin PR #57 merge `0f947b5`·GitHub fast-forward 확인; 새 기록 규칙의 첫 적용 |
 | 19 | `claude/v2.4.0-release-prep` | T-034: `v2.4.0` locale release | **Integrated·Published** — 준비 Origin PR #58 merge `4fe3f76`·GitHub fast-forward 확인; 2026-10-07 annotated tag·immutable Latest 공개, candidate·published(`--base-version 2.3.3`) 통과 |
+| 20 | `claude/t036-t038-reporting-verification-design` | T-036·T-037·T-038: 보고·검증 규범 설계 | **Integrated** — Accepted D-015~D-017, Origin PR #59 merge `3ddc35c`·GitHub fast-forward 확인; `v2.4.0` 공개 기록 포함 |
+| 21 | `claude/t036-t038-reporting-verification` | T-036·T-037·T-038: 승인 계약 구현 | **Integrated** — 이 변경의 PR(결합 서술). merge SHA는 PR이 원장 |

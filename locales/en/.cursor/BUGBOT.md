@@ -65,6 +65,6 @@ When you attach IDs to findings, keep them from colliding with other reviewers' 
 - Duplicate findings with the same root cause
 - Requests to reverse a decision recorded under "Accepted Design Decisions and Approved Deferrals" above
 
-Do not infer approval or completion from a design document's filename or checkboxes alone. Verify completion claims against code and validation evidence, and distinguish branch implementation and validation completion in a change-specific PLAN from integration, release, and support validation completion in the global TODO.
+Do not infer approval or completion from a design document's filename or checkboxes alone. Verify completion claims against code and validation evidence, and distinguish branch implementation and validation completion in a change-specific PLAN from integration, release, and support validation completion in the global TODO. Completion, passing, or fix claims need evidence run or retrieved after the last change. A bug fix's regression check must actually exercise the bug path; report it if the check would pass even without the fix.
 
 If there are no significant problems, do not invent one. Explain the scope reviewed and its limitations.
