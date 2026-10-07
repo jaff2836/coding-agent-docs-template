@@ -17,7 +17,7 @@
 - **Name:** T-039 `v2.5.0` locale release
 - **Goal:** D-015~D-017(보고 형식, 외부 입력 경계, 완료 근거)의 locale payload 변경을 `v2.5.0`으로 공개함
 - **Target:** `claude/v2.5.0-release-prep`(준비)와 D-007의 candidate·published 단계
-- **Status:** Next — T-036·T-037·T-038 구현은 이 변경의 통합으로 끝납니다.
+- **Status:** In Progress — 이 변경의 통합으로 준비가 끝납니다. tag·draft candidate와 공개·published 검증은 그 뒤 단계입니다.
 - **다음 마일스톤:** T-035는 조건부 재검토 항목이고, `en`·`ko` 외 locale은 보류 상태입니다.
 
 ## 운영 규칙
@@ -36,11 +36,17 @@
 
 ## In Progress
 
-없음. 다음 작업은 Current Milestone과 Backlog 순서를 따릅니다.
+- [ ] **T-039 `v2.5.0` locale release**
+  - 범위: 아래 Backlog의 T-039 항목. D-007에 따라 준비, tag·draft candidate, 공개·published 단계를 나눕니다.
+  - version 판단: `v2.5.0`(minor). installer CLI, release manifest schema, artifact inventory는 그대로이고, 적용 프로젝트가 따를 새 규범(D-015~D-017)이 들어갑니다. `v2.4.0`과 같은 성격이라 minor로 둡니다.
+  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 2.5.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v2.5.0 이력을, root `CHANGELOG`에 링크 없는 v2.5.0 항목(공개 시 release 링크로 교체)을 추가했습니다. `v2.4.0` 대비 규범이 바뀐 artifact 파일은 locale마다 `AGENTS.md`, `.cursor/BUGBOT.md`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`이고, `docs/DOCS_GUIDE.md`·`docs/TEMPLATE_GUIDE.md`는 version과 이력이 바뀌었습니다(locale마다 6개). 통합 근거: 이 변경의 PR.
+  - [x] PR #60 인계 C60-B-001(Codex `C60-B-001`, Cursor `C60-A-001`과 같은 원인, P3): 설계 R-002대로 생략한 주제에 요청 안내를 root·en·ko `AGENTS.md`에 더했습니다. 통합 근거: 이 변경의 PR.
+  - [ ] tag·draft candidate: 준비가 통합된 exact source에 사용자가 annotated `v2.5.0` tag와 GitHub draft를 만들고, agent가 `verify-release.py candidate`를 실행합니다.
+  - [ ] 공개·published: 사용자가 draft를 immutable release로 공개하고, agent가 `verify-release.py published --base-version 2.4.0`을 실행합니다.
 
 ## Next
 
-T-039로 `v2.5.0`을 준비·검증·공개합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+T-039 `v2.5.0` release를 검증·공개합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -55,7 +61,7 @@ T-039로 `v2.5.0`을 준비·검증·공개합니다. 각 항목은 PR 단위로
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 22 | `claude/v2.5.0-release-prep` 등 | T-039: `v2.5.0` locale release | 21(이 변경) 통합 뒤. D-007에 따라 준비·candidate·published 단계 분리 |
+| 22 | `claude/v2.5.0-release-prep` 등 | T-039: `v2.5.0` locale release | **In Progress** — 상세는 In Progress 항목 |
 
 - [ ] **T-039 `v2.5.0` locale release** — T-036·T-037·T-038의 payload 변경을 `v2.5.0`(minor)으로 공개합니다. D-007에 따라 준비·candidate·published 단계를 나누고, tag 생성과 공개는 사용자가 수행하거나 확인합니다.
 - [ ] **T-035 release 신뢰 루트 검토 (서명·attestation)** — installer는 같은 release의 `SHA256SUMS`·manifest로 무결성을 확인하지만 게시 계정 탈취는 막지 못하며, immutable release와 tag ruleset으로 완화합니다. 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기거나 표준 라이브러리만으로 GitHub release attestation을 검증할 경로가 확인되면 D-004 확장 설계로 재검토합니다.
@@ -72,7 +78,7 @@ T-039로 `v2.5.0`을 준비·검증·공개합니다. 각 항목은 PR 단위로
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
-- [x] **T-036·T-037·T-038 보고·검증 규범 구현** — D-015~D-017을 en·ko locale과 root 사본의 `AGENTS.md`(보고 형식, 기본값 명시, 지시의 출처, 완료 근거, red-green), `docs/REVIEW.md` §5, `docs/REVIEW_ROUND.md` §1·§4~§7(위임 경계, 원본 재조회, 원장 `확인` 열), `.cursor/BUGBOT.md`에 반영했습니다. PR #59의 인계 C59-B-001(Codex, P3)도 [완료 작업 보관](./TODO_ARCHIVE.md)에서 해소했습니다. 통합 근거: 이 변경의 PR(결합 서술). 공개는 T-039입니다.
+- [x] **T-036·T-037·T-038 보고·검증 규범 구현** — D-015~D-017을 en·ko locale과 root 사본의 `AGENTS.md`(보고 형식, 기본값 명시, 지시의 출처, 완료 근거, red-green), `docs/REVIEW.md` §5, `docs/REVIEW_ROUND.md` §1·§4~§7(위임 경계, 원본 재조회, 원장 `확인` 열), `.cursor/BUGBOT.md`에 반영했습니다. PR #59의 인계 C59-B-001(Codex, P3)도 [완료 작업 보관](./TODO_ARCHIVE.md)에서 해소했습니다. 통합: PR #60. R-002의 요청 안내는 T-039 준비에서 보완했습니다(C60-B-001). 공개는 T-039입니다.
 - [x] **T-036·T-037·T-038 보고·검증 규범 설계** — Accepted D-015~D-017([설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md)). 통합: PR #59. 공개는 T-039입니다.
 - [x] **T-034 `v2.4.0` locale release** — 준비는 PR #58로 통합됐습니다. 2026-10-07 사용자가 exact source `4fe3f76`에 annotated tag와 draft를 만들어 immutable Latest로 공개했고, candidate와 published(`--base-version 2.3.3`) 검증이 통과했습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 - [x] **T-033 TODO 완료 이력 보관** — Completed 상세와 통합된 Backlog 행을 [완료 작업 보관](./TODO_ARCHIVE.md)으로 옮기고 이 문서에는 한 줄 목록만 남겼습니다. PR #56의 인계 C56-005(P3: sticky 게시물의 짧은 인용이 head를 버림)를 en·ko·root `REVIEW.md` §7과 설계 R-006에서 해소했습니다. 통합 근거: 이 변경의 PR(D-013 결합 서술).

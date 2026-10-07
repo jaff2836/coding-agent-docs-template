@@ -311,4 +311,4 @@ T-034는 T-033(2026-10-01)에서 등록했고 PR #58에서 version을 반영한 
 | 18 | `claude/t033-todo-history-archive` | T-033: TODO 완료 이력 보관 | **Integrated** — Origin PR #57 merge `0f947b5`·GitHub fast-forward 확인; 새 기록 규칙의 첫 적용 |
 | 19 | `claude/v2.4.0-release-prep` | T-034: `v2.4.0` locale release | **Integrated·Published** — 준비 Origin PR #58 merge `4fe3f76`·GitHub fast-forward 확인; 2026-10-07 annotated tag·immutable Latest 공개, candidate·published(`--base-version 2.3.3`) 통과 |
 | 20 | `claude/t036-t038-reporting-verification-design` | T-036·T-037·T-038: 보고·검증 규범 설계 | **Integrated** — Accepted D-015~D-017, Origin PR #59 merge `3ddc35c`·GitHub fast-forward 확인; `v2.4.0` 공개 기록 포함 |
-| 21 | `claude/t036-t038-reporting-verification` | T-036·T-037·T-038: 승인 계약 구현 | **Integrated** — 이 변경의 PR(결합 서술). merge SHA는 PR이 원장 |
+| 21 | `claude/t036-t038-reporting-verification` | T-036·T-037·T-038: 승인 계약 구현 | **Integrated** — Origin PR #60 merge `e2aca32`·GitHub fast-forward 확인 |
