@@ -17,7 +17,7 @@
 - **Name:** T-040 문서·주석 필터 root 시범
 - **Goal:** maintainer 영역에서 추적 문서·코드 주석 필터를 PR 5개에 적용하고, 효과와 오탐으로 payload 이관 여부를 정함
 - **Target:** [문서·주석 필터](./DOC_FILTER.md)와 이 저장소의 다음 PR들
-- **Status:** In Progress — 도입은 이 변경의 통합으로 끝나고, 시범 적용과 평가가 남습니다.
+- **Status:** In Progress — 도입은 PR #63으로 통합됐습니다. 시범 적용(1/5)과 평가가 남습니다.
 - **다음 마일스톤:** `en`·`ko` 외 locale은 보류 상태입니다.
 
 ## 운영 규칙
@@ -39,8 +39,9 @@
 - [ ] **T-040 문서·주석 필터 root 시범**
   - 출처: 2026-10-07 외부 자료 분석(anti-slop)과 2026-10-08 사용자 선택. 방향은 root 시범이고 대상은 추적 문서와 코드 주석입니다. 채팅 보고·PR 본문·리뷰 prose는 대상이 아닙니다.
   - 측정 근거: 2026-10-08 추적 문서(ko 116k자, en 210k자, root 171k자)에서 상투 표현은 거의 없었고 코드 주석의 장식 구분선·단계 나레이션은 0건이었습니다. `—`와 굵게 표시는 이 저장소의 관례라 필터 대상에서 뺐습니다.
-  - [x] 도입: root [문서·주석 필터](./DOC_FILTER.md)(문서 규칙 D1~D7, 주석 규칙 C1~C6, 적용 절차, 평가 기준)를 추가하고 root `AGENTS.md`·[DOCS_GUIDE.md](./DOCS_GUIDE.md) §1에 연결했습니다. locale artifact는 바꾸지 않습니다. 통합 근거: 이 변경의 PR.
-  - [ ] 시범 적용: 추적 문서나 코드 주석을 바꾸는 이 저장소 PR 5개에서 작성자가 필터를 적용하고 결과를 PR 본문에 남깁니다. 진행: 0/5.
+  - [x] 도입: root [문서·주석 필터](./DOC_FILTER.md)(문서 규칙 D1~D7, 주석 규칙 C1~C6, 적용 절차, 평가 기준)를 추가하고 root `AGENTS.md`·[DOCS_GUIDE.md](./DOCS_GUIDE.md) §1에 연결했습니다. locale artifact는 바꾸지 않습니다. 통합: PR #63.
+  - [x] PR #63 인계 C63-B-001(Codex, P3): 필터 대상이 `docs/`·`locales/`·`template/`·root README·CHANGELOG로 열거돼 root `AGENTS.md`·`CLAUDE.md`·스킬·`.cursor/BUGBOT.md`·`.omp/WATCHDOG.md`가 빠졌습니다. 대상을 추적 Markdown 전체(`git ls-files '*.md'`)로 고쳤습니다. 통합 근거: 이 변경의 PR.
+  - [ ] 시범 적용: 추적 문서나 코드 주석을 바꾸는 이 저장소 PR 5개에서 작성자가 필터를 적용하고 결과를 PR 본문에 남깁니다. 진행: 1/5(이 변경의 PR이 첫 적용).
   - [ ] 평가와 결정: 다섯 PR의 채택·오탐으로 중단, 규칙 조정, payload 이관 설계 중 하나를 사용자와 정합니다.
 
 ## Next
@@ -56,12 +57,11 @@ T-040 시범을 다음 PR들에 적용합니다. 새 작업은 사용자와 정�
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
 설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다. `v2.3.3`의 candidate 검증과 공개·published 검증은 D-007 경계에 따라 단계와 기록 PR을 분리합니다.
 
-통합된 순서 1~22의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+통합된 순서 1~23의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 23 | `claude/t035-t040-attestation-guide-doc-filter` | T-035 README 검증 안내, T-040 필터 시범 도입 | **In Progress** — 이 변경의 통합으로 T-035 완료와 T-040 도입. 상세는 In Progress·Completed |
-
+| 24 | `claude/t040-filter-scope` | T-040: 필터 대상 범위 수정(C63-B-001), 시범 1/5 | **In Progress** — 이 변경의 통합으로 완료. 상세는 In Progress 항목 |
 
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토
 
@@ -75,7 +75,7 @@ T-040 시범을 다음 PR들에 적용합니다. 새 작업은 사용자와 정�
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
-- [x] **T-035 release 신뢰 루트 검토** — 2026-10-08 검토: 재검토 조건(게시 권한 구조 변경, 외부 배포 요구, 표준 라이브러리만으로 검증할 경로)은 모두 충족되지 않았습니다. `v2.0.0`~`v2.5.0`의 모든 release에 GitHub release attestation이 있어 `gh release verify`로 검증됨을 확인했습니다. 이 서명은 GitHub가 공개한 digest를 증명할 뿐 게시 계정 탈취는 막지 못합니다. 사용자 선택에 따라 root README(영·한)에 `gh release verify-asset` 선택 검증 안내와 그 한계를 추가했습니다. maintainer 독립 서명은 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기면 새 항목으로 제안합니다. 통합 근거: 이 변경의 PR(결합 서술).
+- [x] **T-035 release 신뢰 루트 검토** — 2026-10-08 검토: 재검토 조건(게시 권한 구조 변경, 외부 배포 요구, 표준 라이브러리만으로 검증할 경로)은 모두 충족되지 않았습니다. `v2.0.0`~`v2.5.0`의 모든 release에 GitHub release attestation이 있어 `gh release verify`로 검증됨을 확인했습니다. 이 서명은 GitHub가 공개한 digest를 증명할 뿐 게시 계정 탈취는 막지 못합니다. 사용자 선택에 따라 root README(영·한)에 `gh release verify-asset` 선택 검증 안내와 그 한계를 추가했습니다. maintainer 독립 서명은 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기면 새 항목으로 제안합니다. 통합: PR #63.
 - [x] **T-039 `v2.5.0` locale release** — 준비는 PR #61로 통합됐습니다. 2026-10-07 사용자가 exact source `6d04b97`에 annotated tag와 draft를 만들어 immutable Latest로 공개했고, candidate와 published(`--base-version 2.4.0`) 검증이 통과했습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 - [x] **T-036·T-037·T-038 보고·검증 규범 구현** — D-015~D-017을 en·ko locale과 root 사본의 `AGENTS.md`(보고 형식, 기본값 명시, 지시의 출처, 완료 근거, red-green), `docs/REVIEW.md` §5, `docs/REVIEW_ROUND.md` §1·§4~§7(위임 경계, 원본 재조회, 원장 `확인` 열), `.cursor/BUGBOT.md`에 반영했습니다. PR #59의 인계 C59-B-001(Codex, P3)도 [완료 작업 보관](./TODO_ARCHIVE.md)에서 해소했습니다. 통합: PR #60. R-002의 요청 안내는 T-039 준비에서 보완했습니다(C60-B-001). 공개는 T-039입니다.
 - [x] **T-036·T-037·T-038 보고·검증 규범 설계** — Accepted D-015~D-017([설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md)). 통합: PR #59. 공개는 T-039입니다.
