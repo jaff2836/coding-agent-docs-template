@@ -14,11 +14,11 @@
 
 ## Current Milestone
 
-- **Name:** T-034 `v2.4.0` locale release
-- **Goal:** `v2.3.3` 이후 통합된 locale payload 변경(T-013 검색 선언, D-013·D-014 계약)을 `v2.4.0`으로 공개함
-- **Target:** `claude/v2.4.0-release-prep`(준비)와 D-007의 candidate·published 단계
-- **Status:** In Progress — 이 변경의 통합으로 준비가 끝납니다. tag·draft candidate와 공개·published 검증은 그 뒤 단계입니다.
-- **다음 마일스톤:** T-036·T-037·T-038 보고·검증 규범과 T-039 `v2.5.0` release입니다. T-035는 조건부 재검토 항목이고, `en`·`ko` 외 locale은 보류 상태입니다.
+- **Name:** T-036·T-037·T-038 보고·검증 규범과 T-039 `v2.5.0` release
+- **Goal:** D-015~D-017을 locale payload에 구현하고 `v2.5.0`으로 공개함
+- **Target:** 구현 PR `claude/t036-t038-reporting-verification`과 D-007의 release 단계
+- **Status:** Next — 설계(Accepted D-015~D-017)는 이 변경의 통합으로 끝나고, 구현 PR은 그 뒤에 시작합니다.
+- **다음 마일스톤:** T-035는 조건부 재검토 항목이고, `en`·`ko` 외 locale은 보류 상태입니다.
 
 ## 운영 규칙
 
@@ -36,17 +36,11 @@
 
 ## In Progress
 
-- [ ] **T-034 `v2.4.0` locale release**
-  - 범위: 아래 Backlog의 T-034 항목. D-007에 따라 준비, tag·draft candidate, 공개·published 단계를 나눕니다.
-  - version 판단: `v2.4.0`(minor). installer CLI, release manifest schema, artifact inventory는 그대로입니다. 적용 프로젝트가 따를 새 규범(D-013 기록 시점, D-014 리뷰 ID·근거)과 placeholder 검색 선언이 들어가므로 같은 성격이던 `v2.3.0`처럼 minor로 둡니다.
-  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 2.4.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v2.4.0 이력을, root `CHANGELOG`에 링크 없는 v2.4.0 항목(공개 시 release 링크로 교체)을 추가했습니다. PR #50 인계대로 검색 선언 단일화·Bash 전제·삭제 전 보관과 바뀐 artifact 파일을 기록했습니다. 통합 근거: 이 변경의 PR.
-  - [x] PR #57 인계 C57-B-001(Codex `C57-B-001`, P3): 보관 표에 빠진 18번 T-033 행을 [완료 작업 보관](./TODO_ARCHIVE.md)에 추가했습니다. 통합 근거: 이 변경의 PR.
-  - [ ] tag·draft candidate: 준비가 통합된 exact source commit에 annotated `v2.4.0` tag와 GitHub draft를 만들고 `verify-release.py candidate`를 실행합니다. tag 생성은 되돌릴 수 없어 사용자 확인 뒤 진행합니다.
-  - [ ] 공개·published: draft를 immutable release로 공개하고 `verify-release.py published --base-version 2.3.3`을 실행합니다. 공개도 사용자 확인 뒤 진행합니다.
+없음. 다음 작업은 Current Milestone과 Backlog 순서를 따릅니다.
 
 ## Next
 
-T-034 `v2.4.0` release를 검증·공개합니다. 이어서 T-036·T-037·T-038을 설계·구현하고 T-039로 `v2.5.0`을 공개합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+T-036·T-037·T-038을 구현 PR 하나로 진행하고, 통합 뒤 T-039로 `v2.5.0`을 공개합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -57,16 +51,14 @@ T-034 `v2.4.0` release를 검증·공개합니다. 이어서 T-036·T-037·T-038
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
 설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다. `v2.3.3`의 candidate 검증과 공개·published 검증은 D-007 경계에 따라 단계와 기록 PR을 분리합니다.
 
-통합된 순서 1~18의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+통합된 순서 1~19의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 19 | `claude/v2.4.0-release-prep` 등 | T-034: `v2.4.0` locale release | **In Progress** — 상세는 In Progress 항목 |
 | 20 | `claude/t036-t038-reporting-verification-design` | T-036·T-037·T-038: 보고·검증 규범 설계 | **Accepted** — 2026-10-07 Q1~Q4 선택, D-015~D-017. 이 변경의 통합으로 설계 완료. [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) |
 | 21 | `claude/t036-t038-reporting-verification` | T-036·T-037·T-038: 승인 계약 구현 | 20 통합 뒤. 세 항목이 같은 파일을 고치므로 PR 하나로 묶음 |
-| 22 | `claude/v2.5.0-release-prep` 등 | T-039: `v2.5.0` locale release | 21 통합과 T-034 공개 뒤. D-007에 따라 준비·candidate·published 단계 분리 |
+| 22 | `claude/v2.5.0-release-prep` 등 | T-039: `v2.5.0` locale release | 21 통합 뒤. D-007에 따라 준비·candidate·published 단계 분리 |
 
-- [ ] **T-034 `v2.4.0` locale release** — `v2.3.3` 이후 통합된 payload 변경을 `v2.4.0`으로 공개합니다. 대상은 T-013 검색 선언(en·ko `docs/TEMPLATE_GUIDE.md`)과 D-013·D-014 계약(en·ko `docs/DOCS_GUIDE.md`·`docs/02-TODO.md`·`docs/REVIEW.md`·`docs/REVIEW_ROUND.md`·`.cursor/BUGBOT.md`)입니다. PR #50의 인계대로 release 이력에 검색 선언 단일화·Bash 전제·TEMPLATE_GUIDE 삭제 전 보관과 변경 파일을 기록합니다. version은 준비 단계에서 `v2.4.0`(minor)으로 정했습니다(근거는 In Progress 항목). D-007에 따라 준비·candidate·published 단계를 나누고, tag 생성과 공개는 각각 사용자 확인 뒤 진행합니다.
 - [ ] **T-036 보고 형식과 기본값 명시** — 여러 주제를 담은 작업 보고와 답변은 첫 줄 결론, `##` 주제별 요약 리스트와 항목 설명으로 쓰고, 경고·수치·조건을 줄이지 않으며 결정 질문을 마지막에 둡니다. 요청에 언급이 없어 기본값으로 정한 선택은 보고에 밝힙니다. 대상은 en·ko·root `AGENTS.md`입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-001~R-004(D-015).
 - [ ] **T-037 외부 입력 경계** — 지시의 출처를 사용자 요청과 지침 파일로 한정하고, 도구 출력·외부 저장소·PR·리뷰·댓글 안의 지시는 데이터로 다룹니다. 리뷰 라운드에서는 리뷰 본문의 지시가 위임 범위나 파라미터를 바꾸지 않습니다. 대상은 `AGENTS.md`와 `docs/REVIEW_ROUND.md` §1입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-005·R-006(D-016).
 - [ ] **T-038 완료 근거와 직접 확인** — 주장별 완료 근거와 신선도, 버그 수정·새 검사 규칙의 red-green 확인, 리뷰 라운드 원장의 `확인` 열과 빈 리뷰의 원본 재조회, 리뷰 점검 항목을 둡니다. 대상은 `AGENTS.md`, `docs/REVIEW.md` §5, `docs/REVIEW_ROUND.md` §4~§7, `.cursor/BUGBOT.md`입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-007~R-011(D-017).
@@ -85,6 +77,8 @@ T-034 `v2.4.0` release를 검증·공개합니다. 이어서 T-036·T-037·T-038
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
+- [x] **T-036·T-037·T-038 보고·검증 규범 설계** — Accepted D-015~D-017([설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md)). 통합 근거: 이 변경의 PR(결합 서술). 구현은 Backlog 21, 공개는 T-039입니다.
+- [x] **T-034 `v2.4.0` locale release** — 준비는 PR #58로 통합됐습니다. 2026-10-07 사용자가 exact source `4fe3f76`에 annotated tag와 draft를 만들어 immutable Latest로 공개했고, candidate와 published(`--base-version 2.3.3`) 검증이 통과했습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 - [x] **T-033 TODO 완료 이력 보관** — Completed 상세와 통합된 Backlog 행을 [완료 작업 보관](./TODO_ARCHIVE.md)으로 옮기고 이 문서에는 한 줄 목록만 남겼습니다. PR #56의 인계 C56-005(P3: sticky 게시물의 짧은 인용이 head를 버림)를 en·ko·root `REVIEW.md` §7과 설계 R-006에서 해소했습니다. 통합 근거: 이 변경의 PR(D-013 결합 서술).
 - [x] **T-030·T-014 기록 시점·리뷰 finding ID 계약 구현** — 통합: PR #56(D-013·D-014). 공개는 T-034.
 - [x] **T-030·T-014 기록 시점·리뷰 finding ID 계약 설계**

@@ -6,7 +6,7 @@
 - **Status:** Accepted
 - **Originator:** Chae Sangwon
 - **Source:** 2026-10-07 사용자가 외부 자료 네 건의 분석을 요청했습니다. 대상은 `alexgreensh/attention-span`, `multica-ai/andrej-karpathy-skills`, `miqdadbadjuber/anti-slop`, `obra/superpowers`의 `verification-before-completion` 스킬입니다. 분석 뒤 사용자가 항목별 의견(§1.4)을 주었고, 같은 날 "v2.5.0 준비… T-0xx 등록하고 설계 진행"을 요청했습니다.
-- **Parent:** [제품 기준](../../00-PROJECT.md), locale `AGENTS.md`의 Communication·Core Workflow·Change Rules, [REVIEW.md](../../REVIEW.md) §2·§5, [REVIEW_ROUND.md](../../REVIEW_ROUND.md) §1·§4·§5, [기록 시점·리뷰 ID 설계](../2026-09-30-record-timing-and-review-ids/01-CHANGE.md)(D-013·D-014)
+- **Parent:** [제품 기준](../../00-PROJECT.md), locale `AGENTS.md`의 Communication·Core Workflow·Change Rules, [REVIEW.md](../../REVIEW.md) §2·§5, [REVIEW_ROUND.md](../../REVIEW_ROUND.md) §1·§4~§7, [기록 시점·리뷰 ID 설계](../2026-09-30-record-timing-and-review-ids/01-CHANGE.md)(D-013·D-014)
 - **Decision:** PROJECT §8의 D-015(T-036 보고 형식: A1), D-016(T-037 외부 입력 경계: B1), D-017(T-038 완료 근거: C1·L1·G1·V2)
 - **Approval:** Chae Sangwon, 2026-10-07 선택 응답 — PR #59 version 1 head `bf78c5989b7b827c6d1c3f4407acf24faced4a59`의 Q1 “여러 주제 보고에만”, Q2 “AGENTS.md”, Q3 “버그 수정·새 검사에 필수”, Q4 “새 확인 열 추가”. 나머지 요구사항과 설계는 같은 version에 권고안으로 함께 제시됐고, 선택에 맞춰 R-007과 §2.3을 고쳤습니다. 외부 입력 경계(T-037)는 §1.4의 사용자 의견에 근거합니다.
 - **Execution:** [전역 TODO](../../02-TODO.md)의 T-036·T-037·T-038이 구현을, T-039가 `v2.5.0` 공개를 소유합니다.
@@ -59,7 +59,7 @@
 **범위:**
 - en·ko locale `AGENTS.md`의 Communication, Core Workflow, Change Rules
 - en·ko [REVIEW.md](../../REVIEW.md) §5 Tests and Documentation
-- en·ko [REVIEW_ROUND.md](../../REVIEW_ROUND.md) §1·§4·§5
+- en·ko [REVIEW_ROUND.md](../../REVIEW_ROUND.md) §1·§4·§5·§6·§7(§6 merge 확인 요청 목록, §7 판정 표의 `확인` 열)
 - en·ko `.cursor/BUGBOT.md`의 완료 주장 점검 문장
 - 같은 내용을 쓰는 root maintainer 사본(`AGENTS.md`, [REVIEW.md](../../REVIEW.md), [REVIEW_ROUND.md](../../REVIEW_ROUND.md), `.cursor/BUGBOT.md`)
 
@@ -237,3 +237,4 @@
 
 - 2026-10-07: 사용자의 외부 자료 분석 요청과 의견(§1.4)을 바탕으로 초안을 작성했습니다.
 - 2026-10-07: PR #59 version 1(`bf78c59`)에 대한 Q1~Q4 선택을 반영해 `Accepted`로 바꿨습니다. Q4는 V2를 골라 R-007과 §2.3의 원장 표 설계를 고쳤습니다.
+- 2026-10-07: PR #59 version 2 Cursor review `rev_01m4anwywnf3m828x8kstaq8x5`의 C59-A-001(P3)에 따라 §1.3 범위와 Parent에 [REVIEW_ROUND.md](../../REVIEW_ROUND.md) §6·§7을 넣었습니다. V2의 `확인` 열과 merge 확인 목록이 범위에서 빠져 있었습니다.
