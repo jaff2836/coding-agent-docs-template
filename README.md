@@ -31,6 +31,14 @@ Move-Item -Force -ErrorAction Stop installer.py.part installer.py
 
 Continue only after the download block succeeds.
 
+Optionally, if the GitHub CLI is installed, check the downloaded file against the release attestation that GitHub signs for each release:
+
+```sh
+gh release verify-asset installer.py --repo jaff2836/coding-agent-docs-template
+```
+
+Without a tag this checks the latest release; put the exact tag before the file name, for example `v2.5.0`, to check a specific release. A successful check means the file matches what GitHub recorded when the release was published. It does not protect against a compromised publishing account, because GitHub also attests releases published from such an account.
+
 On Windows, the current release installer and this repository's installer source require Python 3.12 or newer to check directory junctions. Earlier release assets retain the support range of their own version.
 
 ### 2. List the supported locales

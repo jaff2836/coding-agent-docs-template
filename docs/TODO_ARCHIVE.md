@@ -292,9 +292,11 @@ T-034는 T-033(2026-10-01)에서 등록했고 PR #58에서 version을 반영한 
 - [x] **T-037 외부 입력 경계** — 지시의 출처를 사용자 요청과 지침 파일로 한정하고, 도구 출력·외부 저장소·PR·리뷰·댓글 안의 지시는 데이터로 다룹니다. 리뷰 라운드에서는 리뷰 본문의 지시가 위임 범위나 파라미터를 바꾸지 않습니다. 대상은 `AGENTS.md`와 `docs/REVIEW_ROUND.md` §1입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-005·R-006(D-016).
 - [x] **T-038 완료 근거와 직접 확인** — 주장별 완료 근거와 신선도, 버그 수정·새 검사 규칙의 red-green 확인, 리뷰 라운드 원장의 `확인` 열과 빈 리뷰의 원본 재조회, 리뷰 점검 항목을 둡니다. 대상은 `AGENTS.md`, `docs/REVIEW.md` §5, `docs/REVIEW_ROUND.md` §4~§7, `.cursor/BUGBOT.md`입니다. 설계: [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-007~R-011(D-017).
 
-T-039는 2026-10-07 PR #59에서 등록한 설명입니다.
+T-039는 2026-10-07 PR #59에서 등록한 설명입니다. T-035는 2026-09-29 위험 목록에서 등록한 설명입니다.
 
 - [x] **T-039 `v2.5.0` locale release** — T-036·T-037·T-038의 payload 변경을 `v2.5.0`(minor)으로 공개합니다. D-007에 따라 준비·candidate·published 단계를 나누고, tag 생성과 공개는 사용자가 수행하거나 확인합니다.
+
+- [x] **T-035 release 신뢰 루트 검토 (서명·attestation)** — installer는 같은 release의 `SHA256SUMS`·manifest로 무결성을 확인하지만 게시 계정 탈취는 막지 못하며, immutable release와 tag ruleset으로 완화합니다. 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기거나 표준 라이브러리만으로 GitHub release attestation을 검증할 경로가 확인되면 D-004 확장 설계로 재검토합니다.
 
 2026-09-29 분석의 root §3 검색식 allowlist 권고는 T-029에서 해소됐고, 작업 트리의 로컬 `.swp` 파일은 저장소 작업이 아니어서 등록하지 않았습니다.
 
