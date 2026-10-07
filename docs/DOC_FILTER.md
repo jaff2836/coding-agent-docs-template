@@ -11,7 +11,9 @@
 
 ## 1. 범위와 원칙
 
-- **대상:** 추적 문서(`docs/`, `locales/`, `template/`, root README·CHANGELOG의 Markdown)와 코드 주석(`scripts/`, `tests/`, `template/common/`의 주석·docstring)
+- **대상:** 이 저장소가 추적하는 모든 Markdown 문서(`git ls-files '*.md'`)와 코드 주석입니다.
+  - 문서: `docs/`, `locales/`, `template/`, root의 `AGENTS.md`·`CLAUDE.md`·README·CHANGELOG, `.agents/`·`.claude/` 스킬, `.cursor/BUGBOT.md`, `.omp/WATCHDOG.md`
+  - 코드 주석: `scripts/`, `tests/`, `template/common/`의 주석과 docstring
 - **대상 아님:** 채팅 보고·PR 본문·리뷰 prose(형식은 D-015가 맡음), 코드 동작과 식별자, 인용문과 외부 자료 원문, [TODO_ARCHIVE.md](./TODO_ARCHIVE.md)처럼 원문을 보존하는 기록
 - **필터이지 스타일 가이드가 아닙니다.** 이 저장소의 표기 관례는 지적하지 않습니다: 표 상태 열과 heading의 `—`, `**항목:**` 리드인, 절 번호 참조, 원문을 유지하는 코드 식별자.
 - **목적이 있으면 남깁니다.** 규칙에 걸려도 남길 이유를 한 줄로 말할 수 있으면 유지하고, 그 이유를 기각 사유로 적습니다.
