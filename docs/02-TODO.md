@@ -14,10 +14,10 @@
 
 ## Current Milestone
 
-- **Name:** T-034 다음 locale release
-- **Goal:** `v2.3.3` 이후 통합된 locale payload 변경(T-013 검색 선언, D-013·D-014 계약)을 한 release로 공개함
-- **Target:** release 준비 PR과 D-007의 candidate·published 단계
-- **Status:** Next — version·시점은 준비 PR에서 정합니다.
+- **Name:** T-034 `v2.4.0` locale release
+- **Goal:** `v2.3.3` 이후 통합된 locale payload 변경(T-013 검색 선언, D-013·D-014 계약)을 `v2.4.0`으로 공개함
+- **Target:** `claude/v2.4.0-release-prep`(준비)와 D-007의 candidate·published 단계
+- **Status:** In Progress — 이 변경의 통합으로 준비가 끝납니다. tag·draft candidate와 공개·published 검증은 그 뒤 단계입니다.
 - **다음 마일스톤:** T-035는 조건부 재검토 항목이고, `en`·`ko` 외 locale은 보류 상태입니다.
 
 ## 운영 규칙
@@ -36,11 +36,17 @@
 
 ## In Progress
 
-없음. 다음 작업은 Current Milestone과 Backlog 순서를 따릅니다.
+- [ ] **T-034 `v2.4.0` locale release**
+  - 범위: 아래 Backlog의 T-034 항목. D-007에 따라 준비, tag·draft candidate, 공개·published 단계를 나눕니다.
+  - version 판단: `v2.4.0`(minor). installer CLI, release manifest schema, artifact inventory는 그대로입니다. 적용 프로젝트가 따를 새 규범(D-013 기록 시점, D-014 리뷰 ID·근거)과 placeholder 검색 선언이 들어가므로 같은 성격이던 `v2.3.0`처럼 minor로 둡니다.
+  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 2.4.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v2.4.0 이력을, root `CHANGELOG`에 링크 없는 v2.4.0 항목(공개 시 release 링크로 교체)을 추가했습니다. PR #50 인계대로 검색 선언 단일화·Bash 전제·삭제 전 보관과 바뀐 artifact 파일을 기록했습니다. 통합 근거: 이 변경의 PR.
+  - [x] PR #57 인계 C57-B-001(Codex `C57-B-001`, P3): 보관 표에 빠진 18번 T-033 행을 [완료 작업 보관](./TODO_ARCHIVE.md)에 추가했습니다. 통합 근거: 이 변경의 PR.
+  - [ ] tag·draft candidate: 준비가 통합된 exact source commit에 annotated `v2.4.0` tag와 GitHub draft를 만들고 `verify-release.py candidate`를 실행합니다. tag 생성은 되돌릴 수 없어 사용자 확인 뒤 진행합니다.
+  - [ ] 공개·published: draft를 immutable release로 공개하고 `verify-release.py published --base-version 2.3.3`을 실행합니다. 공개도 사용자 확인 뒤 진행합니다.
 
 ## Next
 
-T-034 release를 준비합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+T-034 `v2.4.0` release를 준비·검증·공개합니다. 각 항목은 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -55,9 +61,9 @@ T-034 release를 준비합니다. 각 항목은 PR 단위로 수동 리뷰·필�
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 19 | `claude/<version>-release-prep` 등 | T-034: 다음 locale release | 공개 payload 변경을 한 release로 묶음. D-007에 따라 준비·candidate·published 단계 분리 |
+| 19 | `claude/v2.4.0-release-prep` 등 | T-034: `v2.4.0` locale release | **In Progress** — 상세는 In Progress 항목 |
 
-- [ ] **T-034 다음 locale release** — `v2.3.3` 이후 통합된 payload 변경을 한 release로 공개합니다. 대상은 T-013 검색 선언(en·ko `docs/TEMPLATE_GUIDE.md`)과 D-013·D-014 계약(en·ko `docs/DOCS_GUIDE.md`·`docs/02-TODO.md`·`docs/REVIEW.md`·`docs/REVIEW_ROUND.md`·`.cursor/BUGBOT.md`)입니다. PR #50의 인계대로 release 이력에 검색 선언 단일화·Bash 전제·TEMPLATE_GUIDE 삭제 전 보관과 변경 파일을 기록합니다. version·시점은 준비 PR에서 정하고, D-007에 따라 준비·candidate·published 단계를 나눕니다.
+- [ ] **T-034 `v2.4.0` locale release** — `v2.3.3` 이후 통합된 payload 변경을 `v2.4.0`으로 공개합니다. 대상은 T-013 검색 선언(en·ko `docs/TEMPLATE_GUIDE.md`)과 D-013·D-014 계약(en·ko `docs/DOCS_GUIDE.md`·`docs/02-TODO.md`·`docs/REVIEW.md`·`docs/REVIEW_ROUND.md`·`.cursor/BUGBOT.md`)입니다. PR #50의 인계대로 release 이력에 검색 선언 단일화·Bash 전제·TEMPLATE_GUIDE 삭제 전 보관과 변경 파일을 기록합니다. version은 준비 단계에서 `v2.4.0`(minor)으로 정했습니다(근거는 In Progress 항목). D-007에 따라 준비·candidate·published 단계를 나누고, tag 생성과 공개는 각각 사용자 확인 뒤 진행합니다.
 - [ ] **T-035 release 신뢰 루트 검토 (서명·attestation)** — installer는 같은 release의 `SHA256SUMS`·manifest로 무결성을 확인하지만 게시 계정 탈취는 막지 못하며, immutable release와 tag ruleset으로 완화합니다. 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기거나 표준 라이브러리만으로 GitHub release attestation을 검증할 경로가 확인되면 D-004 확장 설계로 재검토합니다.
 
 - [ ] `en`·`ko` 외 community locale — v2의 locale 추가 계약과 두 공식 locale 지원 검증 후 재검토

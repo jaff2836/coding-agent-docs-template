@@ -293,3 +293,4 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
 | 15 | `claude/t032-remote-operations` | T-032: GitHub `main` 보호·Origin→GitHub 동기화 절차·tag 정책 | **Integrated** — Origin PR #54 merge `e55fcd9`·ruleset 아래 GitHub fast-forward 확인; Windows #75·Linux #60 통과 |
 | 16 | `claude/t030-t014-contract-design` | T-030·T-014: 기록 시점·리뷰 finding ID 계약 설계 | **Integrated** — Accepted D-013·D-014, Origin PR #55 merge `a608627`·GitHub fast-forward 확인; Windows #78·Linux #63 통과 |
 | 17 | `claude/t030-t014-contract` | T-030·T-014: 승인 계약 구현 | **Integrated** — Origin PR #56 merge `379c0f0`·GitHub fast-forward 확인 |
+| 18 | `claude/t033-todo-history-archive` | T-033: TODO 완료 이력 보관 | **Integrated** — Origin PR #57 merge `0f947b5`·GitHub fast-forward 확인; 새 기록 규칙의 첫 적용 |
