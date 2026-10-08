@@ -83,7 +83,8 @@ def _prepare_refs(version: str) -> None:
     if configured.returncode != 0:
         _git("remote", "add", "github", GITHUB_URL)
     elif configured.stdout.strip() != GITHUB_URL:
-        raise InputError("existing github remote points elsewhere: %s" % configured.stdout.strip())
+        # Never echo the configured URL: it may embed a token.
+        raise InputError("existing github remote is not %s; remove or fix it" % GITHUB_URL)
     _git("fetch", "--no-tags", "origin", "+refs/heads/main:refs/remotes/origin/main")
     tag = "refs/tags/v%s" % version
     _git("fetch", "--no-tags", "github", "+%s:%s" % (tag, tag))

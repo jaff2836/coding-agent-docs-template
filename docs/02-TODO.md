@@ -73,9 +73,9 @@ T-040 시범을 다음 PR들에 적용합니다. 새 작업은 사용자와 정�
 | 31 | `claude/t045-community-locale-*` | T-045 community locale 구현 | 28 Accepted와 29 뒤. 계약·검사 PR과 번역 묶음별 PR로 나눔 |
 | 32 | `claude/v2.6.0-release-prep` 등 | T-046 `v2.6.0` release | 30·31 통합 뒤. payload 변경이 없으면 생략 |
 
-- [ ] **T-041 native Windows published 검증** — `v2.3.3`·`v2.4.0`·`v2.5.0`의 published E2E는 Linux에서만 실행했습니다(마지막 native 실행은 `v2.3.1`). 사용자가 Windows에서 `v2.5.0` tag source로 `verify-release.py published --base-version 2.4.0`을 실행하고 결과를 기록합니다. 사용자 결정에 따라 이후 release의 Windows 검증은 Buildkite 수동 build로 실행합니다.
+- [ ] **T-041 native Windows published 검증** — `v2.3.3`·`v2.4.0`·`v2.5.0`의 published E2E를 처음에는 Linux에서만 실행했습니다(그전 마지막 native 실행은 `v2.3.1`). 2026-10-08 사용자가 Windows에서 `v2.5.0` 검증을 실행해 통과했고, 사용자 결정에 따라 이후 release의 Windows 검증은 Buildkite 수동 build로 실행합니다. 남은 일은 그 Buildkite 경로의 실환경 확인입니다(In Progress 항목).
 - [ ] **T-042 Origin 원격 branch 정리** — merge가 끝난 `claude/*`·`codex/*` 원격 branch 60여 개를 정리합니다. branch 삭제는 명시 요청이 있어야 하므로 사용자 승인 뒤 merge 여부를 확인한 branch만 지웁니다.
-- [ ] **T-043 community locale 설계** — `en`·`ko` 외 locale을 추가하는 설계입니다. 기존 보류 항목(두 공식 locale 지원 검증 뒤 재검토)의 조건은 `v2.0.0`~`v2.5.0` 공개로 충족된 것으로 봅니다. locale 선택, `experimental`·`complete` 상태 정책(안정판에는 `complete`만 포함), 번역 검수자, 번역 단위를 정합니다. en source는 26개 파일, Markdown 약 264k자입니다.
+- [ ] **T-043 community locale 설계** — `en`·`ko` 외 locale을 추가하는 설계입니다. 기존 보류 항목(두 공식 locale 지원 검증 뒤 재검토)의 조건은 `v2.0.0`~`v2.5.0` 공개로 충족된 것으로 봅니다. locale 선택, `experimental`·`complete` 상태 정책(안정판에는 `complete`만 포함), 번역 검수자, 번역 단위를 정합니다. en source는 추적 파일 24개, Markdown 약 264k자입니다.
 - [ ] **T-044 문서 필터 payload 이관 (조건부)** — T-040 평가에서 이관을 정하면 en·ko 문서 필터의 설계와 구현을 진행합니다.
 - [ ] **T-045 community locale 구현** — T-043 설계에 따라 manifest·상태·검사 PR과 번역 묶음별 PR로 나눠 구현합니다. 번역마다 사람의 검수가 필요합니다.
 - [ ] **T-046 `v2.6.0` release** — T-044·T-045의 payload 변경을 D-007 단계로 공개합니다. 바뀐 payload가 없으면 생략합니다.

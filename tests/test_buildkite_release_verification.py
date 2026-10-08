@@ -60,6 +60,16 @@ class ReadInputsTest(unittest.TestCase):
             )
 
 
+class PrepareRefsTest(unittest.TestCase):
+    def test_mismatched_remote_error_does_not_echo_the_configured_url(self) -> None:
+        secret = "ghp_example_secret_value"
+        configured = mock.Mock(returncode=0, stdout="https://x:%s@github.com/other/repo.git\n" % secret)
+        with mock.patch.object(helper, "_git", return_value=configured):
+            with self.assertRaises(helper.InputError) as raised:
+                helper._prepare_refs("2.5.0")
+        self.assertNotIn(secret, str(raised.exception))
+
+
 class MainTest(unittest.TestCase):
     def test_invalid_input_stops_before_any_command(self) -> None:
         with mock.patch.object(helper.subprocess, "run") as run:
