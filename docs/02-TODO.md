@@ -14,8 +14,10 @@
 
 ## Current Milestone
 
-- **Name:** 없음
-- **Status:** 2026-10-08에 승인한 순서의 작업이 이 변경으로 끝납니다. T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
+- **Name:** T-047 자기 점검 규칙 root 시범
+- **Goal:** root `AGENTS.md`의 자기 점검 규칙을 PR 5개에 적용해 보고 payload 반영 여부를 정함
+- **Target:** 이 저장소의 다음 PR들
+- **Status:** In Progress — 규칙 도입은 이 변경으로 통합됩니다. 2026-10-08에 승인한 순서의 나머지 작업은 끝났고, T-043은 보류(Blocked)입니다.
 
 ## 운영 규칙
 
@@ -33,11 +35,15 @@
 
 ## In Progress
 
-없음. 다음 작업은 Current Milestone과 Backlog 순서를 따릅니다.
+- [ ] **T-047 자기 점검 규칙 root 시범**
+  - 출처: 2026-10-08 T-040 평가 뒤 사용자 결정("일단 root에서 시범을 조금 더 해보자")
+  - [x] 도입: root `AGENTS.md` Communication에 바뀐 줄을 다시 읽어 수치·상태·위치·참조와 문체를 점검하는 규칙 한 줄을 넣었습니다. 통합 근거: 이 변경의 PR.
+  - [ ] 시범: 이 저장소의 다음 PR 5개에서 작성자가 규칙을 적용하고, PR 본문에 `자기 점검: 고친 것 N`과 고친 내용을 한 줄씩 남깁니다. 리뷰어가 같은 종류의 결함을 찾으면 함께 적습니다. 진행: 0/5.
+  - [ ] 평가: 다섯 PR 뒤 en·ko payload `AGENTS.md`에 넣을지 사용자와 정합니다. 넣기로 하면 release 항목을 새로 등록합니다.
 
 ## Next
 
-진행할 작업이 없습니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+T-047 시범을 다음 PR들에 적용합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -72,7 +78,7 @@
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
-- [x] **T-040 문서·주석 필터 root 시범** — 2026-10-08 평가: 시범 PR 5개(#64~#67과 이 변경)에서 채택은 대부분 문장 다듬기였고, 정확도를 높인 것은 D1 한 건과 규칙 밖의 사실·일관성 확인이었습니다. 사용자 결정으로 문체 필터를 중단하고 `docs/DOC_FILTER.md`를 지웠습니다. 대신 root `AGENTS.md` Communication에 바뀐 줄을 다시 읽어 수치·상태·위치·참조와 문체를 점검하는 규칙 한 줄을 넣었습니다. payload는 바꾸지 않습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합 근거: 이 변경의 PR.
+- [x] **T-040 문서·주석 필터 root 시범** — 2026-10-08 평가: 시범 PR 5개(#64~#67과 이 변경)에서 채택은 대부분 문장 다듬기였고, 정확도를 높인 것은 D1 한 건과 규칙 밖의 사실·일관성 확인이었습니다. 사용자 결정으로 문체 필터를 중단하고 `docs/DOC_FILTER.md`를 지웠습니다. 대신 root `AGENTS.md` Communication에 바뀐 줄을 다시 읽어 수치·상태·위치·참조와 문체를 점검하는 규칙 한 줄을 넣었습니다. payload는 바꾸지 않고, 규칙은 root에서 T-047로 더 시범합니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합 근거: 이 변경의 PR.
 - [x] **T-042 Origin 원격 branch 정리** — 2026-10-08 사용자 승인으로, `main`을 뺀 Origin 원격 branch 66개(`claude/*`·`codex/*`·`cursor/*`)를 지웠습니다. 삭제 직전에 모든 head가 `origin/main`의 조상인지 다시 확인했고, 삭제 뒤 `git ls-remote origin`에는 `refs/heads/main`만 남았습니다. 열린 PR은 없었습니다. PR 없는 원격 작업이라 이 기록은 다음 PR(이 변경)에 담았습니다.
 - [x] **T-041 native Windows published 검증** — `v2.5.0`을 사용자가 Windows 10에서 직접 검증했고(PR #66 기록), Buildkite `windows-ci`의 수동 published 검증 step(PR #66)이 실환경에서 통과했습니다. Build #112(`main` `e105412`, `v2.5.0` 변수)는 Origin check에서 success로 조회됩니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)과 [CI.md](./CI.md) §6에 있습니다.
 - [x] **T-035 release 신뢰 루트 검토** — 2026-10-08 검토: 재검토 조건(게시 권한 구조 변경, 외부 배포 요구, 표준 라이브러리만으로 검증할 경로)은 모두 충족되지 않았습니다. `v2.0.0`~`v2.5.0`의 모든 release에 GitHub release attestation이 있어 `gh release verify`로 검증했습니다. 이 서명은 GitHub가 공개 시점에 기록한 digest를 증명할 뿐 게시 계정 탈취는 막지 못합니다. 사용자 선택에 따라 root README(영·한)에 `gh release verify-asset` 선택 검증 안내와 그 한계를 추가했습니다. maintainer 독립 서명은 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기면 새 항목으로 제안합니다. 통합: PR #63.

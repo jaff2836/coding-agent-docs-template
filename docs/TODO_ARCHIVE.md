@@ -22,12 +22,12 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
   - [x] 시범 적용: PR 5개에 적용했습니다. 결과는 각 PR 본문에 있습니다.
     - #64: 후보 1, 채택 1(문장). 처음 "후보 0"으로 과소 보고했다가 정정했습니다.
     - #65: 후보 2, 채택 2(실질 1, 문장 1). 규칙 밖 1건(§4·§5 위치 오기)
-    - #66: 후보 1, 채택 1(문장). 리뷰어가 같은 줄에서 C66-A-001(상태 불일치)과 C66-A-002(파일 수 오기)를 찾았고 필터는 놓쳤습니다.
+    - #66: 후보 1, 채택 1(문장). 리뷰어가 필터로 읽은 줄 안에서 C66-A-001(`docs/02-TODO.md` 76행, 상태 불일치)과 C66-A-002(78행, 파일 수 오기)를 찾았고 필터는 놓쳤습니다.
     - #67: 후보 0. 규칙 밖 1건(보관 문서의 근거 위치)
     - 5번째(이 변경): 결과는 이 변경의 PR 본문에 있습니다.
     - #64 정정 때 다시 읽으며 Backlog 행의 상태와 설명이 어긋난 것도 찾았습니다(규칙 밖).
 
-  - [x] 평가와 결정: 2026-10-08 사용자가 문체 필터 중단을 정했습니다. 문체 규칙(D2~D7)의 채택은 대부분 표현 다듬기였고, 효과가 보인 것은 사실·일관성 확인이었습니다. 이에 따라 짧은 자기 점검 규칙을 root `AGENTS.md` Communication에 넣고 필터 문서와 연결(`AGENTS.md`, [DOCS_GUIDE.md](./DOCS_GUIDE.md) §1)을 지웠습니다. T-044·T-046은 취소했습니다. 통합 근거: T-040 평가 PR.
+  - [x] 평가와 결정: 2026-10-08 사용자가 문체 필터 중단을 정했습니다. 문체 규칙(D2~D7)의 채택은 대부분 표현 다듬기였고, 효과가 보인 것은 사실·일관성 확인이었습니다. 이에 따라 짧은 자기 점검 규칙을 root `AGENTS.md` Communication에 넣고 필터 문서와 연결(`AGENTS.md`, [DOCS_GUIDE.md](./DOCS_GUIDE.md) §1)을 지웠습니다. T-044·T-046은 취소했습니다. 사용자 결정에 따라 새 규칙은 root에서 T-047로 더 시범합니다. 통합 근거: T-040 평가 PR.
 - [x] **T-041 native Windows published 검증**
   - [x] `v2.5.0` 수동 검증: 2026-10-08 사용자가 native Windows 10(NT 10.0.19045)에서 tag source로 `published --base-version 2.4.0`을 실행했고 통과했습니다(exit 0, 동기화된 `main` `3bbf8b9`). Python 버전은 출력에 없지만, installer가 Windows에서 3.12 미만이면 중단하므로 3.12 이상으로 추론합니다.
   - [x] Buildkite 경로: 사용자 결정(2026-10-08)에 따라 `windows-ci`에 수동 build 전용 published 검증 step과 [`verify_published_release.py`](../.buildkite/verify_published_release.py)를 추가했습니다. 입력 검증 회귀는 red-green으로 확인했습니다. [CI.md](./CI.md) §6과 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §5에 절차를 적었습니다. 통합: PR #66.
