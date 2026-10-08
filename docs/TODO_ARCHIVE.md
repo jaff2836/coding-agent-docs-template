@@ -13,6 +13,10 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
 
 ## 완료 작업 상세
 
+- [x] **T-041 native Windows published 검증**
+  - [x] `v2.5.0` 수동 검증: 2026-10-08 사용자가 native Windows 10(NT 10.0.19045)에서 tag source로 `published --base-version 2.4.0`을 실행했고 통과했습니다(exit 0, 동기화된 `main` `3bbf8b9`). Python 버전은 출력에 없지만, installer가 Windows에서 3.12 미만이면 중단하므로 3.12 이상으로 추론합니다.
+  - [x] Buildkite 경로: 사용자 결정(2026-10-08)에 따라 `windows-ci`에 수동 build 전용 published 검증 step과 [`verify_published_release.py`](../.buildkite/verify_published_release.py)를 추가했습니다. 입력 검증 회귀는 red-green으로 확인했습니다. [CI.md](./CI.md) §6과 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §5에 절차를 적었습니다. 통합: PR #66.
+  - [x] Buildkite 실환경 확인: 2026-10-08 사용자가 Windows agent에 `gh` 2.101.0과 권한 없는 fine-grained `GH_TOKEN`을 두었습니다(agent `environment` hook이 SYSTEM·Administrators 전용 파일에서 읽어 job 환경에만 넣음). `windows-ci` Build #112(`main` `e105412`, `RELEASE_VERIFY_VERSION=2.5.0`, `RELEASE_VERIFY_BASE_VERSION=2.4.0`)의 published 검증 step이 exit 0으로 끝났다는 사용자 보고를 받았고, Origin check(`windows-ci` Build #112 success)로 대조했습니다. hook이 없으면 SYSTEM의 `gh auth status`가 실패한다는 것도 사용자가 확인했습니다.
 - [x] **T-039 `v2.5.0` locale release**
   - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-039 항목. D-007에 따라 준비, tag·draft candidate, 공개·published 단계를 나눕니다.
   - version 판단: `v2.5.0`(minor). installer CLI, release manifest schema, artifact inventory는 그대로이고, 적용 프로젝트가 따를 새 규범(D-015~D-017)이 들어갑니다. `v2.4.0`과 같은 성격이라 minor로 둡니다.
@@ -298,6 +302,13 @@ T-039는 2026-10-07 PR #59에서 등록한 설명입니다. T-035는 2026-09-29 
 
 - [x] **T-035 release 신뢰 루트 검토 (서명·attestation)** — installer는 같은 release의 `SHA256SUMS`·manifest로 무결성을 확인하지만 게시 계정 탈취는 막지 못하며, immutable release와 tag ruleset으로 완화합니다. 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기거나 표준 라이브러리만으로 GitHub release attestation을 검증할 경로가 확인되면 D-004 확장 설계로 재검토합니다.
 
+T-041~T-045는 2026-10-08 PR #66에서 등록한 설명입니다. T-043은 보류(TODO Blocked), T-045는 취소(TODO Cancelled)되어 체크하지 않았습니다. 보관하면서 T-041의 근거 위치만 보관 위치로 고쳤습니다.
+
+- [x] **T-041 native Windows published 검증** — `v2.3.3`·`v2.4.0`·`v2.5.0`의 published E2E를 처음에는 Linux에서만 실행했습니다(그전 마지막 native 실행은 `v2.3.1`). 2026-10-08 사용자가 Windows에서 `v2.5.0` 검증을 실행해 통과했고, 사용자 결정에 따라 이후 release의 Windows 검증은 Buildkite 수동 build로 실행합니다. 남은 일은 그 Buildkite 경로의 실환경 확인입니다(이 문서 「완료 작업 상세」의 T-041 항목).
+- [x] **T-042 Origin 원격 branch 정리** — merge가 끝난 `claude/*`·`codex/*` 원격 branch 60여 개를 정리합니다. branch 삭제는 명시 요청이 있어야 하므로 사용자 승인 뒤 merge 여부를 확인한 branch만 지웁니다.
+- [ ] **T-043 community locale 설계** — `en`·`ko` 외 locale을 추가하는 설계입니다. 기존 보류 항목(두 공식 locale 지원 검증 뒤 재검토)의 조건은 `v2.0.0`~`v2.5.0` 공개로 충족된 것으로 봅니다. locale 선택, `experimental`·`complete` 상태 정책(안정판에는 `complete`만 포함), 번역 검수자, 번역 단위를 정합니다. en source는 추적 파일 24개, Markdown 약 264k자입니다.
+- [ ] **T-045 community locale 구현** — T-043 설계에 따라 manifest·상태·검사 PR과 번역 묶음별 PR로 나눠 구현합니다. 번역마다 사람의 검수가 필요합니다.
+
 2026-09-29 분석의 root §3 검색식 allowlist 권고는 T-029에서 해소됐고, 작업 트리의 로컬 `.swp` 파일은 저장소 작업이 아니어서 등록하지 않았습니다.
 
 ## 통합된 Backlog PR 순서
@@ -329,3 +340,5 @@ T-039는 2026-10-07 PR #59에서 등록한 설명입니다. T-035는 2026-09-29 
 | 23 | `claude/t035-t040-attestation-guide-doc-filter` | T-035 README 검증 안내, T-040 필터 시범 도입 | **Integrated** — Origin PR #63 merge `b442caf`·GitHub fast-forward 확인; T-035 완료 |
 | 24 | `claude/t040-filter-scope` | T-040: 필터 대상 범위 수정(C63-B-001), 시범 1/5 | **Integrated** — Origin PR #64 merge `e4e8c2d`·GitHub fast-forward 확인 |
 | 25 | `claude/t040-filter-procedure` | T-040: 필터 절차·평가 기준 보완, 시범 2/5 | **Integrated** — Origin PR #65 merge `3bbf8b9`·GitHub fast-forward 확인 |
+| 26 | `claude/t041-windows-published-and-plan` | T-041 native Windows published 검증 기록, T-041~T-046 등록, 기록 정리 | **Integrated** — Origin PR #66 merge `e105412`·GitHub fast-forward 확인 |
+| 27 | (PR 없음) | T-042 Origin의 merge된 원격 branch 정리 | **완료** — 2026-10-08 원격 branch 66개 삭제, `main`만 남음. 기록은 28행 PR |
