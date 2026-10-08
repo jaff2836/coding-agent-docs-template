@@ -101,7 +101,9 @@ source locale 검사는 이 선언·참조·sentinel과 root 안내의 정본 �
 
 release candidate는 clean exact source commit에서 package하고 tag·manifest·draft
 asset provenance를 대조합니다. 공개 후에는 published verifier로 immutable
-asset, latest·exact 설치, export와 지원 locale 경로를 확인합니다.
+asset, latest·exact 설치, export와 지원 locale 경로를 확인합니다. published
+검증은 Linux와 native Windows에서 모두 실행하며, Windows는 Buildkite
+`windows-ci`의 수동 build로 실행합니다([CI.md](./CI.md) §6).
 
 source 변경을 적용 프로젝트에 이관할 때는 기록된 이전 revision과 새 revision을
 원본 저장소에서 비교하고 프로젝트가 의도적으로 바꾼 내용을 보존합니다.

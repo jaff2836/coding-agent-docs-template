@@ -12,3 +12,10 @@ steps:
       "%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe" scripts/check-locales.py --require-stable &&
       "%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe" -m unittest discover -s tests -v &&
       "%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe" .buildkite/t017-junction-probe.py
+
+  # Runs only on a manually created build that names a published release.
+  # See docs/CI.md section 6 for the variables and the agent's gh token.
+  - label: ":windows: published release verification"
+    if: build.env("RELEASE_VERIFY_VERSION") != null
+    command: >-
+      "%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe" .buildkite/verify_published_release.py
