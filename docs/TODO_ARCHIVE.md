@@ -363,3 +363,5 @@ T-044·T-046은 2026-10-08 PR #66에서 등록했고 같은 날 취소했습니�
 | 26 | `claude/t041-windows-published-and-plan` | T-041 native Windows published 검증 기록, T-041~T-046 등록, 기록 정리 | **Integrated** — Origin PR #66 merge `e105412`·GitHub fast-forward 확인 |
 | 27 | (PR 없음) | T-042 Origin의 merge된 원격 branch 정리 | **완료** — 2026-10-08 원격 branch 66개 삭제, `main`만 남음. 기록은 28행 PR |
 | 28 | `claude/t041-t043-records` | T-041 완료, T-042 결과, T-043 보류·T-045 취소 기록 | **Integrated** — Origin PR #67 merge `31458c0`·GitHub fast-forward 확인 |
+| 29 | `claude/t040-stop-filter-self-check` | T-040 시범 평가와 결정: 문체 필터 중단, 자기 점검 규칙 추가 | **Integrated** — Origin PR #68 merge `e9a6820`·GitHub fast-forward 확인 |
+| 30 | `claude/readme-install-restructure` | T-048 root README 설치 절 정리 | **Integrated** — Origin PR #69 merge `220188d`·GitHub fast-forward 확인 |

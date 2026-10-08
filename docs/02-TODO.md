@@ -17,7 +17,7 @@
 - **Name:** T-047 자기 점검 규칙 root 시범
 - **Goal:** root `AGENTS.md`의 자기 점검 규칙을 PR 5개에 적용해 보고 payload 반영 여부를 정함
 - **Target:** 이 저장소의 다음 PR들
-- **Status:** In Progress — 규칙 도입은 이 변경으로 통합됩니다. 2026-10-08에 승인한 순서의 나머지 작업은 끝났고, T-043은 보류(Blocked)입니다.
+- **Status:** In Progress — 규칙 도입은 PR #68로 통합됐습니다. 2026-10-08에 승인한 순서의 나머지 작업은 끝났고, T-043은 보류(Blocked)입니다.
 
 ## 운영 규칙
 
@@ -37,8 +37,8 @@
 
 - [ ] **T-047 자기 점검 규칙 root 시범**
   - 출처: 2026-10-08 T-040 평가 뒤 사용자 결정("일단 root에서 시범을 조금 더 해보자")
-  - [x] 도입: root `AGENTS.md` Communication에 바뀐 줄을 다시 읽어 수치·상태·위치·참조와 문체를 점검하는 규칙 한 줄을 넣었습니다. 통합 근거: 이 변경의 PR.
-  - [ ] 시범: 이 저장소의 다음 PR 5개에서 작성자가 규칙을 적용하고, PR 본문에 `자기 점검: 고친 것 N`과 고친 내용을 한 줄씩 남깁니다. 리뷰어가 같은 종류의 결함을 찾으면 함께 적습니다. 진행: 0/5.
+  - [x] 도입: root `AGENTS.md` Communication에 바뀐 줄을 다시 읽어 수치·상태·위치·참조와 문체를 점검하는 규칙 한 줄을 넣었습니다. 통합: PR #68.
+  - [ ] 시범: 이 저장소의 다음 PR 5개에서 작성자가 규칙을 적용하고, PR 본문에 `자기 점검: 고친 것 N`과 고친 내용을 한 줄씩 남깁니다. 리뷰어가 같은 종류의 결함을 찾으면 함께 적습니다. 진행: 2/5(PR #69: 고친 것 2, 리뷰어가 찾은 같은 종류 2. 이 변경의 PR).
   - [ ] 평가: 다섯 PR 뒤 en·ko payload `AGENTS.md`에 넣을지 사용자와 정합니다. 넣기로 하면 release 항목을 새로 등록합니다.
 
 ## Next
@@ -57,19 +57,19 @@ T-047 시범을 다음 PR들에 적용합니다. 새 작업은 사용자와 정�
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
 설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다. `v2.3.3`의 candidate 검증과 공개·published 검증은 D-007 경계에 따라 단계와 기록 PR을 분리합니다.
 
-통합된 순서 1~28의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+통합된 순서 1~30의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 29 | `claude/t040-stop-filter-self-check` | T-040 시범 평가와 결정: 문체 필터 중단, 자기 점검 규칙 추가 | **In Progress** — 이 변경의 PR. 시범 5/5 |
 | 31 | `claude/t049-t051-installer-checks-design` | T-049·T-050·T-051 설계 | **Accepted** — 2026-10-08 Q1~Q4 선택, D-018·D-019. 이 변경의 통합으로 설계 완료. [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) |
-| 32 | `claude/t049-maintainer-checks` | T-049 root 사본·README locale 표 검사 | 31 통합과 PR #69(README 표) 통합 뒤. release 불필요 |
-| 33 | `claude/t050-installer-defaults` | T-050 installer 기본 URL과 Python 3.12 하한 | 31 통합 뒤 |
+| 32 | `claude/t049-maintainer-checks` | T-049 root 사본·README locale 표 검사 | 31 통합 뒤(README 표는 PR #69로 통합됨). release 불필요 |
+| 33 | `claude/t050-installer-defaults` | T-050 installer 기본 URL과 Python 3.12 하한, T-052 Completed 안내문 | 31 통합 뒤 |
 | 34 | `claude/v3.0.0-release-prep` 등 | T-051 `v3.0.0` release | 33 통합 뒤. 공개 뒤 기록 PR에서 root README 명령을 바꿈 |
 
-- [ ] **T-049 maintainer 정합 검사** — root `scripts/check-docs.py`(무인자 maintainer 실행)에 root `REVIEW.md`·`REVIEW_ROUND.md`·`BUGBOT.md`와 ko 원본의 동기화 검사(프로젝트 소유 절만 차이 허용)와 root README locale 표·manifest 대조를 넣습니다. 설계: [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) R-004·R-005(D-019).
+- [ ] **T-049 maintainer 정합 검사** — root `scripts/check-docs.py`(무인자 maintainer 실행)에 root `REVIEW.md`·`REVIEW_ROUND.md`·`BUGBOT.md`와 ko 원본의 동기화 검사(프로젝트 소유 절만 차이 허용)와 root README locale 표가 manifest의 `complete` locale 안에 있는지 확인하는 검사를 넣습니다. 설계: [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) R-004·R-005(D-019).
 - [ ] **T-050 installer 기본값과 Python 하한** — `--release-url` 기본값을 공식 release root로 두고, 모든 OS에서 Python 3.12 이상을 요구합니다. en·ko 적용 가이드·manifest `required_commands`·root `AGENTS.md`의 installer 명령에서 `--release-url`을 뺍니다. 설계: [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) R-001~R-003(D-018).
 - [ ] **T-051 `v3.0.0` release** — T-050의 installer·payload 변경을 major release로 D-007 단계에 따라 공개합니다. Linux·macOS의 Python 3.11 이하 사용자에게 이전 installer 대안을 안내합니다. 공개 뒤 기록 PR에서 root README 명령의 `--release-url`을 빼고 Prerequisites를 고칩니다.
+- [ ] **T-052 Completed 안내문을 D-013에 맞춤** — root·en·ko `docs/02-TODO.md`의 Completed 안내문이 "PR이 있으면 실제 병합 결과를 확인"이라는 D-013 이전 문구로 남아, 결합 서술을 허용하는 운영 규칙과 충돌합니다. PR #69 리뷰에서 이 문구를 근거로 결합 서술을 위반으로 본 finding이 나왔습니다(무효 판정). D-013 구현(#56) 때 놓친 문장입니다. payload 문장이라 T-050 구현 PR에 함께 넣어 T-051(`v3.0.0`)로 공개합니다.
 
 ## Cancelled
 
@@ -85,7 +85,8 @@ T-047 시범을 다음 PR들에 적용합니다. 새 작업은 사용자와 정�
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
-- [x] **T-040 문서·주석 필터 root 시범** — 2026-10-08 평가: 시범 PR 5개(#64~#67과 이 변경)에서 채택은 대부분 문장 다듬기였고, 정확도를 높인 것은 D1 한 건과 규칙 밖의 사실·일관성 확인이었습니다. 사용자 결정으로 문체 필터를 중단하고 `docs/DOC_FILTER.md`를 지웠습니다. 대신 root `AGENTS.md` Communication에 바뀐 줄을 다시 읽어 수치·상태·위치·참조와 문체를 점검하는 규칙 한 줄을 넣었습니다. payload는 바꾸지 않고, 규칙은 root에서 T-047로 더 시범합니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합 근거: 이 변경의 PR.
+- [x] **T-048 root README 설치 절 정리** — 2026-10-08 사용자 요청으로 root `README.md`·`README.ko.md`를 더 형식적이고 짧게 고쳤습니다. 설치 절은 사전 요구사항, 다운로드, 선택 확인(지원 locale 표, `list-locales`, attestation), 적용(선택 A `adopt`, B `install`, C `export`) 순서이고, installer 명령의 Windows 블록은 `python`·Windows 경로 안내 한 줄로 합쳤습니다. root README는 artifact가 아니어서 release가 필요 없습니다. 통합: PR #69.
+- [x] **T-040 문서·주석 필터 root 시범** — 2026-10-08 평가: 시범 PR 5개(#64~#68)에서 채택은 대부분 문장 다듬기였고, 정확도를 높인 것은 D1 한 건과 규칙 밖의 사실·일관성 확인이었습니다. 사용자 결정으로 문체 필터를 중단하고 `docs/DOC_FILTER.md`를 지웠습니다. 대신 root `AGENTS.md` Communication에 바뀐 줄을 다시 읽어 수치·상태·위치·참조와 문체를 점검하는 규칙 한 줄을 넣었습니다. payload는 바꾸지 않고, 규칙은 root에서 T-047로 더 시범합니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합: PR #68.
 - [x] **T-042 Origin 원격 branch 정리** — 2026-10-08 사용자 승인으로, `main`을 뺀 Origin 원격 branch 66개(`claude/*`·`codex/*`·`cursor/*`)를 지웠습니다. 삭제 직전에 모든 head가 `origin/main`의 조상인지 다시 확인했고, 삭제 뒤 `git ls-remote origin`에는 `refs/heads/main`만 남았습니다. 열린 PR은 없었습니다. PR 없는 원격 작업이라 이 기록은 다음 PR(이 변경)에 담았습니다.
 - [x] **T-041 native Windows published 검증** — `v2.5.0`을 사용자가 Windows 10에서 직접 검증했고(PR #66 기록), Buildkite `windows-ci`의 수동 published 검증 step(PR #66)이 실환경에서 통과했습니다. Build #112(`main` `e105412`, `v2.5.0` 변수)는 Origin check에서 success로 조회됩니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)과 [CI.md](./CI.md) §6에 있습니다.
 - [x] **T-035 release 신뢰 루트 검토** — 2026-10-08 검토: 재검토 조건(게시 권한 구조 변경, 외부 배포 요구, 표준 라이브러리만으로 검증할 경로)은 모두 충족되지 않았습니다. `v2.0.0`~`v2.5.0`의 모든 release에 GitHub release attestation이 있어 `gh release verify`로 검증했습니다. 이 서명은 GitHub가 공개 시점에 기록한 digest를 증명할 뿐 게시 계정 탈취는 막지 못합니다. 사용자 선택에 따라 root README(영·한)에 `gh release verify-asset` 선택 검증 안내와 그 한계를 추가했습니다. maintainer 독립 서명은 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기면 새 항목으로 제안합니다. 통합: PR #63.

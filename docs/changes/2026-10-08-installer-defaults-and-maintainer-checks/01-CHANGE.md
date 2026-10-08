@@ -8,7 +8,7 @@
 - **Source:** 2026-10-08 사용자가 프로젝트 구조·설치 개선안을 물었고, 제안한 다섯 가지 가운데 1(installer `--release-url` 기본값), 2(root 사본 동기화 검사), 3(Python 하한 통일)을 적용하는 구조를 설계하고 4(README locale 표와 manifest 대조)는 check-docs 쪽에 넣으라고 지시했습니다.
 - **Parent:** [GitHub Releases 공개 배포 SPEC](../2026-09-18-github-releases-publication/02-SPEC.md) §3.1(D-004), [T-017 경계 설계](../2026-09-23-windows-junction-boundary/01-CHANGE.md)(D-011의 Windows Python 3.12 하한), [문서 소유권 설계](../2026-09-22-documentation-ownership/01-CHANGE.md)(D-009의 root addendum)
 - **Decision:** PROJECT §8의 D-018(T-050 installer: A1·B2·C2)과 D-019(T-049 maintainer 검사: D1)
-- **Approval:** Chae Sangwon, 2026-10-08 선택 응답 — PR #70 version 1 head `3355cb5bbc797461236a28c45fc39e1512f00341`의 Q1 "installer source 상수", Q2 "locale guide와 계약까지", Q3 "v3.0.0", Q4 "heading으로 찾기". 나머지 요구사항과 설계는 같은 version에 권고안으로 함께 제시됐고, Q2·Q3 선택에 맞춰 R-003, §1.3, §2.3, §2.5, §2.6을 고쳤습니다.
+- **Approval:** Chae Sangwon, 2026-10-08 선택 응답 — PR #70 version 1 head `3355cb5bbc797461236a28c45fc39e1512f00341`의 Q1 "installer source 상수", Q2 "locale guide와 계약까지", Q3 "v3.0.0", Q4 "heading으로 찾기". 나머지 요구사항과 설계는 같은 version에 권고안으로 함께 제시됐고, Q2·Q3 선택에 맞춰 R-003, §1.3, §2.3, §2.5, §2.6을 고쳤습니다. 리뷰 C70-B-001(=C70-A-001)에 따라 R-005를 부분집합 검사와 공개 기록 절차로 바꿨고, 사용자가 2026-10-08 "70은 1안으로"로 승인했습니다.
 - **Execution:** [전역 TODO](../../02-TODO.md)의 T-049(maintainer 정합 검사), T-050(installer 기본값과 Python 하한), T-051(`v3.0.0` release)
 
 ## 1. Intent
@@ -36,7 +36,7 @@
 - 공식 release를 쓰는 사용자는 `--release-url` 없이 installer를 실행할 수 있습니다. 다른 저장소의 release를 쓰려면 지금처럼 명시합니다.
 - root 사본과 ko 원본이 프로젝트 소유 절 밖에서 다르면 문서 검사가 실패합니다.
 - installer가 모든 OS에서 Python 3.12 이상을 요구하고, 그보다 낮으면 release·대상에 접근하기 전에 멈춥니다.
-- README locale 표가 manifest의 `complete` locale과 다르면 문서 검사가 실패합니다.
+- README locale 표에 manifest의 `complete` locale이 아닌 tag나 다른 상태가 있으면 문서 검사가 실패합니다.
 
 ### 1.3 범위와 비범위
 
@@ -92,10 +92,11 @@
   - 상황: root `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `.cursor/BUGBOT.md` 가운데 하나가 `locales/ko/`의 같은 파일과 프로젝트 소유 절 밖에서 다름
   - 결과: 파일과 처음 다른 줄을 보고하며 실패합니다. 프로젝트 소유 절은 REVIEW §6과 §9 표의 행, REVIEW_ROUND §2.1 리뷰어 표의 행, BUGBOT의 불변조건 절과 결정·deferral 절입니다. 그 안의 차이는 허용합니다.
   - 검증: 소유 절 밖 차이를 넣으면 실패, 안의 차이는 통과하는 회귀 테스트와 red-green. 현재 저장소에서는 통과해야 합니다.
-- **R-005 README locale 표**
-  - 상황: root `README.md` 또는 `README.ko.md`의 locale 표(첫 열 머리글 `Locale`)가 manifest의 `complete` locale 목록이나 상태와 다름
-  - 결과: 파일과 차이를 보고하며 실패합니다. 언어 이름 열은 비교하지 않습니다.
-  - 검증: 표에서 locale을 빼거나 상태를 바꾸면 실패하는 회귀 테스트와 red-green
+- **R-005 README locale 표 (리뷰 C70-B-001로 변경)**
+  - 상황: root `README.md` 또는 `README.ko.md`의 locale 표(첫 열 머리글 `Locale`)에 manifest의 `complete` locale이 아닌 tag가 있거나, 상태 열이 `complete`가 아님
+  - 결과: 파일과 차이를 보고하며 실패합니다. 표는 공개된 release를 설명하므로, source manifest에만 있고 아직 공개되지 않은 `complete` locale이 표에 없어도 실패하지 않습니다(부분집합 검사). 새 locale은 그 release의 공개 기록 PR에서 표에 추가하며, 이 단계를 root [TEMPLATE_GUIDE.md](../../TEMPLATE_GUIDE.md) §5의 release 절차에 적습니다. 언어 이름 열은 비교하지 않습니다.
+  - 한계: 공개 뒤 표 갱신을 잊으면 검사가 잡지 못하고 release 절차에 맡깁니다.
+  - 검증: 표에 manifest에 없는 tag를 넣거나 상태를 바꾸면 실패하고, manifest에만 있는 `complete` locale은 통과하는 회귀 테스트와 red-green
 
 **공통**
 
@@ -128,11 +129,11 @@
 
 **root `scripts/check-docs.py`**
 - `check_root_copies()`: 세 파일 쌍을 줄 단위로 비교하기 전에 양쪽에서 프로젝트 소유 절을 지웁니다. 소유 절은 ko heading으로 찾고, heading을 찾지 못하면 실패합니다.
-- `check_readme_locale_table()`: 두 README에서 첫 열 머리글이 `Locale`인 표를 읽고, `check_locales.complete_locales()`와 상태를 대조합니다.
+- `check_readme_locale_table()`: `scripts/check_locales.py`에 검증된 manifest를 돌려주는 공개 함수(기존 `_read_manifest`와 `_validate_manifest_schema`를 사용)를 두고, 그 결과를 `complete_locales(manifest)`에 넘깁니다. manifest를 읽거나 검증하지 못하면 그 오류를 보고하고 표는 대조하지 않습니다. 두 README에서 첫 열 머리글이 `Locale`인 표를 읽어, 각 tag가 반환된 목록에 있고 상태 열이 `complete`인지 확인합니다(R-005, 부분집합).
 - 두 검사는 인자 없는 maintainer 실행에서만 돕니다. `--root`로 artifact를 검사할 때는 실행하지 않습니다.
 
 **문서**
-- T-049 PR: root [TEMPLATE_GUIDE.md](../../TEMPLATE_GUIDE.md) §3(무인자 maintainer 검사 설명)과 root `DOCS_GUIDE.md`의 점검 목록
+- T-049 PR: root [TEMPLATE_GUIDE.md](../../TEMPLATE_GUIDE.md) §3(무인자 maintainer 검사 설명)과 §5(공개 기록 PR에서 README locale 표 갱신), root `DOCS_GUIDE.md`의 점검 목록
 - T-050 PR: [en](../../../locales/en/docs/TEMPLATE_GUIDE.md)·[ko](../../../locales/ko/docs/TEMPLATE_GUIDE.md) 적용 가이드 §2(Python 하한)와 PROJECT External Boundaries
 - T-050 PR: en·ko 적용 가이드의 installer 명령과 manifest `required_commands`, root `AGENTS.md` Commands에서 `--release-url` 제거
 - 기록 PR(공개 뒤): root README 명령에서 `--release-url`을 빼고 Prerequisites를 "Python 3.12 이상"으로 바꿉니다.
@@ -163,3 +164,4 @@
 
 - 2026-10-08: 사용자 지시에 따라 초안을 작성했습니다.
 - 2026-10-08: PR #70 version 1(`3355cb5`)에 대한 Q1~Q4 선택을 반영해 `Accepted`로 바꿨습니다. Q2는 B2, Q3는 C2를 골라 R-003, §1.3, §2.3, §2.5, §2.6을 고쳤습니다.
+- 2026-10-08: PR #70 version 2 리뷰의 C70-B-001(=C70-A-001, P2)에 따라 R-005를 공개 release 기준에 맞춰 부분집합 검사로 바꾸고 새 locale의 표 갱신을 공개 기록 절차에 넣었습니다(사용자 승인 "70은 1안으로"). C70-B-002(=C70-A-002, P2)에 따라 §2.3에 검증된 manifest를 `complete_locales(manifest)`에 넘기는 흐름을 적었습니다.
