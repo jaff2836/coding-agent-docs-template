@@ -63,7 +63,7 @@ T-047 시범을 다음 PR들에 적용합니다. 새 작업은 사용자와 정�
 | --- | --- | --- | --- |
 | 30 | `claude/readme-install-restructure` | T-048 root README 설치 절 정리 | **In Progress** — 이 변경의 PR. T-047 시범 1/5 |
 
-- [ ] **T-052 Completed 안내문을 D-013에 맞춤** — root·en·ko `docs/02-TODO.md`의 Completed 안내문이 "PR이 있으면 실제 병합 결과를 확인"이라는 D-013 이전 문구로 남아, 결합 서술을 허용하는 운영 규칙과 충돌합니다. PR #69 리뷰에서 이 문구를 근거로 결합 서술을 위반으로 본 finding이 나왔습니다(무효 판정). D-013 구현(#56) 때 놓친 문장이므로 payload를 고치는 다음 release(T-050·T-051)에 함께 넣습니다.
+- [ ] **T-052 Completed 안내문을 D-013에 맞춤** — root·en·ko `docs/02-TODO.md`의 Completed 안내문이 "PR이 있으면 실제 병합 결과를 확인"이라는 D-013 이전 문구로 남아, 결합 서술을 허용하는 운영 규칙과 충돌합니다. PR #69 리뷰에서 이 문구를 근거로 결합 서술을 위반으로 본 finding이 나왔습니다(무효 판정). D-013 구현(#56) 때 놓친 문장입니다. payload 문장이므로 payload를 고치는 다음 release에 함께 넣습니다.
 
 ## Cancelled
 
