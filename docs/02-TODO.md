@@ -14,10 +14,10 @@
 
 ## Current Milestone
 
-- **Name:** 남은 작업 순차 진행 (T-041 → T-042 → T-043 → T-040 평가 → T-044 → T-045 → T-046)
-- **Goal:** 2026-10-08 사용자가 승인한 권장 순서대로 남은 작업을 PR 단위로 끝냄
-- **Target:** 아래 Backlog 26~32행
-- **Status:** In Progress — T-041(이 변경의 PR)부터 시작했습니다. T-040 시범은 이 변경의 PR까지 3/5입니다.
+- **Name:** 남은 작업 순차 진행 (T-040 평가 → T-044 → T-046)
+- **Goal:** 2026-10-08 사용자가 승인한 순서대로 남은 작업을 PR 단위로 끝냄
+- **Target:** 아래 Backlog 29·30·32행
+- **Status:** In Progress — T-041·T-042는 끝났고, T-043은 보류, T-045는 취소했습니다. T-040 시범은 이 변경의 PR까지 4/5입니다.
 
 ## 운영 규칙
 
@@ -35,54 +35,48 @@
 
 ## In Progress
 
-- [ ] **T-041 native Windows published 검증**
-  - [x] `v2.5.0` 수동 검증: 2026-10-08 사용자가 native Windows 10(NT 10.0.19045)에서 tag source로 `published --base-version 2.4.0`을 실행했고 통과했습니다(exit 0, 동기화된 `main` `3bbf8b9`). Python 버전은 출력에 없지만, installer가 Windows에서 3.12 미만이면 중단하므로 3.12 이상으로 추론합니다.
-  - [x] Buildkite 경로: 사용자 결정(2026-10-08)에 따라 `windows-ci`에 수동 build 전용 published 검증 step과 [`verify_published_release.py`](../.buildkite/verify_published_release.py)를 추가했습니다. 입력 검증 회귀는 red-green으로 확인했습니다. [CI.md](./CI.md) §6과 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §5에 절차를 적었습니다. 통합 근거: 이 변경의 PR.
-  - [ ] Buildkite 실환경 확인: 통합 뒤 사용자가 Windows agent에 `gh`와 읽기 전용 `GH_TOKEN`을 두고, `v2.5.0` 변수로 수동 build를 만들어 step 통과를 확인합니다.
 - [ ] **T-040 문서·주석 필터 root 시범**
   - 출처: 2026-10-07 외부 자료 분석(anti-slop)과 2026-10-08 사용자 선택. 방향은 root 시범이고 대상은 추적 문서와 코드 주석입니다. 채팅 보고·PR 본문·리뷰 prose는 대상이 아닙니다.
   - 측정 근거: 2026-10-08 추적 문서(ko 116k자, en 210k자, root 171k자)에서 상투 표현 패턴 검사에서 걸린 것은 `다음과 같습니다` 4회(ko·root)와 `ensure` 12회(en)였고(함께 걸린 일반 서술 `할 수 있습니다` 33회는 상투 표현으로 보지 않음) 코드 주석의 장식 구분선·단계 나레이션은 0건이었습니다. `—`와 굵게 표시는 이 저장소의 관례라 필터 대상에서 뺐습니다.
   - [x] 도입: root [문서·주석 필터](./DOC_FILTER.md)(문서 규칙 D1~D7, 주석 규칙 C1~C6, 적용 절차, 평가 기준)를 추가하고 root `AGENTS.md`·[DOCS_GUIDE.md](./DOCS_GUIDE.md) §1에 연결했습니다. locale artifact는 바꾸지 않습니다. 통합: PR #63.
   - [x] PR #63 인계 C63-B-001(Codex, P3): 필터 대상이 `docs/`·`locales/`·`template/`·root README·CHANGELOG로 열거돼 root `AGENTS.md`·`CLAUDE.md`·스킬·`.cursor/BUGBOT.md`·`.omp/WATCHDOG.md`가 빠졌습니다. 대상을 추적 Markdown 전체(`git ls-files '*.md'`)로 고쳤습니다. 통합: PR #64.
   - [x] 시범 1/5 결과 정정과 절차 보완: PR #64의 "후보 0"은 패턴 검색 0건을 줄 단위로 읽은 결과처럼 적은 과소 보고였습니다. 다시 읽으니 후보 1건(D6)이 있었습니다. [문서·주석 필터](./DOC_FILTER.md) §4에 줄 단위 읽기, 방법 기록, 실질·문장 채택 구분을, §5에 측정할 수 있는 이관 기준과 조기 중단 조건을 넣었고, §1의 보관 문서 제외 범위를 좁혔습니다. 통합: PR #65.
-  - [ ] 시범 적용: 추적 문서나 코드 주석을 바꾸는 이 저장소 PR 5개에서 작성자가 필터를 적용하고 결과를 PR 본문에 남깁니다. 진행: 3/5(PR #64, PR #65, 이 변경의 PR).
+  - [ ] 시범 적용: 추적 문서나 코드 주석을 바꾸는 이 저장소 PR 5개에서 작성자가 필터를 적용하고 결과를 PR 본문에 남깁니다. 진행: 4/5(PR #64, PR #65, PR #66, 이 변경의 PR).
   - [ ] 평가와 결정: 다섯 PR의 채택·오탐으로 중단, 규칙 조정, payload 이관 설계 중 하나를 사용자와 정합니다.
 
 ## Next
 
-T-040 시범을 다음 PR들에 적용합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+T-040 시범 평가(5/5)를 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
-없음.
+- [ ] **T-043 community locale 설계 (보류)** — 2026-10-08 사용자 결정으로 보류합니다.
+  - 보류 이유: 지금 계약에서는 manifest의 모든 locale이 `en`과 구조 parity를 유지해야 합니다(`check_locales.py`의 `_check_structural_parity`, `experimental` 포함). locale을 하나 추가하면 이후 payload PR마다 그 locale에도 구조 변경을 반영해야 합니다. 또 `stale`·`baseline_version`은 manifest 기준 판 `1.7.1`(v1 이관 시점)에 묶여 있어 현재 release와 번역 사이의 차이를 표현하지 못합니다.
+  - 재개 조건: 실제 수요가 생기거나 사용자가 다시 정하는 경우입니다. 후보 locale은 중국어(`zh-Hans`)와 일본어(`ja`)이고, 번역 검수는 사용자 본인이 할 수 있습니다. 다시 시작하면 먼저 상태 장치를 고칠지(뒤처진 locale을 parity에서 빼고 현재 release 기준으로 `stale`을 표시) 정한 뒤 locale을 추가합니다.
+  - 등록 당시 설명은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
 ## Backlog
 
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
 설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다. `v2.3.3`의 candidate 검증과 공개·published 검증은 D-007 경계에 따라 단계와 기록 PR을 분리합니다.
 
-통합된 순서 1~25의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+통합된 순서 1~27의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 26 | `claude/t041-windows-published-and-plan` | T-041 native Windows published 검증 기록, T-041~T-046 등록, 기록 정리 | **In Progress** — 상세는 In Progress 항목. 시범 3/5 |
-| 27 | (PR 없음) | T-042 Origin의 merge된 원격 branch 정리 | 사용자의 명시 승인 뒤 원격에서 삭제. 결과는 다음 PR의 TODO에 기록 |
-| 28 | `claude/t043-community-locale-design` | T-043 community locale 설계 | 26 뒤. locale·상태·검수자·번역 단위를 사용자와 정함. 시범 4/5 |
-| 29 | `claude/t040-filter-evaluation` | T-040 시범 평가와 결정 | 28 뒤. 시범 5/5 |
+| 28 | `claude/t041-t043-records` | T-041 완료, T-042 결과, T-043 보류·T-045 취소 기록 | **In Progress** — 이 변경의 PR. 시범 4/5 |
+| 29 | `claude/t040-filter-evaluation` | T-040 시범 평가와 결정 | 28 통합 뒤. 시범 5/5 |
 | 30 | `claude/t044-doc-filter-payload-*` | T-044 문서 필터 payload 이관(설계·구현) | 29에서 이관을 정했을 때만 |
-| 31 | `claude/t045-community-locale-*` | T-045 community locale 구현 | 28 Accepted와 29 뒤. 계약·검사 PR과 번역 묶음별 PR로 나눔 |
-| 32 | `claude/v2.6.0-release-prep` 등 | T-046 `v2.6.0` release | 30·31 통합 뒤. payload 변경이 없으면 생략 |
+| 32 | `claude/v2.6.0-release-prep` 등 | T-046 `v2.6.0` release | 30 통합 뒤. payload 변경이 없으면 생략 |
 
-- [ ] **T-041 native Windows published 검증** — `v2.3.3`·`v2.4.0`·`v2.5.0`의 published E2E를 처음에는 Linux에서만 실행했습니다(그전 마지막 native 실행은 `v2.3.1`). 2026-10-08 사용자가 Windows에서 `v2.5.0` 검증을 실행해 통과했고, 사용자 결정에 따라 이후 release의 Windows 검증은 Buildkite 수동 build로 실행합니다. 남은 일은 그 Buildkite 경로의 실환경 확인입니다(In Progress 항목).
-- [ ] **T-042 Origin 원격 branch 정리** — merge가 끝난 `claude/*`·`codex/*` 원격 branch 60여 개를 정리합니다. branch 삭제는 명시 요청이 있어야 하므로 사용자 승인 뒤 merge 여부를 확인한 branch만 지웁니다.
-- [ ] **T-043 community locale 설계** — `en`·`ko` 외 locale을 추가하는 설계입니다. 기존 보류 항목(두 공식 locale 지원 검증 뒤 재검토)의 조건은 `v2.0.0`~`v2.5.0` 공개로 충족된 것으로 봅니다. locale 선택, `experimental`·`complete` 상태 정책(안정판에는 `complete`만 포함), 번역 검수자, 번역 단위를 정합니다. en source는 추적 파일 24개, Markdown 약 264k자입니다.
 - [ ] **T-044 문서 필터 payload 이관 (조건부)** — T-040 평가에서 이관을 정하면 en·ko 문서 필터의 설계와 구현을 진행합니다.
-- [ ] **T-045 community locale 구현** — T-043 설계에 따라 manifest·상태·검사 PR과 번역 묶음별 PR로 나눠 구현합니다. 번역마다 사람의 검수가 필요합니다.
-- [ ] **T-046 `v2.6.0` release** — T-044·T-045의 payload 변경을 D-007 단계로 공개합니다. 바뀐 payload가 없으면 생략합니다.
+- [ ] **T-046 `v2.6.0` release** — T-044의 payload 변경을 D-007 단계로 공개합니다(T-045는 취소). 바뀐 payload가 없으면 생략합니다.
 
 ## Cancelled
 
 취소한 변경만 둡니다. 변경-ID, 취소 이유, Intent/Spec의 `Rejected` 근거, 유지 중인 변경 폴더 경로를 남깁니다. 완료·진행 항목과 섞지 않으며 폴더는 삭제하지 않습니다.
+
+- **T-045 community locale 구현** — 2026-10-08 취소. 선행 설계 T-043을 보류해 구현할 계약이 없습니다. 변경 폴더는 만들지 않았습니다. T-043을 다시 시작하면 그 설계에서 구현 항목을 새로 등록합니다.
 
 ## Completed
 
@@ -90,6 +84,8 @@ T-040 시범을 다음 PR들에 적용합니다. 새 작업은 사용자와 정�
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
+- [x] **T-042 Origin 원격 branch 정리** — 2026-10-08 사용자 승인으로, `main`을 뺀 Origin 원격 branch 66개(`claude/*`·`codex/*`·`cursor/*`)를 지웠습니다. 삭제 직전에 모든 head가 `origin/main`의 조상인지 다시 확인했고, 삭제 뒤 `git ls-remote origin`에는 `refs/heads/main`만 남았습니다. 열린 PR은 없었습니다. PR 없는 원격 작업이라 이 기록은 다음 PR(이 변경)에 담았습니다.
+- [x] **T-041 native Windows published 검증** — `v2.5.0`을 사용자가 Windows 10에서 직접 검증했고(PR #66 기록), Buildkite `windows-ci`의 수동 published 검증 step(PR #66)이 실환경에서 통과했습니다. Build #112(`main` `e105412`, `v2.5.0` 변수)는 Origin check에서 success로 조회됩니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)과 [CI.md](./CI.md) §6에 있습니다.
 - [x] **T-035 release 신뢰 루트 검토** — 2026-10-08 검토: 재검토 조건(게시 권한 구조 변경, 외부 배포 요구, 표준 라이브러리만으로 검증할 경로)은 모두 충족되지 않았습니다. `v2.0.0`~`v2.5.0`의 모든 release에 GitHub release attestation이 있어 `gh release verify`로 검증했습니다. 이 서명은 GitHub가 공개 시점에 기록한 digest를 증명할 뿐 게시 계정 탈취는 막지 못합니다. 사용자 선택에 따라 root README(영·한)에 `gh release verify-asset` 선택 검증 안내와 그 한계를 추가했습니다. maintainer 독립 서명은 게시 권한 구조가 바뀌거나 외부 배포 요구가 생기면 새 항목으로 제안합니다. 통합: PR #63.
 - [x] **T-039 `v2.5.0` locale release** — 준비는 PR #61로 통합됐습니다. 2026-10-07 사용자가 exact source `6d04b97`에 annotated tag와 draft를 만들어 immutable Latest로 공개했고, candidate와 published(`--base-version 2.4.0`) 검증이 통과했습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 - [x] **T-036·T-037·T-038 보고·검증 규범 구현** — D-015~D-017을 en·ko locale과 root 사본의 `AGENTS.md`(보고 형식, 기본값 명시, 지시의 출처, 완료 근거, red-green), `docs/REVIEW.md` §5, `docs/REVIEW_ROUND.md` §1·§4~§7(위임 경계, 원본 재조회, 원장 `확인` 열), `.cursor/BUGBOT.md`에 반영했습니다. PR #59의 인계 C59-B-001(Codex, P3)도 [완료 작업 보관](./TODO_ARCHIVE.md)에서 해소했습니다. 통합: PR #60. R-002의 요청 안내는 T-039 준비에서 보완했습니다(C60-B-001). 공개는 T-039입니다.
