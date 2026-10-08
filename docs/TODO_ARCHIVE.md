@@ -327,3 +327,4 @@ T-039는 2026-10-07 PR #59에서 등록한 설명입니다. T-035는 2026-09-29 
 | 21 | `claude/t036-t038-reporting-verification` | T-036·T-037·T-038: 승인 계약 구현 | **Integrated** — Origin PR #60 merge `e2aca32`·GitHub fast-forward 확인 |
 | 22 | `claude/v2.5.0-release-prep` | T-039: `v2.5.0` locale release | **Integrated·Published** — 준비 Origin PR #61 merge `6d04b97`·GitHub fast-forward 확인; 2026-10-07 annotated tag·immutable Latest 공개, candidate·published(`--base-version 2.4.0`) 통과 |
 | 23 | `claude/t035-t040-attestation-guide-doc-filter` | T-035 README 검증 안내, T-040 필터 시범 도입 | **Integrated** — Origin PR #63 merge `b442caf`·GitHub fast-forward 확인; T-035 완료 |
+| 24 | `claude/t040-filter-scope` | T-040: 필터 대상 범위 수정(C63-B-001), 시범 1/5 | **Integrated** — Origin PR #64 merge `e4e8c2d`·GitHub fast-forward 확인 |
