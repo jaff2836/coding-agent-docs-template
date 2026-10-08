@@ -3,13 +3,13 @@
 ## Metadata
 
 - **Change ID:** `2026-10-08-installer-defaults-and-maintainer-checks`
-- **Status:** Draft
+- **Status:** Accepted
 - **Originator:** Chae Sangwon
 - **Source:** 2026-10-08 사용자가 프로젝트 구조·설치 개선안을 물었고, 제안한 다섯 가지 가운데 1(installer `--release-url` 기본값), 2(root 사본 동기화 검사), 3(Python 하한 통일)을 적용하는 구조를 설계하고 4(README locale 표와 manifest 대조)는 check-docs 쪽에 넣으라고 지시했습니다.
 - **Parent:** [GitHub Releases 공개 배포 SPEC](../2026-09-18-github-releases-publication/02-SPEC.md) §3.1(D-004), [T-017 경계 설계](../2026-09-23-windows-junction-boundary/01-CHANGE.md)(D-011의 Windows Python 3.12 하한), [문서 소유권 설계](../2026-09-22-documentation-ownership/01-CHANGE.md)(D-009의 root addendum)
-- **Decision:** 합의 뒤 PROJECT §8에 등재합니다.
-- **Approval:** 미합의. §1.5의 질문에 대한 사용자 선택을 기다립니다.
-- **Execution:** [전역 TODO](../../02-TODO.md)의 T-049(maintainer 정합 검사), T-050(installer 기본값과 Python 하한), T-051(`v2.6.0` release)
+- **Decision:** PROJECT §8의 D-018(T-050 installer: A1·B2·C2)과 D-019(T-049 maintainer 검사: D1)
+- **Approval:** Chae Sangwon, 2026-10-08 선택 응답 — PR #70 version 1 head `3355cb5bbc797461236a28c45fc39e1512f00341`의 Q1 "installer source 상수", Q2 "locale guide와 계약까지", Q3 "v3.0.0", Q4 "heading으로 찾기". 나머지 요구사항과 설계는 같은 version에 권고안으로 함께 제시됐고, Q2·Q3 선택에 맞춰 R-003, §1.3, §2.3, §2.5, §2.6을 고쳤습니다.
+- **Execution:** [전역 TODO](../../02-TODO.md)의 T-049(maintainer 정합 검사), T-050(installer 기본값과 Python 하한), T-051(`v3.0.0` release)
 
 ## 1. Intent
 
@@ -42,13 +42,13 @@
 
 **범위:**
 - `scripts/installer.py`: `--release-url` 기본값, 모든 OS의 Python 3.12 하한, 관련 테스트
+- en·ko 적용 가이드와 manifest `required_commands`, root `AGENTS.md` Commands의 installer 명령에서 `--release-url` 제거
 - root `scripts/check-docs.py`: root 사본 동기화 검사, README locale 표 검사, 관련 테스트
 - en·ko `docs/TEMPLATE_GUIDE.md`의 Python 하한 문장, PROJECT External Boundaries, release 문서
 - release 공개 뒤 root README의 설치 명령
 
 **비범위:**
 - payload `template/common/scripts/check-docs.py`. 적용 프로젝트에는 manifest와 root 사본이 없습니다.
-- locale guide·`AGENTS.md`·manifest `required_commands`의 installer 명령. 명시적인 `--release-url`은 기본값이 생겨도 유효합니다.
 - maintainer 도구(packager, verifier, exporter)의 Python 하한. 이 도구들은 CI에서 3.12·3.13으로 돕니다.
 - 기존 release의 installer와 그 지원 범위
 
@@ -58,11 +58,14 @@
 - **D-004:** release root, exact tag 검증, redirect 경계는 그대로 둡니다. 기본값도 명시한 값과 같은 검증을 거칩니다.
 - **공통:** 새 의존성이나 CI 제품을 추가하지 않습니다. en·ko 구조 parity와 기존 검사를 통과해야 합니다.
 
-### 1.5 합의할 질문
+### 1.5 합의한 선택
+
+2026-10-08 사용자가 Q1·Q4는 권고안을, Q2는 B2, Q3는 C2를 골랐습니다. 비교한 대안은 §2.2에 근거로 남깁니다.
+
 
 1. **Q1 — 기본 release URL을 어디서 정할지:** 권고는 installer source의 상수(A1)입니다(§2.2).
-2. **Q2 — 명령 문서를 어디까지 바꿀지:** 권고는 공개 뒤 root README만 바꾸는 것(B1)입니다. locale guide와 `required_commands`는 그대로 둡니다.
-3. **Q3 — release version:** 권고는 호환성 안내를 붙인 `v2.6.0`(C1)입니다. Linux·macOS의 Python 3.12 미만 사용자에게는 이전 installer로 정확한 version을 쓰는 대안을 안내합니다.
+2. **Q2 — 명령 문서를 어디까지 바꿀지:** 권고는 공개 뒤 root README만 바꾸는 B1이었고, 사용자는 locale guide와 명령 계약까지 바꾸는 B2를 골랐습니다.
+3. **Q3 — release version:** 권고는 호환성 안내를 붙인 `v2.6.0`(C1)이었고, 사용자는 `v3.0.0`(C2)을 골랐습니다. Linux·macOS의 Python 3.12 미만 사용자에게는 이전 installer로 정확한 version을 쓰는 대안을 안내합니다.
 4. **Q4 — 사본 대조에서 허용할 차이를 어떻게 정할지:** 권고는 root wrapper가 heading으로 프로젝트 소유 절을 찾는 것(D1)입니다. payload에 새 marker를 넣지 않습니다.
 
 ## 2. Spec
@@ -80,7 +83,7 @@
   - 결과: release나 대상에 접근하기 전에 "Python 3.12 or newer is required"로 멈춥니다. 3.12 이상의 동작은 바뀌지 않습니다.
   - 검증: `os.name`과 `sys.version_info`를 바꾼 단위 테스트(POSIX 포함)와 red-green
 - **R-003 문서 시점 (Q2)**
-  - 결과: en·ko 적용 가이드의 Python 하한 문장과 PROJECT External Boundaries는 구현 PR에서 고칩니다. root README의 설치 명령에서 `--release-url`을 빼는 일은 그 installer를 공개한 뒤의 기록 PR에서 합니다. locale guide의 명령 계약은 그대로 둡니다.
+  - 결과: en·ko 적용 가이드의 Python 하한 문장과 installer 명령, manifest `required_commands`, root `AGENTS.md` Commands, PROJECT External Boundaries는 T-050 구현 PR에서 고칩니다. installer 명령에서는 `--release-url`을 뺍니다. payload 문서와 installer가 같은 release로 함께 배포되므로 문서가 설명하는 동작과 배포되는 동작이 일치합니다. root README의 설치 명령은 README가 공개 동작만 설명하므로 `v3.0.0` 공개 뒤의 기록 PR에서 고칩니다.
   - 검증: 구현 PR과 기록 PR의 diff 대조
 
 **T-049 maintainer 정합 검사 (root `scripts/check-docs.py`)**
@@ -106,12 +109,12 @@
 - A0 기본값 없음: 문제 1이 남습니다.
 
 **Q2 명령 문서**
-- **B1 공개 뒤 root README만 (권고):** 명시적 플래그는 계속 유효하므로 locale guide와 계약은 그대로 둡니다. README만 짧아집니다.
-- B2 locale guide·`required_commands`까지: payload 명령 계약이 바뀌어, 적용 프로젝트가 병합할 문서와 검사 변경이 늘어납니다. 이전 installer와 섞여 쓰일 때 혼동될 수 있습니다.
+- B1 공개 뒤 root README만 (권고였음): 명시적 플래그는 계속 유효하므로 locale guide와 계약은 그대로 둡니다. README만 짧아집니다.
+- **B2 locale guide·`required_commands`까지 (사용자 선택):** payload 명령 계약이 바뀌어, 적용 프로젝트가 병합할 문서와 검사 변경이 늘어납니다. 이전 installer와 섞여 쓰일 때 혼동될 수 있습니다.
 
 **Q3 release version**
-- **C1 `v2.6.0` + 호환성 안내 (권고):** `v2.3.3`이 Windows 하한을 올릴 때도 호환성 안내와 이전 installer 대안을 붙였습니다. 기본 URL은 기존 사용법을 깨지 않는 추가입니다.
-- C2 `v3.0.0`: Linux·macOS의 Python 3.11 이하 지원을 끊는 것을 SemVer상 breaking으로 엄격히 보는 선택입니다.
+- C1 `v2.6.0` + 호환성 안내 (권고였음): `v2.3.3`이 Windows 하한을 올릴 때도 호환성 안내와 이전 installer 대안을 붙였습니다. 기본 URL은 기존 사용법을 깨지 않는 추가입니다.
+- **C2 `v3.0.0` (사용자 선택):** Linux·macOS의 Python 3.11 이하 지원을 끊고 payload 명령 계약을 바꾸므로 SemVer상 breaking으로 봅니다.
 
 **Q4 사본 대조의 허용 차이**
 - **D1 root wrapper가 heading으로 소유 절을 찾기 (권고):** payload를 바꾸지 않습니다. heading이 바뀌면 검사가 실패해 바로 드러납니다.
@@ -131,6 +134,7 @@
 **문서**
 - T-049 PR: root [TEMPLATE_GUIDE.md](../../TEMPLATE_GUIDE.md) §3(무인자 maintainer 검사 설명)과 root `DOCS_GUIDE.md`의 점검 목록
 - T-050 PR: [en](../../../locales/en/docs/TEMPLATE_GUIDE.md)·[ko](../../../locales/ko/docs/TEMPLATE_GUIDE.md) 적용 가이드 §2(Python 하한)와 PROJECT External Boundaries
+- T-050 PR: en·ko 적용 가이드의 installer 명령과 manifest `required_commands`, root `AGENTS.md` Commands에서 `--release-url` 제거
 - 기록 PR(공개 뒤): root README 명령에서 `--release-url`을 빼고 Prerequisites를 "Python 3.12 이상"으로 바꿉니다.
 
 ### 2.4 상위 설계에 미치는 영향
@@ -145,6 +149,7 @@
 - **3.12의 POSIX 검증 공백:** CI는 Linux 3.13, Windows 3.12입니다. POSIX의 3.12는 CI로 검증하지 않습니다(위험 낮음, 기록).
 - **fork:** 기본 URL이 공식 저장소를 가리키므로 fork는 `--release-url`을 명시해야 합니다. 안내에 적습니다.
 - **heading 의존:** ko heading이 바뀌면 사본 검사가 실패합니다. 이것은 의도된 동작이며 오류 문구에 원인을 적습니다.
+- **명령 계약 변경:** payload 문서의 installer 명령에서 `--release-url`이 빠지므로, 이 문서를 보고 `v2.x` installer를 쓰면 명령이 실패합니다. 문서와 installer가 같은 release로 배포되고 README가 최신 installer를 받게 하므로 위험은 낮습니다. release notes에 적습니다.
 - **rollback:** installer는 다음 release에서 되돌리면 됩니다. 검사는 maintainer 도구라 PR 하나로 되돌릴 수 있습니다.
 
 ### 2.6 완료 조건과 실행 순서
@@ -152,8 +157,9 @@
 1. **이 설계 PR:** Q1~Q4를 합의한 뒤 `Accepted`로 바꾸고 PROJECT §8에 결정을 등재합니다.
 2. **T-049 구현 PR:** root `scripts/check-docs.py`의 두 검사와 테스트입니다. README 표가 있는 PR #69가 먼저 통합돼야 합니다. release가 필요 없습니다.
 3. **T-050 구현 PR:** installer와 테스트, en·ko guide·PROJECT 문서입니다.
-4. **T-051 release:** `v2.6.0` 준비 → tag·draft(사용자) → candidate → 공개(사용자) → published(Linux 로컬, Windows Buildkite) → 기록 PR(root README 명령과 Prerequisites)
+4. **T-051 release:** `v3.0.0` 준비 → tag·draft(사용자) → candidate → 공개(사용자) → published(Linux 로컬, Windows Buildkite) → 기록 PR(root README 명령과 Prerequisites)
 
 ## 3. 변경 기록
 
 - 2026-10-08: 사용자 지시에 따라 초안을 작성했습니다.
+- 2026-10-08: PR #70 version 1(`3355cb5`)에 대한 Q1~Q4 선택을 반영해 `Accepted`로 바꿨습니다. Q2는 B2, Q3는 C2를 골라 R-003, §1.3, §2.3, §2.5, §2.6을 고쳤습니다.

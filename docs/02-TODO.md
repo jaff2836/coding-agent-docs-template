@@ -62,14 +62,14 @@ T-047 시범을 다음 PR들에 적용합니다. 새 작업은 사용자와 정�
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
 | 29 | `claude/t040-stop-filter-self-check` | T-040 시범 평가와 결정: 문체 필터 중단, 자기 점검 규칙 추가 | **In Progress** — 이 변경의 PR. 시범 5/5 |
-| 31 | `claude/t049-t051-installer-checks-design` | T-049·T-050·T-051 설계 | 사용자 합의 뒤 `Accepted`와 PROJECT §8 등재. [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) |
+| 31 | `claude/t049-t051-installer-checks-design` | T-049·T-050·T-051 설계 | **Accepted** — 2026-10-08 Q1~Q4 선택, D-018·D-019. 이 변경의 통합으로 설계 완료. [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) |
 | 32 | `claude/t049-maintainer-checks` | T-049 root 사본·README locale 표 검사 | 31 통합과 PR #69(README 표) 통합 뒤. release 불필요 |
 | 33 | `claude/t050-installer-defaults` | T-050 installer 기본 URL과 Python 3.12 하한 | 31 통합 뒤 |
-| 34 | `claude/v2.6.0-release-prep` 등 | T-051 `v2.6.0` release | 33 통합 뒤. 공개 뒤 기록 PR에서 root README 명령을 바꿈 |
+| 34 | `claude/v3.0.0-release-prep` 등 | T-051 `v3.0.0` release | 33 통합 뒤. 공개 뒤 기록 PR에서 root README 명령을 바꿈 |
 
-- [ ] **T-049 maintainer 정합 검사** — root `scripts/check-docs.py`(무인자 maintainer 실행)에 root `REVIEW.md`·`REVIEW_ROUND.md`·`BUGBOT.md`와 ko 원본의 동기화 검사(프로젝트 소유 절만 차이 허용)와 root README locale 표·manifest 대조를 넣습니다. 설계: [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) R-004·R-005.
-- [ ] **T-050 installer 기본값과 Python 하한** — `--release-url` 기본값을 공식 release root로 두고, 모든 OS에서 Python 3.12 이상을 요구합니다. 설계: [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) R-001~R-003.
-- [ ] **T-051 `v2.6.0` release** — T-050의 installer 변경을 D-007 단계로 공개합니다. 공개 뒤 기록 PR에서 root README 명령의 `--release-url`을 빼고 Prerequisites를 고칩니다.
+- [ ] **T-049 maintainer 정합 검사** — root `scripts/check-docs.py`(무인자 maintainer 실행)에 root `REVIEW.md`·`REVIEW_ROUND.md`·`BUGBOT.md`와 ko 원본의 동기화 검사(프로젝트 소유 절만 차이 허용)와 root README locale 표·manifest 대조를 넣습니다. 설계: [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) R-004·R-005(D-019).
+- [ ] **T-050 installer 기본값과 Python 하한** — `--release-url` 기본값을 공식 release root로 두고, 모든 OS에서 Python 3.12 이상을 요구합니다. en·ko 적용 가이드·manifest `required_commands`·root `AGENTS.md`의 installer 명령에서 `--release-url`을 뺍니다. 설계: [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) R-001~R-003(D-018).
+- [ ] **T-051 `v3.0.0` release** — T-050의 installer·payload 변경을 major release로 D-007 단계에 따라 공개합니다. Linux·macOS의 Python 3.11 이하 사용자에게 이전 installer 대안을 안내합니다. 공개 뒤 기록 PR에서 root README 명령의 `--release-url`을 빼고 Prerequisites를 고칩니다.
 
 ## Cancelled
 
