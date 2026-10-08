@@ -25,7 +25,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Current State
 
-- 공개 release 기준은 [immutable GitHub Release `v2.5.0`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.5.0)(2026-10-07 공개, Latest)이며 annotated tag의 exact source는 `6d04b97a2e2fc3da0f007b11a4cc1539bb2b57db`입니다. 공개·published 검증 시 Origin·GitHub `main`도 같은 commit이었습니다. Linux에서 tag source의 verifier로 기존 draft와 같은 5개 asset, latest·exact의 en·ko list/install/export/adopt, `v2.4.0` base-aware upgrade 및 비어 있지 않은 install 대상 불변을 확인했습니다. 이전 release는 그대로 유지되며 exact version에 맞는 자기 installer로만 설치할 수 있습니다.
+- 공개 release 기준은 [immutable GitHub Release `v2.5.0`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.5.0)(2026-10-07 공개, Latest)이며 annotated tag의 exact source는 `6d04b97a2e2fc3da0f007b11a4cc1539bb2b57db`입니다. 공개·published 검증 시 Origin·GitHub `main`도 같은 commit이었습니다. Linux에서 tag source의 verifier로 기존 draft와 같은 5개 asset, latest·exact의 en·ko list/install/export/adopt, `v2.4.0` base-aware upgrade 및 비어 있지 않은 install 대상 불변을 확인했습니다. 2026-10-08 native Windows 10(NT 10.0.19045)에서도 같은 `published --base-version 2.4.0`이 통과했습니다. 이전 release는 그대로 유지되며 exact version에 맞는 자기 installer로만 설치할 수 있습니다.
 - W-001의 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source 분리는 Origin PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에 통합됐습니다.
 - W-002의 `locales/en`·locale별 skill S2 계약과 W-003 locale/artifact 검사는 각각 Origin PR #4·#5에 통합됐습니다. `en`·`ko` source는 모두 `complete`입니다.
 - W-004 exporter·packager는 Origin PR #6 merge commit `f60ae97`, W-005 비파괴 installer는 PR #7 merge commit `9d4637d`, W-006 적용 문서는 PR #8 merge commit `60638ed`에 통합됐습니다.

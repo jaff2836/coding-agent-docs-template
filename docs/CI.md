@@ -113,6 +113,8 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 
 [`linux-ci`](https://buildkite.com/jaff2836-org/linux-ci)는 [`linux.yml`](../.buildkite/linux.yml)을 `jaff2836-worker-linux` queue에서 실행합니다. agent의 Python 3.13.5로 같은 root docs·stable locale 검사와 전체 unittest를 실행합니다.
 
+**공개 release의 native Windows 검증:** release를 공개한 뒤 Buildkite에서 `windows-ci`의 New Build를 `main` 최신 commit으로 만들고, 환경변수 `RELEASE_VERIFY_VERSION`(예: `2.5.0`), `RELEASE_VERIFY_SOURCE_COMMIT`(tag source의 전체 SHA), 선택형 `RELEASE_VERIFY_BASE_VERSION`(직전 release)을 설정합니다. 이 변수가 있을 때만 [`verify_published_release.py`](../.buildkite/verify_published_release.py) step이 실행됩니다. 이 step은 `github` 원격과 release tag·`main`을 준비하고, tag source의 임시 worktree에서 그 source 자신의 `verify-release.py published`를 실행합니다. Windows agent에는 `gh`와 읽기 전용 `GH_TOKEN`이 필요하며, token은 agent 환경에만 두고 저장소·로그에 기록하지 않습니다. draft를 읽어야 하는 candidate 검증은 쓰기 권한 token이 필요하므로 CI에서 실행하지 않습니다.
+
 locale source 회귀의 ripgrep·GNU grep 실명령 테스트는 도구가 없으면 skip합니다. 로컬에서는 skip을 허용하지만 CI에서는 skip이 통과로 보이면 안 되므로, 두 pipeline은 unittest 전에 `rg --version`과 GNU grep 여부를 확인하고 없으면 build를 실패시킵니다. 두 worker에는 ripgrep이 설치돼 있어야 하고, Windows worker에는 전체 Git for Windows가 필요합니다. 이 도구들은 테스트에만 쓰이며 artifact나 installer 실행에는 필요하지 않습니다. PR #37의 [Windows build #21](https://buildkite.com/jaff2836-org/windows-ci/builds/21)과 [Linux build #6](https://buildkite.com/jaff2836-org/linux-ci/builds/6)은 같은 head `e7e12581b614685774064d57119b08a508ff5f23`에서 자동 시작해 각각 unittest 176개를 통과하고 Origin 성공 check를 게시했습니다. 두 build의 Buildkite `pull_request.id`는 `37`이며 base는 `main`입니다.
 
 ## 7. 제공하지 않는 것
