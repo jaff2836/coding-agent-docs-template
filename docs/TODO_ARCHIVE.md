@@ -13,6 +13,21 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
 
 ## 완료 작업 상세
 
+- [x] **T-040 문서·주석 필터 root 시범**
+  - 출처: 2026-10-07 외부 자료 분석(anti-slop)과 2026-10-08 사용자 선택. 방향은 root 시범이고 대상은 추적 문서와 코드 주석입니다. 채팅 보고·PR 본문·리뷰 prose는 대상이 아닙니다.
+  - 측정 근거: 2026-10-08 추적 문서(ko 116k자, en 210k자, root 171k자)에서 상투 표현 패턴 검사에서 걸린 것은 `다음과 같습니다` 4회(ko·root)와 `ensure` 12회(en)였고(함께 걸린 일반 서술 `할 수 있습니다` 33회는 상투 표현으로 보지 않음) 코드 주석의 장식 구분선·단계 나레이션은 0건이었습니다. `—`와 굵게 표시는 이 저장소의 관례라 필터 대상에서 뺐습니다.
+  - [x] 도입: root `docs/DOC_FILTER.md`(문서 규칙 D1~D7, 주석 규칙 C1~C6, 적용 절차, 평가 기준. 삭제 전 마지막 revision `31458c0`)를 추가하고 root `AGENTS.md`·[DOCS_GUIDE.md](./DOCS_GUIDE.md) §1에 연결했습니다. locale artifact는 바꾸지 않습니다. 통합: PR #63.
+  - [x] PR #63 인계 C63-B-001(Codex, P3): 필터 대상이 `docs/`·`locales/`·`template/`·root README·CHANGELOG로 열거돼 root `AGENTS.md`·`CLAUDE.md`·스킬·`.cursor/BUGBOT.md`·`.omp/WATCHDOG.md`가 빠졌습니다. 대상을 추적 Markdown 전체(`git ls-files '*.md'`)로 고쳤습니다. 통합: PR #64.
+  - [x] 시범 1/5 결과 정정과 절차 보완: PR #64의 "후보 0"은 패턴 검색 0건을 줄 단위로 읽은 결과처럼 적은 과소 보고였습니다. 다시 읽으니 후보 1건(D6)이 있었습니다. `docs/DOC_FILTER.md`(삭제 전 마지막 revision `31458c0`) §4에 줄 단위 읽기, 방법 기록, 실질·문장 채택 구분을, §5에 측정할 수 있는 이관 기준과 조기 중단 조건을 넣었고, §1의 보관 문서 제외 범위를 좁혔습니다. 통합: PR #65.
+  - [x] 시범 적용: PR 5개에 적용했습니다. 결과는 각 PR 본문에 있습니다.
+    - #64: 후보 1, 채택 1(문장). 처음 "후보 0"으로 과소 보고했다가 정정했습니다.
+    - #65: 후보 2, 채택 2(실질 1, 문장 1). 규칙 밖 1건(§4·§5 위치 오기)
+    - #66: 후보 1, 채택 1(문장). 리뷰어가 필터로 읽은 줄 안에서 C66-A-001(`docs/02-TODO.md` 76행, 상태 불일치)과 C66-A-002(78행, 파일 수 오기)를 찾았고 필터는 놓쳤습니다.
+    - #67: 후보 0. 규칙 밖 1건(보관 문서의 근거 위치)
+    - 5번째(이 변경): 결과는 이 변경의 PR 본문에 있습니다.
+    - #64 정정 때 다시 읽으며 Backlog 행의 상태와 설명이 어긋난 것도 찾았습니다(규칙 밖).
+
+  - [x] 평가와 결정: 2026-10-08 사용자가 문체 필터 중단을 정했습니다. 문체 규칙(D2~D7)의 채택은 대부분 표현 다듬기였고, 효과가 보인 것은 사실·일관성 확인이었습니다. 이에 따라 짧은 자기 점검 규칙을 root `AGENTS.md` Communication에 넣고 필터 문서와 연결(`AGENTS.md`, [DOCS_GUIDE.md](./DOCS_GUIDE.md) §1)을 지웠습니다. T-044·T-046은 취소했습니다. 사용자 결정에 따라 새 규칙은 root에서 T-047로 더 시범합니다. 통합 근거: T-040 평가 PR.
 - [x] **T-041 native Windows published 검증**
   - [x] `v2.5.0` 수동 검증: 2026-10-08 사용자가 native Windows 10(NT 10.0.19045)에서 tag source로 `published --base-version 2.4.0`을 실행했고 통과했습니다(exit 0, 동기화된 `main` `3bbf8b9`). Python 버전은 출력에 없지만, installer가 Windows에서 3.12 미만이면 중단하므로 3.12 이상으로 추론합니다.
   - [x] Buildkite 경로: 사용자 결정(2026-10-08)에 따라 `windows-ci`에 수동 build 전용 published 검증 step과 [`verify_published_release.py`](../.buildkite/verify_published_release.py)를 추가했습니다. 입력 검증 회귀는 red-green으로 확인했습니다. [CI.md](./CI.md) §6과 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §5에 절차를 적었습니다. 통합: PR #66.
@@ -309,6 +324,11 @@ T-041~T-045는 2026-10-08 PR #66에서 등록한 설명입니다. T-043은 보�
 - [ ] **T-043 community locale 설계** — `en`·`ko` 외 locale을 추가하는 설계입니다. 기존 보류 항목(두 공식 locale 지원 검증 뒤 재검토)의 조건은 `v2.0.0`~`v2.5.0` 공개로 충족된 것으로 봅니다. locale 선택, `experimental`·`complete` 상태 정책(안정판에는 `complete`만 포함), 번역 검수자, 번역 단위를 정합니다. en source는 추적 파일 24개, Markdown 약 264k자입니다.
 - [ ] **T-045 community locale 구현** — T-043 설계에 따라 manifest·상태·검사 PR과 번역 묶음별 PR로 나눠 구현합니다. 번역마다 사람의 검수가 필요합니다.
 
+T-044·T-046은 2026-10-08 PR #66에서 등록했고 같은 날 취소했습니다(TODO Cancelled).
+
+- [ ] **T-044 문서 필터 payload 이관 (조건부)** — T-040 평가에서 이관을 정하면 en·ko 문서 필터의 설계와 구현을 진행합니다.
+- [ ] **T-046 `v2.6.0` release** — T-044의 payload 변경을 D-007 단계로 공개합니다(T-045는 취소). 바뀐 payload가 없으면 생략합니다.
+
 2026-09-29 분석의 root §3 검색식 allowlist 권고는 T-029에서 해소됐고, 작업 트리의 로컬 `.swp` 파일은 저장소 작업이 아니어서 등록하지 않았습니다.
 
 ## 통합된 Backlog PR 순서
@@ -342,3 +362,4 @@ T-041~T-045는 2026-10-08 PR #66에서 등록한 설명입니다. T-043은 보�
 | 25 | `claude/t040-filter-procedure` | T-040: 필터 절차·평가 기준 보완, 시범 2/5 | **Integrated** — Origin PR #65 merge `3bbf8b9`·GitHub fast-forward 확인 |
 | 26 | `claude/t041-windows-published-and-plan` | T-041 native Windows published 검증 기록, T-041~T-046 등록, 기록 정리 | **Integrated** — Origin PR #66 merge `e105412`·GitHub fast-forward 확인 |
 | 27 | (PR 없음) | T-042 Origin의 merge된 원격 branch 정리 | **완료** — 2026-10-08 원격 branch 66개 삭제, `main`만 남음. 기록은 28행 PR |
+| 28 | `claude/t041-t043-records` | T-041 완료, T-042 결과, T-043 보류·T-045 취소 기록 | **Integrated** — Origin PR #67 merge `31458c0`·GitHub fast-forward 확인 |
