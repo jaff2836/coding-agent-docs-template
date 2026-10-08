@@ -36,6 +36,34 @@ MAINTAINER_CHECKER = load_module(
 CheckDocsTests = COMMON_TESTS.CheckDocsTests
 
 
+# Root copies of Korean payload files whose project-owned parts may differ.
+ROOT_COPY_FIXTURES = {
+    "docs/REVIEW.md": (
+        "# Review\n\n## 6. Project-specific Invariants\n\n"
+        "<!-- template-section:project-invariants -->\n\n"
+        "- **Keep:** The fixture keeps this rule.\n\n"
+        "## 9. Accepted Deferrals\n\n| ID | Scope |\n| --- | --- |\n\n"
+        "## 10. Review Conclusion\n\nShared conclusion.\n"
+    ),
+    "docs/REVIEW_ROUND.md": (
+        "# Round\n\n## 2. Parameters\n\n### 2.1 리뷰어 등록\n\n"
+        "| 리뷰어 | 슬롯 |\n|---|---|\n\nShared text after the table.\n\n"
+        "## 3. Steps\n\nShared steps.\n"
+    ),
+    ".cursor/BUGBOT.md": (
+        "# Bugbot\n\n## 이 저장소의 불변조건\n\n"
+        "<!-- template-section:project-invariants -->\n\n"
+        "- **Keep:** The fixture keeps this rule.\n\n"
+        "## 확정된 설계 결정과 승인된 deferral\n\n- 확정된 결정: none\n\n"
+        "## Do Not Report\n\nShared list.\n"
+    ),
+}
+README_FIXTURES = {
+    "README.md": "| Locale | Language | Status |\n| --- | --- | --- |\n",
+    "README.ko.md": "| Locale | 언어 | 상태 |\n| --- | --- | --- |\n",
+}
+
+
 class MaintainerCheckDocsTests(unittest.TestCase):
     def write_source(self, root: Path) -> None:
         COMMON_TESTS.write_minimal_artifact(root)
@@ -54,6 +82,24 @@ class MaintainerCheckDocsTests(unittest.TestCase):
             "# Releases\n\n<!-- template-section:release-history -->\n\n"
             "## v1.0.0 — unpublished candidate\n",
         )
+        for path, content in ROOT_COPY_FIXTURES.items():
+            COMMON_TESTS.write(root, path, content)
+            COMMON_TESTS.write(root, "locales/ko/" + path, content)
+        for path, header in README_FIXTURES.items():
+            COMMON_TESTS.write(
+                root, path,
+                "# Template\n\n" + header
+                + "| `en` | English | complete |\n| `ko` | Korean | complete |\n",
+            )
+        root.joinpath("locales/manifest.json").write_bytes(
+            REPOSITORY_ROOT.joinpath("locales/manifest.json").read_bytes()
+        )
+
+    def edit(self, root: Path, path: str, old: str, new: str) -> None:
+        target = root / path
+        text = target.read_text(encoding="utf-8")
+        self.assertEqual(text.count(old), 1, old)
+        target.write_text(text.replace(old, new), encoding="utf-8")
 
     def run_wrapper(self, root: Path, arguments: list[str]) -> tuple[int, str, str]:
         stdout = io.StringIO()
@@ -194,6 +240,119 @@ class MaintainerCheckDocsTests(unittest.TestCase):
                 self.assertNotIn("All checks passed", stdout)
             finally:
                 os.rmdir(link)
+
+    def test_root_copies_may_differ_only_in_project_owned_parts(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_source(root)
+            for path in ("docs/REVIEW.md", ".cursor/BUGBOT.md"):
+                self.edit(
+                    root, path, "- **Keep:** The fixture keeps this rule.\n",
+                    "- **Keep:** The fixture keeps this rule.\n"
+                    "- **Own:** The project adds this rule.\n",
+                )
+            self.edit(
+                root, "docs/REVIEW.md", "| --- | --- |\n",
+                "| --- | --- |\n| DFR-001 | Project deferral |\n",
+            )
+            self.edit(
+                root, "docs/REVIEW_ROUND.md", "|---|---|\n",
+                "|---|---|\n| Reviewer | `A` |\n",
+            )
+            self.edit(
+                root, ".cursor/BUGBOT.md", "- 확정된 결정: none\n",
+                "- 확정된 결정: D-001 — project decision\n",
+            )
+            result, stdout, stderr = self.run_wrapper(root, [])
+            self.assertEqual(result, 0, stderr)
+            self.assertIn("All checks passed", stdout)
+
+    def test_root_copy_drift_outside_project_owned_parts_is_rejected(self) -> None:
+        for path, old, new, line in (
+            ("docs/REVIEW.md", "Shared conclusion.", "Drifted conclusion.", 16),
+            ("docs/REVIEW_ROUND.md", "Shared text after the table.",
+             "Drifted text after the table.", 10),
+            ("docs/REVIEW_ROUND.md", "| 리뷰어 | 슬롯 |", "| 리뷰어 | 역할 |", 7),
+            (".cursor/BUGBOT.md", "Shared list.\n", "Shared list.\n\nExtra.\n",
+             16),
+        ):
+            with self.subTest(path=path, new=new), \
+                    tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                self.write_source(root)
+                self.edit(root, path, old, new)
+                result, stdout, stderr = self.run_wrapper(root, [])
+                self.assertEqual(result, 1)
+                self.assertIn(
+                    "Root copy %s differs from locales/ko/%s outside "
+                    "project-owned sections at line %d" % (path, path, line),
+                    stderr,
+                )
+                self.assertNotIn("All checks passed", stdout)
+
+    def test_missing_project_owned_heading_is_rejected(self) -> None:
+        for prefix in ("", "locales/ko/"):
+            with self.subTest(prefix=prefix), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                self.write_source(root)
+                self.edit(
+                    root, prefix + "docs/REVIEW_ROUND.md",
+                    "### 2.1 리뷰어 등록", "### 2.1 Reviewers",
+                )
+                result, _, stderr = self.run_wrapper(root, [])
+                self.assertEqual(result, 1)
+                self.assertIn(
+                    "%sdocs/REVIEW_ROUND.md: heading '### 2.1 리뷰어 등록' "
+                    "must appear exactly once (found 0)" % prefix,
+                    stderr,
+                )
+
+    def test_readme_locale_table_must_list_complete_manifest_locales(self) -> None:
+        for path in README_FIXTURES:
+            for old, new, message in (
+                ("| `ko` |", "| `fr` |",
+                 "%s:6: locale fr is not complete in locales/manifest.json"),
+                ("| Korean | complete |", "| Korean | experimental |",
+                 "%s:6: locale ko status must be complete, not experimental"),
+            ):
+                with self.subTest(path=path, new=new), \
+                        tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    self.write_source(root)
+                    self.edit(root, path, old, new)
+                    result, stdout, stderr = self.run_wrapper(root, [])
+                    self.assertEqual(result, 1)
+                    self.assertIn(message % path, stderr)
+                    self.assertNotIn("All checks passed", stdout)
+
+    def test_readme_locale_table_may_omit_an_unpublished_complete_locale(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_source(root)
+            for path in README_FIXTURES:
+                self.edit(root, path, "| `ko` | Korean | complete |\n", "")
+            result, stdout, stderr = self.run_wrapper(root, [])
+            self.assertEqual(result, 0, stderr)
+            self.assertIn("All checks passed", stdout)
+
+    def test_readme_without_locale_table_or_manifest_is_rejected(self) -> None:
+        for state in ("no table", "invalid manifest"):
+            with self.subTest(state=state), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                self.write_source(root)
+                if state == "no table":
+                    self.edit(root, "README.ko.md", "| Locale |", "| Tag |")
+                    expected = (
+                        "README.ko.md: expected one table whose first column "
+                        "is Locale (found 0)"
+                    )
+                else:
+                    root.joinpath("locales/manifest.json").write_bytes(b"{}\n")
+                    expected = "Cannot read locale manifest: "
+                result, stdout, stderr = self.run_wrapper(root, [])
+                self.assertEqual(result, 1)
+                self.assertIn(expected, stderr)
+                self.assertNotIn("All checks passed", stdout)
 
     def test_real_wrapper_alternates_source_and_artifact_without_state_leaks(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

@@ -365,3 +365,4 @@ T-044·T-046은 2026-10-08 PR #66에서 등록했고 같은 날 취소했습니�
 | 28 | `claude/t041-t043-records` | T-041 완료, T-042 결과, T-043 보류·T-045 취소 기록 | **Integrated** — Origin PR #67 merge `31458c0`·GitHub fast-forward 확인 |
 | 29 | `claude/t040-stop-filter-self-check` | T-040 시범 평가와 결정: 문체 필터 중단, 자기 점검 규칙 추가 | **Integrated** — Origin PR #68 merge `e9a6820`·GitHub fast-forward 확인 |
 | 30 | `claude/readme-install-restructure` | T-048 root README 설치 절 정리 | **Integrated** — Origin PR #69 merge `220188d`·GitHub fast-forward 확인 |
+| 31 | `claude/t049-t051-installer-checks-design` | T-049·T-050·T-051 설계(D-018·D-019) | **Integrated** — Origin PR #70 merge `7013011`·GitHub fast-forward 확인 |
