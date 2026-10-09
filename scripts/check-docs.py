@@ -96,11 +96,31 @@ def check_source_analysis_copies() -> list[str]:
     return errors
 
 
-def is_table_body_row(lines: list[str], index: int) -> bool:
-    if not lines[index].startswith("|") or TABLE_SEPARATOR_RE.match(lines[index]):
-        return False
-    following = lines[index + 1] if index + 1 < len(lines) else ""
-    return not TABLE_SEPARATOR_RE.match(following)
+def table_body_rows(
+    lines: list[str], context: Sequence[tuple[bool, bool]], start: int, end: int
+) -> set[int]:
+    """Return body row indexes of the tables between *start* and *end*.
+
+    A table is a header and separator outside fences and HTML comments; its
+    body is the run of ``|`` lines that follows them outside comments.
+    """
+
+    rows: set[int] = set()
+    index = start
+    while index < end - 1:
+        if (
+            lines[index].startswith("|")
+            and TABLE_SEPARATOR_RE.match(lines[index + 1])
+            and all(context[index])
+            and all(context[index + 1])
+        ):
+            index += 2
+            while index < end and lines[index].startswith("|") and all(context[index]):
+                rows.add(index)
+                index += 1
+        else:
+            index += 1
+    return rows
 
 
 def shared_lines(
@@ -130,9 +150,12 @@ def shared_lines(
             if match and all(context[index]) and len(match.group(1)) <= level:
                 end = index
                 break
-        for index in range(starts[0] + 1, end):
-            if scope == "section" or is_table_body_row(lines, index):
-                keep[index] = False
+        if scope == "section":
+            owned_lines = range(starts[0] + 1, end)
+        else:
+            owned_lines = table_body_rows(lines, context, starts[0] + 1, end)
+        for index in owned_lines:
+            keep[index] = False
     return [(index + 1, line) for index, line in enumerate(lines) if keep[index]]
 
 

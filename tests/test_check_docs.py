@@ -42,7 +42,8 @@ ROOT_COPY_FIXTURES = {
         "# Review\n\n## 6. Project-specific Invariants\n\n"
         "<!-- template-section:project-invariants -->\n\n"
         "- **Keep:** The fixture keeps this rule.\n\n"
-        "## 9. Accepted Deferrals\n\n| ID | Scope |\n| --- | --- |\n\n"
+        "## 9. Accepted Deferrals\n\n| ID | Scope |\n| --- | --- |\n"
+        "<!-- Example row.\n| DFR-001 | Example scope |\n-->\n\n"
         "## 10. Review Conclusion\n\nShared conclusion.\n"
     ),
     "docs/REVIEW_ROUND.md": (
@@ -269,10 +270,14 @@ class MaintainerCheckDocsTests(unittest.TestCase):
 
     def test_root_copy_drift_outside_project_owned_parts_is_rejected(self) -> None:
         for path, old, new, line in (
-            ("docs/REVIEW.md", "Shared conclusion.", "Drifted conclusion.", 16),
+            ("docs/REVIEW.md", "Shared conclusion.", "Drifted conclusion.", 19),
+            ("docs/REVIEW.md", "| DFR-001 | Example scope |",
+             "| DFR-001 | Changed example |", 14),
             ("docs/REVIEW_ROUND.md", "Shared text after the table.",
              "Drifted text after the table.", 10),
             ("docs/REVIEW_ROUND.md", "| 리뷰어 | 슬롯 |", "| 리뷰어 | 역할 |", 7),
+            ("docs/REVIEW_ROUND.md", "Shared text after the table.\n",
+             "Shared text after the table.\n| Pipe paragraph.\n", 11),
             (".cursor/BUGBOT.md", "Shared list.\n", "Shared list.\n\nExtra.\n",
              16),
         ):
