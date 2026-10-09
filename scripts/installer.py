@@ -38,6 +38,7 @@ ARCHIVE_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
 ARCHIVE_TIMESTAMP_TEXT = "1980-01-01T00:00:00Z"
 FETCH_TIMEOUT = 60.0
 LATEST_VERSION = "latest"
+DEFAULT_RELEASE_URL = "https://github.com/jaff2836/coding-agent-docs-template/releases"
 USER_AGENT = "coding-agent-docs-template-installer"
 ADOPTION_POLICIES = frozenset(("copy", "decide", "merge"))
 ADOPTION_STATUSES = ("missing", "identical", "merge", "decision", "blocked")
@@ -104,8 +105,10 @@ class InstallerError(ValueError):
 
 
 def _require_supported_python() -> None:
-    if os.name == "nt" and sys.version_info < (3, 12):
-        raise InstallerError("Windows requires Python 3.12 or newer to check directory junctions")
+    if sys.version_info < (3, 12):
+        raise InstallerError(
+            "Python 3.12 or newer is required (on Windows it is needed to check directory junctions)"
+        )
 
 
 def _link_kind(path: Path, mode: Optional[int] = None) -> Optional[str]:
@@ -1512,8 +1515,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 def _add_remote_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--release-url",
-        required=True,
-        help="GitHub Releases root (https://github.com/OWNER/NAME/releases)",
+        default=DEFAULT_RELEASE_URL,
+        help="GitHub Releases root (https://github.com/OWNER/NAME/releases; default: %(default)s)",
     )
 
 
