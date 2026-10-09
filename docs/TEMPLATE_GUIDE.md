@@ -12,7 +12,7 @@
 - **Template source:** https://github.com/jaff2836/coding-agent-docs-template
 - **Template revision:** release 검증 시 exact source commit으로 확정
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-28
+- **Last reviewed:** 2026-10-08
 - **Review cadence:** source·artifact 경계 또는 배포 계약 변경 시
 
 ## 1. Source와 artifact 구조
@@ -60,6 +60,16 @@ root `CHANGELOG.md`에서 현재 version 이력을 확인하고, top-level `loca
 읽기 실패·저장소 밖 경로·사본 차이는 실패로 진단합니다. `design`과
 `review-round`의 root↔ko 본문 차이는 이 동등성 검사 대상이 아닙니다.
 
+root `docs/REVIEW.md`·`docs/REVIEW_ROUND.md`·`.cursor/BUGBOT.md`는
+`locales/ko`의 같은 파일과 줄 단위로 대조합니다(D-019). 이 저장소가 채우는
+부분인 REVIEW §6 전체와 §9 표의 행, REVIEW_ROUND §2.1 리뷰어 표의 행,
+BUGBOT의 불변조건 절과 결정·deferral 절은 ko heading으로 찾아 대조에서
+뺍니다. heading이 정확히 한 번 나오지 않거나 그 밖에서 다르면 처음 다른 줄을 보고하며
+실패합니다. root `README.md`·`README.ko.md`의 locale 표(첫 열 `Locale`)는 각
+tag가 `locales/manifest.json`의 `complete` locale이고 상태 열이 `complete`인지
+확인합니다. 표는 공개된 release를 설명하므로 공개 전 새 locale이 표에 없는
+것은 허용하고, 공개 뒤 추가는 §5의 절차가 맡습니다.
+
 CLI 인자를 하나라도 주면 canonical artifact checker에 위임합니다.
 `--root <export된 artifact 경로>`는 artifact의 `docs/TEMPLATE_GUIDE.md` 이력을
 검사하고 source 제외 범위나 root↔ko 의존성을 사용하지 않습니다.
@@ -103,7 +113,10 @@ release candidate는 clean exact source commit에서 package하고 tag·manifest
 asset provenance를 대조합니다. 공개 후에는 published verifier로 immutable
 asset, latest·exact 설치, export와 지원 locale 경로를 확인합니다. published
 검증은 Linux와 native Windows에서 모두 실행하며, Windows는 Buildkite
-`windows-ci`의 수동 build로 실행합니다([CI.md](./CI.md) §6).
+`windows-ci`의 수동 build로 실행합니다([CI.md](./CI.md) §6). 그 release로 새
+`complete` locale을 처음 공개했으면 공개 기록 PR에서 root `README.md`·
+`README.ko.md`의 locale 표에 넣습니다. 무인자 문서 검사는 표에 없는 locale을
+잡지 못합니다(§3).
 
 source 변경을 적용 프로젝트에 이관할 때는 기록된 이전 revision과 새 revision을
 원본 저장소에서 비교하고 프로젝트가 의도적으로 바꾼 내용을 보존합니다.

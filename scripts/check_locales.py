@@ -1960,15 +1960,25 @@ def _check_invariant_contract(
             errors.append("%s REVIEW/BUGBOT project invariants differ" % tag)
 
 
-def check_locales(root: Path = ROOT, require_stable: bool = False) -> List[str]:
-    """Return every locale contract error for *root*."""
+def read_validated_manifest(
+    root: Path = ROOT,
+) -> Tuple[Optional[Dict[str, Any]], List[str]]:
+    """Return the schema-checked manifest under *root*, or ``None`` and errors."""
 
     root = Path(root)
     errors: List[str] = []
     manifest = _read_manifest(root / MANIFEST_PATH, errors, root)
+    if manifest is None or not _validate_manifest_schema(manifest, errors):
+        return None, errors
+    return manifest, errors
+
+
+def check_locales(root: Path = ROOT, require_stable: bool = False) -> List[str]:
+    """Return every locale contract error for *root*."""
+
+    root = Path(root)
+    manifest, errors = read_validated_manifest(root)
     if manifest is None:
-        return errors
-    if not _validate_manifest_schema(manifest, errors):
         return errors
 
     _check_locale_metadata(manifest, errors)

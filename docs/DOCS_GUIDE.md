@@ -12,7 +12,7 @@
 - **Template source:** https://github.com/jaff2836/coding-agent-docs-template
 - **Template revision:** release 검증 시 exact source commit으로 확정
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-09-28
+- **Last reviewed:** 2026-10-08
 - **Review cadence:** maintainer 문서 체계 또는 source·artifact 소유권 변경 시
 
 ## 1. Maintainer 문서 지도
@@ -85,7 +85,8 @@ locale source의 가이드는 artifact 정본입니다. root maintainer 가이�
 - [ ] 사용자 승인 범위와 관련 change 문서·TODO만 갱신했다.
 - [ ] manifest inventory와 adoption policy가 모든 locale에 닫혀 있다.
 - [ ] en·ko 가이드 의미와 skill 사본 byte identity를 확인했다.
-- [ ] 무인자 source 문서 검사로 root↔ko `project-analysis` 네 사본을 확인했다.
+- [ ] 무인자 source 문서 검사로 root↔ko `project-analysis` 네 사본, root 리뷰
+  사본 세 개, README locale 표를 확인했다.
 - [ ] root maintainer 문서가 locale 적용 안내를 복제하지 않는다.
 - [ ] README·CHANGELOG·TODO/PLAN의 현재·과거·미래 경계를 유지했다.
 - [ ] `python3 scripts/check-docs.py`와 checker 회귀 테스트를 통과했다.

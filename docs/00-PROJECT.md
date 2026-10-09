@@ -70,7 +70,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 | Component | Responsibility | Dependencies | Owner |
 | --------- | -------------- | ------------ | ----- |
 | root maintenance plane | 저장소 소개, 제품 결정, 변경 설계·TODO와 maintainer 도구 지침 | artifact source와 분리 | Chae Sangwon |
-| source 문서 검사 | 무인자 root wrapper가 root↔ko `project-analysis` 네 사본을 byte로 대조한 뒤 source 문서·이력을 검사 | canonical artifact checker, source의 top-level `locales`·`template`만 재귀 탐색에서 제외; CLI 인자 경로는 artifact 의미 유지 | Chae Sangwon |
+| source 문서 검사 | 무인자 root wrapper가 root↔ko `project-analysis` 네 사본을 byte로 대조하고, root `REVIEW.md`·`REVIEW_ROUND.md`·`.cursor/BUGBOT.md`를 프로젝트 소유 절 밖에서 ko 원본과 대조하고, root README locale 표의 locale이 manifest의 `complete` locale인지 확인(D-019)한 뒤 source 문서·이력을 검사 | canonical artifact checker, source의 top-level `locales`·`template`만 재귀 탐색에서 제외; CLI 인자 경로는 artifact 의미 유지 | Chae Sangwon |
 | locale source 검사 | 닫힌 inventory·locale 계약과 en·ko placeholder 검색의 단일 선언·공유 참조·독립 sentinel, root 검색 안내의 정본 위임을 검사 | manifest·common·locale source와 maintainer 검색 안내; artifact에는 포함하지 않음 | Chae Sangwon |
 | `template/common/` | 현재 언어 비의존으로 확인된 payload source | `locales/manifest.json` inventory | Chae Sangwon |
 | `locales/en/`, `locales/ko/` | complete locale별 prose·도구 계약 source | common source와 합성 | Chae Sangwon |
