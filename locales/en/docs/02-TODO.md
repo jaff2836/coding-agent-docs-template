@@ -71,6 +71,6 @@ Include only cancelled changes. Record the change-ID, cancellation rationale, `R
 
 ## Completed
 
-Add only actually completed items. Record the change-ID, integration target, verified revision or worktree scope, and location of verification evidence. Retain the change folder, and update PROJECT when an implemented contract becomes part of the current support scope. If a PR exists, confirm the actual merge result; do not invent a PR or merge SHA for local work.
+Add only actually completed items. Record the change-ID, integration target, verified revision or worktree scope, and location of verification evidence. Retain the change folder, and update PROJECT when an implemented contract becomes part of the current support scope. If a PR exists, confirm the actual merge result, except for a merge-bound description that the operating rules allow before integration; do not invent a PR or merge SHA for local work.
 
 When the completion history grows long, link to an existing CHANGELOG or milestone-specific archive document instead of duplicating its contents.

@@ -132,35 +132,35 @@
       },
       {
         "id": "installer-list-locales",
-        "value": "python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}",
+        "value": "python3 installer.py list-locales --version {{VERSION}}",
         "paths": [
           "docs/TEMPLATE_GUIDE.md"
         ]
       },
       {
         "id": "installer-adopt",
-        "value": "python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}",
+        "value": "python3 installer.py adopt --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}",
         "paths": [
           "docs/TEMPLATE_GUIDE.md"
         ]
       },
       {
         "id": "installer-adopt-upgrade",
-        "value": "python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --base-version {{OLDER_EXACT_VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}",
+        "value": "python3 installer.py adopt --version {{VERSION}} --base-version {{OLDER_EXACT_VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}",
         "paths": [
           "docs/TEMPLATE_GUIDE.md"
         ]
       },
       {
         "id": "installer-install",
-        "value": "python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}",
+        "value": "python3 installer.py install --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}",
         "paths": [
           "docs/TEMPLATE_GUIDE.md"
         ]
       },
       {
         "id": "installer-export",
-        "value": "python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}",
+        "value": "python3 installer.py export --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}",
         "paths": [
           "docs/TEMPLATE_GUIDE.md"
         ]

@@ -73,7 +73,7 @@
 
 공식 release에서는 GitHub Releases의 `installer.py`를 사용합니다. latest installer는 latest version과, exact tag의 installer는 같은 exact version과 함께 사용해야 합니다. installer는 GitHub release asset URL에서 시작한 HTTPS redirect chain만 따르고 exact tag의 checksum과 manifest를 검증합니다.
 
-Windows에서 이 템플릿 source revision의 installer를 실행하려면 directory junction 검사를 위해 Python 3.12 이상이 필요합니다. 이전에 공개된 release는 해당 버전의 Python 지원 범위를 따릅니다.
+이 템플릿 source revision의 installer는 모든 OS에서 Python 3.12 이상이 필요하며, Windows에서는 directory junction 검사에도 이 version을 씁니다. 이전에 공개된 release는 해당 버전의 Python 지원 범위를 따릅니다. `--release-url`의 기본값은 `https://github.com/jaff2836/coding-agent-docs-template/releases`이며, 다른 저장소의 GitHub Releases를 쓸 때만 지정합니다.
 
 ```sh
 (
@@ -82,7 +82,7 @@ Windows에서 이 템플릿 source revision의 installer를 실행하려면 dire
     --output installer.py.part \
     https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
   mv installer.py.part installer.py
-  python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}
+  python3 installer.py list-locales --version {{VERSION}}
 )
 ```
 
@@ -91,7 +91,7 @@ Windows에서 이 템플릿 source revision의 installer를 실행하려면 dire
 기존 저장소에는 `adopt`를 사용합니다. `install`과 같은 방식으로 release를 검증한 뒤 대상 저장소에는 쓰지 않고, 대상 밖의 빈 디렉터리에 검증된 artifact(`artifact/`)와 경로별 처리 계획(`adoption-plan.json`)만 만듭니다.
 
 ```sh
-python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
+python3 installer.py adopt --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
 `adopt`는 파일을 적용하지 않습니다. 사람 또는 coding agent가 report의 status에 따라 병합하고 아래 1~13단계를 수행합니다.
@@ -109,7 +109,7 @@ python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agen
 과거 exact release에서 유래한 저장소를 업그레이드하려면 그 이전 full SemVer를 base로 지정합니다. base에는 `latest`를 쓸 수 없으며 최초 adoption에서는 `--base-version`을 생략합니다.
 
 ```sh
-python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --base-version {{OLDER_EXACT_VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
+python3 installer.py adopt --version {{VERSION}} --base-version {{OLDER_EXACT_VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
 base 모드는 과거 installer를 import하거나 실행하지 않고 historical release를 검증합니다. 대상이 해당 exact base에서 유래했다고 전제하며, 파일 byte만으로 프로젝트가 삭제한 경로와 처음부터 적용하지 않은 경로를 구분할 수 없습니다.
@@ -130,13 +130,13 @@ format 2에서 `summary`는 current artifact 경로만 세고 `upgrade_summary`�
 새 Git 저장소는 먼저 설치한 뒤 `git init`을 실행합니다. 이미 초기화하거나 clone한 저장소에는 `.git`이 있어 비어 있지 않으므로 그 대상에는 `adopt`를 사용하거나 다른 새 경로·빈 디렉터리를 선택합니다. 설치 대상 경로가 아직 없다면 바로 위 부모 디렉터리가 이미 존재하고 symlink나 junction이 아니어야 합니다.
 
 ```sh
-python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
+python3 installer.py install --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
 ```
 
 계획 없이 검증된 artifact만 필요하면 빈 디렉터리로 export합니다.
 
 ```sh
-python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+python3 installer.py export --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
 1. `install`한 새 프로젝트 또는 `adopt` report에 따라 병합한 저장소에서 §5에 따라 version·source commit을 두 안내 문서에 기록합니다. 숨김 항목인 `.agents/`, `.claude/`, `.cursor/`, `.omp/`와 `.gitignore`, `docs/changes/_template/`의 네 양식도 artifact inventory에 포함되었는지 확인하세요. source 저장소 root를 직접 복사하지 마세요.

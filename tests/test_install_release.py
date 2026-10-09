@@ -583,17 +583,28 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("symlink", completed.stderr)
         self.assertEqual(_tree_state(target), ())
 
-    def test_windows_python_below_312_stops_before_release_access(self) -> None:
-        with mock.patch.object(INSTALLER.os, "name", "nt"), mock.patch.object(
-            INSTALLER.sys, "version_info", (3, 11, 9)
-        ), mock.patch.object(INSTALLER, "list_locales") as list_locales:
-            with mock.patch.object(INSTALLER.sys, "stderr", new_callable=io.StringIO) as stderr:
-                result = INSTALLER.main(
-                    ["list-locales", "--release-url", "https://github.com/owner/repo/releases"]
-                )
-        self.assertEqual(result, 1)
-        self.assertIn("Windows requires Python 3.12 or newer", stderr.getvalue())
-        list_locales.assert_not_called()
+    def test_python_below_312_stops_before_release_access_on_every_os(self) -> None:
+        for os_name in ("nt", "posix"):
+            with self.subTest(os_name=os_name), mock.patch.object(
+                INSTALLER.os, "name", os_name
+            ), mock.patch.object(
+                INSTALLER.sys, "version_info", (3, 11, 9)
+            ), mock.patch.object(INSTALLER, "list_locales") as list_locales:
+                with mock.patch.object(INSTALLER.sys, "stderr", new_callable=io.StringIO) as stderr:
+                    result = INSTALLER.main(["list-locales"])
+                self.assertEqual(result, 1)
+                self.assertIn("Python 3.12 or newer is required", stderr.getvalue())
+                list_locales.assert_not_called()
+
+    def test_python_312_passes_the_floor_on_posix(self) -> None:
+        manifest = {"version": "2.0.0", "source_commit": "0" * 40,
+                    "repository": "owner/repo", "locales": {}}
+        with mock.patch.object(INSTALLER.os, "name", "posix"), mock.patch.object(
+            INSTALLER.sys, "version_info", (3, 12, 0)
+        ), mock.patch.object(INSTALLER, "list_locales", return_value=manifest) as list_locales:
+            with mock.patch.object(INSTALLER.sys, "stdout", new_callable=io.StringIO):
+                self.assertEqual(INSTALLER.main(["list-locales"]), 0)
+        list_locales.assert_called_once()
 
     def test_install_rejects_uninspectable_target_before_writing(self) -> None:
         target = self.temp_root() / "project"
@@ -1552,10 +1563,33 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("left unchanged", str(context.exception))
         self.assertEqual(_tree_state(target), before)
 
-    def test_cli_requires_a_release_url(self) -> None:
-        missing = self.run_cli("list-locales", "--version", "2.0.0")
-        self.assertNotEqual(missing.returncode, 0)
-        self.assertIn("--release-url", missing.stderr)
+    def test_cli_defaults_to_the_official_release_url(self) -> None:
+        self.assertEqual(
+            INSTALLER._validated_release_url(INSTALLER.DEFAULT_RELEASE_URL),
+            "https://github.com/jaff2836/coding-agent-docs-template/releases",
+        )
+        target = str(self.temp_root() / "target")
+        output = str(self.temp_root() / "output")
+        commands = (
+            ("install", ["--locale", "en", "--repo-root", target]),
+            ("export_artifact", ["--locale", "en", "--output", output]),
+            ("adopt", ["--locale", "en", "--repo-root", target, "--output", output]),
+            ("list_locales", []),
+        )
+        fork = "https://github.com/owner/repo/releases"
+        for function, arguments in commands:
+            command = "export" if function == "export_artifact" else function.replace("_", "-")
+            for extra, expected in (([], INSTALLER.DEFAULT_RELEASE_URL), (["--release-url", fork], fork)):
+                with self.subTest(command=command, release_url=expected), mock.patch.object(
+                    INSTALLER, function
+                ) as called, mock.patch.object(INSTALLER, "_print_adoption_summary"), \
+                        mock.patch.object(INSTALLER.sys, "stdout", new_callable=io.StringIO):
+                    try:
+                        result = INSTALLER.main([command, *extra, *arguments])
+                    except SystemExit as exc:
+                        self.fail("%s rejected its arguments: exit %s" % (command, exc.code))
+                    self.assertEqual(result, 0)
+                    self.assertEqual(called.call_args.args[0], expected)
 
     # -- helpers -----------------------------------------------------------
 

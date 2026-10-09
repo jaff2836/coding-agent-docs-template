@@ -73,7 +73,7 @@ The template does not include an initialization script, review prompts or automa
 
 For an official release, use `installer.py` from GitHub Releases. Use the latest installer with the latest version, or a versioned tag's installer with that same exact version. The installer follows only an HTTPS redirect chain initiated by a GitHub release asset URL, then verifies the checksums and manifest from the exact tag.
 
-On Windows, the installer from this template source revision requires Python 3.12 or newer to check directory junctions. Previously published releases retain their own Python support range.
+The installer from this template source revision requires Python 3.12 or newer on every operating system; on Windows it also needs that version to check directory junctions. Previously published releases retain their own Python support range. `--release-url` defaults to `https://github.com/jaff2836/coding-agent-docs-template/releases`; pass it only to use another repository's GitHub Releases.
 
 ```sh
 (
@@ -82,7 +82,7 @@ On Windows, the installer from this template source revision requires Python 3.1
     --output installer.py.part \
     https://github.com/jaff2836/coding-agent-docs-template/releases/latest/download/installer.py
   mv installer.py.part installer.py
-  python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}}
+  python3 installer.py list-locales --version {{VERSION}}
 )
 ```
 
@@ -91,7 +91,7 @@ Use `latest` or a full SemVer value for `{{VERSION}}`.
 For an existing repository, use `adopt`. It verifies the release the same way as `install`, never writes to the target repository, and creates only the verified artifact (`artifact/`) and a per-path plan (`adoption-plan.json`) in an empty directory outside the target.
 
 ```sh
-python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
+python3 installer.py adopt --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
 `adopt` does not apply any file. A person or coding agent merges according to each report status and then completes steps 1-13 below.
@@ -109,7 +109,7 @@ python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agen
 To upgrade a repository that was previously derived from an exact release, pass that older full SemVer as the base. Do not use `latest` for the base, and omit `--base-version` for a first adoption.
 
 ```sh
-python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --base-version {{OLDER_EXACT_VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
+python3 installer.py adopt --version {{VERSION}} --base-version {{OLDER_EXACT_VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
 Base mode validates the historical release without importing or running its installer. It assumes the target was derived from that exact base; file bytes alone cannot distinguish a project deletion from a file that was never applied.
@@ -130,13 +130,13 @@ For a new project, use `install` with a new path or an empty directory. If the t
 For a new Git repository, install first and run `git init` afterward. An initialized or cloned repository contains `.git` and is not empty; use `adopt` for that target or choose another new or empty directory. If the target path does not yet exist, its immediate parent must already exist and must not be a symlink or junction.
 
 ```sh
-python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
+python3 installer.py install --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}
 ```
 
 To obtain only the verified artifact without a plan, export it to an empty directory.
 
 ```sh
-python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
+python3 installer.py export --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
 1. In a new project created with `install`, or in a repository merged according to the `adopt` report, record its version and source commit in both guide documents as described in §5. Confirm that the artifact inventory includes the hidden `.agents/`, `.claude/`, `.cursor/`, and `.omp/` entries, `.gitignore`, and all four templates under `docs/changes/_template/`. Do not copy the source repository root directly.
