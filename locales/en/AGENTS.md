@@ -18,6 +18,7 @@ Follow the instructions below unless the user's current request conflicts with t
 - When shortening a report, keep warnings and risks, numbers, thresholds and scoped conditions, and failed or skipped verification in the summary list. Name any topic you leave out and say the user can ask for it.
 - Put a question that needs the user's decision before work can continue at the end of the report, with nothing after it. If the report carries much else, say in the first line that a decision is needed. Keep questions that do not block the work in the body and continue.
 - When the request does not mention a choice and you proceed with a reasonable default, state it in the report, for example "The request did not mention X, so I did Y." Do not proceed by default with actions that are hard to reverse, publish externally, delete data, or widen permissions; ask first.
+- After writing or editing documents, reports, or code comments, reread the changed lines. Check that numbers, statuses, locations, and references match reality and agree with the rest of the same document, and that sentences you moved or edited still point to the right place. Remove wording that adds length without information (empty intensifiers, announcements of what follows, repetition of the same content) and comments that restate the code.
 - If this bundle is used as a fallback for an unsupported language, intentionally change this section and the project-owned documents, and do not claim official locale support or locale-parity verification.
 
 ## Commands

@@ -13,6 +13,15 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
 
 ## 완료 작업 상세
 
+- [x] **T-047 자기 점검 규칙 root 시범**
+  - 출처: 2026-10-08 T-040 평가 뒤 사용자 결정("일단 root에서 시범을 조금 더 해보자")
+  - [x] 도입: root `AGENTS.md` Communication에 바뀐 줄을 다시 읽어 수치·상태·위치·참조와 문체를 점검하는 규칙 한 줄을 넣었습니다. 통합: PR #68.
+  - [x] 시범: 이 저장소의 다음 PR 5개에서 작성자가 규칙을 적용하고, PR 본문에 `자기 점검: 고친 것 N`과 고친 내용을 한 줄씩 남기기로 했습니다. 리뷰어가 같은 종류의 결함을 찾으면 함께 적습니다. 4/5에서 마쳤습니다.
+    - #69: 고친 것 2, 리뷰어가 찾은 같은 종류 2
+    - #70: 고친 것 1, 리뷰어가 찾은 같은 종류 1
+    - #71: 고친 것 3, 리뷰어가 찾은 같은 종류 0
+    - #72: 고친 것 0
+  - [x] 평가와 결정: 평가 완료(4 PR, 사용자 결정으로 단축). 2026-10-09 사용자가 다섯 번째 PR 없이 평가를 마치고 규칙을 en·ko payload `AGENTS.md`에 넣기로 정했습니다. 반영은 T-053이고, 공개는 이미 등록된 T-051(`v3.0.0`)에 포함하므로 release 항목을 새로 등록하지 않았습니다. 통합 근거: T-053 PR.
 - [x] **T-040 문서·주석 필터 root 시범**
   - 출처: 2026-10-07 외부 자료 분석(anti-slop)과 2026-10-08 사용자 선택. 방향은 root 시범이고 대상은 추적 문서와 코드 주석입니다. 채팅 보고·PR 본문·리뷰 prose는 대상이 아닙니다.
   - 측정 근거: 2026-10-08 추적 문서(ko 116k자, en 210k자, root 171k자)에서 상투 표현 패턴 검사에서 걸린 것은 `다음과 같습니다` 4회(ko·root)와 `ensure` 12회(en)였고(함께 걸린 일반 서술 `할 수 있습니다` 33회는 상투 표현으로 보지 않음) 코드 주석의 장식 구분선·단계 나레이션은 0건이었습니다. `—`와 굵게 표시는 이 저장소의 관례라 필터 대상에서 뺐습니다.
@@ -367,3 +376,4 @@ T-044·T-046은 2026-10-08 PR #66에서 등록했고 같은 날 취소했습니�
 | 30 | `claude/readme-install-restructure` | T-048 root README 설치 절 정리 | **Integrated** — Origin PR #69 merge `220188d`·GitHub fast-forward 확인 |
 | 31 | `claude/t049-t051-installer-checks-design` | T-049·T-050·T-051 설계(D-018·D-019) | **Integrated** — Origin PR #70 merge `7013011`·GitHub fast-forward 확인 |
 | 32 | `claude/t049-maintainer-checks` | T-049 root 사본·README locale 표 검사 | **Integrated** — Origin PR #71 merge `05b7007`·GitHub fast-forward 확인 |
+| 33 | `claude/t050-installer-defaults` | T-050 installer 기본 URL과 Python 3.12 하한, T-052 Completed 안내문 | **Integrated** — Origin PR #72 merge `9579191` |
