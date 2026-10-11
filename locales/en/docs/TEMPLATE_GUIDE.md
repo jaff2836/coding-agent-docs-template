@@ -356,7 +356,7 @@ Use this history to identify changes that an adopted repository has not yet appl
 
 - The selected release's `installer.py` requires Python 3.12 or newer on every operating system and defaults `--release-url` to the official GitHub Releases root. Previously published installers retain their own support range and still require `--release-url`.
 - `docs/TEMPLATE_GUIDE.md` §2: the installer commands no longer pass `--release-url`. Pass it only to use another repository's GitHub Releases, and run the commands with the installer from the same release.
-- `AGENTS.md` Communication: after writing or editing documents, reports, or code comments, reread the changed lines. Check numbers, statuses, locations, and references, consistency with the rest of the document, and where moved or edited sentences point, and remove padding and comments that restate code.
+- `AGENTS.md` Communication: after writing or editing documents, reports, or code comments, reread the changed lines. Check that numbers, statuses, locations, and references are correct and agree with the rest of the document, and that moved or edited sentences still point to the right place; remove padding and comments that restate code.
 - `docs/02-TODO.md` Completed: a merge-bound description that the operating rules allow may be recorded before integration.
 - Verify in the adopting repository: merge the changed sections with `adopt` (no file is overwritten automatically). Scripts or CI that run the installer need Python 3.12 or newer; an explicit `--release-url` keeps working. `AGENTS.md` is read every session, so check for duplicate sentences after merging.
 
