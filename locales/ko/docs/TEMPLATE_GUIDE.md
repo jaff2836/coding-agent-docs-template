@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.5.0
+- **Template version:** 3.0.0
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -351,6 +351,14 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v3.0.0 — 기본 release URL, Python 3.12 하한과 자기 점검 규칙
+
+- 선택한 release의 `installer.py`는 모든 OS에서 Python 3.12 이상을 요구하고, `--release-url`의 기본값으로 공식 GitHub Releases root를 씁니다. 이전에 공개된 installer는 해당 버전의 지원 범위를 따르며 `--release-url`이 여전히 필요합니다.
+- `docs/TEMPLATE_GUIDE.md` §2: installer 명령에서 `--release-url`을 뺐습니다. 다른 저장소의 GitHub Releases를 쓸 때만 지정하고, 명령은 같은 release의 installer로 실행합니다.
+- `AGENTS.md` Communication: 문서·보고·코드 주석을 쓰거나 고친 뒤 바뀐 줄을 다시 읽습니다. 수치·상태·위치·참조, 같은 문서 안의 일관성, 옮기거나 고친 문장이 가리키는 곳을 확인하고, 정보 없이 길이만 늘리는 표현과 코드를 되풀이하는 주석을 지웁니다.
+- `docs/02-TODO.md` Completed: 운영 규칙이 허용하는 결합 서술은 통합 전에 적을 수 있습니다.
+- 적용 저장소에서 확인할 것: `adopt`로 바뀐 절을 병합하세요(자동으로 덮어쓰는 파일은 없습니다). installer를 실행하는 스크립트나 CI에는 Python 3.12 이상이 필요하고, 명시한 `--release-url`은 계속 동작합니다. `AGENTS.md`는 매 세션 읽히므로 병합한 뒤 중복 문장이 없는지 확인하세요.
 
 ### v2.5.0 — 보고 형식, 지시의 출처와 완료 근거
 

@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 2.5.0
+- **Template version:** 3.0.0
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -351,6 +351,14 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v3.0.0 — Default Release URL, Python 3.12 Floor, and Self-check Rule
+
+- The selected release's `installer.py` requires Python 3.12 or newer on every operating system and defaults `--release-url` to the official GitHub Releases root. Previously published installers retain their own support range and still require `--release-url`.
+- `docs/TEMPLATE_GUIDE.md` §2: the installer commands no longer pass `--release-url`. Pass it only to use another repository's GitHub Releases, and run the commands with the installer from the same release.
+- `AGENTS.md` Communication: after writing or editing documents, reports, or code comments, reread the changed lines. Check numbers, statuses, locations, and references, consistency with the rest of the document, and where moved or edited sentences point, and remove padding and comments that restate code.
+- `docs/02-TODO.md` Completed: a merge-bound description that the operating rules allow may be recorded before integration.
+- Verify in the adopting repository: merge the changed sections with `adopt` (no file is overwritten automatically). Scripts or CI that run the installer need Python 3.12 or newer; an explicit `--release-url` keeps working. `AGENTS.md` is read every session, so check for duplicate sentences after merging.
 
 ### v2.5.0 — Report Format, Instruction Sources, and Completion Evidence
 

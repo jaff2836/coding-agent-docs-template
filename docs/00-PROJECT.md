@@ -37,6 +37,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 - D-010의 새 경로·빈 디렉터리 `install` 계약(T-016)은 Origin PR #34 merge commit `a105740ca16ea3e0b6092a7331bf60b89b06f4a3`에 통합됐고, PR #35 merge `4c6a798885404fdf5170769e271f7d06f4959234`의 `v2.3.2` asset으로 공개됐습니다. 두 remote `main`, annotated tag, draft candidate와 immutable published 검증이 통과했습니다. 공개 검증기의 새 거부 문구 대응과 지원 검증 기록은 Origin PR #36 merge `cc791be2370e76930184e473061312518d5fe221`에 통합하고 GitHub `main`에도 fast-forward로 반영했습니다.
 - D-013(기록 시점: merge 결합 서술·PR 원장)과 D-014(리뷰 finding ID와 근거)는 PR #56으로 source에 통합됐고 2026-10-01부터 이 저장소의 운영에 적용합니다. locale artifact로는 `v2.4.0`에서 공개했습니다.
 - D-015(보고 형식과 기본값 명시), D-016(외부 입력 경계), D-017(완료 근거·red-green·원장 `확인` 열)은 PR #60으로 source에 통합됐고 2026-10-07부터 이 저장소의 운영에 적용합니다. locale artifact로는 `v2.5.0`에서 공개했습니다.
+- D-018(installer 기본 release URL과 모든 OS의 Python 3.12 하한)은 PR #72로, D-019(root 리뷰 사본과 README locale 표의 maintainer 검사)는 PR #71로 source에 통합됐습니다. D-019는 이 저장소의 무인자 문서 검사에 바로 적용하고, D-018과 자기 점검 규칙(T-053, PR #73)은 T-051 `v3.0.0`으로 공개합니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -241,6 +242,6 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 | 문서 운영 계약 회귀 방지 | [2026-09-28-operation-contract-regression](./changes/2026-09-28-operation-contract-regression/01-CHANGE.md) | Accepted A — D-012가 D-005·D-009의 source 연결·CLI·LF·placeholder 검증을 보강 | 승인 설계; 구현·통합 상태는 TODO, 두 후속 구현 PR |
 | 기록 시점·리뷰 finding ID 계약 | [2026-09-30-record-timing-and-review-ids](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) | Accepted — D-013·D-014가 D-009 정본 문서의 기록·리뷰 계약을 확장 | 구현 PR #56 통합; `v2.4.0`으로 공개 |
 | 보고·검증 규범 | [2026-10-07-agent-reporting-and-verification](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) | Accepted — D-015~D-017이 D-009 정본 문서의 보고·입력 경계·완료 근거 계약을 확장 | 설계 PR #59와 구현 PR #60으로 통합; `v2.5.0`으로 공개 |
-| installer 기본값·Python 하한·maintainer 검사 | [2026-10-08-installer-defaults-and-maintainer-checks](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) | Accepted — D-018이 D-004의 CLI 인자와 D-011의 Python 하한을 바꾸고, D-019가 D-009의 root addendum 정합을 검사로 강제 | 승인 설계. 구현은 TODO T-049·T-050, 공개는 T-051(`v3.0.0`) |
+| installer 기본값·Python 하한·maintainer 검사 | [2026-10-08-installer-defaults-and-maintainer-checks](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) | Accepted — D-018이 D-004의 CLI 인자와 D-011의 Python 하한을 바꾸고, D-019가 D-009의 root addendum 정합을 검사로 강제 | 설계 PR #70과 구현 PR #71·#72로 통합; 공개는 TODO T-051(`v3.0.0`) |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.
