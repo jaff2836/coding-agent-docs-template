@@ -10,7 +10,7 @@ It supports Claude, Codex, Cursor, and [Oh My Pi](https://github.com/can1357/oh-
 
 ### Prerequisites
 
-- Python 3 (3.12 or newer on Windows)
+- Python 3.12 or newer
 - `curl` (`curl.exe` on Windows)
 - Network access to GitHub
 - Optional: GitHub CLI (`gh`) for the attestation check in step 2
@@ -46,7 +46,7 @@ Locales in the current release:
 | `ko` | Korean | complete |
 
 ```sh
-python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
+python3 installer.py list-locales --version latest
 gh release verify-asset installer.py --repo jaff2836/coding-agent-docs-template
 ```
 
@@ -59,7 +59,7 @@ Choose one option and set `--locale` to a supported locale.
 #### Option A: Existing project (`adopt`)
 
 ```sh
-python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root /path/to/existing-project --output /path/to/empty-directory
+python3 installer.py adopt --version latest --locale en --repo-root /path/to/existing-project --output /path/to/empty-directory
 ```
 
 `adopt` does not write to the project. In an output directory outside the project, it creates `artifact/` with the verified files and `adoption-plan.json`, which classifies each path as `missing`, `identical`, `merge`, `decision`, or `blocked`. Merge the files by following `artifact/docs/TEMPLATE_GUIDE.md`. To upgrade a project adopted from an exact earlier release, add `--base-version <older-exact-semver>`; the report then classifies paths as `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, or `blocked`. The plan format is experimental.
@@ -67,7 +67,7 @@ python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agen
 #### Option B: New project (`install`)
 
 ```sh
-python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --repo-root /path/to/new-project
+python3 installer.py install --version latest --locale en --repo-root /path/to/new-project
 ```
 
 The target must be a new path or an empty directory. If it does not exist yet, its parent must be an existing directory that is not a symlink or junction. Run `git init` after installing; a directory that already contains `.git` is not empty, so use Option A for it.
@@ -75,7 +75,7 @@ The target must be a new path or an empty directory. If it does not exist yet, i
 #### Option C: Files only (`export`)
 
 ```sh
-python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale en --output /path/to/empty-directory
+python3 installer.py export --version latest --locale en --output /path/to/empty-directory
 ```
 
 `export` writes the verified files to an empty directory without a plan.

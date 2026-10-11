@@ -6,7 +6,7 @@
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
 
-## v3.0.0 — Default release URL, Python 3.12 on every OS, and a self-check rule
+## [v3.0.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.0.0) — Default release URL, Python 3.12 on every OS, and a self-check rule
 
 - **Compatibility:** The `v3.0.0` installer requires Python 3.12 or newer on every operating system; Python 3.11 or older stops before release or target access. Previously only Windows required 3.12. If you cannot upgrade Python on Linux or macOS, download the `installer.py` asset from the `v2.5.0` release and run it with the exact `--version 2.5.0` and an explicit `--release-url`; this fallback does not include the changes below.
 - **Compatibility:** The installer commands in the application guides no longer pass `--release-url`. Run them with the installer from the same release; `v2.x` installers still require the flag.
@@ -14,6 +14,7 @@ This file records version-specific changes. See [README.md](./README.md) for cur
 - `AGENTS.md` Communication adds a self-check: after writing or editing documents, reports, or code comments, reread the changed lines to check that numbers, statuses, locations, and references are correct and agree with the rest of the document and that moved or edited sentences still point to the right place, then remove padding and comments that restate code.
 - The `docs/02-TODO.md` Completed guidance allows the merge-bound description that its operating rules already allowed, instead of always requiring a confirmed merge first.
 - The release manifest schema and artifact inventory are unchanged.
+- The verified draft's five assets were published unchanged as the immutable Latest release. The published verification on Linux and on native Windows (Buildkite) checked the `latest` and exact paths for both locales, the `v2.5.0` base-aware upgrade, and that a non-empty install target is refused and left unchanged.
 
 ## [v2.5.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.5.0) — Report format, instruction sources, and completion evidence
 

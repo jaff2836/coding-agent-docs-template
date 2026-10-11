@@ -37,7 +37,7 @@
 
 ### 1.5 미해결 질문
 
-없습니다. candidate의 실제 draft 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`·`v2.5.0`에서 운영 검증했습니다.
+없습니다. candidate의 실제 draft 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`·`v2.5.0`·`v3.0.0`에서 운영 검증했습니다.
 
 ## 2. Spec
 
@@ -83,7 +83,7 @@ D-004의 transport·source identity·게시 순서는 유지합니다. D-004가 
 
 ### 2.6 완료 조건과 미해결 사항
 
-브랜치 구현 완료는 새 unit test, 전체 unittest, root docs, stable locale, Python compile과 `git diff --check` 통과입니다. 공개 경로는 immutable `v2.1.0`의 exact checkout에서 최초 실환경 `published` 검증으로 확인했고, 실제 `candidate`와 `published` 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`·`v2.5.0`에서 반복 검증했습니다. `v2.2.0`부터는 각각 직전 release를 `--base-version`으로 지정해 모든 공식 locale의 base-aware 공개 E2E를 확인했습니다. Origin 통합과 공개는 각각 실제 remote 상태로 확인합니다.
+브랜치 구현 완료는 새 unit test, 전체 unittest, root docs, stable locale, Python compile과 `git diff --check` 통과입니다. 공개 경로는 immutable `v2.1.0`의 exact checkout에서 최초 실환경 `published` 검증으로 확인했고, 실제 `candidate`와 `published` 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`·`v2.5.0`·`v3.0.0`에서 반복 검증했습니다. `v2.2.0`부터는 각각 직전 release를 `--base-version`으로 지정해 모든 공식 locale의 base-aware 공개 E2E를 확인했습니다. Origin 통합과 공개는 각각 실제 remote 상태로 확인합니다.
 
 ## 3. 변경 기록
 
@@ -100,3 +100,4 @@ D-004의 transport·source identity·게시 순서는 유지합니다. D-004가 
 - 2026-10-07: 사용자가 `v2.5.0` exact source `6d04b97a2e2fc3da0f007b11a4cc1539bb2b57db`에 annotated tag와 draft를 만들었고, candidate가 통과한 5개 asset을 교체 없이 immutable Latest로 공개했습니다. candidate·공개·published 실행 시 Origin·GitHub `main`은 같은 source commit이었습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 2.4.0`이 통과해 asset byte·immutable Latest, latest·exact의 en·ko 경로, base-aware upgrade와 비어 있지 않은 install 대상 불변을 확인했습니다. native Windows의 published E2E는 이번 실행에 포함하지 않았습니다.
 - 2026-10-08: 사용자가 native Windows 10(NT 10.0.19045)에서 `v2.5.0` tag source로 `published --base-version 2.4.0`을 실행해 통과했습니다(exit 0, 동기화된 `main` `3bbf8b9`). 이후 release의 Windows published 검증은 Buildkite `windows-ci`의 수동 build로 실행합니다([CI.md](../../CI.md) §6). 이 경로는 읽기 전용 verifier를 실행할 뿐 tag·release를 바꾸지 않아 D-007의 사람 소유 경계를 유지합니다.
 - 2026-10-08: Buildkite `windows-ci`의 수동 published 검증 step을 처음 실환경에서 실행했습니다. Build #112(`main` `e105412`)가 `v2.5.0`(`--base-version 2.4.0`)을 tag source의 임시 worktree에서 검증해 통과했고, Origin check도 success입니다.
+- 2026-10-12: 사용자가 `v3.0.0` exact source `2c27a4d3e11df8cbd908f017656bee6d7902e245`에 annotated tag와 draft를 만들었고, candidate가 통과한 5개 asset을 교체 없이 immutable Latest로 공개했습니다. candidate·공개·published 실행 시 Origin·GitHub `main`은 같은 source commit이었습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 2.5.0`이 통과해 asset byte·immutable Latest, latest·exact의 en·ko 경로, base-aware upgrade와 비어 있지 않은 install 대상 불변을 확인했습니다. native Windows에서는 Buildkite `windows-ci` Build #135(`main` `2c27a4d`)가 같은 검증을 통과했습니다.
