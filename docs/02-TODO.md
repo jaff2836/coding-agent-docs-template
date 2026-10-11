@@ -16,8 +16,8 @@
 
 - **Name:** T-051 `v3.0.0` release
 - **Goal:** T-050·T-052·T-053 변경을 `v3.0.0`으로 공개함
-- **Target:** 아래 Backlog 34·35행
-- **Status:** In Progress — T-047은 평가를 마쳤고(4 PR, 사용자 결정으로 단축), 규칙은 T-053(34행)으로 payload에 넣습니다. T-043은 보류(Blocked)입니다.
+- **Target:** 아래 In Progress의 T-051과 Backlog 35행
+- **Status:** In Progress — 이 변경의 통합으로 준비가 끝납니다. tag·draft candidate, 공개·published 검증, 기록 PR은 그 뒤 단계입니다. T-043은 보류(Blocked)입니다.
 
 ## 운영 규칙
 
@@ -35,11 +35,17 @@
 
 ## In Progress
 
-없습니다.
+- [ ] **T-051 `v3.0.0` release**
+  - 범위: 아래 Backlog의 T-051 항목. D-007에 따라 준비, tag·draft candidate, 공개·published, 기록 단계를 나눕니다.
+  - version 판단: `v3.0.0`(major, D-018 Q3 사용자 선택). Linux·macOS의 Python 3.11 이하 지원을 끊고, payload의 installer 명령 계약(`required_commands`)에서 `--release-url`을 뺍니다. release manifest schema와 artifact inventory는 그대로입니다.
+  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.0.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.0.0 이력을, root `CHANGELOG`에 호환성 안내를 담은 링크 없는 v3.0.0 항목(공개 시 release 링크로 교체)을 추가했습니다. `v2.5.0` 대비 바뀐 artifact 파일은 locale마다 `AGENTS.md`, `docs/02-TODO.md`, `docs/TEMPLATE_GUIDE.md`, `docs/DOCS_GUIDE.md`(version만)이고, `installer.py`도 바뀝니다. 통합 근거: 이 변경의 PR.
+  - [ ] tag·draft candidate: 준비가 통합된 exact source에 사용자가 annotated `v3.0.0` tag와 GitHub draft를 만들고, agent가 `verify-release.py candidate`를 실행합니다.
+  - [ ] 공개·published: 사용자가 draft를 immutable release로 공개하고, agent가 Linux에서 `verify-release.py published --base-version 2.5.0`을 실행하고 Windows는 Buildkite `windows-ci` 수동 build로 검증합니다.
+  - [ ] 기록: 공개 뒤 기록 PR에서 검증 결과를 남기고, root README 명령의 `--release-url`을 빼고 Prerequisites를 Python 3.12 이상으로 바꾸며, PROJECT의 "`v3.0.0`으로 공개 예정" 표시를 고칩니다.
 
 ## Next
 
-T-051 `v3.0.0` release를 Backlog 35행에서 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+T-051 `v3.0.0` release를 검증·공개합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -53,12 +59,11 @@ T-051 `v3.0.0` release를 Backlog 35행에서 진행합니다. 새 작업은 사
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
 설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다. `v2.3.3`의 candidate 검증과 공개·published 검증은 D-007 경계에 따라 단계와 기록 PR을 분리합니다.
 
-통합된 순서 1~33의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+통합된 순서 1~34의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 34 | `claude/t053-self-check-payload` | T-053 자기 점검 규칙 payload 반영, T-047 종료 | **In Progress** — 이 변경의 PR. 공개는 35행 |
-| 35 | `claude/v3.0.0-release-prep` 등 | T-051 `v3.0.0` release | 34 통합 뒤. 공개 뒤 기록 PR에서 root README 명령을 바꿈 |
+| 35 | `claude/v3.0.0-release-prep` 등 | T-051 `v3.0.0` release | **In Progress** — 상세는 In Progress 항목 |
 
 - [ ] **T-051 `v3.0.0` release** — T-050의 installer·payload 변경과 T-052·T-053의 payload 변경을 major release로 D-007 단계에 따라 공개합니다. Linux·macOS의 Python 3.11 이하 사용자에게 이전 installer 대안을 안내합니다. 공개 뒤 기록 PR에서 root README 명령의 `--release-url`을 빼고 Prerequisites를 고칩니다.
 
@@ -76,8 +81,8 @@ T-051 `v3.0.0` release를 Backlog 35행에서 진행합니다. 새 작업은 사
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
-- [x] **T-053 자기 점검 규칙 payload 반영** — T-047 평가 뒤 사용자 결정(2026-10-09)으로 root `AGENTS.md` Communication의 자기 점검 규칙과 같은 뜻의 한 줄을 en·ko payload `AGENTS.md` Communication에 넣었습니다. ko는 root와 같은 문장이고 en은 번역입니다. 공개는 T-051(`v3.0.0`)입니다. 통합 근거: 이 변경의 PR.
-- [x] **T-047 자기 점검 규칙 root 시범** — 평가 완료(4 PR, 사용자 결정으로 단축). 시범 PR #69~#72에서 작성자가 고친 것은 2·1·3·0건이었습니다. 2026-10-09 사용자가 다섯 번째 PR 없이 평가를 마치고 규칙을 payload에 넣기로 정해 T-053으로 반영했습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합 근거: 이 변경의 PR.
+- [x] **T-053 자기 점검 규칙 payload 반영** — T-047 평가 뒤 사용자 결정(2026-10-09)으로 root `AGENTS.md` Communication의 자기 점검 규칙과 같은 뜻의 한 줄을 en·ko payload `AGENTS.md` Communication에 넣었습니다. ko는 root와 같은 문장이고 en은 번역입니다. 공개는 T-051(`v3.0.0`)입니다. 통합: PR #73.
+- [x] **T-047 자기 점검 규칙 root 시범** — 평가 완료(4 PR, 사용자 결정으로 단축). 시범 PR #69~#72에서 작성자가 고친 것은 2·1·3·0건이었습니다. 2026-10-09 사용자가 다섯 번째 PR 없이 평가를 마치고 규칙을 payload에 넣기로 정해 T-053으로 반영했습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합: PR #73.
 - [x] **T-050 installer 기본값과 Python 하한** — source `scripts/installer.py`의 `--release-url` 기본값을 `DEFAULT_RELEASE_URL`(공식 release root)로 두고, 모든 OS에서 Python 3.12 미만이면 release·대상 접근 전에 멈춥니다(D-018). en·ko 적용 가이드 §2의 Python 하한·기본 URL 문장과 installer 명령, manifest `required_commands`, root `AGENTS.md` Commands에서 `--release-url`을 뺐고 PROJECT External Boundaries를 고쳤습니다. 회귀 테스트는 `tests/test_install_release.py`에 있고 red-green 결과는 PR 본문에 있습니다. 공개는 T-051(`v3.0.0`)이며 root README 명령은 공개 뒤 기록 PR에서 바꿉니다. 설계: [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) R-001~R-003. 통합: PR #72.
 - [x] **T-052 Completed 안내문을 D-013에 맞춤** — root·en·ko `docs/02-TODO.md`의 Completed 안내문에 운영 규칙이 허용하는 결합 서술을 통합 전에 적을 수 있다는 예외를 넣었습니다. PR #69 리뷰의 무효 finding(C69-B-001)이 근거로 든 문장입니다. payload 변경은 T-051(`v3.0.0`)로 공개합니다. 통합: PR #72.
 - [x] **T-049 maintainer 정합 검사** — root `scripts/check-docs.py`의 무인자 실행이 root `REVIEW.md`·`REVIEW_ROUND.md`·`.cursor/BUGBOT.md`를 ko heading으로 찾은 프로젝트 소유 절 밖에서 ko 원본과 대조하고, root README locale 표의 tag가 manifest의 `complete` locale이며 상태가 `complete`인지 확인합니다(D-019). `check_locales.read_validated_manifest()`를 추가해 `check_locales()`와 함께 씁니다. 회귀 테스트는 `tests/test_check_docs.py`에 있고 red-green 결과는 PR 본문에 있습니다. root `TEMPLATE_GUIDE.md` §3·§5, `DOCS_GUIDE.md` 점검 목록, PROJECT 기능 표를 고쳤습니다. 통합: PR #71.
