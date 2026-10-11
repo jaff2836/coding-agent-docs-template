@@ -2,20 +2,20 @@
 
 > 프로젝트 전체의 변경·마일스톤·우선순위·의존성을 관리합니다. 제품 기준과 결정은 [00-PROJECT.md](./00-PROJECT.md), 상세 상태의 소유권은 [DOCS_GUIDE.md](./DOCS_GUIDE.md)를 따릅니다.
 >
-> 이 branch에서는 템플릿 저장소 자체의 다국어 변경을 추적합니다. 기존 사용자용 한국어 TODO 양식은 구현 시 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`에서 `locales/ko/docs/02-TODO.md`로 이관하며, 이 maintainer 작업은 locale artifact에 포함하지 않습니다.
+> 템플릿 저장소 자체의 maintainer 작업을 추적하며 locale artifact에 포함하지 않습니다. 사용자용 TODO 양식의 source는 `locales/<tag>/docs/02-TODO.md`입니다. 한국어 양식은 W-001(Origin PR #3)에서 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`의 root 양식을 옮긴 것입니다.
 
 ## Metadata
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-07 (KST)
+- **Last reviewed:** 2026-10-12 (KST)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
-- **Integration target:** local `main`; 공개 저장소 target `jaff2836/coding-agent-docs-template`; v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
+- **Integration target:** Origin `main`(PR merge)과 공개 저장소 `jaff2836/coding-agent-docs-template`의 `main`(같은 merge commit의 non-force fast-forward, [TEMPLATE_GUIDE §5](./TEMPLATE_GUIDE.md)); v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
 - **Name:** 없음
-- **Status:** `v3.0.0` 공개로 T-051까지 끝났습니다. 남은 Backlog는 없고 T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
+- **Status:** `v3.0.0` 공개(T-051)와 root 문서 정리(T-054)까지 끝났습니다. 남은 Backlog는 없고 T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
 
 ## 운영 규칙
 
@@ -26,7 +26,7 @@
 - 공통 항목은 범위·의존성·통합 결과가 달라질 때만 수정합니다. 충돌은 최신 기준과 변경-ID를 대조해 해결하고, 영향받은 계약·검증 전제를 재확인합니다.
 - `Completed`는 필요한 검증과 지정한 대상에의 반영을 확인한 항목, 또는 작업 브랜치에서 자기 최종 head의 통합과 동시에 완료되는 항목(결합 서술)을 담습니다. 릴리스·지원 검증처럼 통합 뒤에 일어나는 완료는 그 일이 끝난 뒤에만 기록합니다. 브랜치 구현 완료·리뷰 통과·병합·릴리스·지원 검증을 구분하고 해당 작업의 완료 조건으로 판단합니다.
 - 자기 PR의 CI build·리뷰 판정·merge SHA는 PR을 원장으로 두고 이 문서에는 PR 참조만 둡니다. 상세 규칙과 사용자 요청 예외는 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 로컬 Git과 병렬 브랜치 절을 따릅니다.
-- `T-nnn`은 이 문서의 전역 작업 ID입니다. 변경-ID·PROJECT의 `D-nnn`·변경 폴더의 `R-nnn`/`W-nnn`과 범위가 다릅니다. 발급·충돌 처리는 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 식별자 범위를 따릅니다. 아래 `T-001` 등은 자리 표시입니다.
+- `T-nnn`은 이 문서의 전역 작업 ID입니다. 변경-ID·PROJECT의 `D-nnn`·변경 폴더의 `R-nnn`/`W-nnn`과 범위가 다릅니다. 발급·충돌 처리는 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 식별자 범위를 따릅니다.
 - 취소한 변경은 Cancelled에 두고 변경 폴더는 유지합니다. 완료된 SPEC을 현재 제품 기준으로 읽지 않으며, 구현된 계약은 통합 후 PROJECT에 반영합니다.
 - 원격 저장소나 PR은 필수가 아닙니다. 로컬 작업은 기준 revision과 대상 브랜치 또는 검토한 작업 트리 범위로 근거를 남깁니다. 미커밋 결과를 commit SHA로 재현된다고 표현하지 않습니다.
 - 문서 갱신은 commit·push·merge 권한이 아닙니다. 리뷰 라운드 통과 후 반영은 [REVIEW_ROUND.md](./REVIEW_ROUND.md) §9를 따릅니다.
@@ -49,7 +49,7 @@
 ## Backlog
 
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
-설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다. `v2.3.3`의 candidate 검증과 공개·published 검증은 D-007 경계에 따라 단계와 기록 PR을 분리합니다.
+설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다.
 
 통합된 순서 1~35의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
@@ -70,6 +70,7 @@
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
+- [x] **T-054 root 관리 문서 정리** — 2026-10-12 사용자 요청으로 root `docs/00-PROJECT.md`·`docs/02-TODO.md`의 오래된 문장과 템플릿 안내를 고쳤습니다. PROJECT §6은 남은 목표 구조가 없다고 적고 다른 절과 겹치던 설명을 뺐으며, root에서는 실제 항목인 `D-001`·`T-001`을 자리 표시라고 한 문장을 지웠습니다. TODO의 머리말·Integration target·Backlog 안내를 현재 운영에 맞추고 두 문서의 `Last reviewed`를 갱신했습니다. root 문서만 바뀌어 release가 필요 없습니다. 통합: 이 변경의 PR.
 - [x] **T-051 `v3.0.0` release** — 준비는 PR #74로 통합됐습니다. 2026-10-12(KST) 사용자가 exact source `2c27a4d`에 annotated tag와 draft를 만들어 immutable Latest로 공개했고, candidate 검증과 Linux·native Windows(Buildkite `windows-ci`)의 published(`--base-version 2.5.0`) 검증이 통과했습니다. root README 명령·Prerequisites와 공개 기록은 이 변경의 PR에서 고쳤습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 - [x] **T-053 자기 점검 규칙 payload 반영** — T-047 평가 뒤 사용자 결정(2026-10-09)으로 root `AGENTS.md` Communication의 자기 점검 규칙과 같은 뜻의 한 줄을 en·ko payload `AGENTS.md` Communication에 넣었습니다. ko는 root와 같은 문장이고 en은 번역입니다. 공개는 T-051(`v3.0.0`)입니다. 통합: PR #73.
 - [x] **T-047 자기 점검 규칙 root 시범** — 평가 완료(4 PR, 사용자 결정으로 단축). 시범 PR #69~#72에서 작성자가 고친 것은 2·1·3·0건이었습니다. 2026-10-09 사용자가 다섯 번째 PR 없이 평가를 마치고 규칙을 payload에 넣기로 정해 T-053으로 반영했습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합: PR #73.
