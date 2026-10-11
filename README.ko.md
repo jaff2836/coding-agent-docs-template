@@ -10,7 +10,7 @@ Claude, Codex, Cursor와 [Oh My Pi](https://github.com/can1357/oh-my-pi)를 지�
 
 ### 사전 요구사항
 
-- Python 3 (Windows는 3.12 이상)
+- Python 3.12 이상
 - `curl` (Windows는 `curl.exe`)
 - GitHub 네트워크 접근
 - 선택: 2단계의 attestation 확인에 쓰는 GitHub CLI(`gh`)
@@ -46,7 +46,7 @@ Move-Item -Force -ErrorAction Stop installer.py.part installer.py
 | `ko` | 한국어 | complete |
 
 ```sh
-python3 installer.py list-locales --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest
+python3 installer.py list-locales --version latest
 gh release verify-asset installer.py --repo jaff2836/coding-agent-docs-template
 ```
 
@@ -59,7 +59,7 @@ gh release verify-asset installer.py --repo jaff2836/coding-agent-docs-template
 #### 선택 A: 기존 프로젝트 (`adopt`)
 
 ```sh
-python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale ko --repo-root /path/to/existing-project --output /path/to/empty-directory
+python3 installer.py adopt --version latest --locale ko --repo-root /path/to/existing-project --output /path/to/empty-directory
 ```
 
 `adopt`는 프로젝트에 아무것도 쓰지 않습니다. 프로젝트 밖의 output 디렉터리에 검증된 파일을 담은 `artifact/`와, 각 경로를 `missing`, `identical`, `merge`, `decision`, `blocked`로 분류한 `adoption-plan.json`을 만듭니다. 병합은 `artifact/docs/TEMPLATE_GUIDE.md`의 절차를 따릅니다. 이전 exact release에서 적용한 프로젝트를 올릴 때는 `--base-version <older-exact-semver>`를 더하면, report가 경로를 `unchanged`, `template-only`, `project-only`, `converged`, `diverged`, `blocked`로 분류합니다. plan 형식은 실험적입니다.
@@ -67,7 +67,7 @@ python3 installer.py adopt --release-url https://github.com/jaff2836/coding-agen
 #### 선택 B: 새 프로젝트 (`install`)
 
 ```sh
-python3 installer.py install --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale ko --repo-root /path/to/new-project
+python3 installer.py install --version latest --locale ko --repo-root /path/to/new-project
 ```
 
 설치 대상은 존재하지 않는 경로이거나 빈 디렉터리여야 합니다. 대상이 아직 없다면 바로 위 부모가 이미 존재하는 디렉터리이고 symlink나 junction이 아니어야 합니다. `git init`은 설치한 뒤에 실행합니다. `.git`이 있는 디렉터리는 비어 있지 않으므로 선택 A를 사용합니다.
@@ -75,7 +75,7 @@ python3 installer.py install --release-url https://github.com/jaff2836/coding-ag
 #### 선택 C: 파일만 (`export`)
 
 ```sh
-python3 installer.py export --release-url https://github.com/jaff2836/coding-agent-docs-template/releases --version latest --locale ko --output /path/to/empty-directory
+python3 installer.py export --version latest --locale ko --output /path/to/empty-directory
 ```
 
 `export`는 계획 없이 검증된 파일만 빈 디렉터리에 씁니다.

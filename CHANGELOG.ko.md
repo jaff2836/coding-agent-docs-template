@@ -6,7 +6,7 @@
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
 
-## v3.0.0 — 기본 release URL, 모든 OS의 Python 3.12, 자기 점검 규칙
+## [v3.0.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.0.0) — 기본 release URL, 모든 OS의 Python 3.12, 자기 점검 규칙
 
 - **호환성:** `v3.0.0` installer는 모든 OS에서 Python 3.12 이상을 요구하며, Python 3.11 이하는 release·대상 접근 전에 중단합니다. 이전에는 Windows만 3.12를 요구했습니다. Linux·macOS에서 Python을 업그레이드할 수 없다면 `v2.5.0` release의 `installer.py` asset을 받아 정확한 `--version 2.5.0`과 명시적인 `--release-url`로 실행하세요. 이 대안에는 아래 변경 사항이 포함되지 않습니다.
 - **호환성:** 적용 가이드의 installer 명령에서 `--release-url`을 뺐습니다. 같은 release의 installer로 실행하세요. `v2.x` installer에는 이 인자가 여전히 필요합니다.
@@ -14,6 +14,7 @@
 - `AGENTS.md` Communication에 자기 점검 규칙을 더했습니다. 문서·보고·코드 주석을 쓰거나 고친 뒤 바뀐 줄을 다시 읽어 수치·상태·위치·참조, 같은 문서 안의 일관성, 옮기거나 고친 문장이 가리키는 곳을 확인하고, 정보 없이 길이만 늘리는 표현과 코드를 되풀이하는 주석을 지웁니다.
 - `docs/02-TODO.md`의 Completed 안내문이 운영 규칙에 이미 있던 결합 서술을 허용합니다. 이전 문구는 늘 병합 결과를 먼저 확인하라고 적었습니다.
 - release manifest schema와 artifact inventory는 바뀌지 않습니다.
+- 검증된 draft asset 5개를 그대로 immutable Latest로 공개했습니다. Linux와 native Windows(Buildkite)의 published 검증에서 latest·exact의 두 locale 경로, `v2.5.0` base-aware upgrade와 비어 있지 않은 install 대상의 거부·tree 불변을 확인했습니다.
 
 ## [v2.5.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v2.5.0) — 보고 형식, 지시의 출처와 완료 근거
 
