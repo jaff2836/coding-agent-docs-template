@@ -509,6 +509,40 @@ Translated guidance
                 CHECK_DOCS.check_relative_links(errors, [])
             self.assertIn("MISSING.md", "\n".join(errors))
 
+    def test_backticks_inside_comments_do_not_pair_with_code_spans(self) -> None:
+        text = (
+            "<!-- ` --> <!-- `\n"
+            "## 9. Commented decoy\n"
+            "-->\n"
+            "## 1. Visible heading\n"
+        )
+        self.assertEqual(
+            CHECK_DOCS.markdown_line_context(text),
+            ((True, True), (True, False), (True, False), (True, True)),
+        )
+        self.assertEqual(
+            CHECK_DOCS.markdown_searchable_text(text),
+            " " * 17 + "\n" + " " * 21 + "\n" + " " * 3 + "\n"
+            + "## 1. Visible heading\n",
+        )
+
+        code_span_across_lines = "`code\n<!-- still code`\n## 1. Visible\n"
+        self.assertEqual(
+            CHECK_DOCS.markdown_line_context(code_span_across_lines),
+            ((True, True), (True, True), (True, True)),
+        )
+
+    def test_comment_opener_search_masks_each_code_span_once(self) -> None:
+        lines = 200
+        text = "<!-- `note` --> `code` prose\n" * lines
+        with patch.object(
+            CHECK_DOCS, "mask_text_range", wraps=CHECK_DOCS.mask_text_range
+        ) as mask_text_range:
+            searchable = CHECK_DOCS.markdown_searchable_text(text)
+        self.assertEqual(searchable, (" " * 15 + " `code` prose\n") * lines)
+        # Comments are masked once each; code spans are paired, not re-masked.
+        self.assertLessEqual(mask_text_range.call_count, 2 * lines)
+
     def test_list_relative_fence_masks_links(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
