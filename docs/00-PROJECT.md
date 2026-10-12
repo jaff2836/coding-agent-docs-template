@@ -9,7 +9,7 @@
 - **Project:** coding-agent-docs-template
 - **Status:** Active — immutable Latest `v3.0.0` 공개와 Linux·Windows published 검증 완료
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-08
+- **Last reviewed:** 2026-10-12
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
 
 ## 1. Context
@@ -99,27 +99,9 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 
 ## 6. Target Architecture
 
-합의되었지만 아직 완전히 구현되지 않은 목표 구조를 기록합니다. **제안만 있고 합의되지 않은 항목은 여기 두지 않습니다.** 미합의 항목은 §11 Open Questions 또는 §12 Rejected or Deferred Ideas에 두고, 결정이 내려진 뒤에만 이 표로 옮깁니다. 이 표만 읽는 사람은 여기 있는 것을 이미 결정된 것으로 읽습니다.
+합의되었지만 아직 완전히 구현되지 않은 목표 구조를 기록합니다. **제안만 있고 합의되지 않은 항목은 여기 두지 않습니다.** 미합의 항목은 §11 Open Questions 또는 §12 Rejected or Deferred Ideas에 두고, 결정이 내려진 뒤에만 이 절로 옮깁니다. 이 절만 읽는 사람은 여기 있는 것을 이미 결정된 것으로 읽습니다.
 
-### Target Components
-
-승인된 목표 구성은 `template/common/`과 BCP 47 tag별 `locales/<tag>/` source, 닫힌 manifest inventory, locale 검사, deterministic exporter·packager와 비파괴 installer입니다. 첫 안정판은 `en`·`ko`가 모두 `complete`일 때만 만들며 skill prose와 출력 정책은 locale별 source가 소유합니다.
-
-D-006의 `adopt`·adoption policy·release manifest schema 2는 `v2.1.0`으로 구현·공개되어 §5 현재 구조로 옮겼습니다. 상세 계약은 [adoption SPEC](./changes/2026-09-18-existing-repository-adoption/02-SPEC.md)을 따릅니다.
-
-D-008의 선택형 `adopt --base-version <older-exact-semver>`과 format 2 report는 `v2.2.0`으로 구현·공개되어 §5 현재 구조로 옮겼습니다. 상세 계약과 완료 근거는 [base-aware adoption 변경](./changes/2026-09-20-adopt-upgrade-classification/01-CHANGE.md)과 [PLAN](./changes/2026-09-20-adopt-upgrade-classification/03-PLAN.md)을 따릅니다.
-
-D-011의 Windows Python 3.12 하한과 junction 경계는 `v2.3.3`으로 구현·공개되어 §5 현재 구조로 옮겼습니다. D-006 adoption SPEC §3.3의 대상 상태 확장과 자세한 범위는 [T-017 경계 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)를 따릅니다.
-
-### Target Data Flow
-
-common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경로로 합성하고 검사합니다. exact source commit과 version에 결합된 locale별 archive·manifest를 만든 뒤 installer가 검증·stage·전체 충돌 검사를 거쳐 대상에 기록합니다. 상세 계약은 [SPEC §3](./changes/2026-09-09-multilingual-template/02-SPEC.md)을 따릅니다.
-
-### Compatibility Requirements
-
-- v1.7.1 한국어 payload는 `fb70176` 기준으로 보존합니다.
-- source root를 직접 복사하지 않으며 locale artifact만 적용합니다.
-- 이미 적용한 저장소는 자동 migration하지 않습니다.
+현재 해당하는 목표 구조는 없습니다. 지금까지 합의한 구조는 모두 구현되어 §5에 있고, 결정과 상세 설계는 §8과 §13이 연결합니다.
 
 ## 7. Transition Plan
 
@@ -169,7 +151,7 @@ common과 선택 locale 하나를 manifest inventory에 따라 표준 root 경�
 
 중요한 결정이 많아지면 개별 ADR 문서로 분리하고 여기에는 링크와 요약만 남깁니다.
 
-결정 상태와 정본 위치는 이 표가 기준입니다. `D-nnn`은 이 표에 등재할 때 전역으로 발급합니다. 표의 `D-001` 행은 자리 표시이므로 적용 시 삭제하거나 실제 결정으로 교체하세요. 변경 폴더의 `R-001` 등과 같은 번호대가 아닙니다. 상세 설계에 이유·대안·영향이 있으면 여기에는 링크와 요약만 남깁니다. 승인한 사람·범위·확인 가능한 근거를 연결하고, 기존 결정을 대체하면 삭제하지 않고 `Superseded`로 남깁니다. 기존 결정 ID를 파일 번호에 맞춰 재번호하지 않습니다.
+결정 상태와 정본 위치는 이 표가 기준입니다. `D-nnn`은 이 표에 등재할 때 전역으로 발급합니다. 변경 폴더의 `R-001` 등과 같은 번호대가 아닙니다. 상세 설계에 이유·대안·영향이 있으면 여기에는 링크와 요약만 남깁니다. 승인한 사람·범위·확인 가능한 근거를 연결하고, 기존 결정을 대체하면 삭제하지 않고 `Superseded`로 남깁니다. 기존 결정 ID를 파일 번호에 맞춰 재번호하지 않습니다.
 
 ## 9. Delivery Strategy
 
