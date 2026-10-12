@@ -567,6 +567,7 @@ class CommentOpenerSearch:
     Whichever starts first wins: a code span hides the openers inside it, and
     backticks inside a comment never pair with backticks outside it. Code spans
     may cross lines, so backticks pair from the end of the last closed comment.
+    Searches only move forward, so each backtick run is paired at most once.
     """
 
     def __init__(self, text: str) -> None:
@@ -577,25 +578,45 @@ class CommentOpenerSearch:
             )
         )
         self.pairing_start = 0
-        self.masked: Optional[str] = None
+        self.next_backtick = text.find("`")
+        self.span = (0, 0)
 
     def comment_closed(self, index: int, column: int) -> None:
         """Pair later backticks from *column* of line *index*."""
 
         self.pairing_start = self.line_starts[index] + column
-        self.masked = None
 
     def find(self, index: int, column: int, end: int) -> int:
         """Return the first opener column in ``line[column:end]``, or ``-1``."""
 
         line_start = self.line_starts[index]
-        if self.text.find("<!--", line_start + column, line_start + end) < 0:
-            return -1
-        if self.masked is None:
-            self.masked = mask_inline_code_spans(self.text[self.pairing_start :])
-        offset = line_start - self.pairing_start
-        position = self.masked.find("<!--", offset + column, offset + end)
-        return -1 if position < 0 else position - offset
+        line_end = line_start + end
+        position = self.text.find("<!--", line_start + column, line_end)
+        while position >= 0:
+            span_end = self.code_span_end(position)
+            if span_end < 0:
+                return position - line_start
+            position = self.text.find("<!--", span_end, line_end)
+        return -1
+
+    def code_span_end(self, position: int) -> int:
+        """Return the end of the code span covering *position*, or ``-1``."""
+
+        while True:
+            start, end = self.span
+            if start <= position < end:
+                return end
+            if 0 <= self.next_backtick < self.pairing_start:
+                self.next_backtick = self.text.find("`", self.pairing_start)
+            start = self.next_backtick
+            if start < 0 or start > position:
+                return -1
+            opening_end, closing_end = code_span_at(self.text, start)
+            if closing_end is None:
+                self.pairing_start = opening_end
+            else:
+                self.span = (start, closing_end)
+                self.pairing_start = closing_end
 
 
 def list_relative_line(
@@ -640,31 +661,39 @@ def mask_inline_code_spans(text: str) -> str:
         start = text.find("`", cursor)
         if start < 0:
             break
-        opening_end = start + 1
-        while opening_end < len(text) and text[opening_end] == "`":
-            opening_end += 1
-        run_length = opening_end - start
-
-        candidate = opening_end
-        closing_end: Optional[int] = None
-        while candidate < len(text):
-            closing_start = text.find("`", candidate)
-            if closing_start < 0:
-                break
-            run_end = closing_start + 1
-            while run_end < len(text) and text[run_end] == "`":
-                run_end += 1
-            if run_end - closing_start == run_length:
-                closing_end = run_end
-                break
-            candidate = run_end
-
+        opening_end, closing_end = code_span_at(text, start)
         if closing_end is None:
             cursor = opening_end
             continue
         mask_text_range(characters, start, closing_end)
         cursor = closing_end
     return "".join(characters)
+
+
+def code_span_at(text: str, start: int) -> Tuple[int, Optional[int]]:
+    """Return the end of the backtick run at *start* and of its code span.
+
+    The code span ends after the next run of the same length; without one the
+    run is literal text and its span end is ``None``.
+    """
+
+    opening_end = start + 1
+    while opening_end < len(text) and text[opening_end] == "`":
+        opening_end += 1
+    run_length = opening_end - start
+
+    candidate = opening_end
+    while candidate < len(text):
+        closing_start = text.find("`", candidate)
+        if closing_start < 0:
+            break
+        run_end = closing_start + 1
+        while run_end < len(text) and text[run_end] == "`":
+            run_end += 1
+        if run_end - closing_start == run_length:
+            return opening_end, run_end
+        candidate = run_end
+    return opening_end, None
 
 
 def markdown_searchable_text(text: str, *, mask_inline_code: bool = False) -> str:

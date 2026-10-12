@@ -532,6 +532,17 @@ Translated guidance
             ((True, True), (True, True), (True, True)),
         )
 
+    def test_comment_opener_search_masks_each_code_span_once(self) -> None:
+        lines = 200
+        text = "<!-- `note` --> `code` prose\n" * lines
+        with patch.object(
+            CHECK_DOCS, "mask_text_range", wraps=CHECK_DOCS.mask_text_range
+        ) as mask_text_range:
+            searchable = CHECK_DOCS.markdown_searchable_text(text)
+        self.assertEqual(searchable, (" " * 15 + " `code` prose\n") * lines)
+        # Comments are masked once each; code spans are paired, not re-masked.
+        self.assertLessEqual(mask_text_range.call_count, 2 * lines)
+
     def test_list_relative_fence_masks_links(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
