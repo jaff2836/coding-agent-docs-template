@@ -1380,6 +1380,48 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("SHA256SUMS", str(context.exception))
         self.assertFalse(target.exists())
 
+
+    def test_rejects_sha256sums_that_disagree_with_the_release_assets(self) -> None:
+        sums_path = "%s/SHA256SUMS" % VERSION_DIR
+        lines = build_release_payloads()[sums_path].decode("ascii").splitlines(keepends=True)
+        archive_line = next(line for line in lines if line.rstrip().endswith(".zip"))
+        cases = {
+            "missing-archive": [line for line in lines if line != archive_line],
+            "wrong-archive-digest": [
+                "0" * 64 + line[64:] if line == archive_line else line for line in lines
+            ],
+            "extra-asset": lines + ["%s  extra.bin\n" % ("1" * 64)],
+        }
+        for label, sums in cases.items():
+            with self.subTest(label):
+                base = self.publish(sums="".join(sums).encode("ascii"))
+                target = self.temp_root() / label
+                with self.assertRaises(INSTALLER.InstallerError) as context:
+                    self.call_install(base, target)
+                self.assertIn("SHA256SUMS", str(context.exception))
+                self.assertFalse(target.exists())
+
+    def test_rejects_an_installer_record_with_the_wrong_size(self) -> None:
+        base = self.publish(installer_record_overrides={"bytes": 1})
+        target = self.temp_root() / "project"
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            self.call_install(base, target)
+        self.assertIn("installer", str(context.exception))
+        self.assertFalse(target.exists())
+
+    def test_rejects_non_string_manifest_fields_as_installer_errors(self) -> None:
+        manifest = json.loads(build_release_payloads()["%s/release-manifest.json" % VERSION_DIR])
+        for key, value in (
+            ("version", 123),
+            ("source_commit", None),
+            ("repository", ["jaff2836/coding-agent-docs-template"]),
+        ):
+            with self.subTest(key=key), self.assertRaises(INSTALLER.InstallerError):
+                INSTALLER._validated_manifest(dict(manifest, **{key: value}))
+        member = manifest["locales"]["ko"]["members"][0]
+        with self.assertRaises(INSTALLER.InstallerError):
+            INSTALLER._validated_member_record("ko", dict(member, sha256=7))
+
     def test_rejects_archive_members_that_differ_from_the_manifest_inventory(self) -> None:
         archive = PACKAGE_RELEASE._zip_bytes(
             (
@@ -1407,6 +1449,27 @@ class InstallerTests(unittest.TestCase):
             self.call_install(base, target)
         self.assertIn("..", str(context.exception))
         self.assertFalse((self.temp_root() / "evil.txt").exists())
+        self.assertFalse(target.exists())
+
+
+    def test_rejects_windows_unsafe_member_paths_before_writing(self) -> None:
+        for path in (
+            "C:/probe.md",
+            "docs/C:/probe.md",
+            "AGENTS.md:payload",
+            "NUL.txt",
+            "docs/com1.md",
+            "docs/end.",
+            "docs/end ",
+            "docs/tab\tname.md",
+        ):
+            with self.subTest(path=path), self.assertRaises(INSTALLER.InstallerError):
+                INSTALLER._validated_member_path(path)
+        base = self.publish(members={"C:/probe.md": b"escape\n", "AGENTS.md": b"# ok\n"})
+        target = self.temp_root() / "project"
+        with self.assertRaises(INSTALLER.InstallerError) as context:
+            self.call_install(base, target)
+        self.assertIn("C:/probe.md", str(context.exception))
         self.assertFalse(target.exists())
 
     def test_rejects_non_regular_archive_members(self) -> None:
@@ -1563,6 +1626,86 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("left unchanged", str(context.exception))
         self.assertEqual(_tree_state(target), before)
 
+
+    def test_rollback_failure_reports_the_paths_left_behind(self) -> None:
+        target = self.temp_root() / "project"
+        target.mkdir()
+        real_chmod = os.chmod
+        real_unlink = Path.unlink
+
+        def failing_chmod(path, mode):
+            if Path(path).name == "b.md":
+                raise OSError("simulated write failure")
+            return real_chmod(path, mode)
+
+        def failing_unlink(path, *args, **kwargs):
+            if path.name == "a.md":
+                raise OSError("simulated rollback failure")
+            return real_unlink(path, *args, **kwargs)
+
+        with mock.patch.object(INSTALLER.os, "chmod", failing_chmod), mock.patch.object(
+            Path, "unlink", failing_unlink
+        ):
+            with self.assertRaises(INSTALLER.InstallerError) as context:
+                INSTALLER._write_members(target, {"a.md": b"a\n", "b.md": b"b\n"})
+        message = str(context.exception)
+        self.assertNotIn("left unchanged", message)
+        self.assertIn(str(target / "a.md"), message)
+        self.assertTrue((target / "a.md").exists())
+        self.assertFalse((target / "b.md").exists())
+
+    def test_interrupted_install_rolls_back_created_paths(self) -> None:
+        target = self.temp_root() / "project"
+        real_chmod = os.chmod
+
+        def interrupting_chmod(path, mode):
+            if Path(path).name == "b.md":
+                raise KeyboardInterrupt
+            return real_chmod(path, mode)
+
+        with mock.patch.object(INSTALLER.os, "chmod", interrupting_chmod):
+            with self.assertRaises(KeyboardInterrupt):
+                INSTALLER._write_members(target, {"a.md": b"a\n", "b.md": b"b\n"})
+        self.assertFalse(target.exists())
+
+    def test_publish_failure_restores_the_existing_empty_output(self) -> None:
+        output = self.temp_root() / "export"
+        output.mkdir()
+        os.chmod(output, 0o750)
+        mode = stat.S_IMODE(output.stat().st_mode)
+
+        def failing_replace(source, destination):
+            raise OSError("simulated publish failure")
+
+        with mock.patch.object(INSTALLER.os, "replace", failing_replace):
+            with self.assertRaises(INSTALLER.InstallerError) as context:
+                INSTALLER._publish_directory(output, {"a.md": b"a\n"})
+        self.assertIn("cannot publish", str(context.exception))
+        self.assertTrue(output.is_dir())
+        self.assertEqual(list(output.iterdir()), [])
+        self.assertEqual(stat.S_IMODE(output.stat().st_mode), mode)
+        self.assertEqual(
+            [path.name for path in self.temp_root().iterdir() if path.name.startswith(".template-install-")],
+            [],
+        )
+
+
+    def test_publish_failure_before_removing_the_output_does_not_recreate_it(self) -> None:
+        output = self.temp_root() / "export"
+        output.mkdir()
+        real_rmdir = Path.rmdir
+
+        def failing_rmdir(path):
+            if path == output:
+                raise OSError("simulated rmdir failure")
+            return real_rmdir(path)
+
+        with mock.patch.object(Path, "rmdir", failing_rmdir):
+            with self.assertRaises(INSTALLER.InstallerError) as context:
+                INSTALLER._publish_directory(output, {"a.md": b"a\n"})
+        self.assertIn("simulated rmdir failure", str(context.exception))
+        self.assertNotIn("could not be restored", str(context.exception))
+        self.assertTrue(output.is_dir())
     def test_cli_defaults_to_the_official_release_url(self) -> None:
         self.assertEqual(
             INSTALLER._validated_release_url(INSTALLER.DEFAULT_RELEASE_URL),
