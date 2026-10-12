@@ -205,6 +205,17 @@ class PackageReleaseTests(unittest.TestCase):
             )
         self.assertFalse((self.temp_root / "escape").exists())
 
+
+    def test_publish_failure_restores_the_existing_empty_output(self) -> None:
+        artifacts = self.build()
+        output = self.temp_root / "release"
+        output.mkdir()
+        with patch.object(PACKAGE_RELEASE.os, "replace", side_effect=OSError("simulated")):
+            with self.assertRaisesRegex(PACKAGE_RELEASE.ReleaseError, "cannot publish"):
+                PACKAGE_RELEASE.write_release_artifacts(self.repository, output, artifacts)
+        self.assertTrue(output.is_dir())
+        self.assertEqual(list(output.iterdir()), [])
+
     def test_rejects_a_symlink_output_without_touching_its_target(self) -> None:
         artifacts = self.build()
         target = self.temp_root / "target"
@@ -289,6 +300,55 @@ class PackageReleaseTests(unittest.TestCase):
         tracked.write_text("dirty\n", encoding="utf-8")
         with self.assertRaisesRegex(PACKAGE_RELEASE.ReleaseError, "must be clean"):
             PACKAGE_RELEASE.verify_source_revision(repository, head)
+
+
+    def test_source_revision_rejects_paths_hidden_from_git_status(self) -> None:
+        repository = self.temp_root / "hidden-repository"
+        repository.mkdir()
+        for command in (
+            ["git", "init", "-q"],
+            ["git", "config", "user.email", "fixture@example.test"],
+            ["git", "config", "user.name", "Fixture"],
+        ):
+            subprocess.run(command, cwd=repository, check=True)
+        tracked = repository / "tracked.txt"
+        tracked.write_text("clean\n", encoding="utf-8")
+        subprocess.run(["git", "add", "tracked.txt"], cwd=repository, check=True)
+        subprocess.run(["git", "commit", "-qm", "fixture"], cwd=repository, check=True)
+        head = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=repository,
+            stdout=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+            check=True,
+        ).stdout.strip()
+        for flag in ("assume-unchanged", "skip-worktree"):
+            with self.subTest(flag=flag):
+                subprocess.run(
+                    ["git", "update-index", "--" + flag, "tracked.txt"],
+                    cwd=repository,
+                    check=True,
+                )
+                tracked.write_text("hidden\n", encoding="utf-8")
+                status = subprocess.run(
+                    ["git", "status", "--porcelain"],
+                    cwd=repository,
+                    stdout=subprocess.PIPE,
+                    text=True,
+                    encoding="utf-8",
+                    check=True,
+                ).stdout
+                self.assertEqual(status, "")
+                with self.assertRaisesRegex(PACKAGE_RELEASE.ReleaseError, "tracked.txt"):
+                    PACKAGE_RELEASE.verify_source_revision(repository, head)
+                tracked.write_text("clean\n", encoding="utf-8")
+                subprocess.run(
+                    ["git", "update-index", "--no-" + flag, "tracked.txt"],
+                    cwd=repository,
+                    check=True,
+                )
+        PACKAGE_RELEASE.verify_source_revision(repository, head)
 
     def test_schema_and_cli_help_are_available(self) -> None:
         schema = json.loads(

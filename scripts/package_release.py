@@ -107,6 +107,15 @@ def verify_source_revision(repository_root: Path, source_commit: str) -> None:
             encoding="utf-8",
             check=True,
         ).stdout
+        index_entries = subprocess.run(
+            ["git", "ls-files", "-v", "-z"],
+            cwd=repository_root,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+            check=True,
+        ).stdout
     except (OSError, subprocess.CalledProcessError) as exc:
         raise ReleaseError("cannot verify source Git revision: %s" % exc) from exc
     if Path(top).resolve() != repository_root:
@@ -118,6 +127,18 @@ def verify_source_revision(repository_root: Path, source_commit: str) -> None:
         )
     if status:
         raise ReleaseError("source checkout must be clean before packaging")
+    # git status does not report assume-unchanged (lowercase tag) or
+    # skip-worktree (S) paths, so their working-tree bytes are unverified.
+    hidden = sorted(
+        entry[2:]
+        for entry in index_entries.split("\0")
+        if entry and (entry[0].islower() or entry[0] == "S")
+    )
+    if hidden:
+        raise ReleaseError(
+            "source checkout hides tracked paths from git status "
+            "(assume-unchanged or skip-worktree): %s" % ", ".join(hidden)
+        )
 
 
 def _installer_bytes(repository_root: Path) -> bytes:
@@ -343,9 +364,7 @@ def write_release_artifacts(
             target = stage / name
             target.write_bytes(data)
             target.chmod(FILE_MODE)
-        if existed:
-            output.rmdir()
-        os.replace(stage, output)
+        export_template.replace_empty_output(stage, output, existed)
         published = True
     except OSError as exc:
         raise ReleaseError("cannot publish release artifacts: %s" % exc) from exc

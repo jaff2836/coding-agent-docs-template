@@ -630,6 +630,32 @@ class LocaleFixtureTests(unittest.TestCase):
         )
         self.assert_error("numbered heading sequence differs for docs/00-PROJECT.md")
 
+
+    def test_inline_code_comment_opener_does_not_hide_structure(self) -> None:
+        for locale in ("en", "ko"):
+            path = self.path("locales/%s/docs/00-PROJECT.md" % locale)
+            title, rest = path.read_text(encoding="utf-8").split("\n", 1)
+            path.write_text(title + "\n\n`<!--`\n" + rest, encoding="utf-8")
+        path = self.path("locales/en/docs/00-PROJECT.md")
+        path.write_text(
+            path.read_text(encoding="utf-8").replace(
+                "## 12. Rejected or Deferred Ideas", "## 14. Rejected or Deferred Ideas", 1
+            ),
+            encoding="utf-8",
+        )
+        self.assert_error("numbered heading sequence differs for docs/00-PROJECT.md")
+
+    def test_comment_openers_in_code_are_literal_text(self) -> None:
+        text = "`<!--` is literal\nvisible\n<!-- real\nhidden -->\nafter\n"
+        self.assertEqual(
+            [outside for _, outside in CHECK_LOCALES._markdown_line_context(text)],
+            [True, True, True, False, True],
+        )
+        self.assertEqual(
+            CHECK_LOCALES._mask_html_comments(text),
+            "`<!--` is literal\nvisible\n         \n          \nafter\n",
+        )
+
     def test_missing_and_reordered_markers_are_rejected(self) -> None:
         path = self.path("locales/en/docs/REVIEW.md")
         text = path.read_text(encoding="utf-8")
