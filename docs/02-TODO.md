@@ -16,8 +16,8 @@
 
 - **Name:** `v3.0.1` — 외부 분석 후속
 - **Goal:** 2026-10-12 사용자가 전달한 외부 project-analysis 결과의 1~7번을 반영하고 `v3.0.1`로 공개함
-- **Target:** 아래 Backlog 36~40행
-- **Status:** In Progress — 2026-10-12 사용자가 1~6번 수정과 7번의 `v3.0.1` 전 진행을 정했습니다. 같은 결과의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 했고, 네 도구의 지침 로딩 경로에 없어 보류했습니다. T-043은 보류(Blocked)입니다.
+- **Target:** 아래 Backlog 36~41행
+- **Status:** In Progress — 2026-10-12 사용자가 1~6번 수정과 7번의 `v3.0.1` 전 진행을 정했습니다. 같은 결과의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 했고, 네 도구의 지침 로딩 경로에 없어 보류했습니다. PR #79 리뷰의 C79-B-001과 같은 artifact checker 결함은 사용자 결정으로 별도로 고쳐 `v3.0.1`에 넣습니다(T-060). T-043은 보류(Blocked)입니다.
 
 ## 운영 규칙
 
@@ -39,7 +39,7 @@
 
 ## Next
 
-Backlog 40행의 T-059 `v3.0.1` release를 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+Backlog 41행의 T-059 `v3.0.1` release를 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -57,13 +57,14 @@ Backlog 40행의 T-059 `v3.0.1` release를 진행합니다. 새 작업은 사용
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 36 | `claude/installer-hardening` | T-055 installer 경로·복구·manifest 검사 보강 | **Integrated** — Origin PR #77 merge `de6e666`·GitHub fast-forward 확인. 공개는 40행 |
+| 36 | `claude/installer-hardening` | T-055 installer 경로·복구·manifest 검사 보강 | **Integrated** — Origin PR #77 merge `de6e666`·GitHub fast-forward 확인. 공개는 41행 |
 | 37 | `claude/t056-t057-maintainer-and-readme` | T-056 package source 대조와 locale 주석 해석 | **In Progress** — 이 변경의 PR(38과 함께). release 불필요 |
 | 38 | `claude/t056-t057-maintainer-and-readme` | T-057 root README attestation 순서와 CI 문구 | **In Progress** — 이 변경의 PR(37과 함께). release 불필요 |
-| 39 | `claude/t058-candidate-e2e` | T-058 candidate 실제 package E2E | **Integrated** — Origin PR #78 merge `6b3d5da`·GitHub fast-forward 확인. 40행 candidate부터 적용 |
-| 40 | `claude/v3.0.1-release-prep` 등 | T-059 `v3.0.1` release | 36~39 통합 뒤 |
+| 39 | `claude/t058-candidate-e2e` | T-058 candidate 실제 package E2E | **Integrated** — Origin PR #78 merge `6b3d5da`·GitHub fast-forward 확인. 41행 candidate부터 적용 |
+| 40 | `claude/t060-artifact-comment-backticks` | T-060 artifact checker의 주석 안 backtick 해석 | **In Progress** — 이 변경의 PR(37·38행 PR 위에 쌓음). 공개는 41행 |
+| 41 | `claude/v3.0.1-release-prep` 등 | T-059 `v3.0.1` release | 36~40 통합 뒤 |
 
-- [ ] **T-059 `v3.0.1` release** — T-055의 installer 변경을 D-007 단계에 따라 patch release로 공개합니다. candidate는 T-058을 포함해 실행합니다.
+- [ ] **T-059 `v3.0.1` release** — T-055의 installer 변경과 T-060의 artifact checker 수정을 D-007 단계에 따라 patch release로 공개합니다. candidate는 T-058을 포함해 실행합니다.
 
 ## Cancelled
 
@@ -79,6 +80,7 @@ Backlog 40행의 T-059 `v3.0.1` release를 진행합니다. 새 작업은 사용
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
+- [x] **T-060 artifact checker의 주석 안 backtick 해석** — PR #79 리뷰의 C79-B-001과 같은 결함이 payload `template/common/scripts/check-docs.py`에도 있어, 2026-10-12 사용자 결정으로 별도로 고쳤습니다. `markdown_line_context()`와 `markdown_searchable_text()`는 새 `CommentOpenerSearch`로 주석 시작을 찾습니다. code span과 주석 중 먼저 시작한 쪽을 택하고, backtick은 마지막으로 닫힌 주석 뒤부터 짝지어 주석 안의 backtick이 주석 밖 code span을 만들지 않습니다. 여러 줄에 걸친 code span은 전처럼 인식합니다. 회귀 테스트는 `template/common/tests/test_check_docs.py`에 있고 red-green 결과는 PR 본문에 있습니다. 공개는 T-059(`v3.0.1`)입니다. 통합: 이 변경의 PR.
 - [x] **T-057 root README 설치 안내** — 외부 분석 5번과 CI 문구입니다. root `README.md`·`README.ko.md` 2단계에서 `gh release verify-asset`을 `list-locales`(첫 installer 실행)보다 앞에 두고, 확인하려면 처음 실행하기 전에 하라고 적었습니다. "이 저장소에는 특정 CI 제품의 pipeline이 없다"는 문장은 템플릿 artifact 기준으로 고치고, 이 저장소의 품질 게이트는 Buildkite(`.buildkite/`)라고 적었습니다. root 문서라 release가 필요 없습니다. 통합: 이 변경의 PR.
 - [x] **T-056 maintainer 검사 보강** — 외부 분석 1·4번입니다. `package_release.verify_source_revision()`은 `git ls-files -v`로 `assume-unchanged`·`skip-worktree` 경로를 찾아, `git status`에 보이지 않는 작업 트리 변경이 있을 수 있으면 거부합니다. `check_locales`의 `_mask_html_comments()`와 `_markdown_line_context()`는 artifact checker처럼 같은 줄의 code span과 fenced code 안의 `<!--`를 주석 시작으로 읽지 않습니다. 또 주석 안의 backtick을 주석 밖 backtick과 code span으로 짝짓지 않고(C79-B-001), 주석 안의 fence 모양 줄로 fence를 열지 않습니다(C79-B-002). 같은 문서에 반복되는 줄 문맥 계산은 캐시해 검사 시간이 늘지 않게 했습니다. exporter·packager는 공유 `export_template.replace_empty_output()`로 게시에 실패하면 먼저 지운 빈 output을 되살립니다. 회귀 테스트는 `tests/test_package_release.py`·`tests/test_check_locales.py`·`tests/test_export_template.py`에 있고 red-green 결과는 PR 본문에 있습니다. maintainer 도구라 release가 필요 없습니다. 통합: 이 변경의 PR.
 - [x] **T-058 candidate 실제 package E2E** — 외부 분석 7번입니다. 2026-10-12 사용자가 승인한 방식대로 `verify-release.py candidate`가 draft byte 대조 뒤 그 byte를 loopback(`127.0.0.1`) release root로 제공하고, published와 같은 `_verify_published_e2e()`를 실행합니다(en·ko × `latest`·exact × `list-locales`·`install`·`export`·`adopt`, install 충돌·adopt 대상 불변, artifact checker). 선택형 `--base-version`을 주면 base가 immutable 공개 release인지 확인한 뒤 그 asset도 같은 root로 제공해 base-aware `adopt`까지 확인합니다(같은 날 사용자 결정). PR 리뷰의 C78-B-001(base 공개 상태)과 C78-B-002(proxy 환경)를 반영해 source installer는 loopback release root에 HTTP proxy를 쓰지 않습니다. 설계: [release 검증 변경](./changes/2026-09-20-release-verification/01-CHANGE.md) R-008. 회귀 테스트는 `tests/test_verify_release.py`에 있고 red-green 결과는 PR 본문에 있습니다. 첫 운영 적용은 T-059 candidate입니다. 통합: 이 변경의 PR.
