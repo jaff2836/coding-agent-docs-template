@@ -86,6 +86,12 @@ LOCALE_KEY_RE = re.compile(
 )
 SHA256_RE = re.compile(r"[0-9a-f]{64}")
 LOCAL_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
+# Mirrors the source path rule in check_locales.py; this file stays standalone.
+WINDOWS_RESERVED_COMPONENTS = frozenset(
+    ("con", "prn", "aux", "nul")
+    + tuple("com%d" % number for number in range(1, 10))
+    + tuple("lpt%d" % number for number in range(1, 10))
+)
 GITHUB_HOST = "github.com"
 GITHUB_RELEASE_PATH_RE = re.compile(
     r"/(?P<repository>"
@@ -365,11 +371,14 @@ def _validated_manifest(manifest: Any) -> Mapping[str, Any]:
             "unsupported release manifest schema_version; download and run "
             "installer.py from the same release version"
         )
-    if SEMVER_RE.fullmatch(manifest["version"]) is None:
+    version = manifest["version"]
+    if not isinstance(version, str) or SEMVER_RE.fullmatch(version) is None:
         raise InstallerError("release manifest version must be full SemVer")
-    if COMMIT_RE.fullmatch(manifest["source_commit"]) is None:
+    source_commit = manifest["source_commit"]
+    if not isinstance(source_commit, str) or COMMIT_RE.fullmatch(source_commit) is None:
         raise InstallerError("release manifest source_commit must be 40 lowercase hex characters")
-    if REPOSITORY_RE.fullmatch(manifest["repository"]) is None:
+    repository = manifest["repository"]
+    if not isinstance(repository, str) or REPOSITORY_RE.fullmatch(repository) is None:
         raise InstallerError("release manifest repository must be an OWNER/NAME slug")
     _validated_installer_record(manifest["installer"])
     if not isinstance(manifest["locales"], dict) or not manifest["locales"]:
@@ -454,7 +463,11 @@ def _validated_member_record(tag: str, member: Any) -> None:
         raise InstallerError("locale %s has an invalid member record" % tag)
     if not isinstance(member["policy"], str) or member["policy"] not in ADOPTION_POLICIES:
         raise InstallerError("locale %s has an invalid member adoption policy" % tag)
-    if not isinstance(member["path"], str) or SHA256_RE.fullmatch(member["sha256"]) is None:
+    if (
+        not isinstance(member["path"], str)
+        or not isinstance(member["sha256"], str)
+        or SHA256_RE.fullmatch(member["sha256"]) is None
+    ):
         raise InstallerError("locale %s has an invalid member hash" % tag)
     if (
         isinstance(member["bytes"], bool)
@@ -617,13 +630,23 @@ def _validated_base_member_record(tag: str, member: Any, schema_version: int) ->
 
 
 def _validated_member_path(path: str) -> PurePosixPath:
-    if "\\" in path or "\x00" in path:
-        raise InstallerError("member path must not contain backslashes or NUL: %s" % path)
+    if "\\" in path or ":" in path or any(ord(character) < 32 for character in path):
+        raise InstallerError(
+            "member path must not contain backslashes, colons or control characters: %r"
+            % path
+        )
     segments = path.split("/")
     if not all(segments):
         raise InstallerError("member path must be a non-empty relative path: %s" % path)
     if any(segment in (".", "..") for segment in segments):
         raise InstallerError("member path must not contain . or .. segments: %s" % path)
+    if any(segment.endswith((".", " ")) for segment in segments):
+        raise InstallerError("member path segments must not end with a dot or space: %r" % path)
+    if any(
+        segment.split(".", 1)[0].rstrip(" ").casefold() in WINDOWS_RESERVED_COMPONENTS
+        for segment in segments
+    ):
+        raise InstallerError("member path must not use a Windows reserved name: %s" % path)
     return PurePosixPath(path)
 
 
@@ -679,12 +702,30 @@ def _verified_manifest(
             "release manifest version %s does not match the requested version %s"
             % (manifest["version"], version)
         )
-    if manifest["installer"]["sha256"] != _sha256(installer_bytes):
+    installer_record = manifest["installer"]
+    if (
+        installer_record["sha256"] != _sha256(installer_bytes)
+        or installer_record["bytes"] != len(installer_bytes)
+    ):
         raise InstallerError(
-            "the running installer does not match the release manifest installer hash"
+            "the running installer does not match the release manifest installer record"
         )
-    if sums.get(INSTALLER_ASSET) != manifest["installer"]["sha256"]:
+    expected_assets = {MANIFEST_ASSET, INSTALLER_ASSET}
+    expected_assets.update(record["asset"] for record in manifest["locales"].values())
+    if set(sums) != expected_assets:
+        missing = sorted(expected_assets - set(sums))
+        unexpected = sorted(set(sums) - expected_assets)
+        raise InstallerError(
+            "SHA256SUMS asset inventory differs (missing: %s; unexpected: %s)"
+            % (missing or "none", unexpected or "none")
+        )
+    if sums[INSTALLER_ASSET] != installer_record["sha256"]:
         raise InstallerError("SHA256SUMS and the release manifest disagree about installer.py")
+    for tag, record in manifest["locales"].items():
+        if sums[record["asset"]] != record["sha256"]:
+            raise InstallerError(
+                "SHA256SUMS and the release manifest disagree about locale %s" % tag
+            )
     return manifest
 
 
@@ -908,17 +949,29 @@ def _write_members(root: Path, members: Mapping[str, bytes]) -> tuple[str, ...]:
                 created_files.append(target)
                 handle.write(members[name])
             os.chmod(target, FILE_MODE)
-    except (InstallerError, OSError) as exc:
+    except BaseException as exc:
+        # BaseException also covers KeyboardInterrupt, which must not skip rollback.
+        left_behind: list[Path] = []
         for target in reversed(created_files):
             try:
-                target.unlink()
+                target.unlink(missing_ok=True)
             except OSError:
-                pass
+                left_behind.append(target)
         for directory in reversed(created_dirs):
             try:
                 directory.rmdir()
-            except OSError:
+            except FileNotFoundError:
                 pass
+            except OSError:
+                left_behind.append(directory)
+        if left_behind:
+            raise InstallerError(
+                "install failed before completion and rollback could not remove %d created "
+                "path(s); remove them manually: %s; cause: %s"
+                % (len(left_behind), ", ".join(str(path) for path in left_behind), exc)
+            ) from exc
+        if not isinstance(exc, (InstallerError, OSError)):
+            raise
         raise InstallerError(
             "install failed before completion; the target tree was left unchanged: %s" % exc
         ) from exc
@@ -1012,7 +1065,7 @@ def _publish_directory(output: Path, files: Mapping[str, bytes]) -> None:
 
     output = _validated_export_output(output)
     stage = Path(tempfile.mkdtemp(prefix=".template-install-", dir=output.parent))
-    published = False
+    removed_output_mode: Optional[int] = None
     try:
         for name in sorted(files):
             path = _validated_member_path(name)
@@ -1020,15 +1073,28 @@ def _publish_directory(output: Path, files: Mapping[str, bytes]) -> None:
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(files[name])
             os.chmod(target, FILE_MODE)
+        # Windows cannot replace an existing directory, so the empty output is
+        # removed first and recreated below if publishing does not complete.
         if output.exists():
+            output_mode = stat.S_IMODE(output.stat().st_mode)
             output.rmdir()
+            removed_output_mode = output_mode
         os.replace(stage, output)
-        published = True
-    except OSError as exc:
+    except BaseException as exc:
+        shutil.rmtree(stage, ignore_errors=True)
+        if removed_output_mode is not None:
+            try:
+                output.mkdir()
+                os.chmod(output, removed_output_mode)
+            except OSError as restore_exc:
+                raise InstallerError(
+                    "cannot publish the output directory, and the empty output directory "
+                    "removed before publishing could not be restored (%s): %s"
+                    % (restore_exc, exc)
+                ) from exc
+        if not isinstance(exc, OSError):
+            raise
         raise InstallerError("cannot publish the output directory: %s" % exc) from exc
-    finally:
-        if not published:
-            shutil.rmtree(stage, ignore_errors=True)
 
 
 def adopt(

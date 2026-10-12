@@ -88,7 +88,7 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 ### External Boundaries
 
 - 공개 저장소 identity와 release host는 `jaff2836/coding-agent-docs-template`의 GitHub Releases로 확정했습니다. bootstrap URL과 version URL 계약은 [D-004 SPEC](./changes/2026-09-18-github-releases-publication/02-SPEC.md)이 소유합니다. installer의 `--release-url` 기본값은 `v3.0.0`부터 이 release root이고, 다른 값을 주면 같은 URL 검증을 거칩니다(D-018). 이전 installer에는 이 인자가 필요합니다.
-- 파일시스템과 release asset 다운로드가 신뢰 경계입니다. manifest·archive·member hash를 모두 확인해야 합니다.
+- 파일시스템과 release asset 다운로드가 신뢰 경계입니다. manifest·archive·member hash를 모두 확인해야 합니다. source installer는 member 경로에서 source 검사와 같은 규칙으로 드라이브·colon·제어문자·끝의 점과 공백·Windows 예약 이름을 거부하고, `SHA256SUMS`의 asset 목록과 digest를 manifest와 대조합니다(T-055, `v3.0.1`로 공개 예정).
 - `v2.0.0`부터 모든 release에는 GitHub release attestation(서명 identity `https://dotcom.releases.github.com`)이 있어 `gh release verify-asset`으로 asset이 GitHub가 공개 시점에 기록한 것과 같은지 선택적으로 확인할 수 있습니다. 이 서명은 게시 계정 탈취를 막지 못하며, 표준 라이브러리만으로는 검증할 수 없어 installer는 사용하지 않습니다(T-035).
 - installer는 `v3.0.0`부터 모든 OS에서 Python 3.12 이상을 요구하며(D-018), 더 낮은 version에서는 release·대상 접근 전에 중단합니다. `v2.3.3`~`v2.5.0`은 Windows에만 이 하한을 적용했습니다. 기존 root·output·직접 부모·member 검사 지점의 symlink·junction을 거부하고, 선택 경로보다 위의 기존 상위 component는 확대 검사하지 않습니다. 상세 계약은 [D-011 경계 설계](./changes/2026-09-23-windows-junction-boundary/01-CHANGE.md)를 따릅니다.
 - 완료 메시지는 stdout 인코딩으로 표현할 수 없는 경로 문자를 escape하여 `install`·`export`·`adopt`가 끝난 뒤 출력 때문에 실패로 보고되지 않도록 합니다.

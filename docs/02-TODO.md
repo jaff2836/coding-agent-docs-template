@@ -14,8 +14,10 @@
 
 ## Current Milestone
 
-- **Name:** 없음
-- **Status:** `v3.0.0` 공개(T-051)와 root 문서 정리(T-054)까지 끝났습니다. 남은 Backlog는 없고 T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
+- **Name:** `v3.0.1` — 외부 분석 후속
+- **Goal:** 2026-10-12 사용자가 전달한 외부 project-analysis 결과의 1~7번을 반영하고 `v3.0.1`로 공개함
+- **Target:** 아래 Backlog 36~40행
+- **Status:** In Progress — 2026-10-12 사용자가 1~6번 수정과 7번의 `v3.0.1` 전 진행을 정했습니다. 같은 결과의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 했고, 네 도구의 지침 로딩 경로에 없어 보류했습니다. T-043은 보류(Blocked)입니다.
 
 ## 운영 규칙
 
@@ -37,7 +39,7 @@
 
 ## Next
 
-진행할 작업이 없습니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+Backlog 37행부터 순서대로 진행합니다. T-058(39행)은 방식을 사용자와 정한 뒤 시작합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -55,6 +57,16 @@
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
+| 36 | `claude/installer-hardening` | T-055 installer 경로·복구·manifest 검사 보강 | **In Progress** — 이 변경의 PR. 공개는 40행 |
+| 37 | `claude/maintainer-check-hardening` | T-056 package source 대조와 locale 주석 해석 | 36과 독립. release 불필요 |
+| 38 | `claude/readme-attestation-order` | T-057 root README attestation 순서와 CI 문구 | 독립. release 불필요 |
+| 39 | 방식 합의 뒤 정함 | T-058 candidate 실제 package E2E | 방식 합의 뒤 구현. 40행 candidate부터 적용 |
+| 40 | `claude/v3.0.1-release-prep` 등 | T-059 `v3.0.1` release | 36~39 통합 뒤 |
+
+- [ ] **T-056 maintainer 검사 보강** — 외부 분석 1·4번입니다. `package_release.verify_source_revision()`이 `assume-unchanged`·`skip-worktree`로 숨긴 작업 트리 변경을 통과시키지 않게 하고, `check_locales._mask_html_comments()`가 inline code·fenced code 안의 `<!--`를 주석 시작으로 읽지 않게 합니다. exporter·packager가 게시에 실패하면 먼저 지운 빈 output을 되살리는지도 installer와 맞춥니다. 각각 red-green 회귀를 둡니다.
+- [ ] **T-057 root README 설치 안내** — 외부 분석 5번과 CI 문구입니다. root `README.md`·`README.ko.md`에서 `gh release verify-asset` 확인을 첫 installer 실행보다 앞에 두고, "특정 CI 제품의 pipeline이 없다"는 문장을 artifact 기준으로 고칩니다. root 문서라 release가 필요 없습니다.
+- [ ] **T-058 candidate 실제 package E2E** — 외부 분석 7번입니다. candidate 검증이 재현한 asset을 localhost release root로 제공하고, published와 같은 installer 경로(en·ko × latest·exact × list·install·export·adopt)를 공개 전에 실행합니다. D-007의 candidate 범위를 넓히므로 방식은 사용자와 정한 뒤 구현합니다.
+- [ ] **T-059 `v3.0.1` release** — T-055의 installer 변경을 D-007 단계에 따라 patch release로 공개합니다. candidate는 T-058을 포함해 실행합니다.
 
 ## Cancelled
 
@@ -70,6 +82,7 @@
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
+- [x] **T-055 installer 경로·복구·manifest 검사 보강** — 외부 분석 2·3·6번(2026-10-12 사용자 결정)입니다. source `scripts/installer.py`의 member 경로가 source 검사와 같은 규칙으로 드라이브·colon·제어문자·끝의 점과 공백·Windows 예약 이름을 거부합니다. install rollback은 취소(`KeyboardInterrupt`)에도 실행되고, 지우지 못한 경로가 있으면 대상 불변 대신 그 경로를 보고합니다. export·adopt 게시가 실패하면 먼저 지운 빈 output 디렉터리를 되살립니다. 현재 release manifest는 문자열 필드 타입, installer 크기, `SHA256SUMS`의 asset 목록과 locale ZIP digest까지 대조합니다. 회귀 테스트는 `tests/test_install_release.py`에 있고 red-green 결과는 PR 본문에 있습니다. 공개는 T-059(`v3.0.1`)입니다. 통합: 이 변경의 PR.
 - [x] **T-054 root 관리 문서 정리** — 2026-10-12 사용자 요청으로 root `docs/00-PROJECT.md`·`docs/02-TODO.md`의 오래된 문장과 템플릿 안내를 고쳤습니다. PROJECT §6은 남은 목표 구조가 없다고 적고 다른 절과 겹치던 설명을 뺐으며, root에서는 실제 항목인 `D-001`·`T-001`을 자리 표시라고 한 문장을 지웠습니다. TODO의 머리말·Integration target·Backlog 안내를 현재 운영에 맞추고 두 문서의 `Last reviewed`를 갱신했습니다. root 문서만 바뀌어 release가 필요 없습니다. 통합: 이 변경의 PR.
 - [x] **T-051 `v3.0.0` release** — 준비는 PR #74로 통합됐습니다. 2026-10-12(KST) 사용자가 exact source `2c27a4d`에 annotated tag와 draft를 만들어 immutable Latest로 공개했고, candidate 검증과 Linux·native Windows(Buildkite `windows-ci`)의 published(`--base-version 2.5.0`) 검증이 통과했습니다. root README 명령·Prerequisites와 공개 기록은 이 변경의 PR에서 고쳤습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 - [x] **T-053 자기 점검 규칙 payload 반영** — T-047 평가 뒤 사용자 결정(2026-10-09)으로 root `AGENTS.md` Communication의 자기 점검 규칙과 같은 뜻의 한 줄을 en·ko payload `AGENTS.md` Communication에 넣었습니다. ko는 root와 같은 문장이고 en은 번역입니다. 공개는 T-051(`v3.0.0`)입니다. 통합: PR #73.
