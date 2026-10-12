@@ -9,6 +9,7 @@ discovers a new supported locale or output member implicitly.
 from __future__ import annotations
 
 import argparse
+import functools
 import json
 import re
 import shlex
@@ -966,6 +967,7 @@ def _strip_blockquote_markers(
     return depth, line[cursor:]
 
 
+@functools.lru_cache(maxsize=256)
 def _markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
     """Return ``(outside_fence, outside_html_comment)`` for each line."""
 
@@ -999,7 +1001,8 @@ def _markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
                     fence_blockquote_depth = 0
                 continue
 
-        fence = FENCE_LINE_RE.fullmatch(fence_candidate)
+        # A fence line inside an HTML comment is comment text.
+        fence = None if in_html_comment else FENCE_LINE_RE.fullmatch(fence_candidate)
         if fence is not None:
             sequence = fence.group(1)
             fence_character = sequence[0]
@@ -1009,15 +1012,39 @@ def _markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
             continue
 
         context.append((True, not in_html_comment))
-        cursor = 0
-        while cursor < len(line):
-            token = "-->" if in_html_comment else "<!--"
-            position = line.find(token, cursor)
-            if position < 0:
-                break
-            in_html_comment = not in_html_comment
-            cursor = position + len(token)
+        if in_html_comment or "<!--" in line:
+            _, in_html_comment = _html_comment_ranges(line, in_html_comment)
     return tuple(context)
+
+
+def _html_comment_ranges(
+    line: str, in_html_comment: bool
+) -> Tuple[List[Tuple[int, int]], bool]:
+    """Return one line's HTML comment ranges and whether a comment stays open.
+
+    Whichever starts first wins: a code span hides the comment openers inside
+    it, and backticks inside a comment never pair with code outside it.
+    """
+
+    ranges: List[Tuple[int, int]] = []
+    content_end = len(line.rstrip("\r\n"))
+    cursor = 0
+    while cursor < content_end:
+        start = cursor
+        if not in_html_comment:
+            opener = _mask_inline_code_line(line[cursor:content_end]).find("<!--")
+            if opener < 0:
+                break
+            start = cursor + opener
+            cursor = start + 4
+            in_html_comment = True
+        end = line.find("-->", cursor, content_end)
+        stop = content_end if end < 0 else end + 3
+        ranges.append((start, stop))
+        cursor = stop
+        if end >= 0:
+            in_html_comment = False
+    return ranges, in_html_comment
 
 
 def _visible_contract_assertions(text: str) -> List[str]:
@@ -1043,26 +1070,27 @@ def _visible_full_line_matches(text: str, pattern: Any) -> List[str]:
 
 
 def _mask_html_comments(text: str) -> str:
-    """Replace HTML comments with whitespace while preserving line structure."""
+    """Replace HTML comments with whitespace while preserving line structure.
 
-    parts: List[str] = []
-    cursor = 0
-    while cursor < len(text):
-        start = text.find("<!--", cursor)
-        if start < 0:
-            parts.append(text[cursor:])
-            break
-        parts.append(text[cursor:start])
-        end = text.find("-->", start + 4)
-        comment_end = len(text) if end < 0 else end + 3
-        parts.append(
-            "".join(
-                "\n" if character == "\n" else " "
-                for character in text[start:comment_end]
-            )
-        )
-        cursor = comment_end
-    return "".join(parts)
+    Comment openers inside fenced code or same-line code spans are literal text.
+    """
+
+    if "<!--" not in text:
+        return text
+    masked_lines: List[str] = []
+    for line, (outside_fence, outside_comment) in zip(
+        text.splitlines(keepends=True), _markdown_line_context(text)
+    ):
+        if not outside_fence or (outside_comment and "<!--" not in line):
+            masked_lines.append(line)
+            continue
+        ranges, _ = _html_comment_ranges(line, not outside_comment)
+        characters = list(line)
+        for start, stop in ranges:
+            for index in range(start, stop):
+                characters[index] = " "
+        masked_lines.append("".join(characters))
+    return "".join(masked_lines)
 
 
 def _mask_fenced_code_blocks(text: str) -> str:
@@ -1085,6 +1113,55 @@ def _observable_markdown_text(text: str) -> str:
     return _mask_fenced_code_blocks(_mask_html_comments(text))
 
 
+def _mask_inline_code_line(line: str) -> str:
+    """Mask the Markdown code spans that open and close on one line."""
+
+    masked = list(line)
+    cursor = 0
+    while cursor < len(line):
+        start = line.find("`", cursor)
+        if start < 0:
+            break
+        escaped = 0
+        before = start - 1
+        while before >= 0 and line[before] == "\\":
+            escaped += 1
+            before -= 1
+        if escaped % 2:
+            cursor = start + 1
+            continue
+        delimiter_length = 1
+        while (
+            start + delimiter_length < len(line)
+            and line[start + delimiter_length] == "`"
+        ):
+            delimiter_length += 1
+        search = start + delimiter_length
+        closing_end: Optional[int] = None
+        while search < len(line):
+            closing = line.find("`", search)
+            if closing < 0:
+                break
+            closing_length = 1
+            while (
+                closing + closing_length < len(line)
+                and line[closing + closing_length] == "`"
+            ):
+                closing_length += 1
+            if closing_length == delimiter_length:
+                closing_end = closing + closing_length
+                break
+            search = closing + closing_length
+        if closing_end is None:
+            cursor = start + delimiter_length
+            continue
+        for index in range(start, closing_end):
+            if masked[index] != "\n":
+                masked[index] = " "
+        cursor = closing_end
+    return "".join(masked)
+
+
 def _mask_inline_code_spans(text: str) -> str:
     """Mask same-line Markdown code spans outside fenced code blocks."""
 
@@ -1092,53 +1169,7 @@ def _mask_inline_code_spans(text: str) -> str:
     for line, (outside_fence, _) in zip(
         text.splitlines(keepends=True), _markdown_line_context(text)
     ):
-        if not outside_fence:
-            masked_lines.append(line)
-            continue
-        masked = list(line)
-        cursor = 0
-        while cursor < len(line):
-            start = line.find("`", cursor)
-            if start < 0:
-                break
-            escaped = 0
-            before = start - 1
-            while before >= 0 and line[before] == "\\":
-                escaped += 1
-                before -= 1
-            if escaped % 2:
-                cursor = start + 1
-                continue
-            delimiter_length = 1
-            while (
-                start + delimiter_length < len(line)
-                and line[start + delimiter_length] == "`"
-            ):
-                delimiter_length += 1
-            search = start + delimiter_length
-            closing_end: Optional[int] = None
-            while search < len(line):
-                closing = line.find("`", search)
-                if closing < 0:
-                    break
-                closing_length = 1
-                while (
-                    closing + closing_length < len(line)
-                    and line[closing + closing_length] == "`"
-                ):
-                    closing_length += 1
-                if closing_length == delimiter_length:
-                    closing_end = closing + closing_length
-                    break
-                search = closing + closing_length
-            if closing_end is None:
-                cursor = start + delimiter_length
-                continue
-            for index in range(start, closing_end):
-                if masked[index] != "\n":
-                    masked[index] = " "
-            cursor = closing_end
-        masked_lines.append("".join(masked))
+        masked_lines.append(_mask_inline_code_line(line) if outside_fence else line)
     return "".join(masked_lines)
 
 

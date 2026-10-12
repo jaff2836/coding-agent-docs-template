@@ -9,6 +9,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -111,6 +112,16 @@ class ExportTemplateTests(unittest.TestCase):
         output.mkdir()
         EXPORT_TEMPLATE.export_locale(REPOSITORY_ROOT, "en", output)
         self.assertTrue((output / "AGENTS.md").is_file())
+
+
+    def test_publish_failure_restores_the_existing_empty_output(self) -> None:
+        output = self.temp_root / "empty"
+        output.mkdir()
+        with patch.object(EXPORT_TEMPLATE.os, "replace", side_effect=OSError("simulated")):
+            with self.assertRaisesRegex(EXPORT_TEMPLATE.ExportError, "cannot publish"):
+                EXPORT_TEMPLATE.export_locale(REPOSITORY_ROOT, "en", output)
+        self.assertTrue(output.is_dir())
+        self.assertEqual(list(output.iterdir()), [])
 
     def test_rejects_unsupported_locale_and_nonempty_output(self) -> None:
         with self.assertRaisesRegex(EXPORT_TEMPLATE.ExportError, "unsupported locale"):

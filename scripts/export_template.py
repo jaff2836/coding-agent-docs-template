@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -140,6 +141,30 @@ def _check_artifact(stage: Path) -> None:
         raise ExportError("materialized artifact check failed: %s" % detail)
 
 
+def replace_empty_output(stage: Path, output: Path, existed: bool) -> None:
+    """Move *stage* to *output*, recreating a removed empty *output* on failure."""
+
+    if not existed:
+        os.replace(stage, output)
+        return
+    # Windows cannot replace an existing directory, so the empty output is
+    # removed first and recreated if publishing does not complete.
+    mode = stat.S_IMODE(output.stat().st_mode)
+    output.rmdir()
+    try:
+        os.replace(stage, output)
+    except BaseException as publish_exc:
+        try:
+            output.mkdir()
+            os.chmod(output, mode)
+        except OSError as restore_exc:
+            raise OSError(
+                "%s; the empty output directory removed before publishing could not "
+                "be restored: %s" % (publish_exc, restore_exc)
+            ) from publish_exc
+        raise
+
+
 def export_locale(
     repository_root: Path,
     locale: str,
@@ -165,9 +190,7 @@ def export_locale(
     try:
         _copy_sources(stage, sources)
         _check_artifact(stage)
-        if existed:
-            output.rmdir()
-        os.replace(stage, output)
+        replace_empty_output(stage, output, existed)
         published = True
     except OSError as exc:
         raise ExportError("cannot publish artifact: %s" % exc) from exc

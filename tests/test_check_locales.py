@@ -630,6 +630,72 @@ class LocaleFixtureTests(unittest.TestCase):
         )
         self.assert_error("numbered heading sequence differs for docs/00-PROJECT.md")
 
+    def test_inline_code_comment_opener_does_not_hide_structure(self) -> None:
+        for locale in ("en", "ko"):
+            path = self.path("locales/%s/docs/00-PROJECT.md" % locale)
+            title, rest = path.read_text(encoding="utf-8").split("\n", 1)
+            path.write_text(title + "\n\n`<!--`\n" + rest, encoding="utf-8", newline="\n")
+        path = self.path("locales/en/docs/00-PROJECT.md")
+        path.write_text(
+            path.read_text(encoding="utf-8").replace(
+                "## 12. Rejected or Deferred Ideas", "## 14. Rejected or Deferred Ideas", 1
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assert_error("numbered heading sequence differs for docs/00-PROJECT.md")
+
+    def test_comment_openers_in_code_are_literal_text(self) -> None:
+        text = "`<!--` is literal\nvisible\n<!-- real\nhidden -->\nafter\n"
+        self.assertEqual(
+            [outside for _, outside in CHECK_LOCALES._markdown_line_context(text)],
+            [True, True, True, False, True],
+        )
+        self.assertEqual(
+            CHECK_LOCALES._mask_html_comments(text),
+            "`<!--` is literal\nvisible\n         \n          \nafter\n",
+        )
+
+    def test_backticks_inside_comments_do_not_pair_with_code_spans(self) -> None:
+        path = self.path("locales/en/docs/00-PROJECT.md")
+        title, rest = path.read_text(encoding="utf-8").split("\n", 1)
+        path.write_text(
+            title + "\n\n<!-- ` --> <!-- `\n## 999. Hidden heading\n-->\n" + rest,
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertEqual(self.errors(), [])
+
+        text = "a <!-- ` --> b <!-- ` c\nhidden -->\nafter\n"
+        self.assertEqual(
+            [outside for _, outside in CHECK_LOCALES._markdown_line_context(text)],
+            [True, False, True],
+        )
+        self.assertEqual(
+            CHECK_LOCALES._mask_html_comments(text),
+            "a" + " " * 12 + "b" + " " * 9 + "\n" + " " * 10 + "\nafter\n",
+        )
+
+    def test_fence_lines_inside_comments_do_not_open_fences(self) -> None:
+        comments = "<!--\n```\n-->\n<!--\n## 999. Hidden heading\n```\n-->\n"
+        path = self.path("locales/en/docs/00-PROJECT.md")
+        title, rest = path.read_text(encoding="utf-8").split("\n", 1)
+        path.write_text(
+            title + "\n\n" + comments + rest, encoding="utf-8", newline="\n"
+        )
+        self.assertEqual(self.errors(), [])
+
+        text = comments + "after\n"
+        self.assertEqual(
+            [outside for _, outside in CHECK_LOCALES._markdown_line_context(text)],
+            [True, False, False, True, False, False, False, True],
+        )
+        self.assertEqual(
+            CHECK_LOCALES._observable_markdown_text(text),
+            "".join(" " * len(line) + "\n" for line in comments.splitlines())
+            + "after\n",
+        )
+
     def test_missing_and_reordered_markers_are_rejected(self) -> None:
         path = self.path("locales/en/docs/REVIEW.md")
         text = path.read_text(encoding="utf-8")

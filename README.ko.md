@@ -38,6 +38,14 @@ Move-Item -Force -ErrorAction Stop installer.py.part installer.py
 
 ### 2. 확인 (선택)
 
+attestation을 확인하려면 installer를 처음 실행하기 전에 하세요. 실행한 뒤의 확인으로는 변조된 파일이 이미 한 일을 되돌릴 수 없습니다.
+
+```sh
+gh release verify-asset installer.py --repo jaff2836/coding-agent-docs-template
+```
+
+`gh release verify-asset`은 installer를 GitHub가 latest release에 서명한 attestation과 대조합니다. 특정 release와 대조하려면 파일 이름 앞에 `v2.5.0` 같은 tag를 넣으세요. attestation은 게시 계정이 탈취된 경우를 막지 못합니다.
+
 현재 release의 locale:
 
 | Locale | 언어 | 상태 |
@@ -47,10 +55,9 @@ Move-Item -Force -ErrorAction Stop installer.py.part installer.py
 
 ```sh
 python3 installer.py list-locales --version latest
-gh release verify-asset installer.py --repo jaff2836/coding-agent-docs-template
 ```
 
-`list-locales`는 release의 locale을 보여 줍니다. `gh release verify-asset`은 installer를 GitHub가 latest release에 서명한 attestation과 대조합니다. 특정 release와 대조하려면 파일 이름 앞에 `v2.5.0` 같은 tag를 넣으세요. attestation은 게시 계정이 탈취된 경우를 막지 못합니다.
+`list-locales`는 release의 locale을 보여 줍니다.
 
 ### 3. 템플릿 적용
 
@@ -122,7 +129,7 @@ python3 scripts/verify-release.py published --version {{VERSION}} --source-commi
 - **다국어 배포:** `template/common/`, `locales/en/`, `locales/ko/`, manifest와 schema
 - **도구:** 문서·locale 검사, export, release package·검증, installer
 
-구조와 적용 체크리스트: [한국어 Template Guide](./locales/ko/docs/TEMPLATE_GUIDE.md)·[Documentation Guide](./locales/ko/docs/DOCS_GUIDE.md), [영문 Template Guide](./locales/en/docs/TEMPLATE_GUIDE.md)·[Documentation Guide](./locales/en/docs/DOCS_GUIDE.md). root [Template Guide](./docs/TEMPLATE_GUIDE.md)와 [Documentation Guide](./docs/DOCS_GUIDE.md)는 maintainer 보충 안내입니다. 이 저장소에는 애플리케이션 코드나 특정 CI 제품의 pipeline이 없습니다.
+구조와 적용 체크리스트: [한국어 Template Guide](./locales/ko/docs/TEMPLATE_GUIDE.md)·[Documentation Guide](./locales/ko/docs/DOCS_GUIDE.md), [영문 Template Guide](./locales/en/docs/TEMPLATE_GUIDE.md)·[Documentation Guide](./locales/en/docs/DOCS_GUIDE.md). root [Template Guide](./docs/TEMPLATE_GUIDE.md)와 [Documentation Guide](./docs/DOCS_GUIDE.md)는 maintainer 보충 안내입니다. 템플릿 artifact에는 애플리케이션 코드나 특정 CI 제품의 pipeline이 없습니다. 이 저장소 자체의 품질 게이트는 Buildkite(`.buildkite/`)에서 실행합니다([CI 가이드](./docs/CI.md)).
 
 ## 번들 스킬
 

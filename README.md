@@ -38,6 +38,14 @@ Continue only if the download succeeds. On Windows, use `python` instead of `pyt
 
 ### 2. Check (optional)
 
+If you check the attestation, do it before you first run the installer; a check after running it cannot undo what a tampered file already did.
+
+```sh
+gh release verify-asset installer.py --repo jaff2836/coding-agent-docs-template
+```
+
+`gh release verify-asset` checks the installer against the attestation that GitHub signs for the latest release; put a tag such as `v2.5.0` before the file name to check a specific release. The attestation does not protect against a compromised publishing account.
+
 Locales in the current release:
 
 | Locale | Language | Status |
@@ -47,10 +55,9 @@ Locales in the current release:
 
 ```sh
 python3 installer.py list-locales --version latest
-gh release verify-asset installer.py --repo jaff2836/coding-agent-docs-template
 ```
 
-`list-locales` lists the locales of a release. `gh release verify-asset` checks the installer against the attestation that GitHub signs for the latest release; put a tag such as `v2.5.0` before the file name to check a specific release. The attestation does not protect against a compromised publishing account.
+`list-locales` lists the locales of a release.
 
 ### 3. Apply the template
 
@@ -122,7 +129,7 @@ python3 scripts/verify-release.py published --version {{VERSION}} --source-commi
 - **Multilingual delivery:** `template/common/`, `locales/en/`, `locales/ko/`, the manifest, and the schema
 - **Tools:** documentation and locale checks, export, release packaging and verification, and installation
 
-Structure and adoption checklists: [English Template Guide](./locales/en/docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./locales/en/docs/DOCS_GUIDE.md), or [Korean Template Guide](./locales/ko/docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./locales/ko/docs/DOCS_GUIDE.md). The root [Template Guide](./docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./docs/DOCS_GUIDE.md) are maintainer addenda. This repository contains no application code and no pipelines for a specific CI product.
+Structure and adoption checklists: [English Template Guide](./locales/en/docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./locales/en/docs/DOCS_GUIDE.md), or [Korean Template Guide](./locales/ko/docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./locales/ko/docs/DOCS_GUIDE.md). The root [Template Guide](./docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./docs/DOCS_GUIDE.md) are maintainer addenda. The template artifact contains no application code and no pipelines for a specific CI product; this repository runs its own quality gates on Buildkite (`.buildkite/`, [CI guide](./docs/CI.md)).
 
 ## Bundled skills
 
