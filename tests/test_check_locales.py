@@ -634,13 +634,14 @@ class LocaleFixtureTests(unittest.TestCase):
         for locale in ("en", "ko"):
             path = self.path("locales/%s/docs/00-PROJECT.md" % locale)
             title, rest = path.read_text(encoding="utf-8").split("\n", 1)
-            path.write_text(title + "\n\n`<!--`\n" + rest, encoding="utf-8")
+            path.write_text(title + "\n\n`<!--`\n" + rest, encoding="utf-8", newline="\n")
         path = self.path("locales/en/docs/00-PROJECT.md")
         path.write_text(
             path.read_text(encoding="utf-8").replace(
                 "## 12. Rejected or Deferred Ideas", "## 14. Rejected or Deferred Ideas", 1
             ),
             encoding="utf-8",
+            newline="\n",
         )
         self.assert_error("numbered heading sequence differs for docs/00-PROJECT.md")
 
@@ -661,6 +662,7 @@ class LocaleFixtureTests(unittest.TestCase):
         path.write_text(
             title + "\n\n<!-- ` --> <!-- `\n## 999. Hidden heading\n-->\n" + rest,
             encoding="utf-8",
+            newline="\n",
         )
         self.assertEqual(self.errors(), [])
 
