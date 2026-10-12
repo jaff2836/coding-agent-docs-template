@@ -309,7 +309,11 @@ def _fetch(url: str, max_bytes: int) -> bytes:
             if _is_github_release_asset_url(url)
             else _RejectRedirects()
         )
-        opener = urllib.request.build_opener(redirect_handler)
+        handlers: list[urllib.request.BaseHandler] = [redirect_handler]
+        if urllib.parse.urlsplit(url).hostname in LOCAL_HOSTS:
+            # A loopback release root is never reachable through an HTTP proxy.
+            handlers.append(urllib.request.ProxyHandler({}))
+        opener = urllib.request.build_opener(*handlers)
         with opener.open(request, timeout=FETCH_TIMEOUT) as response:
             if response.status != 200:
                 raise InstallerError(

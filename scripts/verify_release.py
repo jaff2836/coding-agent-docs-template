@@ -941,6 +941,14 @@ def verify_candidate(
     if base_version is not None:
         base_version = installer._validated_base_version(base_version)
         installer._require_older_base_version(base_version, version)
+        # gh can download draft assets, so the base must be shown to be public.
+        base_tag = "v%s" % base_version
+        _require_release_shape(
+            _release_metadata(repository_root, repository, base_tag),
+            tag=base_tag,
+            draft=False,
+            immutable=True,
+        )
     _run_local_gates(repository_root, source_commit)
     artifacts = _build_reproducible_assets(
         repository_root,
@@ -966,7 +974,7 @@ def verify_candidate(
     releases = {version: draft_assets}
     if base_version is not None:
         releases[base_version] = _download_release_assets(
-            repository_root, repository, "v%s" % base_version
+            repository_root, repository, base_tag
         )
     with _loopback_release_root(releases, latest=version) as release_url:
         _verify_published_e2e(

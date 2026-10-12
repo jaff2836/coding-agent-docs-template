@@ -33,7 +33,7 @@
 - Python production dependency를 추가하지 않고 기존 표준 라이브러리 모듈과 maintainer 환경의 `git`·`gh`만 사용합니다.
 - candidate는 사람이 annotated tag와 draft release를 준비한 뒤, publish 전에 실행합니다.
 - published는 공개 release를 변경하지 않고 GitHub API·asset과 installer의 공개 HTTPS 경로만 읽습니다.
-- candidate의 installer E2E는 draft byte와 선택한 base release asset을 실행 중에만 loopback(`127.0.0.1`) HTTP 서버로 제공합니다.
+- candidate의 installer E2E는 draft byte와 선택한 base release asset을 실행 중에만 loopback(`127.0.0.1`) HTTP 서버로 제공합니다. installer는 loopback release root에 HTTP proxy를 쓰지 않습니다.
 - 검증 중 생성하는 package, install, export와 adoption output은 임시 디렉터리에만 둡니다.
 
 ### 1.5 미해결 질문
@@ -52,7 +52,7 @@
 | R-004 | candidate는 기존 draft의 상태와 asset을 확인합니다. | 사람이 만든 GitHub draft | draft-aware release 조회에서 `draft=true`, `immutable=false`, 정확한 tag이며 local package 5개와 inventory·byte가 같을 때만 통과 | `gh release view` 계약·release shape·download·orchestration unit test, 다음 draft 운영 검증 |
 | R-005 | published는 immutable Latest release와 local package를 대조합니다. | 공개된 exact release | `draft=false`, `immutable=true`, `prerelease=false`, GitHub Latest identity 일치, asset inventory·byte 일치 | published unit test, `v2.1.0` 실환경 검증 |
 | R-006 | published는 모든 공식 locale과 두 version selector를 공개 경로로 검증합니다. | `latest`·exact version, `en`·`ko` | package의 `installer.py` CLI로 실행한 `list-locales`·`install`·`export`·`adopt`와 tag source export가 같고 artifact checker가 통과하며 install 충돌·adopt 대상은 불변 | packaged-installer materialization unit test, `v2.1.0` 실환경 검증 |
-| R-008 | candidate는 draft와 byte가 같은 asset으로 R-006의 installer 경로를 공개 전에 실행합니다. | draft byte 대조가 통과한 후보, 선택형 `--base-version` | loopback release root의 `latest`·exact에서 R-006과 같은 결과가 나와야 통과. `--base-version`이 있으면 공개된 base release asset을 같은 root로 제공하고 base-aware `adopt`까지 확인 | orchestration unit test, 다음 draft 운영 검증 |
+| R-008 | candidate는 draft와 byte가 같은 asset으로 R-006의 installer 경로를 공개 전에 실행합니다. | draft byte 대조가 통과한 후보, 선택형 `--base-version` | loopback release root의 `latest`·exact에서 R-006과 같은 결과가 나와야 통과. `--base-version`이 있으면 base가 draft·prerelease가 아닌 immutable 공개 release인지 먼저 확인한 뒤 그 asset을 같은 root로 제공하고 base-aware `adopt`까지 확인 | orchestration unit test, 다음 draft 운영 검증 |
 | R-007 | 검증은 fail-closed이고 remote state를 변경하지 않습니다. | 잘못된 identity·ref·metadata·asset·tree 또는 외부 명령 실패 | 즉시 비정상 종료하며 remote mutation 명령을 제공하거나 호출하지 않음 | 입력·CLI·실패 경로 unit test, 코드 검토 |
 
 ### 2.2 대안과 선택 이유
@@ -103,4 +103,4 @@ D-004의 transport·source identity·게시 순서는 유지합니다. D-004가 
 - 2026-10-08: 사용자가 native Windows 10(NT 10.0.19045)에서 `v2.5.0` tag source로 `published --base-version 2.4.0`을 실행해 통과했습니다(exit 0, 동기화된 `main` `3bbf8b9`). 이후 release의 Windows published 검증은 Buildkite `windows-ci`의 수동 build로 실행합니다([CI.md](../../CI.md) §6). 이 경로는 읽기 전용 verifier를 실행할 뿐 tag·release를 바꾸지 않아 D-007의 사람 소유 경계를 유지합니다.
 - 2026-10-08: Buildkite `windows-ci`의 수동 published 검증 step을 처음 실환경에서 실행했습니다. Build #112(`main` `e105412`)가 `v2.5.0`(`--base-version 2.4.0`)을 tag source의 임시 worktree에서 검증해 통과했고, Origin check도 success입니다.
 - 2026-10-12: 사용자가 `v3.0.0` exact source `2c27a4d3e11df8cbd908f017656bee6d7902e245`에 annotated tag와 draft를 만들었고, candidate가 통과한 5개 asset을 교체 없이 immutable Latest로 공개했습니다. candidate·공개·published 실행 시 Origin·GitHub `main`은 같은 source commit이었습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 2.5.0`이 통과해 asset byte·immutable Latest, latest·exact의 en·ko 경로, base-aware upgrade와 비어 있지 않은 install 대상 불변을 확인했습니다. native Windows에서는 Buildkite `windows-ci` Build #135(`main` `2c27a4d`)가 같은 검증을 통과했습니다.
-- 2026-10-12: T-058로 candidate가 draft byte를 loopback release root로 제공해 published와 같은 installer E2E를 공개 전에 실행하도록 넓혔습니다(R-008). 같은 날 사용자 결정으로 선택형 `--base-version`도 넣어, 공개된 base release를 함께 제공하고 base-aware `adopt`를 공개 전에 확인합니다. 외부 project-analysis 결과의 7번이 근거입니다. installer와 실제 package의 결합 결함을 공개 전에 찾기 위한 변경이며, tag·release를 바꾸지 않는 D-007 경계는 그대로입니다.
+- 2026-10-12: T-058로 candidate가 draft byte를 loopback release root로 제공해 published와 같은 installer E2E를 공개 전에 실행하도록 넓혔습니다(R-008). 같은 날 사용자 결정으로 선택형 `--base-version`도 넣어, 공개된 base release를 함께 제공하고 base-aware `adopt`를 공개 전에 확인합니다. 외부 project-analysis 결과의 7번이 근거입니다. PR #78 리뷰에 따라 base의 공개 상태를 download 전에 확인하고(C78-B-001), installer가 loopback release root에 proxy를 쓰지 않게 했습니다(C78-B-002). installer와 실제 package의 결합 결함을 공개 전에 찾기 위한 변경이며, tag·release를 바꾸지 않는 D-007 경계는 그대로입니다.
