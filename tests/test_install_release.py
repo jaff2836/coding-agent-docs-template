@@ -286,6 +286,17 @@ class InstallerTests(unittest.TestCase):
             )
         )
 
+    def test_loopback_release_roots_bypass_http_proxies(self) -> None:
+        base = self.publish()
+        unreachable_proxy = "http://127.0.0.1:9"
+        with mock.patch.dict(
+            os.environ, {"http_proxy": unreachable_proxy, "HTTP_PROXY": unreachable_proxy}
+        ):
+            os.environ.pop("no_proxy", None)
+            os.environ.pop("NO_PROXY", None)
+            manifest = INSTALLER.list_locales(base, "2.0.0")
+        self.assertEqual(manifest["version"], "2.0.0")
+
     def test_github_redirect_handler_allows_only_its_https_chain(self) -> None:
         initial = (
             "https://github.com/jaff2836/coding-agent-docs-template/"

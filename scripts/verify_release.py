@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
+import http.server
 import io
 import json
 import os
@@ -13,9 +15,10 @@ import stat
 import subprocess
 import sys
 import tempfile
+import threading
 import zipfile
 from pathlib import Path
-from typing import Any, Mapping, Optional, Sequence
+from typing import Any, Iterator, Mapping, Optional, Sequence
 
 import export_template
 import installer
@@ -881,6 +884,44 @@ def _verify_published_e2e(
                     _check_artifact(repository_root, exported)
 
 
+@contextlib.contextmanager
+def _loopback_release_root(
+    releases: Mapping[str, Mapping[str, bytes]], *, latest: str
+) -> Iterator[str]:
+    """Serve release assets on loopback in the installer's non-GitHub URL layout."""
+
+    payloads = {
+        "/releases/%s/%s" % (version, name): data
+        for version, assets in releases.items()
+        for name, data in assets.items()
+    }
+    payloads.update(
+        ("/releases/latest/%s" % name, data) for name, data in releases[latest].items()
+    )
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self) -> None:  # noqa: N802
+            payload = payloads.get(self.path)
+            self.send_response(404 if payload is None else 200)
+            self.send_header("Content-Length", str(len(payload or b"")))
+            self.end_headers()
+            if payload:
+                self.wfile.write(payload)
+
+        def log_message(self, *_args: Any) -> None:
+            pass
+
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield "http://127.0.0.1:%d/releases" % server.server_port
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join()
+
+
 def verify_candidate(
     repository_root: Path,
     *,
@@ -889,13 +930,25 @@ def verify_candidate(
     repository: str,
     origin_remote: str,
     github_remote: str,
+    base_version: Optional[str] = None,
 ) -> None:
-    """Verify a clean candidate and byte-compare it with an existing draft."""
+    """Verify a clean candidate, byte-compare its draft and install the draft bytes."""
 
     repository_root = Path(repository_root).resolve()
     version, source_commit, repository = _validated_identity(
         version, source_commit, repository
     )
+    if base_version is not None:
+        base_version = installer._validated_base_version(base_version)
+        installer._require_older_base_version(base_version, version)
+        # gh can download draft assets, so the base must be shown to be public.
+        base_tag = "v%s" % base_version
+        _require_release_shape(
+            _release_metadata(repository_root, repository, base_tag),
+            tag=base_tag,
+            draft=False,
+            immutable=True,
+        )
     _run_local_gates(repository_root, source_commit)
     artifacts = _build_reproducible_assets(
         repository_root,
@@ -915,8 +968,25 @@ def verify_candidate(
     _require_release_shape(metadata, tag=tag, draft=True, immutable=False)
     draft_assets = _download_release_assets(repository_root, repository, tag)
     _compare_assets(artifacts.files, draft_assets, "GitHub draft")
+    # A draft is not reachable through public release URLs, so the same
+    # installer paths that published checks run against the draft bytes here.
+    # The installer reads a base release from the same root, so it is served too.
+    releases = {version: draft_assets}
+    if base_version is not None:
+        releases[base_version] = _download_release_assets(
+            repository_root, repository, base_tag
+        )
+    with _loopback_release_root(releases, latest=version) as release_url:
+        _verify_published_e2e(
+            repository_root,
+            release_url=release_url,
+            version=version,
+            artifacts=artifacts,
+            base_version=base_version,
+        )
     print(
-        "Candidate release verification passed: %s at %s; synchronized main %s; %d assets"
+        "Candidate release verification passed: %s at %s; synchronized main %s; "
+        "%d assets; installer E2E on loopback"
         % (tag, source_commit, main_commit, len(artifacts.files))
     )
 
@@ -996,9 +1066,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
     candidate = subparsers.add_parser(
-        "candidate", help="verify local gates, remote refs, and an existing draft"
+        "candidate",
+        help="verify local gates, remote refs, an existing draft, and its installer paths",
     )
     _add_common_arguments(candidate)
+    candidate.add_argument(
+        "--base-version",
+        help="older exact published SemVer for optional base-aware adopt verification",
+    )
     published = subparsers.add_parser(
         "published", help="verify an immutable latest release through public HTTPS"
     )
@@ -1021,7 +1096,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             "github_remote": args.github_remote,
         }
         if args.command == "candidate":
-            verify_candidate(**common)
+            verify_candidate(base_version=args.base_version, **common)
         else:
             verify_published(
                 release_url=args.release_url,

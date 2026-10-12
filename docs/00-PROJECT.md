@@ -79,7 +79,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 | 번들 skill | `design`, `project-analysis`, `review-round`의 조건부 절차를 tool별 고정 경로에 제공 | locale별 `.agents`·`.claude` byte-identical 사본과 skill fixture | Chae Sangwon |
 | locale exporter·packager | 단일-locale tree와 deterministic ZIP·manifest·checksum 생성 | complete locale source, 고정 installer source | Chae Sangwon |
 | 비파괴 installer | 명시한 GitHub Releases root의 manifest·checksum·locale ZIP을 검증하고 새 경로 또는 빈 디렉터리에만 install하거나 빈 디렉터리로 export하며, 기존 저장소에는 `adopt`로 대상 밖 output에 artifact와 경로별 plan을 게시합니다. 선택형 exact base가 있으면 과거 코드를 실행하지 않고 base·current·target의 3-way upgrade 상태를 함께 분류합니다. | GitHub asset HTTPS redirect만 제한 허용, 비어 있지 않거나 읽을 수 없는 install 대상은 쓰기 전 전체 중단, `adopt`는 대상에 쓰거나 자동 병합·삭제하지 않음 | Chae Sangwon |
-| release 검증 도구 | 게시 후보의 local gate·재현 package·draft asset과 공개된 immutable Latest release의 모든 locale 경로를 읽기 전용으로 검증하며, 선택형 base-aware 공개 upgrade E2E도 검사 | clean exact-source checkout, `git`, `gh`, GitHub Releases | Chae Sangwon |
+| release 검증 도구 | 게시 후보의 local gate·재현 package·draft asset과 그 byte의 loopback installer E2E, 공개된 immutable Latest release의 모든 locale 경로를 읽기 전용으로 검증하며, 두 단계 모두 선택형 base-aware upgrade E2E도 검사 | clean exact-source checkout, `git`, `gh`, GitHub Releases | Chae Sangwon |
 
 ### Data Flow
 
@@ -193,7 +193,7 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 | release asset redirect가 신뢰 경계를 넓힘 | Low | High | 검증된 GitHub asset URL에서 시작한 HTTPS chain만 허용하고 exact tag checksum 검증 | HTTP downgrade, 비-release 시작점 또는 checksum 불일치 |
 | `adopt` report를 자동 병합 승인으로 오해하거나 대상에 기록 | Medium | High | 대상 밖 output 강제, `decision` 분류, 실험적 report 표시와 대상 tree 불변 테스트 | 대상 before/after snapshot 차이 또는 `LICENSE` 무단 추가 |
 | base 비교를 위해 검증되지 않은 과거 installer를 실행하거나 legacy parser가 current 검증을 느슨하게 함 | Low | High | base installer는 opaque byte로만 검증, schema 1·2 exact-key parser를 base 경로에 격리, 나머지 schema fail-closed | subprocess/import 감시 실패, current 명령에서 legacy schema 수용 |
-| 수동 release gate에서 source·asset·remote 근거가 어긋남 | Medium | High | candidate는 exact source·두 remote·draft asset byte를, published는 immutable Latest asset과 package의 installer를 통한 공개 E2E를 각각 한 실행에 결합 | 단계별 검증 대상 SHA·version 불일치 또는 일부 locale 누락 |
+| 수동 release gate에서 source·asset·remote 근거가 어긋남 | Medium | High | candidate는 exact source·두 remote·draft asset byte와 그 byte의 loopback installer E2E를, published는 immutable Latest asset과 package의 installer를 통한 공개 E2E를 각각 한 실행에 결합 | 단계별 검증 대상 SHA·version 불일치 또는 일부 locale 누락 |
 | 비어 있지 않은 기존 저장소에 `install`이 파일을 추가 | Medium | High | 새 경로·빈 디렉터리 preflight와 불변 snapshot 회귀, 기존 저장소에는 읽기 전용 `adopt` 안내 | 겹치지 않는 `existing.txt`가 있는 대상에서 install 성공 또는 tree 변경 |
 
 ## 11. Open Questions

@@ -338,10 +338,21 @@ class VerifyReleaseTests(unittest.TestCase):
                 expected,
             )
 
-    def test_candidate_orchestrates_gates_refs_and_draft_comparison(self) -> None:
+    def test_candidate_orchestrates_gates_refs_draft_comparison_and_e2e(self) -> None:
         artifacts = PACKAGE_RELEASE.ReleaseArtifacts(
             files={"asset": b"bytes"}, manifest={"version": VERSION}
         )
+        served: list[bytes] = []
+
+        def served_during_e2e(repository_root, *, release_url, version, artifacts, base_version):
+            # The installer must reach the draft bytes in its non-GitHub URL layout.
+            for selector in ("latest", version):
+                served.append(
+                    VERIFY_RELEASE.installer._fetch(
+                        VERIFY_RELEASE.installer._asset_url(release_url, selector, "asset"),
+                        1024,
+                    )
+                )
         metadata = {
             "tag_name": "v%s" % VERSION,
             "draft": True,
@@ -355,7 +366,9 @@ class VerifyReleaseTests(unittest.TestCase):
             VERIFY_RELEASE, "_draft_release_metadata", return_value=metadata
         ) as release, patch.object(
             VERIFY_RELEASE, "_download_release_assets", return_value=dict(artifacts.files)
-        ) as download:
+        ) as download, patch.object(
+            VERIFY_RELEASE, "_verify_published_e2e", side_effect=served_during_e2e
+        ) as e2e:
             with redirect_stdout(io.StringIO()):
                 VERIFY_RELEASE.verify_candidate(
                     self.root,
@@ -370,6 +383,128 @@ class VerifyReleaseTests(unittest.TestCase):
         refs.assert_called_once()
         release.assert_called_once_with(self.root.resolve(), REPOSITORY, "v%s" % VERSION)
         download.assert_called_once_with(self.root.resolve(), REPOSITORY, "v%s" % VERSION)
+        e2e.assert_called_once()
+        self.assertEqual(e2e.call_args.args, (self.root.resolve(),))
+        self.assertEqual(e2e.call_args.kwargs["version"], VERSION)
+        self.assertIs(e2e.call_args.kwargs["artifacts"], artifacts)
+        self.assertTrue(e2e.call_args.kwargs["release_url"].startswith("http://127.0.0.1:"))
+        self.assertIsNone(e2e.call_args.kwargs["base_version"])
+        self.assertEqual(served, [b"bytes", b"bytes"])
+
+    def test_candidate_serves_the_published_base_release_for_base_aware_e2e(self) -> None:
+        artifacts = PACKAGE_RELEASE.ReleaseArtifacts(
+            files={"asset": b"current"}, manifest={"version": VERSION}
+        )
+        metadata = {"tag_name": "v%s" % VERSION, "draft": True, "immutable": False}
+        downloads = {"v%s" % VERSION: {"asset": b"current"}, "v2.0.0": {"asset": b"base"}}
+        served: list[bytes] = []
+
+        def served_during_e2e(repository_root, *, release_url, version, artifacts, base_version):
+            for selector in ("latest", version, base_version):
+                served.append(
+                    VERIFY_RELEASE.installer._fetch(
+                        VERIFY_RELEASE.installer._asset_url(release_url, selector, "asset"),
+                        1024,
+                    )
+                )
+
+        with patch.object(VERIFY_RELEASE, "_run_local_gates"), patch.object(
+            VERIFY_RELEASE, "_build_reproducible_assets", return_value=artifacts
+        ), patch.object(
+            VERIFY_RELEASE, "_verify_remote_refs", return_value=MAIN_COMMIT
+        ), patch.object(
+            VERIFY_RELEASE, "_draft_release_metadata", return_value=metadata
+        ), patch.object(
+            VERIFY_RELEASE,
+            "_release_metadata",
+            return_value={
+                "tag_name": "v2.0.0",
+                "draft": False,
+                "immutable": True,
+                "prerelease": False,
+            },
+        ) as base_release, patch.object(
+            VERIFY_RELEASE,
+            "_download_release_assets",
+            side_effect=lambda _root, _repository, tag: dict(downloads[tag]),
+        ) as download, patch.object(
+            VERIFY_RELEASE, "_verify_published_e2e", side_effect=served_during_e2e
+        ) as e2e:
+            with redirect_stdout(io.StringIO()):
+                VERIFY_RELEASE.verify_candidate(
+                    self.root,
+                    version=VERSION,
+                    source_commit=SOURCE_COMMIT,
+                    repository=REPOSITORY,
+                    origin_remote="origin",
+                    github_remote="github",
+                    base_version="2.0.0",
+                )
+        self.assertEqual(
+            [call.args[2] for call in download.call_args_list],
+            ["v%s" % VERSION, "v2.0.0"],
+        )
+        base_release.assert_called_once_with(self.root.resolve(), REPOSITORY, "v2.0.0")
+        self.assertEqual(e2e.call_args.kwargs["base_version"], "2.0.0")
+        self.assertEqual(served, [b"current", b"current", b"base"])
+
+        for invalid in ("2.1.0", "3.0.0", "latest"):
+            with self.subTest(base_version=invalid), patch.object(
+                VERIFY_RELEASE, "_run_local_gates"
+            ) as gates:
+                with self.assertRaises(VERIFY_RELEASE.installer.InstallerError):
+                    VERIFY_RELEASE.verify_candidate(
+                        self.root,
+                        version=VERSION,
+                        source_commit=SOURCE_COMMIT,
+                        repository=REPOSITORY,
+                        origin_remote="origin",
+                        github_remote="github",
+                        base_version=invalid,
+                    )
+                gates.assert_not_called()
+
+    def test_candidate_rejects_a_base_release_that_is_not_published(self) -> None:
+        artifacts = PACKAGE_RELEASE.ReleaseArtifacts(
+            files={"asset": b"current"}, manifest={"version": VERSION}
+        )
+        draft = {"tag_name": "v%s" % VERSION, "draft": True, "immutable": False}
+        for base_metadata, message in (
+            ({"tag_name": "v2.0.0", "draft": True, "immutable": False}, "draft state"),
+            (
+                {"tag_name": "v2.0.0", "draft": False, "immutable": True, "prerelease": True},
+                "prerelease",
+            ),
+        ):
+            with self.subTest(message=message), patch.object(
+                VERIFY_RELEASE, "_run_local_gates"
+            ) as gates, patch.object(
+                VERIFY_RELEASE, "_build_reproducible_assets", return_value=artifacts
+            ), patch.object(
+                VERIFY_RELEASE, "_verify_remote_refs", return_value=MAIN_COMMIT
+            ), patch.object(
+                VERIFY_RELEASE, "_draft_release_metadata", return_value=draft
+            ), patch.object(
+                VERIFY_RELEASE, "_release_metadata", return_value=base_metadata
+            ), patch.object(
+                VERIFY_RELEASE,
+                "_download_release_assets",
+                return_value={"asset": b"current"},
+            ) as download, patch.object(VERIFY_RELEASE, "_verify_published_e2e"):
+                with redirect_stdout(io.StringIO()), self.assertRaisesRegex(
+                    VERIFY_RELEASE.VerificationError, message
+                ):
+                    VERIFY_RELEASE.verify_candidate(
+                        self.root,
+                        version=VERSION,
+                        source_commit=SOURCE_COMMIT,
+                        repository=REPOSITORY,
+                        origin_remote="origin",
+                        github_remote="github",
+                        base_version="2.0.0",
+                    )
+                gates.assert_not_called()
+                download.assert_not_called()
 
     def test_published_requires_latest_identity_and_runs_e2e(self) -> None:
         artifacts = PACKAGE_RELEASE.ReleaseArtifacts(
@@ -820,7 +955,7 @@ class VerifyReleaseTests(unittest.TestCase):
         self.assertEqual(published.returncode, 0, published.stderr)
         self.assertEqual(candidate.returncode, 0, candidate.stderr)
         self.assertIn("--base-version", published.stdout)
-        self.assertNotIn("--base-version", candidate.stdout)
+        self.assertIn("--base-version", candidate.stdout)
 
 
 if __name__ == "__main__":
