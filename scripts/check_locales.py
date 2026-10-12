@@ -1001,7 +1001,8 @@ def _markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
                     fence_blockquote_depth = 0
                 continue
 
-        fence = FENCE_LINE_RE.fullmatch(fence_candidate)
+        # A fence line inside an HTML comment is comment text.
+        fence = None if in_html_comment else FENCE_LINE_RE.fullmatch(fence_candidate)
         if fence is not None:
             sequence = fence.group(1)
             fence_character = sequence[0]
@@ -1077,20 +1078,13 @@ def _mask_html_comments(text: str) -> str:
     if "<!--" not in text:
         return text
     masked_lines: List[str] = []
-    in_html_comment = False
-    for line, (outside_fence, _) in zip(
+    for line, (outside_fence, outside_comment) in zip(
         text.splitlines(keepends=True), _markdown_line_context(text)
     ):
-        if not in_html_comment and (not outside_fence or "<!--" not in line):
+        if not outside_fence or (outside_comment and "<!--" not in line):
             masked_lines.append(line)
             continue
-        if outside_fence:
-            ranges, in_html_comment = _html_comment_ranges(line, in_html_comment)
-        else:
-            # Fenced code cannot open a comment, but an open one can end inside it.
-            end = line.find("-->")
-            ranges = [(0, len(line.rstrip("\r\n")) if end < 0 else end + 3)]
-            in_html_comment = end < 0
+        ranges, _ = _html_comment_ranges(line, not outside_comment)
         characters = list(line)
         for start, stop in ranges:
             for index in range(start, stop):

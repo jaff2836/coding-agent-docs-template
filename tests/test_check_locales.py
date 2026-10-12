@@ -676,6 +676,26 @@ class LocaleFixtureTests(unittest.TestCase):
             "a" + " " * 12 + "b" + " " * 9 + "\n" + " " * 10 + "\nafter\n",
         )
 
+    def test_fence_lines_inside_comments_do_not_open_fences(self) -> None:
+        comments = "<!--\n```\n-->\n<!--\n## 999. Hidden heading\n```\n-->\n"
+        path = self.path("locales/en/docs/00-PROJECT.md")
+        title, rest = path.read_text(encoding="utf-8").split("\n", 1)
+        path.write_text(
+            title + "\n\n" + comments + rest, encoding="utf-8", newline="\n"
+        )
+        self.assertEqual(self.errors(), [])
+
+        text = comments + "after\n"
+        self.assertEqual(
+            [outside for _, outside in CHECK_LOCALES._markdown_line_context(text)],
+            [True, False, False, True, False, False, False, True],
+        )
+        self.assertEqual(
+            CHECK_LOCALES._observable_markdown_text(text),
+            "".join(" " * len(line) + "\n" for line in comments.splitlines())
+            + "after\n",
+        )
+
     def test_missing_and_reordered_markers_are_rejected(self) -> None:
         path = self.path("locales/en/docs/REVIEW.md")
         text = path.read_text(encoding="utf-8")
