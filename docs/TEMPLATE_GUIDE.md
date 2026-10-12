@@ -110,7 +110,10 @@ source locale 검사는 이 선언·참조·sentinel과 root 안내의 정본 �
 ## 5. Release와 consumer 검증
 
 release candidate는 clean exact source commit에서 package하고 tag·manifest·draft
-asset provenance를 대조합니다. 공개 후에는 published verifier로 immutable
+asset provenance를 대조한 뒤, draft와 byte가 같은 asset을 loopback release
+root로 제공해 공개 전에 latest·exact 설치, export와 adopt를 확인합니다.
+`--base-version`에 직전 release를 주면 그 공개 asset도 같은 root로 제공해
+base-aware adopt까지 확인합니다. 공개 후에는 published verifier로 immutable
 asset, latest·exact 설치, export와 지원 locale 경로를 확인합니다. published
 검증은 Linux와 native Windows에서 모두 실행하며, Windows는 Buildkite
 `windows-ci`의 수동 build로 실행합니다([CI.md](./CI.md) §6). 그 release로 새
