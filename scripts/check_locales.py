@@ -1011,17 +1011,39 @@ def _markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
             continue
 
         context.append((True, not in_html_comment))
-        # A comment opener inside a code span is literal text.
-        searchable = _mask_inline_code_line(line) if "<!--" in line else line
-        cursor = 0
-        while cursor < len(line):
-            token = "-->" if in_html_comment else "<!--"
-            position = (line if in_html_comment else searchable).find(token, cursor)
-            if position < 0:
-                break
-            in_html_comment = not in_html_comment
-            cursor = position + len(token)
+        if in_html_comment or "<!--" in line:
+            _, in_html_comment = _html_comment_ranges(line, in_html_comment)
     return tuple(context)
+
+
+def _html_comment_ranges(
+    line: str, in_html_comment: bool
+) -> Tuple[List[Tuple[int, int]], bool]:
+    """Return one line's HTML comment ranges and whether a comment stays open.
+
+    Whichever starts first wins: a code span hides the comment openers inside
+    it, and backticks inside a comment never pair with code outside it.
+    """
+
+    ranges: List[Tuple[int, int]] = []
+    content_end = len(line.rstrip("\r\n"))
+    cursor = 0
+    while cursor < content_end:
+        start = cursor
+        if not in_html_comment:
+            opener = _mask_inline_code_line(line[cursor:content_end]).find("<!--")
+            if opener < 0:
+                break
+            start = cursor + opener
+            cursor = start + 4
+            in_html_comment = True
+        end = line.find("-->", cursor, content_end)
+        stop = content_end if end < 0 else end + 3
+        ranges.append((start, stop))
+        cursor = stop
+        if end >= 0:
+            in_html_comment = False
+    return ranges, in_html_comment
 
 
 def _visible_contract_assertions(text: str) -> List[str]:
@@ -1062,27 +1084,17 @@ def _mask_html_comments(text: str) -> str:
         if not in_html_comment and (not outside_fence or "<!--" not in line):
             masked_lines.append(line)
             continue
+        if outside_fence:
+            ranges, in_html_comment = _html_comment_ranges(line, in_html_comment)
+        else:
+            # Fenced code cannot open a comment, but an open one can end inside it.
+            end = line.find("-->")
+            ranges = [(0, len(line.rstrip("\r\n")) if end < 0 else end + 3)]
+            in_html_comment = end < 0
         characters = list(line)
-        content_end = len(line.rstrip("\r\n"))
-        searchable = _mask_inline_code_line(line) if outside_fence else None
-        cursor = 0
-        while cursor < content_end:
-            search_from = cursor
-            if not in_html_comment:
-                if searchable is None:
-                    break
-                start = searchable.find("<!--", cursor, content_end)
-                if start < 0:
-                    break
-                cursor, search_from = start, start + 4
-                in_html_comment = True
-            end = line.find("-->", search_from, content_end)
-            stop = content_end if end < 0 else end + 3
-            for index in range(cursor, stop):
+        for start, stop in ranges:
+            for index in range(start, stop):
                 characters[index] = " "
-            cursor = stop
-            if end >= 0:
-                in_html_comment = False
         masked_lines.append("".join(characters))
     return "".join(masked_lines)
 

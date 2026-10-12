@@ -630,7 +630,6 @@ class LocaleFixtureTests(unittest.TestCase):
         )
         self.assert_error("numbered heading sequence differs for docs/00-PROJECT.md")
 
-
     def test_inline_code_comment_opener_does_not_hide_structure(self) -> None:
         for locale in ("en", "ko"):
             path = self.path("locales/%s/docs/00-PROJECT.md" % locale)
@@ -654,6 +653,25 @@ class LocaleFixtureTests(unittest.TestCase):
         self.assertEqual(
             CHECK_LOCALES._mask_html_comments(text),
             "`<!--` is literal\nvisible\n         \n          \nafter\n",
+        )
+
+    def test_backticks_inside_comments_do_not_pair_with_code_spans(self) -> None:
+        path = self.path("locales/en/docs/00-PROJECT.md")
+        title, rest = path.read_text(encoding="utf-8").split("\n", 1)
+        path.write_text(
+            title + "\n\n<!-- ` --> <!-- `\n## 999. Hidden heading\n-->\n" + rest,
+            encoding="utf-8",
+        )
+        self.assertEqual(self.errors(), [])
+
+        text = "a <!-- ` --> b <!-- ` c\nhidden -->\nafter\n"
+        self.assertEqual(
+            [outside for _, outside in CHECK_LOCALES._markdown_line_context(text)],
+            [True, False, True],
+        )
+        self.assertEqual(
+            CHECK_LOCALES._mask_html_comments(text),
+            "a" + " " * 12 + "b" + " " * 9 + "\n" + " " * 10 + "\nafter\n",
         )
 
     def test_missing_and_reordered_markers_are_rejected(self) -> None:
