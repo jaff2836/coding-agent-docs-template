@@ -39,7 +39,7 @@
 
 ## Next
 
-Backlog 37·38행을 진행합니다. T-058(39행)은 36행 위에 쌓은 PR로 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+Backlog 37·38행을 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -57,10 +57,10 @@ Backlog 37·38행을 진행합니다. T-058(39행)은 36행 위에 쌓은 PR로 
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 36 | `claude/installer-hardening` | T-055 installer 경로·복구·manifest 검사 보강 | **In Progress** — PR #77. 공개는 40행 |
+| 36 | `claude/installer-hardening` | T-055 installer 경로·복구·manifest 검사 보강 | **Integrated** — Origin PR #77 merge `de6e666`·GitHub fast-forward 확인. 공개는 40행 |
 | 37 | `claude/maintainer-check-hardening` | T-056 package source 대조와 locale 주석 해석 | 36과 독립. release 불필요 |
 | 38 | `claude/readme-attestation-order` | T-057 root README attestation 순서와 CI 문구 | 독립. release 불필요 |
-| 39 | `claude/t058-candidate-e2e` | T-058 candidate 실제 package E2E | **In Progress** — 이 변경의 PR(36 위에 쌓음). 40행 candidate부터 적용 |
+| 39 | `claude/t058-candidate-e2e` | T-058 candidate 실제 package E2E | **In Progress** — 이 변경의 PR(36 위에 쌓았고 36 통합 뒤 `main`으로 retarget). 40행 candidate부터 적용 |
 | 40 | `claude/v3.0.1-release-prep` 등 | T-059 `v3.0.1` release | 36~39 통합 뒤 |
 
 - [ ] **T-056 maintainer 검사 보강** — 외부 분석 1·4번입니다. `package_release.verify_source_revision()`이 `assume-unchanged`·`skip-worktree`로 숨긴 작업 트리 변경을 통과시키지 않게 하고, `check_locales._mask_html_comments()`가 inline code·fenced code 안의 `<!--`를 주석 시작으로 읽지 않게 합니다. exporter·packager가 게시에 실패하면 먼저 지운 빈 output을 되살리는지도 installer와 맞춥니다. 각각 red-green 회귀를 둡니다.
