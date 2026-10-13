@@ -6,13 +6,14 @@
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
 
-## v3.0.1 — Installer validation and checker comment parsing
+## [v3.0.1](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.0.1) — Installer validation and checker comment parsing
 
 - `installer.py` rejects member paths that contain a colon or control character, have a segment ending with a dot or space, or use a Windows reserved name. It also checks that release manifest string fields are strings, that the installer record matches the running installer's size as well as its hash, and that `SHA256SUMS` lists exactly the release assets with the manifest's locale ZIP digests.
 - An interrupted `install`, including Ctrl+C, removes the paths it created and names any path it could not remove. If `export` or `adopt` fails while publishing, the installer recreates the empty output directory it removed.
 - `scripts/check-docs.py` no longer pairs a backtick inside an HTML comment with one outside it. Such a pair could hide a later comment, so the checker read that comment's headings and links as visible content.
 - Maintainer release tools: the candidate verifier serves the draft assets from a loopback release root and runs the published installer checks before publication, including, with `--base-version`, a base-aware upgrade from a published release. The installer reaches a loopback release root without an HTTP proxy. Packaging refuses a source checkout with assume-unchanged or skip-worktree paths, because `git status` does not report their changes.
 - The Python 3.12 requirement, the installer commands, the release manifest schema, and the artifact inventory are unchanged.
+- Before publication, the candidate verifier ran the installer end to end on the draft's bytes from a loopback release root, including the `v3.0.0` base-aware upgrade. The verified draft's five assets were published unchanged as the immutable Latest release. The published verification on Linux and on native Windows (Buildkite) checked the `latest` and exact paths for both locales, the `v3.0.0` base-aware upgrade, and that a non-empty install target is refused and left unchanged.
 
 ## [v3.0.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.0.0) — Default release URL, Python 3.12 on every OS, and a self-check rule
 
