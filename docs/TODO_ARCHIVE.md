@@ -390,3 +390,8 @@ T-051은 2026-10-08 PR #70에서 등록했고 PR #73에서 T-052·T-053을 범�
 | 33 | `claude/t050-installer-defaults` | T-050 installer 기본 URL과 Python 3.12 하한, T-052 Completed 안내문 | **Integrated** — Origin PR #72 merge `9579191`·GitHub fast-forward 확인(2026-10-11) |
 | 34 | `claude/t053-self-check-payload` | T-053 자기 점검 규칙 payload 반영, T-047 종료 | **Integrated** — Origin PR #73 merge `74ea56b`·GitHub fast-forward 확인 |
 | 35 | `claude/v3.0.0-release-prep` | T-051 `v3.0.0` release | **Integrated·Published** — 준비 Origin PR #74 merge `2c27a4d`·GitHub fast-forward 확인; 2026-10-12(KST) annotated tag·immutable Latest 공개, candidate·published(`--base-version 2.5.0`, Linux·Windows) 통과; 공개 기록은 이 변경의 PR |
+| 36 | `claude/installer-hardening` | T-055 installer 경로·복구·manifest 검사 보강 | **Integrated** — Origin PR #77 merge `de6e666`·GitHub fast-forward 확인. 공개는 T-059 |
+| 37 | `claude/t056-t057-maintainer-and-readme` | T-056 package source 대조와 locale 주석 해석 | **Integrated** — Origin PR #79 merge `56b2cf9`·GitHub fast-forward 확인(38과 함께). release 불필요 |
+| 38 | `claude/t056-t057-maintainer-and-readme` | T-057 root README attestation 순서와 CI 문구 | **Integrated** — Origin PR #79 merge `56b2cf9`·GitHub fast-forward 확인(37과 함께). release 불필요 |
+| 39 | `claude/t058-candidate-e2e` | T-058 candidate 실제 package E2E | **Integrated** — Origin PR #78 merge `6b3d5da`·GitHub fast-forward 확인. T-059 candidate부터 적용 |
+| 40 | `claude/t060-artifact-comment-backticks` | T-060 artifact checker의 주석 안 backtick 해석 | **Integrated** — Origin PR #80 merge `9568803`·GitHub fast-forward 확인. 공개는 T-059 |

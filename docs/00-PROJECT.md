@@ -38,6 +38,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 - D-013(기록 시점: merge 결합 서술·PR 원장)과 D-014(리뷰 finding ID와 근거)는 PR #56으로 source에 통합됐고 2026-10-01부터 이 저장소의 운영에 적용합니다. locale artifact로는 `v2.4.0`에서 공개했습니다.
 - D-015(보고 형식과 기본값 명시), D-016(외부 입력 경계), D-017(완료 근거·red-green·원장 `확인` 열)은 PR #60으로 source에 통합됐고 2026-10-07부터 이 저장소의 운영에 적용합니다. locale artifact로는 `v2.5.0`에서 공개했습니다.
 - D-018(installer 기본 release URL과 모든 OS의 Python 3.12 하한)은 PR #72로, D-019(root 리뷰 사본과 README locale 표의 maintainer 검사)는 PR #71로 source에 통합됐습니다. D-019는 이 저장소의 무인자 문서 검사에 바로 적용하고, D-018과 자기 점검 규칙(T-053, PR #73)은 `v3.0.0`에서 공개했습니다.
+- T-055 installer 경로·복구·manifest 검사 보강(PR #77)과 T-060 artifact checker의 주석 해석 수정(PR #80)은 source에 통합됐고 T-059 `v3.0.1`로 공개합니다. maintainer 도구인 T-056 maintainer 검사 보강(PR #79)와 T-058 candidate E2E(PR #78)는 통합으로 바로 적용되며, T-058은 `v3.0.1` candidate에서 처음 운영합니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
