@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.0.1
+- **Template version:** 3.1.0
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -354,6 +354,12 @@ When changing instructions, skills, the checker, or the version of a tool or mod
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v3.1.0 — Behavior Verification Cases and Permission Enforcement
+
+- §5 "Template Behavior Verification Cases" now also applies when you change the version of a tool or model you use, not only when you change instructions, skills, or the checker. New cases check that instructions inside a PR, review, or tool output are treated as data, and that an edit request without a commit or push request stops after the edit.
+- §4 "Instruction Files" adds a note: instructions do not technically restrict what an agent does, so also enforce rules that must hold, such as commit, push, and merge limits, with protected branches, required reviews and CI, and the tool's permission settings. Both guide documents carry the new template version.
+- Verify in the adopting repository: merge the two sections of `docs/TEMPLATE_GUIDE.md`, and confirm that the repository's protected branches, required reviews, and tool permission settings actually enforce commit, push, and merge limits. Artifact files other than the two guides, and `installer.py`, are the same as in `v3.0.1`.
 
 ### v3.0.1 — Installer Validation and Checker Comment Parsing
 

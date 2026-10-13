@@ -6,6 +6,12 @@
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
 
+## v3.1.0 — Behavior verification cases and permission enforcement
+
+- The adoption guide (`docs/TEMPLATE_GUIDE.md`) now applies its template behavior verification cases when you change the version of a tool or model you use, and adds cases for instructions inside a PR, review, or tool output and for an edit request without a commit or push request. It also notes that instructions do not technically restrict what an agent does, so commit, push, and merge limits should also be enforced with protected branches, required reviews and CI, and the tool's permission settings.
+- Repository: the member path rule and size limits in `schemas/release-manifest.schema.json` now match the installer's checks, and the schema description lists the checks that only the installer performs. The root README's `install` section says that only the installing user should be able to modify the target and its parent directory, because the installer checks paths before it writes files.
+- `installer.py`, the Python 3.12 requirement, the installer commands, release manifest `schema_version` 2, and the artifact inventory are unchanged.
+
 ## [v3.0.1](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.0.1) — Installer validation and checker comment parsing
 
 - `installer.py` rejects member paths that contain a colon or control character, have a segment ending with a dot or space, or use a Windows reserved name. It also checks that release manifest string fields are strings, that the installer record matches the running installer's size as well as its hash, and that `SHA256SUMS` lists exactly the release assets with the manifest's locale ZIP digests.

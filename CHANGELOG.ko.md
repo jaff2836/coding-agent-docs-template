@@ -6,6 +6,12 @@
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
 
+## v3.1.0 — 행동 검증 사례와 권한 강제 안내
+
+- 적용 가이드(`docs/TEMPLATE_GUIDE.md`)의 템플릿 행동 검증 사례를 사용하는 도구·모델의 버전을 바꿀 때도 확인하게 하고, PR·리뷰·도구 출력 안의 지시와 commit·push를 요청하지 않은 수정 사례를 더했습니다. 지침은 에이전트의 행동을 기술적으로 막지 않으니 commit·push·merge 제한은 보호 branch, 필수 리뷰·CI와 도구의 권한 설정으로도 강제하라는 안내도 더했습니다.
+- 저장소: `schemas/release-manifest.schema.json`의 member 경로 규칙과 크기 상한을 installer 검사와 맞췄고, installer만 하는 나머지 검사는 schema 설명에 적었습니다. root README의 `install` 절은 대상과 그 부모를 설치하는 사용자만 바꿀 수 있어야 한다고 안내합니다. installer가 경로를 검사한 뒤 파일을 쓰기 때문입니다.
+- `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version` 2와 artifact inventory는 바뀌지 않습니다.
+
 ## [v3.0.1](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.0.1) — installer 검증 보강과 checker 주석 해석
 
 - `installer.py`는 colon이나 제어문자가 있거나, 구성 요소가 점이나 공백으로 끝나거나, Windows 예약 이름을 쓰는 member 경로를 거부합니다. release manifest의 문자열 필드가 문자열인지, installer 기록이 실행 중인 installer의 hash와 크기에 모두 맞는지, `SHA256SUMS`가 release asset만 빠짐없이 나열하고 locale ZIP digest가 manifest와 같은지도 확인합니다.

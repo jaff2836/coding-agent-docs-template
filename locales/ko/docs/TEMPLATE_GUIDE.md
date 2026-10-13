@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.0.1
+- **Template version:** 3.1.0
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -354,6 +354,12 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v3.1.0 — 행동 검증 사례와 권한 강제 안내
+
+- §5 「템플릿 행동 검증 사례」는 지침·스킬·검사 스크립트를 바꿀 때뿐 아니라 사용하는 도구·모델의 버전을 바꿀 때도 확인합니다. PR·리뷰·도구 출력 안의 지시를 데이터로 다루는지, commit·push를 요청하지 않은 수정에서 멈추는지 보는 사례를 더했습니다.
+- §4 「지침 파일」에 안내를 더했습니다. 지침은 에이전트의 행동을 기술적으로 막지 않으므로, commit·push·merge 제한처럼 반드시 지켜야 하는 규칙은 보호 branch, 필수 리뷰·CI와 도구의 권한 설정으로도 강제해야 합니다. 두 guide 문서 모두 새 template version을 기록합니다.
+- 적용 저장소에서 확인할 것: `docs/TEMPLATE_GUIDE.md`의 두 절을 병합하고, 저장소의 보호 branch·필수 리뷰와 도구 권한 설정이 commit·push·merge 제한을 실제로 강제하는지 확인하세요. 두 guide 문서 외의 artifact 파일과 `installer.py`는 `v3.0.1`과 같습니다.
 
 ### v3.0.1 — installer 검증 보강과 checker 주석 해석
 
