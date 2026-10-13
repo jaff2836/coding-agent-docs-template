@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.0.0
+- **Template version:** 3.0.1
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -351,6 +351,13 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v3.0.1 — installer 검증 보강과 checker 주석 해석
+
+- 선택한 release의 별도 `installer.py`가 쓰기 전에 더 많이 검사합니다. member 경로에 colon이나 제어문자가 있거나, 경로 구성 요소가 점이나 공백으로 끝나거나, `CON`·`COM1` 같은 Windows 예약 이름이면 거부합니다. release manifest의 문자열 필드는 문자열이어야 하고, installer 기록은 실행 중인 installer의 hash와 크기가 모두 맞아야 합니다. `SHA256SUMS`는 release asset만 빠짐없이 나열하고 locale ZIP digest가 manifest와 같아야 합니다. 이전에 공개된 installer는 해당 버전의 검사를 따릅니다.
+- `install`이 Ctrl+C 등으로 중단돼도 installer는 자신이 만든 경로를 지웁니다. 지우지 못한 경로가 있으면 대상이 그대로라고 보고하지 않고 그 경로를 알려 줍니다. `export`·`adopt`가 게시 중에 실패하면 먼저 지운 빈 output 디렉터리를 되살립니다.
+- `scripts/check-docs.py`는 HTML 주석 안의 backtick을 주석 밖 backtick과 code span으로 짝짓지 않습니다. 이전에는 이 짝이 뒤 주석의 시작을 가려, 그 주석 안의 heading과 링크를 보이는 내용으로 검사하고 두 주석 사이의 본문은 code로 건너뛸 수 있었습니다. code span과 주석 중 먼저 시작한 쪽을 택하고, 여러 줄에 걸친 code span은 전처럼 인식합니다. 회귀 테스트는 `tests/test_check_docs.py`에 있습니다. 두 guide 문서 모두 새 template version을 기록합니다.
+- 적용 저장소에서 확인할 것: `scripts/check-docs.py`와 `tests/test_check_docs.py`를 함께 교체하고 검사와 테스트를 다시 실행하세요. 주석에 backtick이 있는 문서는 보고되는 오류가 달라질 수 있습니다. installer는 `v3.0.1`을 사용하세요. Python 3.12 하한과 installer 명령은 그대로입니다.
 
 ### v3.0.0 — 기본 release URL, Python 3.12 하한과 자기 점검 규칙
 

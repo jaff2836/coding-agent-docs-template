@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.0.0
+- **Template version:** 3.0.1
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -351,6 +351,13 @@ When changing instructions, skills, or the checker, confirm that these cases sti
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v3.0.1 — Installer Validation and Checker Comment Parsing
+
+- The selected release's separate `installer.py` checks more before writing. It rejects member paths that contain a colon or control character, have a segment ending with a dot or space, or use a Windows reserved name such as `CON` or `COM1`. Release manifest string fields must be strings, its installer record must match the running installer's size as well as its hash, and `SHA256SUMS` must list exactly the release assets, with the manifest's locale ZIP digests. Previously published installers retain their own checks.
+- If `install` is interrupted, including with Ctrl+C, the installer removes the paths it created; if it cannot remove one, it names that path instead of reporting an unchanged target. If `export` or `adopt` fails while publishing, the installer recreates the empty output directory it removed.
+- `scripts/check-docs.py` no longer pairs a backtick inside an HTML comment with a backtick outside it. Previously such a pair could hide the opener of a later comment, so headings and links inside that comment were checked as visible content and text between the comments was skipped as code. Whichever of a code span or comment starts first wins, and code spans that cross lines are still recognized. `tests/test_check_docs.py` adds the regression tests. Both guide documents carry the new template version.
+- Verify in the adopting repository: replace `scripts/check-docs.py` and `tests/test_check_docs.py` together and rerun the checker and its tests; documents whose comments contain backticks may now report different errors. Run the `v3.0.1` installer; the Python 3.12 requirement and the installer commands are unchanged.
 
 ### v3.0.0 — Default Release URL, Python 3.12 Floor, and Self-check Rule
 
