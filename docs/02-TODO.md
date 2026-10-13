@@ -14,10 +14,8 @@
 
 ## Current Milestone
 
-- **Name:** `v3.0.1` — 외부 분석 후속
-- **Goal:** 2026-10-12 사용자가 전달한 외부 project-analysis 결과의 1~7번을 반영하고 `v3.0.1`로 공개함
-- **Target:** 아래 In Progress의 T-059와 Backlog 41행
-- **Status:** In Progress — 2026-10-12 사용자가 1~6번 수정과 7번의 `v3.0.1` 전 진행을 정했습니다. 같은 결과의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 했고, 네 도구의 지침 로딩 경로에 없어 보류했습니다. PR #79 리뷰의 C79-B-001과 같은 artifact checker 결함은 사용자 결정으로 별도로 고쳐 `v3.0.1`에 넣었습니다(T-060). T-055~T-058과 T-060은 PR #77~#80으로 통합됐고, 이 변경의 통합으로 T-059 준비가 끝납니다. tag·draft candidate, 공개·published 검증, 기록 PR은 그 뒤 단계입니다. T-043은 보류(Blocked)입니다.
+- **Name:** 없음
+- **Status:** `v3.0.1` 공개로 외부 분석 후속 마일스톤(T-055~T-060)이 끝났습니다. 같은 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중입니다. 남은 Backlog는 없고 T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
 
 ## 운영 규칙
 
@@ -35,17 +33,11 @@
 
 ## In Progress
 
-- [ ] **T-059 `v3.0.1` release**
-  - 범위: 아래 Backlog의 T-059 항목. D-007에 따라 준비, tag·draft candidate, 공개·published, 기록 단계를 나눕니다.
-  - version 판단: `v3.0.1`(patch). installer 검사 보강(T-055)과 artifact checker 수정(T-060)은 결함 수정이고, Python 3.12 하한·installer 명령·release manifest schema·artifact inventory는 그대로입니다.
-  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.0.1로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.0.1 이력을, root `CHANGELOG`에 링크 없는 v3.0.1 항목(공개 시 release 링크로 교체)을 추가했습니다. `v3.0.0` 대비 바뀐 artifact 파일은 locale마다 `scripts/check-docs.py`, `tests/test_check_docs.py`, `docs/TEMPLATE_GUIDE.md`, `docs/DOCS_GUIDE.md`(version만)이고, `installer.py`도 바뀝니다. 통합 근거: 이 변경의 PR.
-  - [ ] tag·draft candidate: 준비가 통합된 exact source에 사용자가 annotated `v3.0.1` tag와 GitHub draft를 만들고, agent가 `verify-release.py candidate --base-version 3.0.0`을 실행합니다. T-058의 loopback E2E를 처음 운영에 적용합니다.
-  - [ ] 공개·published: 사용자가 draft를 immutable release로 공개하고, agent가 Linux에서 `verify-release.py published --base-version 3.0.0`을 실행하고 Windows는 Buildkite `windows-ci` 수동 build로 검증합니다.
-  - [ ] 기록: 공개 뒤 기록 PR에서 검증 결과를 남기고, root `CHANGELOG`의 v3.0.1 제목을 release 링크로 바꾸며, PROJECT의 "`v3.0.1`로 공개 예정" 표시를 고칩니다.
+없음. 다음 작업은 Current Milestone과 Backlog 순서를 따릅니다.
 
 ## Next
 
-T-059 `v3.0.1` release를 검증·공개합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+진행할 작업이 없습니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -59,13 +51,10 @@ T-059 `v3.0.1` release를 검증·공개합니다. 새 작업은 사용자와 �
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
 설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다.
 
-통합된 순서 1~40의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+통합된 순서 1~41의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 41 | `claude/v3.0.1-release-prep` 등 | T-059 `v3.0.1` release | **In Progress** — 상세는 In Progress 항목 |
-
-- [ ] **T-059 `v3.0.1` release** — T-055의 installer 변경과 T-060의 artifact checker 수정을 D-007 단계에 따라 patch release로 공개합니다. candidate는 T-058을 포함해 실행합니다.
 
 ## Cancelled
 
@@ -81,13 +70,14 @@ T-059 `v3.0.1` release를 검증·공개합니다. 새 작업은 사용자와 �
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
+- [x] **T-059 `v3.0.1` release** — 준비는 PR #81로 통합됐습니다. 2026-10-13(KST) 사용자가 exact source `820cdc0`에 annotated tag와 draft를 만들어 immutable Latest로 공개했습니다. candidate(`--base-version 3.0.0`, T-058 loopback E2E의 첫 운영 적용)와 Linux·native Windows(Buildkite `windows-ci` Build #156)의 published(`--base-version 3.0.0`) 검증이 통과했습니다. 공개 기록은 이 변경의 PR에서 남겼습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 - [x] **T-060 artifact checker의 주석 안 backtick 해석** — PR #79 리뷰의 C79-B-001과 같은 결함이 payload `template/common/scripts/check-docs.py`에도 있어, 2026-10-12 사용자 결정으로 별도로 고쳤습니다. `markdown_line_context()`와 `markdown_searchable_text()`는 새 `CommentOpenerSearch`로 주석 시작을 찾습니다. code span과 주석 중 먼저 시작한 쪽을 택하고, backtick은 마지막으로 닫힌 주석 뒤부터 짝지어 주석 안의 backtick이 주석 밖 code span을 만들지 않습니다. 탐색은 앞으로만 진행해 backtick run마다 한 번만 짝짓습니다(C80-B-001). 여러 줄에 걸친 code span은 전처럼 인식합니다. 회귀 테스트는 `template/common/tests/test_check_docs.py`에 있고 red-green 결과는 PR 본문에 있습니다. 공개는 T-059(`v3.0.1`)입니다. 통합: PR #80.
 - [x] **T-057 root README 설치 안내** — 외부 분석 5번과 CI 문구입니다. root `README.md`·`README.ko.md` 2단계에서 `gh release verify-asset`을 `list-locales`(첫 installer 실행)보다 앞에 두고, 확인하려면 처음 실행하기 전에 하라고 적었습니다. "이 저장소에는 특정 CI 제품의 pipeline이 없다"는 문장은 템플릿 artifact 기준으로 고치고, 이 저장소의 품질 게이트는 Buildkite(`.buildkite/`)라고 적었습니다. root 문서라 release가 필요 없습니다. 통합: PR #79.
 - [x] **T-056 maintainer 검사 보강** — 외부 분석 1·4번입니다. `package_release.verify_source_revision()`은 `git ls-files -v`로 `assume-unchanged`·`skip-worktree` 경로를 찾아, `git status`에 보이지 않는 작업 트리 변경이 있을 수 있으면 거부합니다. `check_locales`의 `_mask_html_comments()`와 `_markdown_line_context()`는 artifact checker처럼 같은 줄의 code span과 fenced code 안의 `<!--`를 주석 시작으로 읽지 않습니다. 또 주석 안의 backtick을 주석 밖 backtick과 code span으로 짝짓지 않고(C79-B-001), 주석 안의 fence 모양 줄로 fence를 열지 않습니다(C79-B-002). 같은 문서에 반복되는 줄 문맥 계산은 캐시해 검사 시간이 늘지 않게 했습니다. exporter·packager는 공유 `export_template.replace_empty_output()`로 게시에 실패하면 먼저 지운 빈 output을 되살립니다. 회귀 테스트는 `tests/test_package_release.py`·`tests/test_check_locales.py`·`tests/test_export_template.py`에 있고 red-green 결과는 PR 본문에 있습니다. maintainer 도구라 release가 필요 없습니다. 통합: PR #79.
 - [x] **T-058 candidate 실제 package E2E** — 외부 분석 7번입니다. 2026-10-12 사용자가 승인한 방식대로 `verify-release.py candidate`가 draft byte 대조 뒤 그 byte를 loopback(`127.0.0.1`) release root로 제공하고, published와 같은 `_verify_published_e2e()`를 실행합니다(en·ko × `latest`·exact × `list-locales`·`install`·`export`·`adopt`, install 충돌·adopt 대상 불변, artifact checker). 선택형 `--base-version`을 주면 base가 immutable 공개 release인지 확인한 뒤 그 asset도 같은 root로 제공해 base-aware `adopt`까지 확인합니다(같은 날 사용자 결정). PR 리뷰의 C78-B-001(base 공개 상태)과 C78-B-002(proxy 환경)를 반영해 source installer는 loopback release root에 HTTP proxy를 쓰지 않습니다. 설계: [release 검증 변경](./changes/2026-09-20-release-verification/01-CHANGE.md) R-008. 회귀 테스트는 `tests/test_verify_release.py`에 있고 red-green 결과는 PR 본문에 있습니다. 첫 운영 적용은 T-059 candidate입니다. 통합: PR #78.
 - [x] **T-055 installer 경로·복구·manifest 검사 보강** — 외부 분석 2·3·6번(2026-10-12 사용자 결정)입니다. source `scripts/installer.py`의 member 경로가 source 검사와 같은 규칙으로 드라이브·colon·제어문자·끝의 점과 공백·Windows 예약 이름을 거부합니다. install rollback은 취소(`KeyboardInterrupt`)에도 실행되고, 지우지 못한 경로가 있으면 대상 불변 대신 그 경로를 보고합니다. export·adopt 게시가 실패하면 먼저 지운 빈 output 디렉터리를 되살립니다. 현재 release manifest는 문자열 필드 타입, installer 크기, `SHA256SUMS`의 asset 목록과 locale ZIP digest까지 대조합니다. 회귀 테스트는 `tests/test_install_release.py`에 있고 red-green 결과는 PR 본문에 있습니다. 공개는 T-059(`v3.0.1`)입니다. 통합: PR #77.
-- [x] **T-054 root 관리 문서 정리** — 2026-10-12 사용자 요청으로 root `docs/00-PROJECT.md`·`docs/02-TODO.md`의 오래된 문장과 템플릿 안내를 고쳤습니다. PROJECT §6은 남은 목표 구조가 없다고 적고 다른 절과 겹치던 설명을 뺐으며, root에서는 실제 항목인 `D-001`·`T-001`을 자리 표시라고 한 문장을 지웠습니다. TODO의 머리말·Integration target·Backlog 안내를 현재 운영에 맞추고 두 문서의 `Last reviewed`를 갱신했습니다. root 문서만 바뀌어 release가 필요 없습니다. 통합: 이 변경의 PR.
-- [x] **T-051 `v3.0.0` release** — 준비는 PR #74로 통합됐습니다. 2026-10-12(KST) 사용자가 exact source `2c27a4d`에 annotated tag와 draft를 만들어 immutable Latest로 공개했고, candidate 검증과 Linux·native Windows(Buildkite `windows-ci`)의 published(`--base-version 2.5.0`) 검증이 통과했습니다. root README 명령·Prerequisites와 공개 기록은 이 변경의 PR에서 고쳤습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+- [x] **T-054 root 관리 문서 정리** — 2026-10-12 사용자 요청으로 root `docs/00-PROJECT.md`·`docs/02-TODO.md`의 오래된 문장과 템플릿 안내를 고쳤습니다. PROJECT §6은 남은 목표 구조가 없다고 적고 다른 절과 겹치던 설명을 뺐으며, root에서는 실제 항목인 `D-001`·`T-001`을 자리 표시라고 한 문장을 지웠습니다. TODO의 머리말·Integration target·Backlog 안내를 현재 운영에 맞추고 두 문서의 `Last reviewed`를 갱신했습니다. root 문서만 바뀌어 release가 필요 없습니다. 통합: PR #76.
+- [x] **T-051 `v3.0.0` release** — 준비는 PR #74로 통합됐습니다. 2026-10-12(KST) 사용자가 exact source `2c27a4d`에 annotated tag와 draft를 만들어 immutable Latest로 공개했고, candidate 검증과 Linux·native Windows(Buildkite `windows-ci`)의 published(`--base-version 2.5.0`) 검증이 통과했습니다. root README 명령·Prerequisites와 공개 기록은 PR #75에서 고쳤습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 - [x] **T-053 자기 점검 규칙 payload 반영** — T-047 평가 뒤 사용자 결정(2026-10-09)으로 root `AGENTS.md` Communication의 자기 점검 규칙과 같은 뜻의 한 줄을 en·ko payload `AGENTS.md` Communication에 넣었습니다. ko는 root와 같은 문장이고 en은 번역입니다. 공개는 T-051(`v3.0.0`)입니다. 통합: PR #73.
 - [x] **T-047 자기 점검 규칙 root 시범** — 평가 완료(4 PR, 사용자 결정으로 단축). 시범 PR #69~#72에서 작성자가 고친 것은 2·1·3·0건이었습니다. 2026-10-09 사용자가 다섯 번째 PR 없이 평가를 마치고 규칙을 payload에 넣기로 정해 T-053으로 반영했습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합: PR #73.
 - [x] **T-050 installer 기본값과 Python 하한** — source `scripts/installer.py`의 `--release-url` 기본값을 `DEFAULT_RELEASE_URL`(공식 release root)로 두고, 모든 OS에서 Python 3.12 미만이면 release·대상 접근 전에 멈춥니다(D-018). en·ko 적용 가이드 §2의 Python 하한·기본 URL 문장과 installer 명령, manifest `required_commands`, root `AGENTS.md` Commands에서 `--release-url`을 뺐고 PROJECT External Boundaries를 고쳤습니다. 회귀 테스트는 `tests/test_install_release.py`에 있고 red-green 결과는 PR 본문에 있습니다. 공개는 T-051(`v3.0.0`)이며 root README 명령은 공개 뒤 기록 PR에서 바꿉니다. 설계: [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) R-001~R-003. 통합: PR #72.
@@ -102,7 +92,7 @@ T-059 `v3.0.1` release를 검증·공개합니다. 새 작업은 사용자와 �
 - [x] **T-036·T-037·T-038 보고·검증 규범 구현** — D-015~D-017을 en·ko locale과 root 사본의 `AGENTS.md`(보고 형식, 기본값 명시, 지시의 출처, 완료 근거, red-green), `docs/REVIEW.md` §5, `docs/REVIEW_ROUND.md` §1·§4~§7(위임 경계, 원본 재조회, 원장 `확인` 열), `.cursor/BUGBOT.md`에 반영했습니다. PR #59의 인계 C59-B-001(Codex, P3)도 [완료 작업 보관](./TODO_ARCHIVE.md)에서 해소했습니다. 통합: PR #60. R-002의 요청 안내는 T-039 준비에서 보완했습니다(C60-B-001). 공개는 T-039입니다.
 - [x] **T-036·T-037·T-038 보고·검증 규범 설계** — Accepted D-015~D-017([설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md)). 통합: PR #59. 공개는 T-039입니다.
 - [x] **T-034 `v2.4.0` locale release** — 준비는 PR #58로 통합됐습니다. 2026-10-07 사용자가 exact source `4fe3f76`에 annotated tag와 draft를 만들어 immutable Latest로 공개했고, candidate와 published(`--base-version 2.3.3`) 검증이 통과했습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
-- [x] **T-033 TODO 완료 이력 보관** — Completed 상세와 통합된 Backlog 행을 [완료 작업 보관](./TODO_ARCHIVE.md)으로 옮기고 이 문서에는 한 줄 목록만 남겼습니다. PR #56의 인계 C56-005(P3: sticky 게시물의 짧은 인용이 head를 버림)를 en·ko·root `REVIEW.md` §7과 설계 R-006에서 해소했습니다. 통합 근거: 이 변경의 PR(D-013 결합 서술).
+- [x] **T-033 TODO 완료 이력 보관** — Completed 상세와 통합된 Backlog 행을 [완료 작업 보관](./TODO_ARCHIVE.md)으로 옮기고 이 문서에는 한 줄 목록만 남겼습니다. PR #56의 인계 C56-005(P3: sticky 게시물의 짧은 인용이 head를 버림)를 en·ko·root `REVIEW.md` §7과 설계 R-006에서 해소했습니다. 통합: PR #57.
 - [x] **T-030·T-014 기록 시점·리뷰 finding ID 계약 구현** — 통합: PR #56(D-013·D-014). 공개는 T-034.
 - [x] **T-030·T-014 기록 시점·리뷰 finding ID 계약 설계**
 - [x] **T-032 원격 운영: GitHub `main` 보호·동기화 절차·tag 정책**

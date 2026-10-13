@@ -6,13 +6,14 @@
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
 
-## v3.0.1 — installer 검증 보강과 checker 주석 해석
+## [v3.0.1](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.0.1) — installer 검증 보강과 checker 주석 해석
 
 - `installer.py`는 colon이나 제어문자가 있거나, 구성 요소가 점이나 공백으로 끝나거나, Windows 예약 이름을 쓰는 member 경로를 거부합니다. release manifest의 문자열 필드가 문자열인지, installer 기록이 실행 중인 installer의 hash와 크기에 모두 맞는지, `SHA256SUMS`가 release asset만 빠짐없이 나열하고 locale ZIP digest가 manifest와 같은지도 확인합니다.
 - `install`이 Ctrl+C 등으로 중단되면 만든 경로를 지우고, 지우지 못한 경로는 이름을 알려 줍니다. `export`·`adopt`가 게시 중에 실패하면 먼저 지운 빈 output 디렉터리를 되살립니다.
 - `scripts/check-docs.py`는 HTML 주석 안의 backtick을 주석 밖 backtick과 짝짓지 않습니다. 이전에는 이 짝이 뒤 주석을 가려, 그 주석 안의 heading과 링크를 보이는 내용으로 검사했습니다.
 - maintainer release 도구: candidate verifier가 draft asset을 loopback release root로 제공해 published와 같은 installer 검사를 공개 전에 실행합니다. `--base-version`을 주면 공개된 release에서의 base-aware upgrade도 확인합니다. installer는 loopback release root에 HTTP proxy를 쓰지 않습니다. packager는 assume-unchanged·skip-worktree 경로가 있는 source checkout을 거부합니다. `git status`가 이 경로의 변경을 보고하지 않기 때문입니다.
 - Python 3.12 하한, installer 명령, release manifest schema와 artifact inventory는 바뀌지 않습니다.
+- 공개 전 candidate verifier가 draft byte를 loopback release root로 제공해 `v3.0.0` base-aware upgrade까지 installer E2E를 실행했습니다. 검증된 draft asset 5개를 그대로 immutable Latest로 공개했습니다. Linux와 native Windows(Buildkite)의 published 검증에서 latest·exact의 두 locale 경로, `v3.0.0` base-aware upgrade와 비어 있지 않은 install 대상의 거부·tree 불변을 확인했습니다.
 
 ## [v3.0.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.0.0) — 기본 release URL, 모든 OS의 Python 3.12, 자기 점검 규칙
 
