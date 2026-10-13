@@ -5,6 +5,7 @@ import http.server
 import io
 import json
 import os
+import re
 import stat
 import subprocess
 import sys
@@ -1772,6 +1773,67 @@ def _zip_with_duplicate_members(name: str, payloads: tuple[bytes, ...]) -> bytes
             info.external_attr = (stat.S_IFREG | 0o644) << 16
             handle.writestr(info, payload)
     return output.getvalue()
+
+
+class ReleaseManifestSchemaTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.schema = json.loads(
+            (REPOSITORY_ROOT / "schemas/release-manifest.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+    def test_member_path_pattern_matches_the_installer_rule(self) -> None:
+        # fullmatch keeps Python's "$" from accepting a trailing newline, which
+        # an ECMA-262 pattern without the multiline flag rejects as well.
+        pattern = re.compile(self.schema["$defs"]["member"]["properties"]["path"]["pattern"])
+        cases = {
+            "AGENTS.md": True,
+            ".agents/skills/design/SKILL.md": True,
+            "docs/changes/_template/01-CHANGE.md": True,
+            "docs/console.md": True,
+            "docs/com10.md": True,
+            "docs/a b.md": True,
+            "": False,
+            "/AGENTS.md": False,
+            "../evil.txt": False,
+            "docs/../AGENTS.md": False,
+            "docs\\AGENTS.md": False,
+            "C:/probe.md": False,
+            "docs/C:/probe.md": False,
+            "AGENTS.md:payload": False,
+            "NUL.txt": False,
+            "docs/com1.md": False,
+            "docs/Lpt9": False,
+            "docs/nul .md": False,
+            "docs/end.": False,
+            "docs/end ": False,
+            "docs/./probe.md": False,
+            "docs//probe.md": False,
+            "docs/": False,
+            "docs/tab\tname.md": False,
+            "AGENTS.md\n": False,
+        }
+        for path, accepted in cases.items():
+            with self.subTest(path=path):
+                try:
+                    INSTALLER._validated_member_path(path)
+                except INSTALLER.InstallerError:
+                    installer_accepts = False
+                else:
+                    installer_accepts = True
+                self.assertEqual(installer_accepts, accepted)
+                self.assertEqual(pattern.fullmatch(path) is not None, accepted)
+
+    def test_size_limits_match_the_installer(self) -> None:
+        self.assertEqual(
+            self.schema["properties"]["installer"]["properties"]["bytes"].get("maximum"),
+            INSTALLER.MANIFEST_MAX_BYTES,
+        )
+        self.assertEqual(
+            self.schema["$defs"]["localeAsset"]["properties"]["bytes"].get("maximum"),
+            INSTALLER.ARCHIVE_MAX_BYTES,
+        )
 
 
 if __name__ == "__main__":
