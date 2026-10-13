@@ -79,6 +79,8 @@ python3 installer.py install --version latest --locale en --repo-root /path/to/n
 
 The target must be a new path or an empty directory. If it does not exist yet, its parent must be an existing directory that is not a symlink or junction. Run `git init` after installing; a directory that already contains `.git` is not empty, so use Option A for it.
 
+Only the installing user should be able to modify the target and its parent directory. The installer checks paths before it writes files, so if another user replaces a directory inside the target with a symlink or similar link in between, files can be created outside the target. Check this especially when installing with administrator privileges.
+
 #### Option C: Files only (`export`)
 
 ```sh
