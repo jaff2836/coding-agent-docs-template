@@ -13,13 +13,20 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
 
 ## 완료 작업 상세
 
+- [x] **T-064 `v3.1.0` release**
+  - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-064 항목. D-007에 따라 준비, tag·draft candidate, 공개·published, 기록 단계를 나눕니다.
+  - version 판단: `v3.1.0`(minor), 2026-10-13 사용자 결정입니다. 지침 내용을 더한 이전 release(`v2.3.0`·`v2.4.0`·`v2.5.0`)처럼 minor로 냅니다. `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version`, artifact inventory는 그대로입니다.
+  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.1.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.1.0 이력을, root `CHANGELOG`에 링크 없는 v3.1.0 항목(공개 시 release 링크로 교체)을 추가했습니다. `v3.0.1` 대비 바뀐 artifact 파일은 locale마다 `docs/TEMPLATE_GUIDE.md`와 `docs/DOCS_GUIDE.md`(version만)이고, `installer.py`는 같습니다. 통합: PR #84.
+  - [x] tag·draft candidate: 준비 PR #84의 Origin merge `3c5b13f`를 GitHub `main`에 fast-forward했습니다. 사용자가 annotated `v3.1.0` tag와 draft(asset 5개, 영·한 release notes)를 만들었고, clean exact checkout에서 `verify-release.py candidate --base-version 3.0.1`이 통과했습니다(두 `main` 동기화, 5 assets, loopback installer E2E). release manifest의 member 수(60)와 `schema_version` 2는 `v3.0.1`과 같고, `installer.py`는 byte까지 같습니다.
+  - [x] 공개·published: 사용자가 2026-10-14(KST) draft를 immutable Latest로 공개했습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 3.0.1`이 통과했습니다. native Windows에서는 Buildkite `coding-agent-docs-template-windows-ci` Build #163(`main` `3c5b13f`, `RELEASE_VERIFY_VERSION=3.1.0`, `RELEASE_VERIFY_BASE_VERSION=3.0.1`)의 published 검증 step이 통과했습니다. 사용자 확인을 agent가 Buildkite API의 build 상태와 step 로그로 대조했습니다.
+  - [x] 기록: root `CHANGELOG`(영·한)의 v3.1.0 제목에 release 링크와 공개 검증 문장을 더했고, PROJECT의 공개 기준과 "`v3.1.0`으로 공개합니다" 표시, release 검증 변경 기록을 고쳤습니다. 같은 날 사용자가 `windows-ci`·`linux-ci`에서 바꾼 Buildkite pipeline 이름을 CI.md §6과 root TEMPLATE_GUIDE에 반영했습니다. TODO Completed와 이 문서의 T-059 기록에 PR #82를 적었습니다. 통합 근거: 이 변경의 PR.
 - [x] **T-059 `v3.0.1` release**
   - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-059 항목. D-007에 따라 준비, tag·draft candidate, 공개·published, 기록 단계를 나눕니다.
   - version 판단: `v3.0.1`(patch). installer 검사 보강(T-055)과 artifact checker 수정(T-060)은 결함 수정이고, Python 3.12 하한·installer 명령·release manifest schema·artifact inventory는 그대로입니다.
   - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.0.1로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.0.1 이력을, root `CHANGELOG`에 링크 없는 v3.0.1 항목(공개 시 release 링크로 교체)을 추가했습니다. `v3.0.0` 대비 바뀐 artifact 파일은 locale마다 `scripts/check-docs.py`, `tests/test_check_docs.py`, `docs/TEMPLATE_GUIDE.md`, `docs/DOCS_GUIDE.md`(version만)이고, `installer.py`도 바뀝니다. 통합: PR #81.
   - [x] tag·draft candidate: 준비 PR #81의 Origin merge `820cdc0`를 GitHub `main`에 fast-forward했습니다. 사용자가 annotated `v3.0.1` tag와 draft(asset 5개, 영·한 release notes)를 만들었고, clean exact checkout에서 `verify-release.py candidate --base-version 3.0.0`이 통과했습니다(두 `main` 동기화, 5 assets, loopback installer E2E). T-058의 첫 운영 적용입니다. release manifest의 member 수(60)와 `schema_version` 2는 `v3.0.0`과 같습니다.
   - [x] 공개·published: 사용자가 2026-10-13(KST) draft를 immutable Latest로 공개했습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 3.0.0`이 통과했습니다. native Windows에서는 Buildkite `windows-ci` Build #156(`main` `820cdc0`, `RELEASE_VERIFY_VERSION=3.0.1`, `RELEASE_VERIFY_BASE_VERSION=3.0.0`)의 published 검증 step이 통과했습니다. 사용자 확인을 agent가 Buildkite API의 build 상태와 step 로그로 대조했습니다.
-  - [x] 기록: root `CHANGELOG`(영·한)의 v3.0.1 제목에 release 링크와 공개 검증 문장을 더했고, PROJECT의 공개 기준과 "`v3.0.1`로 공개 예정" 표시, release 검증 변경 기록을 고쳤습니다. PR #81 리뷰의 C81-A-001에 따라 TODO Completed의 T-054·T-051·T-033 줄에 PR 번호를 적었습니다. 통합 근거: 이 변경의 PR.
+  - [x] 기록: root `CHANGELOG`(영·한)의 v3.0.1 제목에 release 링크와 공개 검증 문장을 더했고, PROJECT의 공개 기준과 "`v3.0.1`로 공개 예정" 표시, release 검증 변경 기록을 고쳤습니다. PR #81 리뷰의 C81-A-001에 따라 TODO Completed의 T-054·T-051·T-033 줄에 PR 번호를 적었습니다. 통합: PR #82.
 - [x] **T-051 `v3.0.0` release**
   - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-051 항목. D-007에 따라 준비, tag·draft candidate, 공개·published, 기록 단계를 나눕니다.
   - version 판단: `v3.0.0`(major, D-018 Q3 사용자 선택). Linux·macOS의 Python 3.11 이하 지원을 끊고, payload의 installer 명령 계약(`required_commands`)에서 `--release-url`을 뺍니다. release manifest schema와 artifact inventory는 그대로입니다.
@@ -360,6 +367,10 @@ T-059는 2026-10-12 PR #77에서 등록했고 PR #80에서 T-060 공개를 범�
 
 - [x] **T-059 `v3.0.1` release** — T-055의 installer 변경과 T-060의 artifact checker 수정을 D-007 단계에 따라 patch release로 공개합니다. candidate는 T-058을 포함해 실행합니다.
 
+T-064는 2026-10-13 PR #83에서 등록했고 PR #84에서 version을 `v3.1.0`(minor)으로 정한 설명입니다.
+
+- [x] **T-064 `v3.1.0` release** — T-063의 en·ko TEMPLATE_GUIDE 변경을 D-007 단계에 따라 minor release로 공개합니다.
+
 2026-09-29 분석의 root §3 검색식 allowlist 권고는 T-029에서 해소됐고, 작업 트리의 로컬 `.swp` 파일은 저장소 작업이 아니어서 등록하지 않았습니다.
 
 ## 통합된 Backlog PR 순서
@@ -406,7 +417,8 @@ T-059는 2026-10-12 PR #77에서 등록했고 PR #80에서 T-060 공개를 범�
 | 38 | `claude/t056-t057-maintainer-and-readme` | T-057 root README attestation 순서와 CI 문구 | **Integrated** — Origin PR #79 merge `56b2cf9`·GitHub fast-forward 확인(37과 함께). release 불필요 |
 | 39 | `claude/t058-candidate-e2e` | T-058 candidate 실제 package E2E | **Integrated** — Origin PR #78 merge `6b3d5da`·GitHub fast-forward 확인. T-059 candidate부터 적용 |
 | 40 | `claude/t060-artifact-comment-backticks` | T-060 artifact checker의 주석 안 backtick 해석 | **Integrated** — Origin PR #80 merge `9568803`·GitHub fast-forward 확인. 공개는 T-059 |
-| 41 | `claude/v3.0.1-release-prep` | T-059 `v3.0.1` release | **Integrated·Published** — 준비 Origin PR #81 merge `820cdc0`·GitHub fast-forward 확인; 2026-10-13(KST) annotated tag·immutable Latest 공개, candidate·published(`--base-version 3.0.0`, Linux·Windows) 통과; 공개 기록은 이 변경의 PR |
+| 41 | `claude/v3.0.1-release-prep` | T-059 `v3.0.1` release | **Integrated·Published** — 준비 Origin PR #81 merge `820cdc0`·GitHub fast-forward 확인; 2026-10-13(KST) annotated tag·immutable Latest 공개, candidate·published(`--base-version 3.0.0`, Linux·Windows) 통과; 공개 기록은 PR #82 |
 | 42 | `claude/t061-t063-schema-install-guidance` | T-061 release manifest schema 정합 | **Integrated** — Origin PR #83 merge `36138e2`·GitHub fast-forward 확인(43·44와 함께). release 불필요 |
 | 43 | `claude/t061-t063-schema-install-guidance` | T-062 install 대상 경로 조건 안내 | **Integrated** — Origin PR #83 merge `36138e2`·GitHub fast-forward 확인(42·44와 함께). release 불필요 |
 | 44 | `claude/t061-t063-schema-install-guidance` | T-063 템플릿 행동 검증 사례 보강 | **Integrated** — Origin PR #83 merge `36138e2`·GitHub fast-forward 확인(42·43과 함께). 공개는 T-064 |
+| 45 | `claude/v3.1.0-release-prep` | T-064 `v3.1.0` release | **Integrated·Published** — 준비 Origin PR #84 merge `3c5b13f`·GitHub fast-forward 확인; 2026-10-14(KST) annotated tag·immutable Latest 공개, candidate·published(`--base-version 3.0.1`, Linux·Windows) 통과; 공개 기록은 이 변경의 PR |
