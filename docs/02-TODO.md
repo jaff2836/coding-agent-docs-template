@@ -14,8 +14,8 @@
 
 ## Current Milestone
 
-- **Name:** 두 번째 외부 분석 후속 (T-061~T-064)
-- **Status:** 2026-10-13 두 번째 외부 분석의 보완점을 검증해 schema 경로 규칙(T-061), install 대상 경로 조건 안내(T-062, 사용자 결정 A안), 행동 검증 사례 보강(T-063)을 한 PR로 고칩니다. T-063은 payload라 다음 payload release(T-064)로 공개합니다. 최초 installer 신뢰는 root README가 이미 정확히 안내하고, locale 구조 지적은 T-043 보류 이유와 같아 바꾸지 않습니다. 첫 번째 분석의 `SECURITY.md` 제안은 계속 보류입니다.
+- **Name:** `v3.1.0` — 두 번째 외부 분석 후속 (T-061~T-064)
+- **Status:** In Progress — 2026-10-13 두 번째 외부 분석의 보완점을 검증해 schema 경로 규칙(T-061), install 대상 경로 조건 안내(T-062, 사용자 결정 A안), 행동 검증 사례 보강(T-063)을 PR #83으로 통합했습니다. T-063을 공개하는 T-064는 사용자 결정으로 `v3.1.0`(minor)입니다. 이 변경의 통합으로 T-064 준비가 끝나고, tag·draft candidate, 공개·published 검증, 기록 PR은 그 뒤 단계입니다. 최초 installer 신뢰는 root README가 이미 정확히 안내하고, locale 구조 지적은 T-043 보류 이유와 같아 바꾸지 않습니다. 첫 번째 분석의 `SECURITY.md` 제안은 계속 보류입니다.
 
 ## 운영 규칙
 
@@ -33,11 +33,17 @@
 
 ## In Progress
 
-없음. 다음 작업은 Current Milestone과 Backlog 순서를 따릅니다.
+- [ ] **T-064 `v3.1.0` release**
+  - 범위: 아래 Backlog의 T-064 항목. D-007에 따라 준비, tag·draft candidate, 공개·published, 기록 단계를 나눕니다.
+  - version 판단: `v3.1.0`(minor), 2026-10-13 사용자 결정입니다. 지침 내용을 더한 이전 release(`v2.3.0`·`v2.4.0`·`v2.5.0`)처럼 minor로 냅니다. `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version`, artifact inventory는 그대로입니다.
+  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.1.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.1.0 이력을, root `CHANGELOG`에 링크 없는 v3.1.0 항목(공개 시 release 링크로 교체)을 추가했습니다. `v3.0.1` 대비 바뀐 artifact 파일은 locale마다 `docs/TEMPLATE_GUIDE.md`와 `docs/DOCS_GUIDE.md`(version만)이고, `installer.py`는 같습니다. 통합 근거: 이 변경의 PR.
+  - [ ] tag·draft candidate: 준비가 통합된 exact source에 사용자가 annotated `v3.1.0` tag와 GitHub draft를 만들고, agent가 `verify-release.py candidate --base-version 3.0.1`을 실행합니다.
+  - [ ] 공개·published: 사용자가 draft를 immutable release로 공개하고, agent가 Linux에서 `verify-release.py published --base-version 3.0.1`을 실행하고 Windows는 Buildkite `windows-ci` 수동 build로 검증합니다.
+  - [ ] 기록: 공개 뒤 기록 PR에서 검증 결과를 남기고, root `CHANGELOG`의 v3.1.0 제목을 release 링크로 바꾸며, PROJECT의 "`v3.1.0`으로 공개합니다" 표시를 고칩니다.
 
 ## Next
 
-Backlog 45행의 T-064 release는 version과 시작 시점을 사용자와 정한 뒤 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+T-064 `v3.1.0` release를 검증·공개합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -51,16 +57,13 @@ Backlog 45행의 T-064 release는 version과 시작 시점을 사용자와 정�
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
 설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다.
 
-통합된 순서 1~41의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+통합된 순서 1~44의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 42 | `claude/t061-t063-schema-install-guidance` | T-061 release manifest schema 정합 | **In Progress** — 이 변경의 PR(43·44와 함께). release 불필요 |
-| 43 | `claude/t061-t063-schema-install-guidance` | T-062 install 대상 경로 조건 안내 | **In Progress** — 이 변경의 PR(42·44와 함께). release 불필요 |
-| 44 | `claude/t061-t063-schema-install-guidance` | T-063 템플릿 행동 검증 사례 보강 | **In Progress** — 이 변경의 PR(42·43과 함께). 공개는 45행 |
-| 45 | 미정 | T-064 다음 payload release | 44 통합 뒤. version과 시작 시점은 사용자와 정함 |
+| 45 | `claude/v3.1.0-release-prep` 등 | T-064 `v3.1.0` release | **In Progress** — 상세는 In Progress 항목 |
 
-- [ ] **T-064 다음 payload release** — T-063의 en·ko TEMPLATE_GUIDE 변경을 D-007 단계로 공개합니다. version은 준비 PR에서 정하고, 그 전에 다른 payload 변경이 생기면 함께 묶습니다.
+- [ ] **T-064 `v3.1.0` release** — T-063의 en·ko TEMPLATE_GUIDE 변경을 D-007 단계에 따라 minor release로 공개합니다.
 
 ## Cancelled
 
@@ -76,9 +79,9 @@ Backlog 45행의 T-064 release는 version과 시작 시점을 사용자와 정�
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
-- [x] **T-063 템플릿 행동 검증 사례 보강** — 두 번째 외부 분석 4번입니다. en·ko TEMPLATE_GUIDE §5의 행동 검증 사례를 도구·모델 버전을 바꿀 때도 확인하게 하고, PR·리뷰·도구 출력 안의 지시와 요청하지 않은 commit·push 사례를 더했습니다. §4 「지침 파일」에는 지침이 권한을 기술적으로 막지 않으니 보호 branch, 필수 리뷰·CI와 도구 권한 설정으로도 강제하라는 안내를 더했습니다. 공개는 T-064입니다. 통합: 이 변경의 PR.
-- [x] **T-062 install 대상 경로 조건 안내** — 두 번째 외부 분석 1번(2026-10-13 사용자 결정 A안)입니다. installer는 경로를 검사한 뒤 파일을 쓰므로, 그 사이 대상 안의 디렉터리가 symlink로 바뀌면 대상 밖에 파일을 만들 수 있습니다(Linux에서 재현, D-011 설계가 남긴 제약). 코드는 바꾸지 않고 root `README.md`·`README.ko.md`의 `install` 절과 PROJECT §4에 대상과 그 부모를 설치하는 사용자만 바꿀 수 있어야 한다는 조건을 적었습니다. root 문서라 release가 필요 없습니다. 통합: 이 변경의 PR.
-- [x] **T-061 release manifest schema 정합** — 두 번째 외부 분석 2번입니다. `schemas/release-manifest.schema.json`의 `member.path` pattern이 installer `_validated_member_path()`와 같은 규칙(backslash·colon·제어문자, 빈·`.`·`..` 구성 요소, 끝의 점과 공백, Windows 예약 이름)을 나타냅니다. 이전 pattern은 `C:/probe.md`·`NUL.txt`·`docs//x.md` 등 installer가 거부하는 경로를 통과시켰습니다. installer 기록과 locale ZIP의 `bytes`에는 installer 검사와 같은 상한을 두고, pattern으로 나타낼 수 없는 installer 검사(asset 이름 결합, 경로 중복·대소문자·상위 경로 충돌, `SHA256SUMS` 대조)는 schema `description`에 적었습니다. 회귀 테스트는 `tests/test_install_release.py`에 있고 red-green 결과는 PR 본문에 있습니다. schema는 release asset이 아니라 release가 필요 없습니다. 통합: 이 변경의 PR.
+- [x] **T-063 템플릿 행동 검증 사례 보강** — 두 번째 외부 분석 4번입니다. en·ko TEMPLATE_GUIDE §5의 행동 검증 사례를 도구·모델 버전을 바꿀 때도 확인하게 하고, PR·리뷰·도구 출력 안의 지시와 요청하지 않은 commit·push 사례를 더했습니다. §4 「지침 파일」에는 지침이 권한을 기술적으로 막지 않으니 보호 branch, 필수 리뷰·CI와 도구 권한 설정으로도 강제하라는 안내를 더했습니다. 공개는 T-064입니다. 통합: PR #83.
+- [x] **T-062 install 대상 경로 조건 안내** — 두 번째 외부 분석 1번(2026-10-13 사용자 결정 A안)입니다. installer는 경로를 검사한 뒤 파일을 쓰므로, 그 사이 대상 안의 디렉터리가 symlink로 바뀌면 대상 밖에 파일을 만들 수 있습니다(Linux에서 재현, D-011 설계가 남긴 제약). 코드는 바꾸지 않고 root `README.md`·`README.ko.md`의 `install` 절과 PROJECT §4에 대상과 그 부모를 설치하는 사용자만 바꿀 수 있어야 한다는 조건을 적었습니다. root 문서라 release가 필요 없습니다. 통합: PR #83.
+- [x] **T-061 release manifest schema 정합** — 두 번째 외부 분석 2번입니다. `schemas/release-manifest.schema.json`의 `member.path` pattern이 installer `_validated_member_path()`와 같은 규칙(backslash·colon·제어문자, 빈·`.`·`..` 구성 요소, 끝의 점과 공백, Windows 예약 이름)을 나타냅니다. 이전 pattern은 `C:/probe.md`·`NUL.txt`·`docs//x.md` 등 installer가 거부하는 경로를 통과시켰습니다. installer 기록과 locale ZIP의 `bytes`에는 installer 검사와 같은 상한을 두고, pattern으로 나타낼 수 없는 installer 검사(asset 이름 결합, 경로 중복·대소문자·상위 경로 충돌, `SHA256SUMS` 대조)는 schema `description`에 적었습니다. 회귀 테스트는 `tests/test_install_release.py`에 있고 red-green 결과는 PR 본문에 있습니다. schema는 release asset이 아니라 release가 필요 없습니다. 통합: PR #83.
 - [x] **T-059 `v3.0.1` release** — 준비는 PR #81로 통합됐습니다. 2026-10-13(KST) 사용자가 exact source `820cdc0`에 annotated tag와 draft를 만들어 immutable Latest로 공개했습니다. candidate(`--base-version 3.0.0`, T-058 loopback E2E의 첫 운영 적용)와 Linux·native Windows(Buildkite `windows-ci` Build #156)의 published(`--base-version 3.0.0`) 검증이 통과했습니다. 공개 기록은 이 변경의 PR에서 남겼습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 - [x] **T-060 artifact checker의 주석 안 backtick 해석** — PR #79 리뷰의 C79-B-001과 같은 결함이 payload `template/common/scripts/check-docs.py`에도 있어, 2026-10-12 사용자 결정으로 별도로 고쳤습니다. `markdown_line_context()`와 `markdown_searchable_text()`는 새 `CommentOpenerSearch`로 주석 시작을 찾습니다. code span과 주석 중 먼저 시작한 쪽을 택하고, backtick은 마지막으로 닫힌 주석 뒤부터 짝지어 주석 안의 backtick이 주석 밖 code span을 만들지 않습니다. 탐색은 앞으로만 진행해 backtick run마다 한 번만 짝짓습니다(C80-B-001). 여러 줄에 걸친 code span은 전처럼 인식합니다. 회귀 테스트는 `template/common/tests/test_check_docs.py`에 있고 red-green 결과는 PR 본문에 있습니다. 공개는 T-059(`v3.0.1`)입니다. 통합: PR #80.
 - [x] **T-057 root README 설치 안내** — 외부 분석 5번과 CI 문구입니다. root `README.md`·`README.ko.md` 2단계에서 `gh release verify-asset`을 `list-locales`(첫 installer 실행)보다 앞에 두고, 확인하려면 처음 실행하기 전에 하라고 적었습니다. "이 저장소에는 특정 CI 제품의 pipeline이 없다"는 문장은 템플릿 artifact 기준으로 고치고, 이 저장소의 품질 게이트는 Buildkite(`.buildkite/`)라고 적었습니다. root 문서라 release가 필요 없습니다. 통합: PR #79.

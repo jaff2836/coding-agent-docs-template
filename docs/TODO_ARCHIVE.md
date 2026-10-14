@@ -407,3 +407,6 @@ T-059는 2026-10-12 PR #77에서 등록했고 PR #80에서 T-060 공개를 범�
 | 39 | `claude/t058-candidate-e2e` | T-058 candidate 실제 package E2E | **Integrated** — Origin PR #78 merge `6b3d5da`·GitHub fast-forward 확인. T-059 candidate부터 적용 |
 | 40 | `claude/t060-artifact-comment-backticks` | T-060 artifact checker의 주석 안 backtick 해석 | **Integrated** — Origin PR #80 merge `9568803`·GitHub fast-forward 확인. 공개는 T-059 |
 | 41 | `claude/v3.0.1-release-prep` | T-059 `v3.0.1` release | **Integrated·Published** — 준비 Origin PR #81 merge `820cdc0`·GitHub fast-forward 확인; 2026-10-13(KST) annotated tag·immutable Latest 공개, candidate·published(`--base-version 3.0.0`, Linux·Windows) 통과; 공개 기록은 이 변경의 PR |
+| 42 | `claude/t061-t063-schema-install-guidance` | T-061 release manifest schema 정합 | **Integrated** — Origin PR #83 merge `36138e2`·GitHub fast-forward 확인(43·44와 함께). release 불필요 |
+| 43 | `claude/t061-t063-schema-install-guidance` | T-062 install 대상 경로 조건 안내 | **Integrated** — Origin PR #83 merge `36138e2`·GitHub fast-forward 확인(42·44와 함께). release 불필요 |
+| 44 | `claude/t061-t063-schema-install-guidance` | T-063 템플릿 행동 검증 사례 보강 | **Integrated** — Origin PR #83 merge `36138e2`·GitHub fast-forward 확인(42·43과 함께). 공개는 T-064 |
