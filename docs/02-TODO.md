@@ -14,8 +14,8 @@
 
 ## Current Milestone
 
-- **Name:** 없음
-- **Status:** `v3.1.0` 공개로 두 번째 외부 분석 후속 마일스톤(T-061~T-064)이 끝났습니다. 첫 번째 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중입니다. 남은 Backlog는 없고 T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
+- **Name:** 위임 입력 규칙 (T-065~T-066)
+- **Status:** 2026-10-14 사용자가 공유한 외부 프롬프트(이미지 생성 도구에 사용자 조건을 빠짐없이 전달하게 하는 규칙)를 이 템플릿의 규칙과 비교했습니다. 대부분은 완료 근거, 기본값 명시, PR 원장, 세션 인계 목록으로 이미 다루지만, 하위 에이전트나 다른 모델에 일을 맡길 때 입력에 무엇을 써야 하는지는 정하지 않았습니다. 사용자 결정으로 그 규칙(T-065)을 넣고, payload라 다음 payload release(T-066)로 공개합니다. 첫 번째 분석의 `SECURITY.md` 제안은 계속 보류이고 T-043은 보류(Blocked)입니다.
 
 ## 운영 규칙
 
@@ -37,7 +37,7 @@
 
 ## Next
 
-진행할 작업이 없습니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+Backlog 47행의 T-066 release는 version과 시작 시점을 사용자와 정한 뒤 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -55,6 +55,10 @@
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
+| 46 | `claude/t065-delegation-input-rule` | T-065 위임 입력 규칙 | **In Progress** — 이 변경의 PR. PR #85(45행 공개 기록) 통합 뒤 merge. 공개는 47행 |
+| 47 | 미정 | T-066 다음 payload release | 46 통합 뒤. version과 시작 시점은 사용자와 정함 |
+
+- [ ] **T-066 다음 payload release** — T-065의 en·ko `AGENTS.md`·`docs/TEMPLATE_GUIDE.md` 변경을 D-007 단계로 공개합니다. version은 준비 PR에서 정하고, 그 전에 다른 payload 변경이 생기면 함께 묶습니다.
 
 ## Cancelled
 
@@ -70,7 +74,8 @@
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
-- [x] **T-064 `v3.1.0` release** — 준비는 PR #84로 통합됐습니다. 2026-10-14(KST) 사용자가 exact source `3c5b13f`에 annotated tag와 draft를 만들어 immutable Latest로 공개했습니다. candidate와 Linux·native Windows(Buildkite `coding-agent-docs-template-windows-ci` Build #163)의 published 검증이 모두 `--base-version 3.0.1`로 통과했습니다. 같은 날 사용자가 바꾼 Buildkite pipeline 이름은 CI.md §6과 root TEMPLATE_GUIDE에 반영했습니다. 공개 기록은 이 변경의 PR에서 남겼습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+- [x] **T-065 위임 입력 규칙** — 2026-10-14 사용자 결정입니다. en·ko·root `AGENTS.md` Change Rules의 지시 출처 규칙 다음에, 하위 에이전트나 다른 모델에 자연어로 일을 맡길 때는 받는 쪽이 실제로 전달한 입력만 안다고 보고 목적·범위·기준 revision·지킬 조건·금지 행동을 입력에 직접 쓰라는 한 줄을 더했습니다. ko는 root와 같은 문장이고 en은 번역입니다. en·ko TEMPLATE_GUIDE §5 행동 검증 사례에도 이 규칙의 사례를 더했습니다. 공개는 T-066입니다. 통합: 이 변경의 PR.
+- [x] **T-064 `v3.1.0` release** — 준비는 PR #84로 통합됐습니다. 2026-10-14(KST) 사용자가 exact source `3c5b13f`에 annotated tag와 draft를 만들어 immutable Latest로 공개했습니다. candidate와 Linux·native Windows(Buildkite `coding-agent-docs-template-windows-ci` Build #163)의 published 검증이 모두 `--base-version 3.0.1`로 통과했습니다. 같은 날 사용자가 바꾼 Buildkite pipeline 이름은 CI.md §6과 root TEMPLATE_GUIDE에 반영했습니다. 공개 기록은 PR #85에서 남겼습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 - [x] **T-063 템플릿 행동 검증 사례 보강** — 두 번째 외부 분석 4번입니다. en·ko TEMPLATE_GUIDE §5의 행동 검증 사례를 도구·모델 버전을 바꿀 때도 확인하게 하고, PR·리뷰·도구 출력 안의 지시와 요청하지 않은 commit·push 사례를 더했습니다. §4 「지침 파일」에는 지침이 권한을 기술적으로 막지 않으니 보호 branch, 필수 리뷰·CI와 도구 권한 설정으로도 강제하라는 안내를 더했습니다. 공개는 T-064입니다. 통합: PR #83.
 - [x] **T-062 install 대상 경로 조건 안내** — 두 번째 외부 분석 1번(2026-10-13 사용자 결정 A안)입니다. installer는 경로를 검사한 뒤 파일을 쓰므로, 그 사이 대상 안의 디렉터리가 symlink로 바뀌면 대상 밖에 파일을 만들 수 있습니다(Linux에서 재현, D-011 설계가 남긴 제약). 코드는 바꾸지 않고 root `README.md`·`README.ko.md`의 `install` 절과 PROJECT §4에 대상과 그 부모를 설치하는 사용자만 바꿀 수 있어야 한다는 조건을 적었습니다. root 문서라 release가 필요 없습니다. 통합: PR #83.
 - [x] **T-061 release manifest schema 정합** — 두 번째 외부 분석 2번입니다. `schemas/release-manifest.schema.json`의 `member.path` pattern이 installer `_validated_member_path()`와 같은 규칙(backslash·colon·제어문자, 빈·`.`·`..` 구성 요소, 끝의 점과 공백, Windows 예약 이름)을 나타냅니다. 이전 pattern은 `C:/probe.md`·`NUL.txt`·`docs//x.md` 등 installer가 거부하는 경로를 통과시켰습니다. installer 기록과 locale ZIP의 `bytes`에는 installer 검사와 같은 상한을 두고, pattern으로 나타낼 수 없는 installer 검사(asset 이름 결합, 경로 중복·대소문자·상위 경로 충돌, `SHA256SUMS` 대조)는 schema `description`에 적었습니다. 회귀 테스트는 `tests/test_install_release.py`에 있고 red-green 결과는 PR 본문에 있습니다. schema는 release asset이 아니라 release가 필요 없습니다. 통합: PR #83.
