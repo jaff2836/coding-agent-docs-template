@@ -116,7 +116,8 @@ root로 제공해 공개 전에 latest·exact 설치, export와 adopt를 확인�
 base-aware adopt까지 확인합니다. 공개 후에는 published verifier로 immutable
 asset, latest·exact 설치, export와 지원 locale 경로를 확인합니다. published
 검증은 Linux와 native Windows에서 모두 실행하며, Windows는 Buildkite
-`windows-ci`의 수동 build로 실행합니다([CI.md](./CI.md) §6). 그 release로 새
+`coding-agent-docs-template-windows-ci`의 수동 build로 실행합니다
+([CI.md](./CI.md) §6). 그 release로 새
 `complete` locale을 처음 공개했으면 공개 기록 PR에서 root `README.md`·
 `README.ko.md`의 locale 표에 넣습니다. 무인자 문서 검사는 표에 없는 locale을
 잡지 못합니다(§3).
