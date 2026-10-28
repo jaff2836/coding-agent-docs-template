@@ -14,8 +14,8 @@
 
 ## Current Milestone
 
-- **Name:** 적용 저장소 역제안 반영 (T-066~T-068)
-- **Status:** 2026-10-28 v3.1.0을 적용한 저장소가 문서 검사기 결함과 리뷰 라운드·적용 안내 개선을 역제안했습니다. 이 저장소에서 다시 검증해 사용자가 D-020으로 승인했습니다. 검사기(T-067)와 문구(T-068)를 고친 뒤, 보류했던 T-066에 T-065와 함께 묶어 `v3.2.0`으로 공개합니다. 첫 번째 분석의 `SECURITY.md` 제안은 계속 보류이고 T-043은 보류(Blocked)입니다.
+- **Name:** 적용 저장소 역제안 반영과 GitLab 이전 (T-066~T-069)
+- **Status:** 2026-10-28 v3.1.0을 적용한 저장소가 문서 검사기 결함과 리뷰 라운드·적용 안내 개선을 역제안했습니다. 이 저장소에서 다시 검증해 사용자가 D-020으로 승인했습니다. 검사기(T-067)와 문구(T-068)를 고친 뒤, 보류했던 T-066에 T-065와 함께 묶어 `v3.2.0`으로 공개합니다. 첫 번째 분석의 `SECURITY.md` 제안은 계속 보류이고 T-043은 보류(Blocked)입니다. 같은 날 사용자가 Cursor 구독을 끝내고 Origin을 비활성화해 개발·MR·필수 CI를 GitLab(`jaff2836/coding-agent-docs-template`, private)으로 옮겼습니다. root 문서와 maintainer 도구에 남은 Origin 기준 서술은 T-069에서 고칩니다.
 
 ## 운영 규칙
 
@@ -37,7 +37,7 @@
 
 ## Next
 
-Backlog 49행의 T-066 release는 47·48행 통합 뒤 시작 시점을 사용자와 정해 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+Backlog 50행의 T-066 release는 47~49행 통합 뒤 시작 시점을 사용자와 정해 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -55,10 +55,16 @@ Backlog 49행의 T-066 release는 47·48행 통합 뒤 시작 시점을 사용�
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 47 | `claude/t067-checker-markdown-fixes` | T-067 검사기 Markdown·정책 판정 수정 | **In Progress** — GitLab MR !1. D-020 설계와 PROJECT·TODO 등재를 함께 담음. 공개는 49행 |
-| 48 | `claude/t068-review-adoption-wording` | T-068 리뷰 라운드·적용 기록 문구 | **In Progress** — 이 변경의 PR. 47 위에 쌓음(stack). 47 통합 뒤 base를 `main`으로 바꿔 merge. 공개는 49행 |
-| 49 | 미정 | T-066 `v3.2.0` payload release | 47·48 통합 뒤. 시작 시점은 사용자와 정함 |
+| 47 | `claude/t067-checker-markdown-fixes` | T-067 검사기 Markdown·정책 판정 수정 | **In Progress** — GitLab MR !1. D-020 설계와 PROJECT·TODO 등재를 함께 담음. 공개는 50행 |
+| 48 | `claude/t068-review-adoption-wording` | T-068 리뷰 라운드·적용 기록 문구 | **In Progress** — 이 변경의 PR. 47 위에 쌓음(stack). 47 통합 뒤 base를 `main`으로 바꿔 merge. T-069 등록을 함께 담음. 공개는 50행 |
+| 49 | `claude/t069-gitlab-migration-docs` | T-069 GitLab 이전 반영 | 48 통합 뒤. release 불필요. release 절차 문서를 고치므로 50 전에 통합 |
+| 50 | 미정 | T-066 `v3.2.0` payload release | 47~49 통합 뒤. 시작 시점은 사용자와 정함 |
 
+- [ ] **T-069 GitLab 이전 반영** — 2026-10-28 사용자 결정으로 Origin(Cursor)을 비활성화하고 개발·MR·필수 CI를 GitLab으로 옮겼습니다. 이미 바꾼 것은 로컬 remote(`origin`=GitLab, `cursor-origin`=이전 Origin), Buildkite 두 pipeline의 저장소(GitLab SSH, agent deploy key), GitLab push 연결(Linux는 Buildkite integration, Windows는 webhook), Buildkite commit status와 GitLab "Pipelines must succeed"입니다. 이 작업은 그 상태를 root 문서와 maintainer 도구에 반영합니다.
+  - 대상: `docs/CI.md` §6(필수 check, 저장소 URL, 연결 방식), root `docs/TEMPLATE_GUIDE.md` §5(개발 host, remote 이름, GitLab merge 뒤 GitHub fast-forward, tag 정책), root `docs/DOCS_GUIDE.md`의 통합 대상·원장, 이 문서의 Integration target, PROJECT의 현재 운영 서술, `scripts/verify_release.py`의 `--origin-remote` 도움말과 오류 메시지, root `docs/REVIEW_ROUND.md` §2.1 리뷰어 표(Cursor 슬롯과 리뷰 게시 경로)
+  - 유지: 과거 Origin PR 번호·merge SHA 기록과 Cursor Bugbot 어댑터(`.cursor/BUGBOT.md`)는 바꾸지 않습니다.
+  - 사용자와 정할 것: 리뷰어 구성(Cursor를 뺀 뒤의 슬롯, Codex의 GitLab 게시 방법)
+  - 완료 조건: root 문서·도구 검사와 관련 테스트 통과, 남은 Origin 언급이 과거 기록뿐인지 대조. payload는 바뀌지 않아 release가 필요 없습니다.
 - [ ] **T-066 다음 payload release** — T-065·T-067·T-068의 payload 변경을 D-007 단계로 공개합니다. version은 D-020 설계 §1.5 Q1에 따라 `v3.2.0`(minor)이고, candidate·published 검증은 `--base-version 3.1.0`으로 합니다. release note에는 검사기 판정이 엄격해져 숨어 있던 깨진 링크가 보고될 수 있다는 점과, 업그레이드할 때 DOCS_GUIDE 「템플릿 적용 기록」 절을 옮긴다는 점을 적습니다.
 
 ## Cancelled
