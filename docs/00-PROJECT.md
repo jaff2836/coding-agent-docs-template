@@ -9,7 +9,7 @@
 - **Project:** coding-agent-docs-template
 - **Status:** Active — immutable Latest `v3.1.0` 공개와 Linux·Windows published 검증 완료
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-14
+- **Last reviewed:** 2026-10-28
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
 
 ## 1. Context
@@ -148,6 +148,7 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 | D-017 | 2026-10-07 | Accepted | T-038 C1·L1·G1·V2: 완료·통과·수정·해소 주장은 `AGENTS.md`의 주장별 근거 목록에 따라 마지막 변경 뒤 실행·조회한 근거를 제시하고, 없으면 미검증으로 보고합니다. 버그 수정과 새 검사 규칙의 회귀 검사는 red-green으로 확인합니다. 리뷰 라운드 원장은 `확인` 열에 유효 판정의 직접 확인 여부를 적고 merge 확인 요청에서 미확인 유효 finding을 구분하며, 비어 보이는 리뷰는 원본으로 다시 읽습니다. 리뷰는 완료 근거와 회귀 검사를 점검합니다 | [보고·검증 규범 설계](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) R-007~R-011 | 현행(C0), 외부 스킬 도입(C2), 검증 스킬 신설(C3), `REVIEW.md` 목록(L2), 권장만(G2), 모든 테스트 필수(G3), 기존 근거 열(V1)·표시 없음(V0)을 기각 | Chae Sangwon, 2026-10-07 선택 응답 — PR #59 version 1 head `bf78c59`의 Q2 “AGENTS.md”, Q3 “버그 수정·새 검사에 필수”, Q4 “새 확인 열 추가” |
 | D-018 | 2026-10-08 | Accepted | T-050 A1·B2·C2: installer `--release-url`의 기본값을 공식 release root(installer source 상수)로 두고 명시한 값이 우선합니다. 모든 OS에서 Python 3.12 이상을 요구합니다. en·ko 적용 가이드와 manifest `required_commands`의 installer 명령에서 `--release-url`을 빼고, 이 변경은 `v3.0.0`으로 공개합니다 | [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) R-001~R-003·R-006 | 기본값 없음(A0), package 때 저장소 삽입(A2), root README만 변경(B1), `v2.6.0`(C1)을 기각. D-004의 release root·검증 경계와 D-011의 junction 경계는 유지 | Chae Sangwon, 2026-10-08 선택 응답 — PR #70 version 1 head `3355cb5`의 Q1 "installer source 상수", Q2 "locale guide와 계약까지", Q3 "v3.0.0" |
 | D-019 | 2026-10-08 | Accepted | T-049 D1: root `scripts/check-docs.py`의 무인자 maintainer 실행이 root `REVIEW.md`·`REVIEW_ROUND.md`·`.cursor/BUGBOT.md`를 ko 원본과 대조하되 ko heading으로 찾은 프로젝트 소유 절에서만 차이를 허용하고, root README locale 표의 tag가 manifest의 `complete` locale 안에 있고 상태가 `complete`인지 확인합니다(공개 전 새 locale은 허용, 공개 기록 PR에서 표에 추가) | [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) R-004·R-005 | payload marker 추가(D2)를 기각. payload checker와 artifact는 바뀌지 않음 | Chae Sangwon, 2026-10-08 선택 응답 — PR #70 version 1 head `3355cb5`의 Q4 "heading으로 찾기"와 2026-10-08 지시("4는 check-docs 쪽으로") |
+| D-020 | 2026-10-28 | Accepted | T-067·T-068: 적용 저장소의 v3.1.0 역제안 R-001~R-012를 반영합니다. payload 검사기는 R-001의 판정 13건(Markdown 12건, Codex 명시 호출 정책 1건)과 R-012의 정책 판정 3건을 CommonMark·YAML 해석에 맞춥니다. REVIEW_ROUND에서 코드 변경 없이 재리뷰만 받으려는 빈 commit은 위임하지 않고 사용자가 요청할 때만 만들며 새 라운드로 셉니다(R-005 A). 다른 PR의 merge로 base branch의 tip만 앞서 나가고 head와 merge base가 그대로면 base 변경이 아니며, merge 직전에 새 tip으로 다시 확인받습니다(R-010 A). DOCS_GUIDE에는 업그레이드 때 옮기는 「템플릿 적용 기록」 절을 둡니다(R-008). 공개는 T-066 `v3.2.0`입니다 | [적용 저장소 역제안 변경](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) R-001~R-012 | R-005 B(결과 없는 `push 자동` 리뷰어에 한 번 위임)·C, R-010 B(tip 변경도 base 변경)·C(base merge 뒤 재검사), `v3.1.1` patch, CommonMark parser 교체, R-004 별도 열, R-006 검사기 대조 확장을 기각. 남은 Markdown 한계는 §12에 보류. `review-round` 계약 토큰, manifest adoption policy, installer와 release manifest schema는 유지 | Chae Sangwon, 2026-10-28 대화 — 미추적 Draft의 Q2~Q4에 "1. A. 2. A. 3. 넣자. 4. 좋아." |
 
 [T-021 preflight 순서 평가](./changes/2026-09-28-install-preflight-order/01-CHANGE.md)에서 사용자는 2026-09-28 PR #47 version 1 head `978be17`의 A안을 선택했습니다. D-010 §2.3의 현재 순서·오류 우선순위를 유지하며 별도 구현·release는 필요하지 않습니다. 기존 결정의 재확인이므로 새 결정 ID를 발급하지 않습니다.
 
@@ -208,6 +209,7 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 
 - `en`·`ko` 외 공식 locale은 v2 계약과 두 필수 locale 지원 검증 후 재검토합니다.
 - 기존 적용 저장소의 자동 update·overwrite는 사용자 문서 손실 위험 때문에 첫 버전에서 제외합니다.
+- payload 검사기에 남은 CommonMark 차이(container 안의 닫히지 않은 HTML 주석, container 안의 reference definition, setext 밑줄과 code span 등)와 기준 parser 차분 검사는 D-020에서 보류했습니다. 목록과 근거는 [적용 저장소 역제안 변경](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) §2.3.1·§2.6.2에 있습니다. 실제 문서에서 판정이 틀린 사례가 나오거나 사용자가 정하면 새 작업으로 제안합니다.
 
 ## 13. 설계 문서 인덱스
 
@@ -227,5 +229,6 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 | 기록 시점·리뷰 finding ID 계약 | [2026-09-30-record-timing-and-review-ids](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) | Accepted — D-013·D-014가 D-009 정본 문서의 기록·리뷰 계약을 확장 | 구현 PR #56 통합; `v2.4.0`으로 공개 |
 | 보고·검증 규범 | [2026-10-07-agent-reporting-and-verification](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) | Accepted — D-015~D-017이 D-009 정본 문서의 보고·입력 경계·완료 근거 계약을 확장 | 설계 PR #59와 구현 PR #60으로 통합; `v2.5.0`으로 공개 |
 | installer 기본값·Python 하한·maintainer 검사 | [2026-10-08-installer-defaults-and-maintainer-checks](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) | Accepted — D-018이 D-004의 CLI 인자와 D-011의 Python 하한을 바꾸고, D-019가 D-009의 root addendum 정합을 검사로 강제 | 설계 PR #70과 구현 PR #71·#72로 통합; `v3.0.0`으로 공개 |
+| 적용 저장소 역제안 반영 | [2026-10-28-adopter-feedback-v3.1.0](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) | Accepted — D-020이 D-009 정본 문서의 리뷰 라운드·적용 기록 안내와 payload 검사기 판정을 보강 | 구현은 T-067·T-068; `v3.2.0`으로 공개 예정(T-066) |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.
