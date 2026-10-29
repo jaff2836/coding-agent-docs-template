@@ -135,6 +135,7 @@ R-001~R-011은 원안의 ID를 유지합니다. R-012는 이 저장소 검증(§
 
 - 대상은 `read_implicit_invocation_policy`의 정규식 세 개입니다. scratch 사본에서 적용해 보니 위 세 입력은 `None`(위반)이 되고, 기존 허용 입력 다섯 개(`false`, `False`, `FALSE`, `false # c`, `policy: # c`)는 그대로 `false`였습니다. 그 사본에서 root·template 테스트와 `check-docs.py`가 통과했습니다.
 - 회귀 테스트는 `test_codex_policy_must_be_boolean_false`의 거부 사례에 세 입력을, 허용 사례에 `False`·`FALSE`·`policy: # note`를 더합니다. 정규식 세 개를 하나씩 되돌리면 각각 대응하는 거부 사례에서 실패해야 합니다.
+- maintainer 검사 `scripts/check_locales.py`의 `_read_implicit_invocation_policy`는 같은 판정의 사본입니다. 이 사본이 더 느슨하면 `check-locales.py --require-stable`은 통과하는데 artifact 검사기는 거부합니다(MR !1 리뷰 P3). 그래서 사본도 같은 규칙으로 맞춥니다. 값이 표기 규칙에 맞지 않는 key도 중복 판정에 셉니다. 회귀 테스트는 `test_common_implicit_invocation_policy_is_narrowly_validated`에 네 입력을 더합니다: `false#note`, `policy:#note`, `allow_implicit_invocation:false`, 따옴표 값 뒤의 `false`.
 
 **남은 한계(이번 범위 밖, 확인됨).** 수정 뒤에도 CommonMark와 다른 판정입니다. 마지막 항목을 빼면 수정 전 검사기도 같아서 R-001이 만든 결함은 아닙니다. PROJECT §12에 보류로 둡니다.
 

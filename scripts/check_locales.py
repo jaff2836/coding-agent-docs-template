@@ -1612,7 +1612,7 @@ def _read_implicit_invocation_policy(text: str) -> Optional[bool]:
     policy_indexes = [
         index
         for index, line in enumerate(lines)
-        if re.fullmatch(r"policy:\s*(?:#.*)?", line)
+        if re.fullmatch(r"policy:(?:[ \t]+#.*)?[ \t]*", line)
     ]
     if len(policy_indexes) != 1:
         return None
@@ -1628,16 +1628,23 @@ def _read_implicit_invocation_policy(text: str) -> Optional[bool]:
     if not entries:
         return None
 
+    # Same YAML rules as read_implicit_invocation_policy in the artifact's
+    # scripts/check-docs.py, so this gate never passes what that checker rejects.
     child_indent = min(indent for indent, _ in entries)
-    values = []
+    values: List[Optional[bool]] = []
     for indent, entry in entries:
         if indent != child_indent:
             continue
-        match = re.fullmatch(
-            r"allow_implicit_invocation:\s*(true|false)\s*(?:#.*)?", entry
+        key = re.match(r"allow_implicit_invocation:(?:[ \t]+(.*))?$", entry)
+        if key is None:
+            continue
+        value = re.fullmatch(
+            r"(true|True|TRUE|false|False|FALSE)(?:[ \t]+#.*)?[ \t]*",
+            key.group(1) or "",
         )
-        if match is not None:
-            values.append(match.group(1) == "true")
+        values.append(
+            value.group(1).lower() == "true" if value is not None else None
+        )
     return values[0] if len(values) == 1 else None
 
 
