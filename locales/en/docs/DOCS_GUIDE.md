@@ -118,10 +118,21 @@ A remote repository, PR, and CI are optional. Record the adopting project's inte
 - `Template source`: Original repository URL or another retrievable archive location.
 - `Template version`: Exact source release version. Distinguish changes after a tag as `Unreleased (latest tag: ...)`.
 - `Template revision`: Full SHA of the copied source commit, not the adopting project's HEAD. If uncommitted changes are included or the revision cannot be verified, record `Unconfirmed` together with the baseline and additional changes.
-- If two guidance documents exist, keep these three values identical. If only part of the template was applied, record inclusions and exclusions in this document. Ordinary project documentation edits do not change the source baseline.
+- If two guidance documents exist, keep these three values identical. If only part of the template was applied, record inclusions and exclusions in the Template Adoption Record below. Ordinary project documentation edits do not change the source baseline.
 - REVIEW's `Policy version` is independent of the template version.
 - Dates use UTC `YYYY-MM-DD` by default. If another convention is used, document it here. Update `Last reviewed` only when the content was actually reviewed.
 - Record the approver, scope, and evidence. Do not treat file authorship or a Git commit itself as approval.
+
+## Template Adoption Record
+
+Fill this in at the first adoption and at each upgrade to a new release. This document is template-owned (`copy`), so when an upgrade starts again from the artifact version, carry this section over unchanged. Do not repeat the source, version, and revision from Metadata above. Write `None` for items that do not apply.
+
+- **Previous baseline:** For an upgrade, the previous version and source revision. Pass this version to `adopt --base-version`
+- **Starting revision:** The commit of this project where the merge started
+- **Path adaptations:** Template documents kept under existing names or moved elsewhere, and how they map
+- **Kept or excluded:** Paths where the project version was kept instead of the template version, or that were not applied, and why
+- **Changes to template-owned files:** If any `copy`-policy file (including the check script and its tests) was changed, what changed and why. These are reapplied at the next upgrade
+- **Unverified:** Tool loading, commands, or CI items that could not be confirmed
 
 ## Template Adoption Checklist
 
@@ -132,7 +143,7 @@ A remote repository, PR, and CI are optional. Record the adopting project's inte
 - [ ] For an existing project, used `adopt` to create the artifact and report in an empty directory outside the target, resolved every `merge`, `decision`, and `blocked` path, and merged manually without automatically overwriting existing documents, commands, decisions, or the license.
 - [ ] Replaced project information, commands, owners, and examples with actual values. Did not count source templates as actual work.
 - [ ] Retained all four combined, split, and PLAN templates in `docs/changes/_template/`. Copied only the necessary format into each actual change folder.
-- [ ] Verified Template source, version, revision, and partial adoption details. Marked anything undetermined as undetermined.
+- [ ] Verified Template source, version, and revision, and filled in the Template Adoption Record. Marked anything undetermined as undetermined.
 - [ ] If manually adapting a language other than `en` or `ko`, did not claim official locale support and recorded the changed language policy and document scope.
 - [ ] Replaced `LICENSE` with the project's license, or removed it and left the README License section undecided if a license has not been chosen. Did not leave the template's MIT notice as the project's license.
 - [ ] Verified Run, Build, Test, Lint, and Typecheck, or recorded `N/A` or the reason they remain unverified.

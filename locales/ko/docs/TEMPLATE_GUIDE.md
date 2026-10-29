@@ -154,7 +154,7 @@ python3 installer.py export --version {{VERSION}} --locale {{LOCALE}} --output {
 12. [문서 운영 안내](./DOCS_GUIDE.md)의 Template Adoption Checklist로 적용 완료 여부를 확인합니다.
 13. CI를 쓰는 저장소는 [CI.md](./CI.md)의 워크플로와 체크리스트로 기존 러너에 품질 게이트를 연결합니다. GitHub Actions·Buildkite 등 특정 제품의 pipeline 파일은 이 템플릿이 포함하지 않습니다. 사용자가 러너를 지정하기 전에는 YAML을 새로 만들지 마세요. CI가 없으면 같은 게이트를 로컬에서 실행하고 미사용 이유를 기록합니다.
 
-기존 프로젝트에는 `install`을 바로 실행하지 말고 위의 `adopt` report와 `artifact/`를 기존 지침·문서·ignore 규칙과 비교하여 수동 병합하세요. installer는 기존 경로가 artifact와 겹치지 않더라도 대상이 비어 있지 않으면 전체 설치를 중단하며 `--force`, 자동 update, 자동 locale 전환을 제공하지 않습니다. 기존 코드, 프로젝트가 채운 값, 사용자 변경을 보존하고 적용·제외한 파일을 Template revision 기록 옆에 남깁니다. 문제가 생기면 작업 전 branch 또는 backup으로 되돌립니다.
+기존 프로젝트에는 `install`을 바로 실행하지 말고 위의 `adopt` report와 `artifact/`를 기존 지침·문서·ignore 규칙과 비교하여 수동 병합하세요. installer는 기존 경로가 artifact와 겹치지 않더라도 대상이 비어 있지 않으면 전체 설치를 중단하며 `--force`, 자동 update, 자동 locale 전환을 제공하지 않습니다. 기존 코드, 프로젝트가 채운 값, 사용자 변경을 보존하고 적용·제외한 파일을 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 「템플릿 적용 기록」에 남깁니다. 문제가 생기면 작업 전 branch 또는 backup으로 되돌립니다.
 
 공식 locale은 `en`과 `ko`입니다. 다른 언어가 필요하면 영어 artifact를 출발점으로 사용하고 [AGENTS.md](../AGENTS.md)의 Communication 정책과 프로젝트 소유 문서를 원하는 언어로 수정할 수 있습니다. 이 수동 변경을 공식 locale 지원이나 locale parity 검증으로 표시하지 마세요.
 
@@ -171,7 +171,7 @@ python3 installer.py export --version {{VERSION}} --locale {{LOCALE}} --output {
 | 기존 변경 설계 | 기존 승인 기록 보존 | 새 변경부터 Intent·Spec·선택적 Plan 형식 사용 |
 
 - 번호와 대문자·하이픈은 정렬과 역할 식별을 돕습니다. 번호만으로 설계 우선순위나 승인을 정하지 않고 기존 결정 ID를 재번호하지 않습니다.
-- 이전 파일명을 일괄 치환하지 않습니다. 변경별 `03-PLAN.md`, 도구 생성 파일, 과거 이력의 `PLAN.md`는 역할이 다릅니다. 링크·import·스킬·검사 코드·고정 정책 경로를 조사해 실제 이관 대상만 바꿉니다.
+- 이전 파일명과 새 파일명은 어느 방향으로도 일괄 치환하지 않습니다. 번호 체계로 옮길 때도, 기존 `PLAN.md`·`DESIGN.md`·`TODO.md`를 유지하고 템플릿의 번호형 경로를 그 파일로 바꿀 때도 같습니다. 변경별 `03-PLAN.md`, 도구 생성 파일, 과거 이력의 `PLAN.md`는 역할이 다릅니다. 링크·import·스킬·검사 코드·고정 정책 경로를 조사해 실제 대상만 바꾸고, §6 변경 이력과 템플릿 자체를 설명하는 문장(위 표, `10-EXTENSION.md` 제거 같은 조건부 안내)은 고치지 않습니다. 기존 이름을 유지했다면 고친 템플릿 소유 파일을 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 「템플릿 적용 기록」에 남깁니다.
 - `AGENTS.md`, `CLAUDE.md`, `SKILL.md`, `docs/REVIEW.md` 등 진입점·계약 경로는 그대로 둡니다. 이름을 바꾸려면 소비자 호환성과 도구 설정을 별도 검토합니다.
 - 기존 제품 설계를 통합한다면 실행 상태는 TODO/PLAN, 완료 이력은 기존 CHANGELOG로 정리합니다. 계약·결정 이유·승인 근거는 보존합니다. 확장 설계에는 상위 문서의 유지·확장·대체 범위를 명시합니다.
 - 과거 변경 파일의 본문 동결 규칙은 그 기록에 유지합니다. 새 형식은 01-DESIGN.md §4의 승인 버전 보존과 갱신 규칙을 적용합니다. 미커밋 상태에서도 기존 승인 내용을 보존합니다.
@@ -348,7 +348,7 @@ git status --short --untracked-files=all
 
 - §6의 변경 이력을 읽고 반영할 변경을 고릅니다. 이력은 요약이므로 **원본 저장소에서** 기록된 이전 SHA와 새 SHA를 `git diff <이전 원본 SHA> <새 원본 SHA> -- <파일>`로 비교합니다. 두 기준이 정확히 tag와 일치하면 `git diff v1.1 v1.2 -- <파일>`처럼 비교해도 됩니다. 기존 기록이 판 번호뿐이라면 해당 tag의 SHA를 확인해 보완하되, 당시 미릴리스 변경을 포함했는지 알 수 없으면 확정된 복사 기준으로 단정하지 않습니다.
 - 그 결과를 적용 저장소의 파일과 대조합니다(`git diff --no-index <템플릿 파일> <적용 파일>`). 프로젝트가 의도적으로 바꾼 부분까지 되돌리지 마세요. 이력에 없는 차이는 템플릿 쪽 누락인지 프로젝트의 의도적 변경인지 구분합니다.
-- 반영한 뒤 두 안내 문서의 version·revision을 새 복사 기준으로 갱신합니다. 같은 판 안의 다른 commit을 반영해도 revision은 갱신합니다. 일부만 반영했다면 적용·제외한 항목과 이유를 [DOCS_GUIDE.md](./DOCS_GUIDE.md)에 함께 남겨 해당 SHA 전체를 적용한 것으로 오해하지 않게 합니다. `CHANGELOG.md`가 있으면 새 기준과 반영 항목을 요약합니다.
+- 반영한 뒤 두 안내 문서의 version·revision을 새 복사 기준으로 갱신합니다. 같은 판 안의 다른 commit을 반영해도 revision은 갱신합니다. 일부만 반영했다면 적용·제외한 항목과 이유를 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 「템플릿 적용 기록」에 남겨 해당 SHA 전체를 적용한 것으로 오해하지 않게 합니다. `CHANGELOG.md`가 있으면 새 기준과 반영 항목을 요약합니다.
 
 ## 6. 템플릿 변경 이력
 

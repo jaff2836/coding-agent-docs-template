@@ -113,11 +113,12 @@ A P2 finding with `blocking=true` is called a **Blocking P2**. The default pass 
 
 - Validation of success and failure paths for changed behavior
 - Agreement between the code and accepted decisions in [00-PROJECT.md](./00-PROJECT.md)
+- Whether a change to a decision or policy also updates the other documents and copies that describe it, so that no remaining copy keeps directing readers to superseded guidance
 - Code and validation supporting completion claims in the global TODO or a change-specific PLAN; distinguish implementation and validation on a branch from integration, release, and support validation
 - Whether documented commands, configuration keys, environment variables, and credential formats match the actual implementation — in particular, whether a setup followed from documentation alone would fail to start
-- Whether behavior declared by the documentation as an invariant or safeguard is actually enforced in code
+- Whether behavior that the documentation declares as an invariant or safeguard, or says is recorded or verified, is actually enforced or implemented in code, a schema, or a check procedure
 - Whether completion statements in documents depend only on this change's integration — if they describe a later release, synchronization, or external verification as complete in advance, whether the user's request is recorded in the PR description or task report
-- Whether completion, passing, or fix claims have the completion evidence in [AGENTS.md](../AGENTS.md), meaning evidence run or retrieved after the last change
+- Whether completion, passing, or fix claims have the completion evidence in [AGENTS.md](../AGENTS.md), meaning evidence run or retrieved after the last change, and whether claims a checkout alone cannot confirm, such as a published release, external verification, or a CI result, carry an identifier that can be looked up again (tag, digest, build or run ID, or the command run)
 - Whether a bug fix's regression check actually exercises the bug path, rather than passing even without the fix
 
 ## 6. Project-specific Invariants
@@ -157,6 +158,7 @@ When you post findings with IDs, keep them from colliding with other reviewers' 
 - Naming or comment preferences with no behavioral impact
 - Findings based only on the number of tests being low
 - Duplicate findings with the same root cause
+- Requests to reverse a decision accepted in [00-PROJECT.md](./00-PROJECT.md) §8 Decisions without new evidence. Report evidence that the decision's premise no longer holds
 
 ## 9. Accepted Deferrals
 

@@ -178,9 +178,9 @@ A에 따라 다음을 넣습니다.
 - §1 「위임되지 않는 것」, "재리뷰 요청 이외의 PR 댓글 …" 항목 뒤
   - ko: "- 코드 변경 없이 재리뷰만 받으려는 빈 commit과 그 push. 사용자가 요청한 경우에만 하며, head가 바뀌므로 새 라운드로 셉니다"
   - en: "- An empty commit, and its push, made only to obtain another review without a code change. Make one only when the user asks, and count it as a new round because the head changes"
-- §3 「push가 없었던 라운드」, "같은 head에 대한 두 번째 리뷰는 라운드가 아닙니다." 뒤
-  - ko: "빈 commit으로 head만 바꿔 재리뷰를 받는 것도 위임되지 않습니다(§1)."
-  - en: "Changing only the head with an empty commit to get another review is not delegated either (§1)."
+- §3 「push가 없었던 라운드」 항목 끝. 둘째 문장 바로 뒤에 두면 다음 문장 "예외는 §4의 base 변경입니다"가 이 문장의 예외로 읽혀 항목 끝으로 옮겼습니다(T-068)
+  - ko: "빈 commit으로 head만 바꿔 재리뷰를 받는 것은 위임되지 않습니다(§1)."
+  - en: "Changing only the head with an empty commit to get another review is not delegated (§1)."
 
 `review-round` 스킬은 REVIEW_ROUND를 따르라고만 하므로 바꾸지 않습니다.
 
@@ -387,6 +387,7 @@ A에 따라 다음을 넣습니다. `MUST_GATE_ON_EXACT_HEAD_AND_BASE`는 "확�
 - 2026-10-28: 적용 저장소 세션에서 초안을 작성했습니다.
 - 2026-10-28: 이 저장소 세션에서 원문 주장을 다시 검증하고(§2.6.2) 판정, ko·en 문구 확정안, R-005·R-010 선택지, R-012를 더했습니다. 원문 §1.1~§1.4, §2.6.1과 부록은 그대로 두었습니다. 채택하지 않은 부분은 R-004의 별도 열, R-006의 검사기 대조 확장, R-008의 필드 세 개이며 이유는 §2.3에 있습니다.
 - 2026-10-28: 사용자가 R-005·R-010 A, R-012 포함, R-008 형식을 승인해 Accepted로 바꾸고 D-020과 T-067·T-068로 등재했습니다. 공개는 T-066 `v3.2.0`입니다.
+- 2026-10-28: T-068에서 R-005 §3 문장을 항목 끝으로 옮기고 "도"·"either"를 뺐습니다(§2.3.2). 뜻은 같습니다.
 
 ## 부록 A. 검사기 diff
 
