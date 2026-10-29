@@ -84,7 +84,7 @@ PR 규모와 리뷰어 수에 따라 실제 필요한 라운드 수는 크게 �
 
 | 리뷰어 | 슬롯 | 게시 위치 | head 식별 방법 | 도착 주기 | 문제가 없을 때 | 재리뷰 요청 방법 |
 |---|---|---|---|---|---|---|
-| pr-reviewer — 자체 호스트 서비스([`jaff2836/pr-reviewer`](https://github.com/jaff2836/pr-reviewer))가 사용자 계정으로 게시하며 제목이 `## 자동 PR 리뷰` | `C` | GitLab MR note. head마다 note를 새로 만들고, 같은 head에서는 그 note 하나를 진행 중 표시에서 결과로 고칩니다. `- 상태: ⏳ 진행 중`이나 `- 상태: ⚠️ 시도 실패`인 note는 결과가 아니며, `**판정: …**` 줄이 생겨야 완료입니다 | note 첫 줄의 마커 `<!-- pr-reviewer:v1 head:<40자 SHA> -->`와 본문의 `head:` | 상시 — MR open·reopen, 새 commit push, draft 해제 때 돕니다 | 결과를 남김(`**판정: 승인**`과 지적 없음) | `push 자동` — GitLab MR webhook(merge request 이벤트)과 서비스의 주기 스윕. 실행 주체는 요청하지 않음 |
+| pr-reviewer — 사용자가 운영하는 자체 호스트 리뷰 서비스(private 저장소)가 사용자 계정으로 게시하며 제목이 `## 자동 PR 리뷰` | `C` | GitLab MR note. head마다 note를 새로 만들고, 같은 head에서는 그 note 하나를 진행 중 표시에서 결과로 고칩니다. `- 상태: ⏳ 진행 중`이나 `- 상태: ⚠️ 시도 실패`인 note는 결과가 아니며, `**판정: …**` 줄이 생겨야 완료입니다 | note 첫 줄의 마커 `<!-- pr-reviewer:v1 head:<40자 SHA> -->`와 본문의 `head:` | 상시 — MR open·reopen, 새 commit push, draft 해제 때 돕니다 | 결과를 남김(`**판정: 승인**`과 지적 없음) | `push 자동` — GitLab MR webhook(merge request 이벤트)과 서비스의 주기 스윕. 실행 주체는 요청하지 않음 |
 
 각 열에 기록할 내용입니다.
 
