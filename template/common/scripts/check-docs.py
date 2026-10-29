@@ -49,8 +49,13 @@ VERSION_RE = re.compile(
 IMPORT_LINE_RE = re.compile(r"^@([^\s]+)\s*$")
 HEADING_RE = re.compile(r"^[ ]{0,3}(#{1,6})\s+(.*)$")
 HEADING_NUM_RE = re.compile(r"^[ ]{0,3}#{1,6}\s+(\d+(?:\.\d+)*)[.\s]")
-FENCE_LINE_RE = re.compile(r"^[ ]{0,3}(`{3,}|~{3,})(.*)$")
+# A backtick fence's info string has no backtick; otherwise it is a code span.
+FENCE_LINE_RE = re.compile(r"^[ ]{0,3}(`{3,}(?=[^`]*$)|~{3,})(.*)$")
 BLOCKQUOTE_MARKER_RE = re.compile(r"[ ]{0,3}>[ \t]?")
+# A one-line block: an ATX heading or a thematic break.
+LINE_BLOCK_RE = re.compile(
+    r"^[ ]{0,3}(?:#{1,6}(?:[ \t]|\r?$)|([-*_])(?:[ \t]*\1){2,}[ \t]*\r?$)"
+)
 # CommonMark HTML blocks: type 1 ends at its closing tag, type 6 at a blank line.
 HTML_BLOCK_RAW_RE = re.compile(
     r"^[ ]{0,3}<(pre|script|style|textarea)(?:[ \t>]|$)", re.IGNORECASE
@@ -64,7 +69,10 @@ HTML_BLOCK_TAG_RE = re.compile(
     r"track|ul)(?:[ \t>]|/>|$)",
     re.IGNORECASE,
 )
-LIST_ITEM_RE = re.compile(r"^( *)(?:[-+*]|\d{1,9}[.)])([ \t]+)")
+# A thematic break such as `- - -` wins over a list item.
+LIST_ITEM_RE = re.compile(
+    r"^( *)(?!([-*_])(?:[ \t]*\2){2,}[ \t]*$)(?:[-+*]|\d{1,9}[.)])([ \t]+)"
+)
 REFERENCE_DEFINITION_RE = re.compile(
     r"^[ ]{0,3}\[((?:\\.|[^\]\r\n])+)\]:[ \t]*"
 )
@@ -288,7 +296,7 @@ def read_implicit_invocation_policy(path: Path) -> Optional[bool]:
     policy_indexes = [
         index
         for index, line in enumerate(lines)
-        if re.fullmatch(r"policy:\s*(?:#.*)?", line)
+        if re.fullmatch(r"policy:(?:[ \t]+#.*)?[ \t]*", line)
     ]
     if len(policy_indexes) != 1:
         return None
@@ -309,11 +317,12 @@ def read_implicit_invocation_policy(path: Path) -> Optional[bool]:
     for indent, entry in entries:
         if indent != child_indent:
             continue
-        key = re.match(r"allow_implicit_invocation:\s*(.*)$", entry)
+        key = re.match(r"allow_implicit_invocation:(?:[ \t]+(.*))?$", entry)
         if key is None:
             continue
         value = re.fullmatch(
-            r"(true|false)\s*(?:#.*)?", key.group(1), re.IGNORECASE
+            r"(true|True|TRUE|false|False|FALSE)(?:[ \t]+#.*)?[ \t]*",
+            key.group(1) or "",
         )
         values.append(
             value.group(1).lower() == "true" if value is not None else None
@@ -412,39 +421,42 @@ def strip_blockquote_markers(
     return depth, line[cursor:]
 
 
+def leaves_container(line: str, blockquote_depth: int, list_indent: int) -> bool:
+    """Return whether *line* ends the blockquote or list item holding a block."""
+
+    depth, content = strip_blockquote_markers(line, blockquote_depth)
+    if depth < blockquote_depth:
+        return True
+    content = content.expandtabs(4)
+    leading = len(content) - len(content.lstrip(" "))
+    return bool(content.strip()) and leading < list_indent
+
+
 def indented_code_line_indexes(text: str) -> set:
     """Return line indexes belonging to ordinary or list-relative code blocks."""
 
     code_lines = set()
     list_items: List[Tuple[int, int]] = []
+    list_depth = 0
     in_code = False
     code_indent = 4
     previous_blank = True
 
     for index, raw_line in enumerate(text.splitlines()):
-        _, line = strip_blockquote_markers(raw_line)
+        depth, line = strip_blockquote_markers(raw_line)
         line = line.expandtabs(4)
+        # Lists live inside one blockquote level and end when it changes.
+        if depth != list_depth:
+            list_items.clear()
+            list_depth = depth
         if not line.strip():
             if in_code:
                 code_lines.add(index)
             previous_blank = True
             continue
 
+        # Code comes first: a list marker indented as code is example text.
         leading = len(line) - len(line.lstrip(" "))
-        list_item = LIST_ITEM_RE.match(line)
-        if list_item is not None:
-            marker_indent = len(list_item.group(1))
-            while list_items and marker_indent <= list_items[-1][0]:
-                list_items.pop()
-            while list_items and marker_indent < list_items[-1][1]:
-                list_items.pop()
-            list_items.append((marker_indent, list_item.end()))
-            in_code = False
-            previous_blank = False
-            continue
-
-        while list_items and leading < list_items[-1][1]:
-            list_items.pop()
         required_indent = (list_items[-1][1] if list_items else 0) + 4
         if in_code:
             if leading >= code_indent:
@@ -456,7 +468,22 @@ def indented_code_line_indexes(text: str) -> set:
             code_indent = required_indent
             in_code = True
             code_lines.add(index)
-        previous_blank = False
+            previous_blank = False
+            continue
+
+        list_item = LIST_ITEM_RE.match(line)
+        if list_item is not None:
+            marker_indent = len(list_item.group(1))
+            while list_items and marker_indent <= list_items[-1][0]:
+                list_items.pop()
+            while list_items and marker_indent < list_items[-1][1]:
+                list_items.pop()
+            list_items.append((marker_indent, list_item.end()))
+        else:
+            while list_items and leading < list_items[-1][1]:
+                list_items.pop()
+        # Like a blank line, a heading or thematic break lets code start next.
+        previous_blank = list_item is None and LINE_BLOCK_RE.match(line) is not None
     return code_lines
 
 
@@ -466,55 +493,63 @@ def markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
     context = []
     fence_character: Optional[str] = None
     fence_length = 0
-    fence_blockquote_depth = 0
+    block_depth = 0
+    block_list_indent = 0
     in_html_comment = False
     html_block_end: Optional[str] = None
     indented_code_lines = indented_code_line_indexes(text)
     openers = CommentOpenerSearch(text)
     list_items: List[Tuple[int, int]] = []
+    list_depth = 0
     for index, line in enumerate(text.splitlines()):
         blockquote_depth, container_line = strip_blockquote_markers(line)
         container_line = container_line.expandtabs(4)
+        if (
+            html_block_end is not None or fence_character is not None
+        ) and leaves_container(line, block_depth, block_list_indent):
+            html_block_end = None
+            fence_character = None
         if html_block_end is not None:
             context.append((False, False))
+            openers.skip_line(index)
             if html_block_end == "" and not container_line.strip():
                 html_block_end = None
             elif html_block_end and html_block_end in line.lower():
                 html_block_end = None
             continue
         if fence_character is not None:
-            if blockquote_depth < fence_blockquote_depth:
+            _, closing_container = strip_blockquote_markers(line, block_depth)
+            closing_candidate = list_relative_line(
+                closing_container.expandtabs(4), list_items, update=False
+            )
+            context.append((False, False))
+            openers.skip_line(index)
+            stripped = closing_candidate.lstrip(" ")
+            if (
+                len(closing_candidate) - len(stripped) <= 3
+                and re.fullmatch(
+                    re.escape(fence_character) + "{%d,}[ \t]*" % fence_length,
+                    stripped,
+                )
+            ):
                 fence_character = None
                 fence_length = 0
-                fence_blockquote_depth = 0
-            else:
-                _, closing_container = strip_blockquote_markers(
-                    line, fence_blockquote_depth
-                )
-                closing_candidate = list_relative_line(
-                    closing_container.expandtabs(4), list_items, update=False
-                )
-                context.append((False, False))
-                stripped = closing_candidate.lstrip(" ")
-                if (
-                    len(closing_candidate) - len(stripped) <= 3
-                    and re.fullmatch(
-                        re.escape(fence_character) + "{%d,}[ \t]*" % fence_length,
-                        stripped,
-                    )
-                ):
-                    fence_character = None
-                    fence_length = 0
-                    fence_blockquote_depth = 0
-                continue
+            continue
 
         if not in_html_comment and index in indented_code_lines:
             context.append((False, False))
+            openers.skip_line(index)
             continue
 
+        if not in_html_comment and blockquote_depth != list_depth:
+            list_items.clear()
+            list_depth = blockquote_depth
         fence_candidate = list_relative_line(
             container_line, list_items, update=not in_html_comment
         )
+        # The container of a fenced or HTML block that opens on this line.
+        block_depth = blockquote_depth
+        block_list_indent = list_items[-1][1] if list_items else 0
         fence = (
             None
             if in_html_comment
@@ -524,8 +559,8 @@ def markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
             sequence = fence.group(1)
             fence_character = sequence[0]
             fence_length = len(sequence)
-            fence_blockquote_depth = blockquote_depth
             context.append((False, False))
+            openers.skip_line(index)
             continue
 
         raw_block = (
@@ -534,11 +569,13 @@ def markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
         if raw_block is not None:
             closing = "</%s>" % raw_block.group(1).lower()
             context.append((False, False))
+            openers.skip_line(index)
             if closing not in fence_candidate.lower()[raw_block.end() :]:
                 html_block_end = closing
             continue
         if not in_html_comment and HTML_BLOCK_TAG_RE.match(fence_candidate):
             context.append((False, False))
+            openers.skip_line(index)
             html_block_end = ""
             continue
 
@@ -585,6 +622,11 @@ class CommentOpenerSearch:
         """Pair later backticks from *column* of line *index*."""
 
         self.pairing_start = self.line_starts[index] + column
+
+    def skip_line(self, index: int) -> None:
+        """Keep backticks on code or raw HTML line *index* out of code spans."""
+
+        self.pairing_start = max(self.pairing_start, self.line_starts[index + 1])
 
     def find(self, index: int, column: int, end: int) -> int:
         """Return the first opener column in ``line[column:end]``, or ``-1``."""
@@ -674,18 +716,30 @@ def code_span_at(text: str, start: int) -> Tuple[int, Optional[int]]:
     """Return the end of the backtick run at *start* and of its code span.
 
     The code span ends after the next run of the same length; without one the
-    run is literal text and its span end is ``None``.
+    run is literal text and its span end is ``None``. An escaped backtick is
+    literal and consumes only itself. A span stays in its paragraph or heading
+    line: it never closes past a line that ends the paragraph.
     """
 
+    if is_escaped(text, start):
+        return start + 1, None
     opening_end = start + 1
     while opening_end < len(text) and text[opening_end] == "`":
         opening_end += 1
     run_length = opening_end - start
 
+    line_start = text.rfind("\n", 0, start) + 1
+    line_end = text.find("\n", start)
+    if line_end < 0:
+        line_end = len(text)
+    depth, content = strip_blockquote_markers(text[line_start:line_end])
+    limit = line_end if HEADING_RE.match(content) else len(text)
     candidate = opening_end
-    while candidate < len(text):
-        closing_start = text.find("`", candidate)
-        if closing_start < 0:
+    while candidate < limit:
+        closing_start = text.find("`", candidate, limit)
+        if closing_start < 0 or paragraph_ends_between(
+            text, candidate, closing_start, depth
+        ):
             break
         run_end = closing_start + 1
         while run_end < len(text) and text[run_end] == "`":
@@ -694,6 +748,30 @@ def code_span_at(text: str, start: int) -> Tuple[int, Optional[int]]:
             return opening_end, run_end
         candidate = run_end
     return opening_end, None
+
+
+def paragraph_ends_between(text: str, start: int, end: int, depth: int) -> bool:
+    """Return whether a line starting in ``text[start:end]`` ends a paragraph.
+
+    A paragraph at blockquote *depth* ends at a blank line, a deeper
+    blockquote, or a heading, thematic break or list item line. A shallower
+    line continues it lazily.
+    """
+
+    newline = text.find("\n", start, end)
+    while newline >= 0:
+        line_end = text.find("\n", newline + 1)
+        line = text[newline + 1 : len(text) if line_end < 0 else line_end]
+        line_depth, content = strip_blockquote_markers(line)
+        if (
+            line_depth > depth
+            or not content.strip()
+            or LINE_BLOCK_RE.match(content)
+            or LIST_ITEM_RE.match(content)
+        ):
+            return True
+        newline = text.find("\n", newline + 1, end)
+    return False
 
 
 def markdown_searchable_text(text: str, *, mask_inline_code: bool = False) -> str:
@@ -711,6 +789,7 @@ def markdown_searchable_text(text: str, *, mask_inline_code: bool = False) -> st
         if not outside_fence:
             mask_text_range(characters, 0, content_end)
             masked_lines.append("".join(characters))
+            openers.skip_line(index)
             continue
 
         cursor = 0
@@ -1119,6 +1198,7 @@ def section_bullets(
             bullet_indent = len(bullet_match.group(1))
         if (
             bullet_match is not None
+            and bullet_indent is not None
             and len(bullet_match.group(1)) <= bullet_indent
         ):
             if current is not None and current_index is not None:

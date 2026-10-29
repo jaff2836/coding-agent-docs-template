@@ -73,7 +73,7 @@ class CheckDocsTests(unittest.TestCase):
             config.parent.mkdir(parents=True)
             skill.write_text("skill", encoding="utf-8")
 
-            for value in ("true", '"false"', "missing"):
+            for value in ("true", '"false"', "false#note", "fAlSe", "missing"):
                 if value == "missing":
                     config.write_text("policy: {}\n", encoding="utf-8")
                 else:
@@ -86,8 +86,29 @@ class CheckDocsTests(unittest.TestCase):
                     CHECK_DOCS.check_skill_configs(errors, [])
                 self.assertTrue(errors, value)
 
+            for document in (
+                "policy:\n  allow_implicit_invocation:false\n",
+                "policy:#note\n  allow_implicit_invocation: false\n",
+            ):
+                config.write_text(document, encoding="utf-8")
+                errors = []
+                with patch.object(CHECK_DOCS, "ROOT", root):
+                    CHECK_DOCS.check_skill_configs(errors, [])
+                self.assertTrue(errors, document)
+
+            for value in ("false", "False", "FALSE", "false # explicit only"):
+                config.write_text(
+                    "policy:\n  allow_implicit_invocation: %s\n" % value,
+                    encoding="utf-8",
+                )
+                errors = []
+                with patch.object(CHECK_DOCS, "ROOT", root):
+                    CHECK_DOCS.check_skill_configs(errors, [])
+                self.assertEqual(errors, [], value)
+
             config.write_text(
-                "policy:\n  allow_implicit_invocation: false\n", encoding="utf-8"
+                "policy: # note\n  allow_implicit_invocation: false\n",
+                encoding="utf-8",
             )
             errors = []
             with patch.object(CHECK_DOCS, "ROOT", root):
@@ -508,6 +529,346 @@ Translated guidance
             with patch.object(CHECK_DOCS, "ROOT", root):
                 CHECK_DOCS.check_relative_links(errors, [])
             self.assertIn("MISSING.md", "\n".join(errors))
+
+    def test_escaped_backtick_does_not_open_code_span(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "Use \\` as a literal delimiter.\n"
+                "[broken](./MISSING.md)\n"
+                "Use \\` again.\n"
+                "\n"
+                "A \\``span\n"
+                "[code](./CODE.md)` stays code.\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            self.assertIn("MISSING.md", "\n".join(errors))
+            self.assertNotIn("CODE.md", "\n".join(errors))
+
+    def test_code_span_does_not_cross_blank_line(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "Open ` here.\n"
+                "\n"
+                "[missing](./MISSING.md)\n"
+                "\n"
+                "Then `code`.\n"
+                "\n"
+                "A `multi-line\n"
+                "[code](./CODE.md)` span.\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            self.assertIn("MISSING.md", "\n".join(errors))
+            self.assertNotIn("CODE.md", "\n".join(errors))
+
+    def test_indented_list_examples_are_code_blocks(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "    - [top](./MISSING-TOP.md)\n"
+                "    - [continued](./MISSING-CONTINUED.md)\n"
+                "\n"
+                "Paragraph.\n"
+                "\n"
+                "    1. [ordered](./MISSING-ORDERED.md)\n"
+                "\n"
+                "- item\n"
+                "\n"
+                "      - [nested](./MISSING-NESTED.md)\n"
+                "\n"
+                "- [real](./MISSING-REAL.md)\n"
+                "  - [inner](./MISSING-INNER.md)\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            for example in ("TOP", "CONTINUED", "ORDERED", "NESTED"):
+                self.assertNotIn("MISSING-%s.md" % example, report)
+            self.assertIn("MISSING-REAL.md", report)
+            self.assertIn("MISSING-INNER.md", report)
+
+    def test_list_fence_ends_with_its_list_item(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "- item\n"
+                "\n"
+                "  ```text\n"
+                "  [inside](./INSIDE.md)\n"
+                "\n"
+                "[after list](./MISSING-AFTER-LIST.md)\n"
+                "\n"
+                "- outer\n"
+                "  - inner\n"
+                "\n"
+                "    ```text\n"
+                "    [nested](./NESTED.md)\n"
+                "  [outer prose](./MISSING-OUTER.md)\n"
+                "\n"
+                "> - quoted\n"
+                ">\n"
+                ">   ```text\n"
+                ">   [quoted](./QUOTED.md)\n"
+                ">\n"
+                "> [quote prose](./MISSING-QUOTE.md)\n"
+                "\n"
+                "- closed\n"
+                "\n"
+                "  ```text\n"
+                "  [closed](./CLOSED.md)\n"
+                "  ```\n"
+                "  [after fence](./MISSING-AFTER-FENCE.md)\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            for example in ("INSIDE", "NESTED", "QUOTED", "CLOSED"):
+                self.assertNotIn("/%s.md" % example, report)
+            for prose in ("AFTER-LIST", "OUTER", "QUOTE", "AFTER-FENCE"):
+                self.assertIn("MISSING-%s.md" % prose, report)
+
+    def test_html_block_ends_with_its_container(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "> <pre>\n"
+                "> [quoted](./QUOTED.md)\n"
+                "\n"
+                "[after quote](./MISSING-AFTER-QUOTE.md)\n"
+                "\n"
+                "- <pre>\n"
+                "  [listed](./LISTED.md)\n"
+                "\n"
+                "[after list](./MISSING-AFTER-LIST.md)\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            for example in ("QUOTED", "LISTED"):
+                self.assertNotIn("/%s.md" % example, report)
+            for prose in ("AFTER-QUOTE", "AFTER-LIST"):
+                self.assertIn("MISSING-%s.md" % prose, report)
+
+    def test_one_line_backtick_span_is_not_a_fence(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "```[span](./SPAN.md)```\n"
+                "\n"
+                "[broken](./MISSING.md)\n"
+                "\n"
+                "```text\n"
+                "[fenced](./FENCED.md)\n"
+                "```\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            self.assertIn("MISSING.md", report)
+            self.assertNotIn("SPAN.md", report)
+            self.assertNotIn("FENCED.md", report)
+
+    def test_code_block_backticks_do_not_hide_comment_openers(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "~~~text\n"
+                "`\n"
+                "~~~\n"
+                "<!--\n"
+                "[fenced](./FENCED.md)\n"
+                "-->\n"
+                "`code`\n"
+                "\n"
+                "Intro.\n"
+                "\n"
+                "    `\n"
+                "<!--\n"
+                "[indented](./INDENTED.md)\n"
+                "-->\n"
+                "`code`\n"
+                "\n"
+                "[real](./MISSING-REAL.md)\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            self.assertIn("MISSING-REAL.md", report)
+            self.assertNotIn("FENCED.md", report)
+            self.assertNotIn("INDENTED.md", report)
+
+    def test_quoted_list_ends_with_its_blockquote(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "> - item\n"
+                "\n"
+                "    [example](./EXAMPLE.md)\n"
+                "\n"
+                "> - item\n"
+                ">\n"
+                ">       [quoted code](./QUOTED-CODE.md)\n"
+                ">\n"
+                ">   [item prose](./MISSING-ITEM.md)\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            self.assertNotIn("EXAMPLE.md", report)
+            self.assertNotIn("QUOTED-CODE.md", report)
+            self.assertIn("MISSING-ITEM.md", report)
+
+    def test_thematic_breaks_are_not_list_items(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "Text.\n"
+                "\n"
+                "- - -\n"
+                "\n"
+                "    [dash](./DASH.md)\n"
+                "\n"
+                "* * *\n"
+                "\n"
+                "    [star](./STAR.md)\n"
+                "\n"
+                "- item\n"
+                "\n"
+                "      [item code](./ITEM-CODE.md)\n"
+                "\n"
+                "  [item prose](./MISSING-ITEM.md)\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            for example in ("DASH", "STAR", "ITEM-CODE"):
+                self.assertNotIn("/%s.md" % example, report)
+            self.assertIn("MISSING-ITEM.md", report)
+
+    def test_code_span_does_not_cross_block_starts(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "A literal ` delimiter.\n"
+                "## Next section\n"
+                "[after heading](./MISSING-HEADING.md)\n"
+                "Use `code`.\n"
+                "\n"
+                "## Heading with ` tick\n"
+                "[after tick](./MISSING-TICK.md) and `code`.\n"
+                "\n"
+                "Break ` open\n"
+                "***\n"
+                "[after break](./MISSING-BREAK.md) and `code`.\n"
+                "\n"
+                "Item ` open\n"
+                "- [listed](./MISSING-LISTED.md) and `code`.\n"
+                "\n"
+                "A `multi-line\n"
+                "[code](./CODE.md)` span.\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            for prose in ("HEADING", "TICK", "BREAK", "LISTED"):
+                self.assertIn("MISSING-%s.md" % prose, report)
+            self.assertNotIn("/CODE.md", report)
+
+    def test_indented_code_may_follow_heading_or_break(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "## Example\n"
+                "    [example](./EXAMPLE-ONLY.md)\n"
+                "\n"
+                "***\n"
+                "    [after break](./AFTER-BREAK.md)\n"
+                "\n"
+                "Paragraph\n"
+                "    [lazy](./MISSING-LAZY.md)\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            self.assertNotIn("EXAMPLE-ONLY.md", report)
+            self.assertNotIn("AFTER-BREAK.md", report)
+            self.assertIn("MISSING-LAZY.md", report)
+
+    def test_code_span_stays_in_its_blockquote_paragraph(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "unmatched `\n"
+                "> [quoted](./MISSING-QUOTED.md) `code`\n"
+                "\n"
+                "> unmatched `\n"
+                ">\n"
+                "> [split](./MISSING-SPLIT.md) `code`\n"
+                "\n"
+                "> A `multi-line\n"
+                "> [code](./CODE.md)` span.\n"
+                "\n"
+                "> A lazy `span\n"
+                "[lazy](./LAZY.md)` ends here.\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            self.assertIn("MISSING-QUOTED.md", report)
+            self.assertIn("MISSING-SPLIT.md", report)
+            self.assertNotIn("/CODE.md", report)
+            self.assertNotIn("LAZY.md", report)
 
     def test_backticks_inside_comments_do_not_pair_with_code_spans(self) -> None:
         text = (

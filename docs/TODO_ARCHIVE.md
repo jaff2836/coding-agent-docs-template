@@ -422,3 +422,4 @@ T-064는 2026-10-13 PR #83에서 등록했고 PR #84에서 version을 `v3.1.0`(m
 | 43 | `claude/t061-t063-schema-install-guidance` | T-062 install 대상 경로 조건 안내 | **Integrated** — Origin PR #83 merge `36138e2`·GitHub fast-forward 확인(42·44와 함께). release 불필요 |
 | 44 | `claude/t061-t063-schema-install-guidance` | T-063 템플릿 행동 검증 사례 보강 | **Integrated** — Origin PR #83 merge `36138e2`·GitHub fast-forward 확인(42·43과 함께). 공개는 T-064 |
 | 45 | `claude/v3.1.0-release-prep` | T-064 `v3.1.0` release | **Integrated·Published** — 준비 Origin PR #84 merge `3c5b13f`·GitHub fast-forward 확인; 2026-10-14(KST) annotated tag·immutable Latest 공개, candidate·published(`--base-version 3.0.1`, Linux·Windows) 통과; 공개 기록은 PR #85 |
+| 46 | `claude/t065-delegation-input-rule` | T-065 위임 입력 규칙 | **Integrated** — Origin PR #86 merge `9326c1e`(merge commit 기준)·2026-10-28 GitHub `main` 일치 확인. 공개는 T-066 |

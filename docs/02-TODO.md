@@ -8,14 +8,14 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-14 (KST)
+- **Last reviewed:** 2026-10-28 (KST)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
 - **Integration target:** Origin `main`(PR merge)과 공개 저장소 `jaff2836/coding-agent-docs-template`의 `main`(같은 merge commit의 non-force fast-forward, [TEMPLATE_GUIDE §5](./TEMPLATE_GUIDE.md)); v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
-- **Name:** 위임 입력 규칙 (T-065~T-066)
-- **Status:** 2026-10-14 사용자가 공유한 외부 프롬프트(이미지 생성 도구에 사용자 조건을 빠짐없이 전달하게 하는 규칙)를 이 템플릿의 규칙과 비교했습니다. 대부분은 완료 근거, 기본값 명시, PR 원장, 세션 인계 목록으로 이미 다루지만, 하위 에이전트나 다른 모델에 일을 맡길 때 입력에 무엇을 써야 하는지는 정하지 않았습니다. 사용자 결정으로 그 규칙(T-065)을 넣고, payload라 다음 payload release(T-066)로 공개합니다. 첫 번째 분석의 `SECURITY.md` 제안은 계속 보류이고 T-043은 보류(Blocked)입니다.
+- **Name:** 적용 저장소 역제안 반영 (T-066~T-068)
+- **Status:** 2026-10-28 v3.1.0을 적용한 저장소가 문서 검사기 결함과 리뷰 라운드·적용 안내 개선을 역제안했습니다. 이 저장소에서 다시 검증해 사용자가 D-020으로 승인했습니다. 검사기(T-067)와 문구(T-068)를 고친 뒤, 보류했던 T-066에 T-065와 함께 묶어 `v3.2.0`으로 공개합니다. 첫 번째 분석의 `SECURITY.md` 제안은 계속 보류이고 T-043은 보류(Blocked)입니다.
 
 ## 운영 규칙
 
@@ -37,7 +37,7 @@
 
 ## Next
 
-Backlog 47행의 T-066 release는 version과 시작 시점을 사용자와 정한 뒤 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+Backlog 49행의 T-066 release는 47·48행 통합 뒤 시작 시점을 사용자와 정해 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -51,14 +51,16 @@ Backlog 47행의 T-066 release는 version과 시작 시점을 사용자와 정�
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
 설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다.
 
-통합된 순서 1~45의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+통합된 순서 1~46의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 46 | `claude/t065-delegation-input-rule` | T-065 위임 입력 규칙 | **In Progress** — 이 변경의 PR. PR #85(45행 공개 기록) 통합 뒤 merge. 공개는 47행 |
-| 47 | 미정 | T-066 다음 payload release | 46 통합 뒤. version과 시작 시점은 사용자와 정함 |
+| 47 | `claude/t067-checker-markdown-fixes` | T-067 검사기 Markdown·정책 판정 수정 | **In Progress** — 이 변경의 PR. D-020 설계와 PROJECT·TODO 등재를 함께 담음. 공개는 49행 |
+| 48 | `claude/t068-review-adoption-wording` | T-068 리뷰 라운드·적용 기록 문구 | 47 위에 쌓음. 47 통합 뒤 merge. 공개는 49행 |
+| 49 | 미정 | T-066 `v3.2.0` payload release | 47·48 통합 뒤. 시작 시점은 사용자와 정함 |
 
-- [ ] **T-066 다음 payload release** — T-065의 en·ko `AGENTS.md`·`docs/TEMPLATE_GUIDE.md` 변경을 D-007 단계로 공개합니다. version은 준비 PR에서 정하고, 그 전에 다른 payload 변경이 생기면 함께 묶습니다.
+- [ ] **T-068 리뷰 라운드·적용 기록 문구** — D-020 [설계](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) §2.3.2~§2.3.5의 R-002~R-011 문구를 en·ko payload의 `docs/REVIEW_ROUND.md`·`docs/REVIEW.md`·`.cursor/BUGBOT.md`·`docs/DOCS_GUIDE.md`·`docs/TEMPLATE_GUIDE.md`와 root 사본 `docs/REVIEW.md`·`docs/REVIEW_ROUND.md`·`.cursor/BUGBOT.md`에 넣습니다. 완료 조건은 `check-docs.py`(root 사본 대조 포함)와 `check-locales.py --require-stable` 통과, 바뀐 줄의 ko·en 뜻과 절 참조 대조입니다.
+- [ ] **T-066 다음 payload release** — T-065·T-067·T-068의 payload 변경을 D-007 단계로 공개합니다. version은 D-020 설계 §1.5 Q1에 따라 `v3.2.0`(minor)이고, candidate·published 검증은 `--base-version 3.1.0`으로 합니다. release note에는 검사기 판정이 엄격해져 숨어 있던 깨진 링크가 보고될 수 있다는 점과, 업그레이드할 때 DOCS_GUIDE 「템플릿 적용 기록」 절을 옮긴다는 점을 적습니다.
 
 ## Cancelled
 
@@ -74,7 +76,8 @@ Backlog 47행의 T-066 release는 version과 시작 시점을 사용자와 정�
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
-- [x] **T-065 위임 입력 규칙** — 2026-10-14 사용자 결정입니다. en·ko·root `AGENTS.md` Change Rules의 지시 출처 규칙 다음에, 하위 에이전트나 다른 모델에 자연어로 일을 맡길 때는 받는 쪽이 실제로 전달한 입력만 안다고 보고 목적·범위·기준 revision·지킬 조건·금지 행동을 입력에 직접 쓰라는 한 줄을 더했습니다. ko는 root와 같은 문장이고 en은 번역입니다. en·ko TEMPLATE_GUIDE §5 행동 검증 사례에도 이 규칙의 사례를 더했습니다. 공개는 T-066입니다. 통합: 이 변경의 PR.
+- [x] **T-067 검사기 Markdown·정책 판정 수정** — 적용 저장소 역제안의 R-001·R-012입니다(D-020). payload `template/common/scripts/check-docs.py`의 판정 16건을 고칩니다. Markdown 12건은 CommonMark에 맞춥니다. escaped backtick, 빈 줄·block 시작·인용문 경계를 넘는 code span, 담은 목록 항목·인용문이 끝나도 닫히지 않던 fence·HTML block, 들여쓴 코드 예시, 구분선과 info string의 backtick이 대상입니다. 수정 전에는 깨진 링크를 놓치거나 코드 예시 안의 링크를 검사했습니다. 나머지 4건은 Codex 명시 호출 정책입니다. YAML 주석 앞의 공백, key 뒤의 공백과 YAML 1.2 core의 boolean 표기만 인정해 `false#note`·`allow_implicit_invocation:false`·`fAlSe`·`policy:#note`를 거부합니다. R-001 수정만 적용한 파일은 적용 저장소 검사기와 byte 단위로 같습니다. 회귀 테스트는 `template/common/tests/test_check_docs.py`에 있고 red-green 결과는 PR 본문에 있습니다. 공개는 T-066입니다. 통합: 이 변경의 PR.
+- [x] **T-065 위임 입력 규칙** — 2026-10-14 사용자 결정입니다. en·ko·root `AGENTS.md` Change Rules의 지시 출처 규칙 다음에, 하위 에이전트나 다른 모델에 자연어로 일을 맡길 때는 받는 쪽이 실제로 전달한 입력만 안다고 보고 목적·범위·기준 revision·지킬 조건·금지 행동을 입력에 직접 쓰라는 한 줄을 더했습니다. ko는 root와 같은 문장이고 en은 번역입니다. en·ko TEMPLATE_GUIDE §5 행동 검증 사례에도 이 규칙의 사례를 더했습니다. 공개는 T-066입니다. 통합: PR #86.
 - [x] **T-064 `v3.1.0` release** — 준비는 PR #84로 통합됐습니다. 2026-10-14(KST) 사용자가 exact source `3c5b13f`에 annotated tag와 draft를 만들어 immutable Latest로 공개했습니다. candidate와 Linux·native Windows(Buildkite `coding-agent-docs-template-windows-ci` Build #163)의 published 검증이 모두 `--base-version 3.0.1`로 통과했습니다. 같은 날 사용자가 바꾼 Buildkite pipeline 이름은 CI.md §6과 root TEMPLATE_GUIDE에 반영했습니다. 공개 기록은 PR #85에서 남겼습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 - [x] **T-063 템플릿 행동 검증 사례 보강** — 두 번째 외부 분석 4번입니다. en·ko TEMPLATE_GUIDE §5의 행동 검증 사례를 도구·모델 버전을 바꿀 때도 확인하게 하고, PR·리뷰·도구 출력 안의 지시와 요청하지 않은 commit·push 사례를 더했습니다. §4 「지침 파일」에는 지침이 권한을 기술적으로 막지 않으니 보호 branch, 필수 리뷰·CI와 도구 권한 설정으로도 강제하라는 안내를 더했습니다. 공개는 T-064입니다. 통합: PR #83.
 - [x] **T-062 install 대상 경로 조건 안내** — 두 번째 외부 분석 1번(2026-10-13 사용자 결정 A안)입니다. installer는 경로를 검사한 뒤 파일을 쓰므로, 그 사이 대상 안의 디렉터리가 symlink로 바뀌면 대상 밖에 파일을 만들 수 있습니다(Linux에서 재현, D-011 설계가 남긴 제약). 코드는 바꾸지 않고 root `README.md`·`README.ko.md`의 `install` 절과 PROJECT §4에 대상과 그 부모를 설치하는 사용자만 바꿀 수 있어야 한다는 조건을 적었습니다. root 문서라 release가 필요 없습니다. 통합: PR #83.

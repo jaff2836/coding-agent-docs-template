@@ -859,6 +859,19 @@ class LocaleFixtureTests(unittest.TestCase):
                 "  allow_implicit_invocation: true\n"
                 "  # allow_implicit_invocation: false\n"
             ),
+            # Same YAML rules as the artifact checker's read_implicit_invocation_policy.
+            "value-comment-without-space": (
+                "policy:\n  allow_implicit_invocation: false#note\n"
+            ),
+            "policy-comment-without-space": (
+                "policy:#note\n  allow_implicit_invocation: false\n"
+            ),
+            "key-without-space": "policy:\n  allow_implicit_invocation:false\n",
+            "quoted-decoy": (
+                "policy:\n"
+                '  allow_implicit_invocation: "false"\n'
+                "  allow_implicit_invocation: false\n"
+            ),
         }
         for name, replacement in mutations.items():
             with self.subTest(name=name):
