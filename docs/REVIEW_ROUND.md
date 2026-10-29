@@ -84,8 +84,7 @@ PR 규모와 리뷰어 수에 따라 실제 필요한 라운드 수는 크게 �
 
 | 리뷰어 | 슬롯 | 게시 위치 | head 식별 방법 | 도착 주기 | 문제가 없을 때 | 재리뷰 요청 방법 |
 |---|---|---|---|---|---|---|
-| Cursor — 사용자 계정으로 게시하며 제목에 `(Cursor)`와 모델명을 적음 | `A` | PR review 본문(`comment` 상태). 필요하면 같은 계정의 후속 PR 댓글 | 본문에 적은 대상 head·base SHA | 상시 — 사용자가 PR version마다 수동 실행 | 결과를 남김(`approve` 판정 본문) | 사용자가 수동 실행하며 실행 주체는 요청하지 않음 |
-| Codex — 사용자 계정으로 게시하며 제목에 `(Codex)`를 적음 | `B` | PR review 본문(`comment` 상태)과 finding별 인라인 스레드 | 본문에 적은 검토 head·base SHA | 상시 — 사용자가 PR version마다 수동 실행 | 결과를 남김(새 finding 없음을 명시) | 사용자가 수동 실행하며 실행 주체는 요청하지 않음 |
+| pr-reviewer — 자체 호스트 서비스([`jaff2836/pr-reviewer`](https://github.com/jaff2836/pr-reviewer))가 사용자 계정으로 게시하며 제목이 `## 자동 PR 리뷰` | `C` | GitLab MR note. head마다 note를 새로 만들고, 같은 head에서는 그 note 하나를 진행 중 표시에서 결과로 고칩니다. `- 상태: ⏳ 진행 중`이나 `- 상태: ⚠️ 시도 실패`인 note는 결과가 아니며, `**판정: …**` 줄이 생겨야 완료입니다 | note 첫 줄의 마커 `<!-- pr-reviewer:v1 head:<40자 SHA> -->`와 본문의 `head:` | 상시 — MR open·reopen, 새 commit push, draft 해제 때 돕니다 | 결과를 남김(`**판정: 승인**`과 지적 없음) | `push 자동` — GitLab MR webhook(merge request 이벤트)과 서비스의 주기 스윕. 실행 주체는 요청하지 않음 |
 
 각 열에 기록할 내용입니다.
 
