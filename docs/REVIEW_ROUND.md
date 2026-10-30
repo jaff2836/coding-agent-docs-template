@@ -84,8 +84,7 @@ PR 규모와 리뷰어 수에 따라 실제 필요한 라운드 수는 크게 �
 
 | 리뷰어 | 슬롯 | 게시 위치 | head 식별 방법 | 도착 주기 | 문제가 없을 때 | 재리뷰 요청 방법 |
 |---|---|---|---|---|---|---|
-| Cursor — 사용자 계정으로 게시하며 제목에 `(Cursor)`와 모델명을 적음 | `A` | PR review 본문(`comment` 상태). 필요하면 같은 계정의 후속 PR 댓글 | 본문에 적은 대상 head·base SHA | 상시 — 사용자가 PR version마다 수동 실행 | 결과를 남김(`approve` 판정 본문) | 사용자가 수동 실행하며 실행 주체는 요청하지 않음 |
-| Codex — 사용자 계정으로 게시하며 제목에 `(Codex)`를 적음 | `B` | PR review 본문(`comment` 상태)과 finding별 인라인 스레드 | 본문에 적은 검토 head·base SHA | 상시 — 사용자가 PR version마다 수동 실행 | 결과를 남김(새 finding 없음을 명시) | 사용자가 수동 실행하며 실행 주체는 요청하지 않음 |
+| pr-reviewer — 사용자가 운영하는 자체 호스트 리뷰 서비스(private 저장소)가 GitLab group 서비스 계정 `PR-Reviewer`(username `service_account_group_144835302_cc7ec72d845381222728ba261fdcf791`)로 게시하며 제목이 `## 자동 PR 리뷰` | `C` | GitLab MR note. MR마다 note 하나를 덮어씁니다(sticky). 새 head가 오면 같은 note를 그 head의 진행 중 표시로 고친 뒤 결과로 고치므로, 앞 head의 결과는 MR에서 사라집니다. `- 상태: ⏳ 진행 중`이나 `- 상태: ⚠️ 시도 실패`인 note는 결과가 아니며, `**판정: …**` 줄이 생겨야 완료입니다. 다만 본문에 「이 PR은 (아직) 리뷰되지 않았습니다」 경고가 있으면 판정 줄이 있어도 결과가 아닙니다(굵게 표시 위치는 경고마다 다릅니다). 작성자가 이 서비스 계정인 note만 결과로 읽습니다(2026-10-29 전환 전에는 사용자 계정 `jaff2836`이 head마다 note를 따로 게시했습니다) | note 첫 줄의 마커 `<!-- pr-reviewer:v1 head:<40자 SHA> -->`와 본문의 `head:`. 마커의 head가 리뷰 대상 head와 같을 때만 그 head의 결과입니다 | 상시 — MR open·reopen, 새 commit push, draft 해제 때 돕니다 | 결과를 남김(`**판정: 승인**`과 지적 없음) | `push 자동` — GitLab MR webhook(merge request 이벤트)과 서비스의 주기 스윕. 실행 주체는 요청하지 않음 |
 
 각 열에 기록할 내용입니다.
 

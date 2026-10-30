@@ -45,9 +45,13 @@ locale source의 가이드는 artifact 정본입니다. root maintainer 가이�
 - README는 현재 사용법, TODO·PLAN은 미래 작업을 소유합니다. 같은 체크리스트나
   릴리스 이력을 여러 문서에 복제하지 않습니다.
 - 리뷰 finding ID는 `C<PR>-<슬롯>-<nnn>` 형식이며(예: `C57-A-001`), 슬롯은
-  [REVIEW_ROUND.md](./REVIEW_ROUND.md) §2.1에 등록된 것만 씁니다. 2026-10-01부터 Cursor가
-  `A`, Codex가 `B`입니다. 등록되지 않은
-  리뷰어의 finding은 `<플랫폼 게시 식별자>/<항목 번호>`로 가리킵니다(D-014).
+  [REVIEW_ROUND.md](./REVIEW_ROUND.md) §2.1에 등록된 것만 씁니다. Cursor `A`와 Codex `B`는
+  2026-10-01부터 쓰다가 2026-10-29에 중단했고, 같은 날부터 pr-reviewer가 `C`입니다. 중단한
+  라벨은 다른 리뷰어에게 다시 주지 않고, 이미 발급한 ID도 고치지 않습니다. 등록되지 않은
+  리뷰어의 finding은 `<플랫폼 게시 식별자>/<항목 번호>`로 가리킵니다(D-014). 등록된
+  리뷰어라도 게시물에 슬롯 ID를 붙이지 않으면 같은 형식을 쓰고, 덮어쓰는 게시물이면
+  `<플랫폼 게시 식별자>@<head 12자리>/<항목 번호>`로 씁니다([REVIEW_ROUND.md](./REVIEW_ROUND.md) §7). pr-reviewer가
+  여기에 해당하며, 게시 식별자는 GitLab note id입니다.
 
 ## 3. 실행·통합·인계
 
