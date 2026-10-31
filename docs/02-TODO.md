@@ -8,14 +8,14 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-28 (KST)
+- **Last reviewed:** 2026-10-30 (KST)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
-- **Integration target:** Origin `main`(PR merge)과 공개 저장소 `jaff2836/coding-agent-docs-template`의 `main`(같은 merge commit의 non-force fast-forward, [TEMPLATE_GUIDE §5](./TEMPLATE_GUIDE.md)); v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
+- **Integration target:** GitLab `main`(MR merge, 2026-10-28 전에는 Origin `main`의 PR merge)과 공개 저장소 `jaff2836/coding-agent-docs-template`의 `main`(같은 merge commit의 non-force fast-forward, [TEMPLATE_GUIDE §5](./TEMPLATE_GUIDE.md)); v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
 - **Name:** 적용 저장소 역제안 반영과 GitLab 이전 (T-066~T-069)
-- **Status:** 2026-10-28 v3.1.0을 적용한 저장소가 문서 검사기 결함과 리뷰 라운드·적용 안내 개선을 역제안했습니다. 이 저장소에서 다시 검증해 사용자가 D-020으로 승인했습니다. 검사기(T-067)와 문구(T-068)를 고친 뒤, 보류했던 T-066에 T-065와 함께 묶어 `v3.2.0`으로 공개합니다. 첫 번째 분석의 `SECURITY.md` 제안은 계속 보류이고 T-043은 보류(Blocked)입니다. 같은 날 사용자가 Cursor 구독을 끝내고 Origin을 비활성화해 개발·MR·필수 CI를 GitLab(`jaff2836/coding-agent-docs-template`, private)으로 옮겼습니다. root 문서와 maintainer 도구에 남은 Origin 기준 서술은 T-069에서 고칩니다.
+- **Status:** 2026-10-28 v3.1.0을 적용한 저장소가 문서 검사기 결함과 리뷰 라운드·적용 안내 개선을 역제안했습니다. 이 저장소에서 다시 검증해 사용자가 D-020으로 승인했습니다. 검사기(T-067)와 문구(T-068)를 고친 뒤, 보류했던 T-066에 T-065와 함께 묶어 `v3.2.0`으로 공개합니다. 첫 번째 분석의 `SECURITY.md` 제안은 계속 보류이고 T-043은 보류(Blocked)입니다. 같은 날 사용자가 Cursor 구독을 끝내고 Origin을 비활성화해 개발·MR·필수 CI를 private GitLab으로 옮겼습니다(2026-10-29부터 `jaff2836-group/coding-agent-docs-template`). root 문서와 maintainer 도구의 Origin 기준 서술은 T-069에서 고쳤습니다.
 
 ## 운영 규칙
 
@@ -37,7 +37,7 @@
 
 ## Next
 
-Backlog 50행의 T-066 release는 47~49행 통합 뒤 시작 시점을 사용자와 정해 진행합니다. 새 작업은 사용자와 정한 뒤 PR 단위로 수동 리뷰·필수 CI·통합을 거칩니다.
+Backlog 50행의 T-066 release는 49행 통합 뒤 시작 시점을 사용자와 정해 진행합니다. 새 작업은 사용자와 정한 뒤 MR 단위로 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -51,20 +51,13 @@ Backlog 50행의 T-066 release는 47~49행 통합 뒤 시작 시점을 사용자
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
 설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다.
 
-통합된 순서 1~46의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+통합된 순서 1~48의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 47 | `claude/t067-checker-markdown-fixes` | T-067 검사기 Markdown·정책 판정 수정 | **In Progress** — GitLab MR !1. D-020 설계와 PROJECT·TODO 등재를 함께 담음. 공개는 50행 |
-| 48 | `claude/t068-review-adoption-wording` | T-068 리뷰 라운드·적용 기록 문구 | **In Progress** — 이 변경의 PR. 47 위에 쌓음(stack). 47 통합 뒤 base를 `main`으로 바꿔 merge. T-069 등록을 함께 담음. 공개는 50행 |
-| 49 | `claude/t069-gitlab-migration-docs` | T-069 GitLab 이전 반영 | 48 통합 뒤. release 불필요. release 절차 문서를 고치므로 50 전에 통합 |
-| 50 | 미정 | T-066 `v3.2.0` payload release | 47~49 통합 뒤. 시작 시점은 사용자와 정함 |
+| 49 | `claude/t069-gitlab-migration-docs` | T-069 GitLab 이전 반영 | **In Progress** — 이 변경의 MR. 리뷰어 구성은 `claude/t069-reviewer-roster`(GitLab MR !3)로 먼저 통합. release 불필요. release 절차 문서를 고치므로 50 전에 통합 |
+| 50 | 미정 | T-066 `v3.2.0` payload release | 49 통합 뒤. 시작 시점은 사용자와 정함 |
 
-- [ ] **T-069 GitLab 이전 반영** — 2026-10-28 사용자 결정으로 Origin(Cursor)을 비활성화하고 개발·MR·필수 CI를 GitLab으로 옮겼습니다. 이미 바꾼 것은 로컬 remote(`origin`=GitLab, `cursor-origin`=이전 Origin), Buildkite 두 pipeline의 저장소(GitLab SSH, agent deploy key), GitLab push 연결(Linux는 Buildkite integration, Windows는 webhook), Buildkite commit status와 GitLab "Pipelines must succeed"입니다. 이 작업은 그 상태를 root 문서와 maintainer 도구에 반영합니다.
-  - 대상: `docs/CI.md` §6(필수 check, 저장소 URL, 연결 방식), root `docs/TEMPLATE_GUIDE.md` §5(개발 host, remote 이름, GitLab merge 뒤 GitHub fast-forward, tag 정책), root `docs/DOCS_GUIDE.md`의 통합 대상·원장, 이 문서의 Integration target, PROJECT의 현재 운영 서술, `scripts/verify_release.py`의 `--origin-remote` 도움말과 오류 메시지
-  - 유지: 과거 Origin PR 번호·merge SHA 기록과 Cursor Bugbot 어댑터(`.cursor/BUGBOT.md`)는 바꾸지 않습니다.
-  - 리뷰어 구성(2026-10-29 사용자 결정): Cursor `A`와 Codex `B`를 중단하고 pr-reviewer를 상시 리뷰어 `C`로 root `docs/REVIEW_ROUND.md` §2.1에 등록했습니다. 슬롯 배정은 root `docs/DOCS_GUIDE.md` §2에 적었습니다. 이 변경의 MR로 반영합니다. 이 프로젝트는 2026-10-29 pr-reviewer에 연결됐습니다(05:43Z project webhook, merge request 이벤트). 같은 날 운영 서비스가 MR !3에 리뷰를 게시했고, 게시 계정은 사용자 계정에서 group 서비스 계정으로 바뀌었습니다. push 뒤 같은 note를 갱신하는 것이 pr-reviewer 설계의 의도이고(2026-10-29 사용자 확인), 운영도 그렇게 동작합니다. 2026-10-30 02:01:58Z에 MR !3에 `ac96e85`를 push하자 02:02:01Z에 서비스 계정이 앞 head의 note를 새 head의 진행 중 표시로 고쳤습니다. 그래서 `REVIEW_ROUND.md` §2.1 게시 위치를 덮어쓰기(sticky)로 적었고, 이 리뷰어에는 `REVIEW_ROUND.md` §7의 덮어쓰는 리뷰어 원장 규칙이 적용됩니다. note가 finding에 슬롯 ID를 붙이지 않아, finding은 root `docs/DOCS_GUIDE.md` §2에 따라 `<note id>@<head 12자리>/<항목 번호>`로 가리킵니다. 같은 note는 02:10:14Z에 `**판정: 의견**`으로 바뀌었지만 LLM 응답 파싱에 실패해 "이 PR은 리뷰되지 않았습니다" 경고가 함께 붙었습니다. 그래서 `REVIEW_ROUND.md` §2.1 완료 판별에 이 경고를 넣었습니다.
-  - 완료 조건: root 문서·도구 검사와 관련 테스트 통과, 남은 Origin 언급이 과거 기록뿐인지 대조. payload는 바뀌지 않아 release가 필요 없습니다.
 - [ ] **T-066 다음 payload release** — T-065·T-067·T-068의 payload 변경을 D-007 단계로 공개합니다. version은 D-020 설계 §1.5 Q1에 따라 `v3.2.0`(minor)이고, candidate·published 검증은 `--base-version 3.1.0`으로 합니다. release note에는 검사기 판정이 엄격해져 숨어 있던 깨진 링크가 보고될 수 있다는 점과, 업그레이드할 때 DOCS_GUIDE 「템플릿 적용 기록」 절을 옮긴다는 점을 적습니다.
 
 ## Cancelled
@@ -81,7 +74,8 @@ Backlog 50행의 T-066 release는 47~49행 통합 뒤 시작 시점을 사용자
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
-- [x] **T-068 리뷰 라운드·적용 기록 문구** — 적용 저장소 역제안의 R-002~R-011입니다(D-020). en·ko payload와 root 사본에 [설계](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) §2.3의 문구를 넣었습니다. `docs/REVIEW_ROUND.md`는 리뷰어 표를 라운드 밖에서 먼저 고치고, `push 자동` 트리거 예시에 webhook 이벤트를 더했습니다. 진행 중 표시를 결과로 바꾸는 리뷰어의 완료 판별을 적게 했고, 빈 commit 재리뷰를 위임하지 않습니다(R-005 A). base branch의 tip만 앞서 나간 경우는 base 변경이 아니며 merge 직전에 새 tip으로 다시 확인받고(R-010 A), 자기 검토 단계를 마치지 못한 결과는 부분 결과입니다. `docs/REVIEW.md` §5에는 결정·정책 변경이 다른 문서와 사본까지 고쳤는지, 선언한 계약이 schema·검사 절차로도 구현됐는지, checkout만으로 확인할 수 없는 주장에 다시 조회할 식별자가 있는지를 더했고, §8에 결정 번복 요구를 더했습니다. `.cursor/BUGBOT.md`의 완료 근거 문단도 같게 넓혔습니다. `docs/DOCS_GUIDE.md`에는 업그레이드 때 옮기는 「템플릿 적용 기록」 절을 두고 기존 안내 네 곳이 그 절을 가리킵니다. `docs/TEMPLATE_GUIDE.md`의 일괄 치환 금지는 기존 이름을 유지하는 방향에도 적용합니다. root 사본 `docs/REVIEW.md`·`docs/REVIEW_ROUND.md`·`.cursor/BUGBOT.md`는 ko와 같은 문장입니다. 공개는 T-066입니다. 통합: 이 변경의 PR.
+- [x] **T-069 GitLab 이전 반영** — 2026-10-28 Origin(Cursor)을 비활성화하고 개발·MR·필수 CI를 GitLab으로 옮긴 상태를 root 문서와 maintainer 도구에 반영했습니다. [CI.md](./CI.md) §6은 GitLab 저장소와 push webhook 연결, 두 Buildkite commit status와 "Pipelines must succeed"를, root TEMPLATE_GUIDE §5는 GitLab MR merge 뒤 GitHub fast-forward, source branch 삭제를 끄는 merge와 tag 정책을 적습니다. DOCS_GUIDE §3의 통합 대상·원장, 이 문서의 Integration target, PROJECT §9 Phase 3의 `main` 일치 조건, `scripts/verify_release.py`의 `--origin-remote` 도움말과 오류 메시지, `.buildkite/verify_published_release.py` 설명도 고쳤습니다. 리뷰어 구성(2026-10-29 사용자 결정)은 Cursor `A`·Codex `B`를 중단하고 pr-reviewer를 상시 리뷰어 `C`로 root `docs/REVIEW_ROUND.md` §2.1에 등록했습니다. 게시 위치는 덮어쓰는 MR note이고 finding 인용은 DOCS_GUIDE §2를 따릅니다. 과거 Origin PR 기록과 `.cursor/BUGBOT.md`는 그대로 둡니다. root 문서와 도구만 바뀌어 release가 필요 없습니다. 등록 당시 설명은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합: GitLab MR !3(리뷰어 구성)과 이 변경의 MR.
+- [x] **T-068 리뷰 라운드·적용 기록 문구** — 적용 저장소 역제안의 R-002~R-011입니다(D-020). en·ko payload와 root 사본에 [설계](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) §2.3의 문구를 넣었습니다. `docs/REVIEW_ROUND.md`는 리뷰어 표를 라운드 밖에서 먼저 고치고, `push 자동` 트리거 예시에 webhook 이벤트를 더했습니다. 진행 중 표시를 결과로 바꾸는 리뷰어의 완료 판별을 적게 했고, 빈 commit 재리뷰를 위임하지 않습니다(R-005 A). base branch의 tip만 앞서 나간 경우는 base 변경이 아니며 merge 직전에 새 tip으로 다시 확인받고(R-010 A), 자기 검토 단계를 마치지 못한 결과는 부분 결과입니다. `docs/REVIEW.md` §5에는 결정·정책 변경이 다른 문서와 사본까지 고쳤는지, 선언한 계약이 schema·검사 절차로도 구현됐는지, checkout만으로 확인할 수 없는 주장에 다시 조회할 식별자가 있는지를 더했고, §8에 결정 번복 요구를 더했습니다. `.cursor/BUGBOT.md`의 완료 근거 문단도 같게 넓혔습니다. `docs/DOCS_GUIDE.md`에는 업그레이드 때 옮기는 「템플릿 적용 기록」 절을 두고 기존 안내 네 곳이 그 절을 가리킵니다. `docs/TEMPLATE_GUIDE.md`의 일괄 치환 금지는 기존 이름을 유지하는 방향에도 적용합니다. root 사본 `docs/REVIEW.md`·`docs/REVIEW_ROUND.md`·`.cursor/BUGBOT.md`는 ko와 같은 문장입니다. 공개는 T-066입니다. 통합: GitLab MR !2.
 - [x] **T-067 검사기 Markdown·정책 판정 수정** — 적용 저장소 역제안의 R-001·R-012입니다(D-020). payload `template/common/scripts/check-docs.py`의 판정 16건을 고칩니다. Markdown 12건은 CommonMark에 맞춥니다. escaped backtick, 빈 줄·block 시작·인용문 경계를 넘는 code span, 담은 목록 항목·인용문이 끝나도 닫히지 않던 fence·HTML block, 들여쓴 코드 예시, 구분선과 info string의 backtick이 대상입니다. 수정 전에는 깨진 링크를 놓치거나 코드 예시 안의 링크를 검사했습니다. 나머지 4건은 Codex 명시 호출 정책입니다. YAML 주석 앞의 공백, key 뒤의 공백과 YAML 1.2 core의 boolean 표기만 인정해 `false#note`·`allow_implicit_invocation:false`·`fAlSe`·`policy:#note`를 거부합니다. R-001 수정만 적용한 파일은 적용 저장소 검사기와 byte 단위로 같습니다. 회귀 테스트는 `template/common/tests/test_check_docs.py`에 있고 red-green 결과는 PR 본문에 있습니다. 공개는 T-066입니다. 통합: GitLab MR !1.
 - [x] **T-065 위임 입력 규칙** — 2026-10-14 사용자 결정입니다. en·ko·root `AGENTS.md` Change Rules의 지시 출처 규칙 다음에, 하위 에이전트나 다른 모델에 자연어로 일을 맡길 때는 받는 쪽이 실제로 전달한 입력만 안다고 보고 목적·범위·기준 revision·지킬 조건·금지 행동을 입력에 직접 쓰라는 한 줄을 더했습니다. ko는 root와 같은 문장이고 en은 번역입니다. en·ko TEMPLATE_GUIDE §5 행동 검증 사례에도 이 규칙의 사례를 더했습니다. 공개는 T-066입니다. 통합: PR #86.
 - [x] **T-064 `v3.1.0` release** — 준비는 PR #84로 통합됐습니다. 2026-10-14(KST) 사용자가 exact source `3c5b13f`에 annotated tag와 draft를 만들어 immutable Latest로 공개했습니다. candidate와 Linux·native Windows(Buildkite `coding-agent-docs-template-windows-ci` Build #163)의 published 검증이 모두 `--base-version 3.0.1`로 통과했습니다. 같은 날 사용자가 바꾼 Buildkite pipeline 이름은 CI.md §6과 root TEMPLATE_GUIDE에 반영했습니다. 공개 기록은 PR #85에서 남겼습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.

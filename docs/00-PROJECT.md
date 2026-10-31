@@ -9,7 +9,7 @@
 - **Project:** coding-agent-docs-template
 - **Status:** Active — immutable Latest `v3.1.0` 공개와 Linux·Windows published 검증 완료
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-28
+- **Last reviewed:** 2026-10-30
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
 
 ## 1. Context
@@ -171,7 +171,7 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 ### Phase 3 — public release
 
 - GitHub Releases 전용 transport를 검증하고 exact source commit에 `v2.0.0` tag와 동일 byte asset을 게시합니다.
-- 게시 시점의 Origin·GitHub `main`은 같은 commit이어야 하며 tag commit은 그 `main`의 조상이어야 합니다. `main`이 tag 이후 전진했더라도 검증된 draft asset은 재패키징·교체하지 않습니다.
+- 게시 시점의 개발 저장소(2026-10-28 전에는 Origin, 이후 GitLab)와 GitHub의 `main`은 같은 commit이어야 하며 tag commit은 그 `main`의 조상이어야 합니다. `main`이 tag 이후 전진했더라도 검증된 draft asset은 재패키징·교체하지 않습니다.
 - `latest`와 exact version의 원격 en/ko install·export를 확인하고 공개 완료 근거를 별도 기록합니다.
 - 다음 release부터 `verify-release.py candidate`로 기존 draft를 게시 전에, `published`로 immutable Latest와 공개 installer 경로를 게시 후에 검증합니다. 이 도구는 tag·release를 만들거나 변경하지 않습니다.
 

@@ -2,13 +2,13 @@
 
 이 문서는 **무엇을, 어떤 순서로, 성공·실패를 어떻게 판정하는지**를 정합니다. 이 저장소의 Windows·Linux Buildkite pipeline은 각각 `.buildkite/pipeline.yml`·`.buildkite/linux.yml`을 업로드해 실행합니다. 템플릿 적용 프로젝트가 GitHub Actions, Buildkite, 그 외 러너 중 무엇을 쓸지는 각 프로젝트가 고릅니다.
 
-이 저장소의 Origin `main` 병합에는 Windows·Linux Buildkite check가 모두 필요합니다. 템플릿 적용 프로젝트에서는 원격 CI를 선택할 수 있습니다. 적용 프로젝트가 CI를 쓰지 않으면 같은 게이트를 로컬에서 실행하고, 미사용 이유와 대체 검증을 [02-TODO.md](./02-TODO.md)의 통합 완료 조건 또는 프로젝트 README에 남깁니다.
+이 저장소의 GitLab `main` merge에는 Windows·Linux Buildkite commit status가 모두 성공해야 합니다(§6). 템플릿 적용 프로젝트에서는 원격 CI를 선택할 수 있습니다. 적용 프로젝트가 CI를 쓰지 않으면 같은 게이트를 로컬에서 실행하고, 미사용 이유와 대체 검증을 [02-TODO.md](./02-TODO.md)의 통합 완료 조건 또는 프로젝트 README에 남깁니다.
 
 ## Metadata
 
 - **Status:** Active
 - **Owner:** Repository maintainers
-- **Last reviewed:** 2026-09-29
+- **Last reviewed:** 2026-10-30
 - **Review cadence:** 품질 게이트 구성 또는 로컬 명령이 바뀔 때
 
 명령 문자열의 정본은 루트 [AGENTS.md](../AGENTS.md)와 적용 프로젝트 README입니다. 한쪽만 바꾸지 마세요. 기계적 규칙은 리뷰 finding이 아니라 이 게이트로 강제합니다. 판정 기준은 [REVIEW.md](./REVIEW.md) §12입니다.
@@ -105,15 +105,15 @@ G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니�
 
 ## 6. Buildkite Windows·Linux 검증
 
-두 pipeline은 연결된 Origin installation의 canonical repository URL `https://origin.cursor.com/git/jaff2836/ai-agent-docs-template.git`을 사용합니다. 각 self-hosted agent의 Git URL rewrite가 HTTPS checkout을 SSH로 전환하며 agent key로 정확한 commit을 가져옵니다. Origin branch push와 열린 PR의 head push에서 두 pipeline이 자동 시작하고 각각 Origin check를 게시합니다. `main` 대상 merge ruleset은 Buildkite 앱의 `jaff2836-org / coding-agent-docs-template-windows-ci`와 `jaff2836-org / coding-agent-docs-template-linux-ci` check suite를 필수로 요구합니다. 두 pipeline은 2026-10-14 다른 저장소의 pipeline과 구분하려고 `windows-ci`·`linux-ci`에서 이름을 바꿨습니다. Origin check는 pipeline slug를 key로 쓰므로 ruleset의 필수 check도 새 이름으로 바꿨고, 이 문서와 변경 기록의 이전 build 링크는 옛 이름을 씁니다. PR #37을 연 직후에는 같은 head의 기존 branch check가 표시됐고 새 build는 관찰되지 않았습니다. 이후 PR head push에서는 PR 정보가 연결된 두 build가 자동 시작했습니다. GitHub push trigger는 구성하지 않았습니다. agent 인증 비밀값은 저장소와 로그에 기록하지 않습니다.
+두 pipeline은 private GitLab 저장소 `git@gitlab.com:jaff2836-group/coding-agent-docs-template.git`을 checkout합니다. 각 self-hosted agent는 사용자가 GitLab에 등록한 SSH deploy key로 정확한 commit을 가져옵니다. GitLab project webhook 두 개(push 이벤트, 모든 branch)가 각 pipeline의 Buildkite webhook으로 이어져 branch push마다 두 pipeline이 자동 시작하고, `buildkite/coding-agent-docs-template-windows-ci`·`buildkite/coding-agent-docs-template-linux-ci` commit status를 GitLab에 게시합니다. GitLab 프로젝트 설정 "Pipelines must succeed"가 켜져 있어 MR head의 status가 없거나 실패하면 merge할 수 없습니다. 이 설정은 head의 pipeline 결과만 보고 특정 status를 요구하지 않으므로, merge 전에 두 status가 모두 그 head에서 성공했는지 직접 확인합니다. GitLab 프로젝트 경로가 바뀌면 두 pipeline의 저장소 경로도 고칩니다. 2026-10-29 project를 group `jaff2836-group`으로 옮긴 뒤 2026-10-30 옛 경로를 고칠 때까지 build는 통과했지만 status가 게시되지 않아 MR을 merge할 수 없었습니다. 두 pipeline은 2026-10-14 다른 저장소의 pipeline과 구분하려고 `windows-ci`·`linux-ci`에서 이름을 바꿨고, 이 문서와 변경 기록의 이전 build 링크는 옛 이름을 씁니다. GitHub push trigger는 구성하지 않았습니다. agent 인증 비밀값과 webhook URL·token은 저장소와 로그에 기록하지 않습니다.
 
-필수 check가 없거나 agent 부재로 대기하면 병합을 보류합니다. agent를 복구한 뒤 Buildkite에서 정확한 head를 재실행하거나 변경된 PR head를 push하고, 두 Origin check의 성공을 확인합니다. 로컬 게이트만으로 이 저장소의 필수 check를 충족했다고 판단하지 않습니다.
+status가 없거나 agent 부재로 대기하면 merge를 보류합니다. agent를 복구한 뒤 Buildkite에서 정확한 head를 재실행하거나 변경된 MR head를 push하고, 두 status의 성공을 GitLab에서 확인합니다. Buildkite API로 만든 build도 status를 게시합니다(2026-10-30 Linux #164, Windows #182). 로컬 게이트만으로 이 저장소의 필수 status를 충족했다고 판단하지 않습니다.
 
 [`coding-agent-docs-template-windows-ci`](https://buildkite.com/jaff2836-org/coding-agent-docs-template-windows-ci)는 [`pipeline.yml`](../.buildkite/pipeline.yml)을 `jaff2836-worker-windows` queue에서 실행합니다. WindowsApps의 실행 불가 `python3` 별칭 대신 공식 Python 3.12.10 NuGet CI 배포본을 `%LOCALAPPDATA%\Programs\Python\Python312-CI\tools\python.exe`에 배치했습니다. root docs·stable locale 검사와 전체 unittest 뒤 T-017 native junction probe를 실행합니다. unittest 전에 PATH 뒤쪽에 Git for Windows의 `C:\Program Files\Git\usr\bin`을 붙여 Git Bash와 같은 GNU grep을 쓰며, System32 도구를 가리지 않습니다. 구현 브랜치의 probe는 junction 경계 거부와 외부 target 불변을 단언하며, 정확한 head의 Windows check로 검증합니다.
 
 [`coding-agent-docs-template-linux-ci`](https://buildkite.com/jaff2836-org/coding-agent-docs-template-linux-ci)는 [`linux.yml`](../.buildkite/linux.yml)을 `jaff2836-worker-linux` queue에서 실행합니다. agent의 Python 3.13.5로 같은 root docs·stable locale 검사와 전체 unittest를 실행합니다.
 
-**공개 release의 native Windows 검증:** release를 공개한 뒤 Buildkite에서 `coding-agent-docs-template-windows-ci`의 New Build를 `main` 최신 commit으로 만들고, 환경변수 `RELEASE_VERIFY_VERSION`(예: `2.5.0`), `RELEASE_VERIFY_SOURCE_COMMIT`(tag source의 전체 SHA), 선택형 `RELEASE_VERIFY_BASE_VERSION`(직전 release)을 설정합니다. 이 변수가 있을 때만 [`verify_published_release.py`](../.buildkite/verify_published_release.py) step이 실행됩니다. 이 step은 `github` 원격과 release tag·`main`을 준비하고, tag source의 임시 worktree에서 그 source 자신의 `verify-release.py published`를 실행합니다. Windows agent에는 `gh`와 읽기 전용 `GH_TOKEN`이 필요하며, token은 agent 환경에만 두고 저장소·로그에 기록하지 않습니다. draft를 읽어야 하는 candidate 검증은 쓰기 권한 token이 필요하므로 CI에서 실행하지 않습니다. 현재 Windows agent는 `environment` hook이 SYSTEM·Administrators 전용 파일에서 권한 없는 fine-grained token을 읽어 job 환경에만 넣습니다. 첫 실환경 실행인 [Build #112](https://buildkite.com/jaff2836-org/windows-ci/builds/112)(`main` `e105412`, `v2.5.0`)가 통과했습니다.
+**공개 release의 native Windows 검증:** release를 공개한 뒤 Buildkite에서 `coding-agent-docs-template-windows-ci`의 New Build를 `main` 최신 commit으로 만들고, 환경변수 `RELEASE_VERIFY_VERSION`(예: `2.5.0`), `RELEASE_VERIFY_SOURCE_COMMIT`(tag source의 전체 SHA), 선택형 `RELEASE_VERIFY_BASE_VERSION`(직전 release)을 설정합니다. 이 변수가 있을 때만 [`verify_published_release.py`](../.buildkite/verify_published_release.py) step이 실행됩니다. 이 step은 `github` 원격과 release tag·`main`을 준비하고(`origin`은 Buildkite가 checkout한 GitLab 저장소), tag source의 임시 worktree에서 그 source 자신의 `verify-release.py published`를 실행합니다. Windows agent에는 `gh`와 읽기 전용 `GH_TOKEN`이 필요하며, token은 agent 환경에만 두고 저장소·로그에 기록하지 않습니다. draft를 읽어야 하는 candidate 검증은 쓰기 권한 token이 필요하므로 CI에서 실행하지 않습니다. 현재 Windows agent는 `environment` hook이 SYSTEM·Administrators 전용 파일에서 권한 없는 fine-grained token을 읽어 job 환경에만 넣습니다. 첫 실환경 실행인 [Build #112](https://buildkite.com/jaff2836-org/windows-ci/builds/112)(`main` `e105412`, `v2.5.0`)가 통과했습니다. GitLab으로 옮긴 뒤에는 이 step을 아직 실행하지 않았습니다.
 
 locale source 회귀의 ripgrep·GNU grep 실명령 테스트는 도구가 없으면 skip합니다. 로컬에서는 skip을 허용하지만 CI에서는 skip이 통과로 보이면 안 되므로, 두 pipeline은 unittest 전에 `rg --version`과 GNU grep 여부를 확인하고 없으면 build를 실패시킵니다. 두 worker에는 ripgrep이 설치돼 있어야 하고, Windows worker에는 전체 Git for Windows가 필요합니다. 이 도구들은 테스트에만 쓰이며 artifact나 installer 실행에는 필요하지 않습니다. PR #37의 [Windows build #21](https://buildkite.com/jaff2836-org/windows-ci/builds/21)과 [Linux build #6](https://buildkite.com/jaff2836-org/linux-ci/builds/6)은 같은 head `e7e12581b614685774064d57119b08a508ff5f23`에서 자동 시작해 각각 unittest 176개를 통과하고 Origin 성공 check를 게시했습니다. 두 build의 Buildkite `pull_request.id`는 `37`이며 base는 `main`입니다.
 

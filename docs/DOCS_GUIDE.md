@@ -12,7 +12,7 @@
 - **Template source:** https://github.com/jaff2836/coding-agent-docs-template
 - **Template revision:** release 검증 시 exact source commit으로 확정
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-08
+- **Last reviewed:** 2026-10-30
 - **Review cadence:** maintainer 문서 체계 또는 source·artifact 소유권 변경 시
 
 ## 1. Maintainer 문서 지도
@@ -65,10 +65,11 @@ locale source의 가이드는 artifact 정본입니다. root maintainer 가이�
 - 리뷰 라운드 통과 후 tracked head는 동결하고, 후속 기록은 다음 관련 작업의
   인계 절차에 따라 반영합니다.
 - 기록 시점은 locale `DOCS_GUIDE.md`의 로컬 Git과 병렬 브랜치 절을 따릅니다(D-013).
-  이 저장소의 통합 대상은 Origin `main`입니다. GitHub `main` 동기화와 release
-  공개는 통합 뒤 사건이므로, 끝난 뒤 해당 작업이 기록합니다.
-- PR의 CI build·리뷰 판정·merge SHA는 Origin PR을 원장으로 두고, TODO에는 PR
-  참조만 둡니다.
+  이 저장소의 통합 대상은 GitLab `main`입니다([TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §5).
+  GitHub `main` 동기화와 release 공개는 통합 뒤 사건이므로, 끝난 뒤 해당 작업이
+  기록합니다.
+- MR의 CI build·리뷰 판정·merge SHA는 GitLab MR을 원장으로 두고, TODO에는 MR
+  참조(`MR !N`)만 둡니다. 2026-10-28 전 기록의 `PR #N`은 Origin PR입니다.
 
 ## 4. Root와 locale 가이드 소유권
 

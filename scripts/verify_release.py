@@ -202,10 +202,14 @@ def _verify_remote_refs(
     origin_main = origin.get(main_ref)
     github_main = github.get(main_ref)
     if origin_main is None or github_main is None:
-        raise VerificationError("Origin and GitHub must both publish refs/heads/main")
+        raise VerificationError(
+            "remotes %s and %s must both publish refs/heads/main"
+            % (origin_remote, github_remote)
+        )
     if origin_main != github_main:
         raise VerificationError(
-            "Origin and GitHub main differ: %s != %s" % (origin_main, github_main)
+            "%s and %s main differ: %s != %s"
+            % (origin_remote, github_remote, origin_main, github_main)
         )
     if tag_ref not in github or peeled_ref not in github:
         raise VerificationError("GitHub release tag must be an annotated tag: v%s" % version)
@@ -1055,7 +1059,9 @@ def _add_common_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--version", required=True, help="full SemVer without v")
     parser.add_argument("--source-commit", required=True, help="exact lowercase Git SHA")
     parser.add_argument("--repository", required=True, help="GitHub OWNER/NAME slug")
-    parser.add_argument("--origin-remote", default="origin", help="Cursor Origin Git remote name")
+    parser.add_argument(
+        "--origin-remote", default="origin", help="GitLab development Git remote name"
+    )
     parser.add_argument("--github-remote", default="github", help="GitHub Git remote name")
     parser.add_argument(
         "--root", type=Path, default=ROOT, help="clean exact source checkout"
