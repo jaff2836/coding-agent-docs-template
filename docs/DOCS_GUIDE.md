@@ -8,7 +8,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.1.0
+- **Template version:** 3.2.0
 - **Template source:** https://github.com/jaff2836/coding-agent-docs-template
 - **Template revision:** release 검증 시 exact source commit으로 확정
 - **Owner:** Chae Sangwon

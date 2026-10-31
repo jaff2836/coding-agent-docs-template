@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.1.0
+- **Template version:** 3.2.0
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -355,6 +355,15 @@ When changing instructions, skills, the checker, or the version of a tool or mod
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v3.2.0 — Checker Markdown Parsing, Review Round Clarifications, and Adoption Record
+
+- `scripts/check-docs.py` now follows CommonMark for escaped backticks, code spans that would cross a blank line, a block start, or a blockquote boundary, fences and HTML blocks that stayed open after their list item or blockquote ended, indented code examples, and backticks in thematic breaks and info strings. Previously it could miss broken links or check links inside code examples. For the Codex explicit-invocation policy value it accepts only whitespace before a YAML comment, whitespace after the key, and YAML 1.2 core boolean spellings, so it rejects `false#note`, `allow_implicit_invocation:false`, `fAlSe`, and `policy:#note`. `tests/test_check_docs.py` adds the regression tests.
+- [DOCS_GUIDE.md](./DOCS_GUIDE.md) adds a Template Adoption Record section for the previous baseline, the starting revision, path adaptations, preserved or excluded paths, changes to template-owned files, and unverified items. When an upgrade restarts DOCS_GUIDE from the artifact version, carry this section over unchanged. The guidance in DOCS_GUIDE and in §2 and §5 of this document that asked you to record included and excluded items now points to it. The §2 "Migrating to the Numbered System" rule against global filename replacement also applies when you keep existing `PLAN.md`, `DESIGN.md`, and `TODO.md`, and it leaves the §6 history and sentences that describe the template itself unchanged.
+- `AGENTS.md` Change Rules add a rule: when you hand work to a subagent or another model, write the goal, scope, base revision, conditions to keep, and prohibited actions into its input directly. §5 "Template Behavior Verification Cases" adds a case for it.
+- [REVIEW_ROUND.md](./REVIEW_ROUND.md): when the set of reviewers changes, update the §2.1 table outside a round first. A reviewer that turns an in-progress post into its result records how to tell that the result is complete, and the `automatic on push` trigger examples include webhook events. An empty commit made only to get another review is not delegated. If only the base branch tip advanced, that is not a base change; the pre-merge check reports the new tip and asks for confirmation again. A result whose own review stage did not finish is a partial result.
+- [REVIEW.md](./REVIEW.md) §5 checks that a change to a decision or policy also updates the other documents and copies that describe it, that behavior documented as recorded or verified is implemented in code, a schema, or a check procedure, and that claims a checkout alone cannot confirm carry an identifier that can be looked up again (tag, digest, build or run ID, or the command run). §8 Do Not Report adds requests to reverse an accepted decision without new evidence, and the completion-evidence paragraph in `.cursor/BUGBOT.md` asks for the same identifiers. Both guide documents carry the new template version.
+- Verify in the adopting repository: replace `scripts/check-docs.py` and `tests/test_check_docs.py` together and rerun the checker and its tests. The stricter parsing can report broken links or policy values that were hidden before. When upgrading, move the included and excluded items recorded in DOCS_GUIDE into the Template Adoption Record section, and when merging `AGENTS.md`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, and `.cursor/BUGBOT.md`, keep the reviewer table and invariants your project filled in. `installer.py`, the Python 3.12 requirement, the installer commands, release manifest `schema_version` 2, and the artifact inventory are the same as in `v3.1.0`.
 
 ### v3.1.0 — Behavior Verification Cases and Permission Enforcement
 

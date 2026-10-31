@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.1.0
+- **Template version:** 3.2.0
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -355,6 +355,15 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v3.2.0 — 검사기 Markdown 판정, 리뷰 라운드 보강과 적용 기록
+
+- `scripts/check-docs.py`의 Markdown 판정을 CommonMark에 맞췄습니다. escaped backtick, 빈 줄·block 시작·인용문 경계를 넘는 code span, 담은 목록 항목·인용문이 끝나도 닫히지 않던 fence·HTML block, 들여쓴 코드 예시, 구분선과 info string의 backtick이 대상입니다. 이전에는 깨진 링크를 놓치거나 코드 예시 안의 링크를 검사했습니다. Codex 명시 호출 정책 값은 YAML 주석 앞의 공백, key 뒤의 공백과 YAML 1.2 core의 boolean 표기만 인정해 `false#note`·`allow_implicit_invocation:false`·`fAlSe`·`policy:#note`를 거부합니다. `tests/test_check_docs.py`에 회귀 테스트를 더했습니다.
+- [DOCS_GUIDE.md](./DOCS_GUIDE.md)에 「템플릿 적용 기록」 절을 두었습니다. 이전 기준, 적용 시작 revision, 경로 적응, 보존·제외, 템플릿 소유 파일의 수정, 미검증 항목을 적고, 업그레이드에서 DOCS_GUIDE를 artifact 판으로 다시 시작할 때 이 절을 그대로 옮깁니다. 적용·제외 내역을 남기라던 DOCS_GUIDE와 이 문서 §2·§5의 안내는 이 절을 가리킵니다. §2 「번호 체계로 이관하기」의 일괄 치환 금지는 기존 `PLAN.md`·`DESIGN.md`·`TODO.md`를 유지하는 방향에도 적용하고, §6 이력과 템플릿 자체를 설명하는 문장은 고치지 않습니다.
+- `AGENTS.md` Change Rules에, 하위 에이전트나 다른 모델에 일을 맡길 때 목적·범위·기준 revision·지킬 조건·금지 행동을 입력에 직접 쓰라는 규칙을 더했습니다. §5 「템플릿 행동 검증 사례」에도 그 사례를 더했습니다.
+- [REVIEW_ROUND.md](./REVIEW_ROUND.md): 리뷰어 구성이 바뀌면 라운드 밖에서 §2.1 표를 먼저 고칩니다. 진행 중 표시를 결과로 바꾸는 리뷰어는 완료 판별 방법을 표에 적고, `push 자동` 트리거 예시에 webhook 이벤트를 더했습니다. 재리뷰만 받으려는 빈 commit은 위임하지 않습니다. base branch의 tip만 앞서 나간 경우는 base 변경이 아니며, merge 직전 확인에서 새 tip을 알리고 다시 확인받습니다. 자기 검토 단계를 마치지 못한 결과는 부분 결과입니다.
+- [REVIEW.md](./REVIEW.md) §5는 결정·정책을 바꾼 변경이 그것을 서술하는 다른 문서와 사본도 고쳤는지, 기록·검증한다고 적은 동작이 코드·schema·검사 절차로 구현됐는지, checkout만으로 확인할 수 없는 주장에 다시 조회할 식별자(tag, digest, build·run ID, 실행 명령)가 있는지 확인합니다. §8 Do Not Report에는 확정된 결정을 새 근거 없이 되돌리라는 요구를 더했고, `.cursor/BUGBOT.md`의 완료 근거 문단도 같은 식별자를 요구합니다. 두 guide 문서 모두 새 template version을 기록합니다.
+- 적용 저장소에서 확인할 것: `scripts/check-docs.py`와 `tests/test_check_docs.py`를 함께 바꾸고 검사기와 테스트를 다시 돌리세요. 판정이 엄격해져 숨어 있던 깨진 링크나 정책 값 오류가 새로 보고될 수 있습니다. 업그레이드할 때는 DOCS_GUIDE에 남겨 둔 적용·제외 내역을 「템플릿 적용 기록」 절로 옮기고, `AGENTS.md`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `.cursor/BUGBOT.md`를 병합할 때 프로젝트가 채운 리뷰어 표와 불변조건을 보존하세요. `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version` 2와 artifact inventory는 `v3.1.0`과 같습니다.
 
 ### v3.1.0 — 행동 검증 사례와 권한 강제 안내
 

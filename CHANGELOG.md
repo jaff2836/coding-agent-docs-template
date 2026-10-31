@@ -6,6 +6,13 @@
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
 
+## v3.2.0 (unpublished candidate) — Checker Markdown parsing, review round clarifications, and adoption record
+
+- `scripts/check-docs.py` now follows CommonMark for escaped backticks, code spans across block boundaries, fences and HTML blocks inside list items and blockquotes, indented code examples, and backticks in thematic breaks and info strings, and it reads comments, the key separator, and booleans in the Codex explicit-invocation policy value by YAML 1.2 core rules. The stricter parsing can report broken links or policy values that the previous checker missed.
+- The adoption guides add a Template Adoption Record section to `docs/DOCS_GUIDE.md`; move your recorded included and excluded items into it when you upgrade. The rule against global filename replacement also covers keeping existing `PLAN.md`, `DESIGN.md`, and `TODO.md`. `AGENTS.md` adds a rule for writing the goal, scope, and conditions directly into input handed to a subagent or another model.
+- `docs/REVIEW_ROUND.md` updates the reviewer table outside a round, records how to tell that an in-progress post has become a result, does not delegate an empty commit made only for another review, and treats a base branch tip that only advanced as a pre-merge check rather than a base change. `docs/REVIEW.md` and `.cursor/BUGBOT.md` check that policy changes update every copy and that claims a checkout cannot confirm carry an identifier that can be looked up again.
+- `installer.py`, the Python 3.12 requirement, the installer commands, release manifest `schema_version` 2, and the artifact inventory are unchanged.
+
 ## [v3.1.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.1.0) — Behavior verification cases and permission enforcement
 
 - The adoption guide (`docs/TEMPLATE_GUIDE.md`) now applies its template behavior verification cases when you change the version of a tool or model you use, and adds cases for instructions inside a PR, review, or tool output and for an edit request without a commit or push request. It also notes that instructions do not technically restrict what an agent does, so commit, push, and merge limits should also be enforced with protected branches, required reviews and CI, and the tool's permission settings.
