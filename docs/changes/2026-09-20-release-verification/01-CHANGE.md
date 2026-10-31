@@ -38,7 +38,7 @@
 
 ### 1.5 미해결 질문
 
-없습니다. candidate의 실제 draft 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`·`v2.5.0`·`v3.0.0`·`v3.0.1`·`v3.1.0`에서 운영 검증했습니다.
+없습니다. candidate의 실제 draft 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`·`v2.5.0`·`v3.0.0`·`v3.0.1`·`v3.1.0`·`v3.2.0`에서 운영 검증했습니다.
 
 ## 2. Spec
 
@@ -85,7 +85,7 @@ D-004의 transport·source identity·게시 순서는 유지합니다. D-004가 
 
 ### 2.6 완료 조건과 미해결 사항
 
-브랜치 구현 완료는 새 unit test, 전체 unittest, root docs, stable locale, Python compile과 `git diff --check` 통과입니다. 공개 경로는 immutable `v2.1.0`의 exact checkout에서 최초 실환경 `published` 검증으로 확인했고, 실제 `candidate`와 `published` 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`·`v2.5.0`·`v3.0.0`·`v3.0.1`·`v3.1.0`에서 반복 검증했습니다. `v2.2.0`부터는 각각 직전 release를 `--base-version`으로 지정해 모든 공식 locale의 base-aware 공개 E2E를 확인했습니다. Origin 통합과 공개는 각각 실제 remote 상태로 확인합니다.
+브랜치 구현 완료는 새 unit test, 전체 unittest, root docs, stable locale, Python compile과 `git diff --check` 통과입니다. 공개 경로는 immutable `v2.1.0`의 exact checkout에서 최초 실환경 `published` 검증으로 확인했고, 실제 `candidate`와 `published` 성공 경로는 `v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`·`v2.5.0`·`v3.0.0`·`v3.0.1`·`v3.1.0`·`v3.2.0`에서 반복 검증했습니다. `v2.2.0`부터는 각각 직전 release를 `--base-version`으로 지정해 모든 공식 locale의 base-aware 공개 E2E를 확인했습니다. Origin 통합과 공개는 각각 실제 remote 상태로 확인합니다.
 
 ## 3. 변경 기록
 
@@ -106,3 +106,4 @@ D-004의 transport·source identity·게시 순서는 유지합니다. D-004가 
 - 2026-10-12: T-058로 candidate가 draft byte를 loopback release root로 제공해 published와 같은 installer E2E를 공개 전에 실행하도록 넓혔습니다(R-008). 같은 날 사용자 결정으로 선택형 `--base-version`도 넣어, 공개된 base release를 함께 제공하고 base-aware `adopt`를 공개 전에 확인합니다. 외부 project-analysis 결과의 7번이 근거입니다. PR #78 리뷰에 따라 base의 공개 상태를 download 전에 확인하고(C78-B-001), installer가 loopback release root에 proxy를 쓰지 않게 했습니다(C78-B-002). installer와 실제 package의 결합 결함을 공개 전에 찾기 위한 변경이며, tag·release를 바꾸지 않는 D-007 경계는 그대로입니다.
 - 2026-10-13: 사용자가 `v3.0.1` exact source `820cdc0aac6f5634bea6fd189ac8df6bc24051e5`에 annotated tag와 draft를 만들었습니다. R-008의 첫 운영 적용으로 `candidate --base-version 3.0.0`이 draft byte를 loopback release root로 제공해 en·ko latest·exact의 installer E2E와 base-aware `adopt`까지 통과했고, 5개 asset을 교체 없이 immutable Latest로 공개했습니다. candidate·공개·published 실행 시 Origin·GitHub `main`은 같은 source commit이었습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 3.0.0`이 통과했고, native Windows에서는 Buildkite `windows-ci` Build #156(`main` `820cdc0`)이 같은 검증을 통과했습니다.
 - 2026-10-14: 사용자가 `v3.1.0` exact source `3c5b13f1a337667cb7f3db1f1fc5df951fdfd060`에 annotated tag와 draft를 만들었습니다. `candidate --base-version 3.0.1`이 draft byte를 loopback release root로 제공해 en·ko latest·exact의 installer E2E와 base-aware `adopt`까지 통과했고, 5개 asset을 교체 없이 immutable Latest로 공개했습니다. candidate·공개·published 실행 시 Origin·GitHub `main`은 같은 source commit이었습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 3.0.1`이 통과했고, native Windows에서는 Buildkite `coding-agent-docs-template-windows-ci` Build #163(`main` `3c5b13f`)이 같은 검증을 통과했습니다. 이 pipeline은 같은 날 `windows-ci`에서 이름을 바꿨습니다([CI.md](../../CI.md) §6).
+- 2026-10-31: 사용자가 `v3.2.0` exact source `48c52a84d3bf8bc638d0e56aa7ce81d8b0851ad2`에 annotated tag와 draft를 만들었습니다. GitLab 이전 뒤 첫 release입니다. `candidate --base-version 3.1.0`이 draft byte를 loopback release root로 제공해 en·ko latest·exact의 installer E2E와 base-aware `adopt`까지 통과했고, 5개 asset을 교체 없이 immutable Latest로 공개했습니다. candidate·공개·published 실행 시 GitLab·GitHub `main`은 같은 source commit이었습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 3.1.0`이 통과했고, native Windows에서는 Buildkite `coding-agent-docs-template-windows-ci` Build #190(`main` `48c52a8`)이 같은 검증을 통과했습니다.

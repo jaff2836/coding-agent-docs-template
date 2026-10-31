@@ -7,9 +7,9 @@
 ## Metadata
 
 - **Project:** coding-agent-docs-template
-- **Status:** Active — immutable Latest `v3.1.0` 공개와 Linux·Windows published 검증 완료
+- **Status:** Active — immutable Latest `v3.2.0` 공개와 Linux·Windows published 검증 완료
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-30
+- **Last reviewed:** 2026-10-31
 - **Review cadence:** 아키텍처·범위 변경 시 또는 마일스톤 종료 시
 
 ## 1. Context
@@ -25,7 +25,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Current State
 
-- 공개 release 기준은 [immutable GitHub Release `v3.1.0`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.1.0)(2026-10-14 KST 공개, Latest)이며 annotated tag의 exact source는 `3c5b13f1a337667cb7f3db1f1fc5df951fdfd060`입니다. 공개·published 검증 시 Origin·GitHub `main`도 같은 commit이었습니다. 공개 전 candidate가 draft byte를 loopback release root로 제공해 같은 installer 경로와 `v3.0.1` base-aware upgrade를 먼저 실행했습니다(T-058). Linux에서 tag source의 verifier로 기존 draft와 같은 5개 asset, latest·exact의 en·ko list/install/export/adopt, `v3.0.1` base-aware upgrade 및 비어 있지 않은 install 대상 불변을 확인했습니다. native Windows에서도 Buildkite `coding-agent-docs-template-windows-ci` Build #163이 같은 `published --base-version 3.0.1`을 통과했습니다. 이전 release는 그대로 유지되며 exact version에 맞는 자기 installer로만 설치할 수 있습니다.
+- 공개 release 기준은 [immutable GitHub Release `v3.2.0`](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.2.0)(2026-10-31 KST 공개, Latest)이며 annotated tag의 exact source는 `48c52a84d3bf8bc638d0e56aa7ce81d8b0851ad2`입니다. 공개·published 검증 시 GitLab·GitHub `main`도 같은 commit이었습니다. 공개 전 candidate가 draft byte를 loopback release root로 제공해 같은 installer 경로와 `v3.1.0` base-aware upgrade를 먼저 실행했습니다(T-058). Linux에서 tag source의 verifier로 기존 draft와 같은 5개 asset, latest·exact의 en·ko list/install/export/adopt, `v3.1.0` base-aware upgrade 및 비어 있지 않은 install 대상 불변을 확인했습니다. native Windows에서도 Buildkite `coding-agent-docs-template-windows-ci` Build #190이 같은 `published --base-version 3.1.0`을 통과했습니다. 이전 release는 그대로 유지되며 exact version에 맞는 자기 installer로만 설치할 수 있습니다.
 - W-001의 root 유지관리 영역과 `template/common/`·`locales/ko/` payload source 분리는 Origin PR #3 merge commit `2a735eb182662afa69ee2c6d67f4f03d09e56d38`에 통합됐습니다.
 - W-002의 `locales/en`·locale별 skill S2 계약과 W-003 locale/artifact 검사는 각각 Origin PR #4·#5에 통합됐습니다. `en`·`ko` source는 모두 `complete`입니다.
 - W-004 exporter·packager는 Origin PR #6 merge commit `f60ae97`, W-005 비파괴 installer는 PR #7 merge commit `9d4637d`, W-006 적용 문서는 PR #8 merge commit `60638ed`에 통합됐습니다.
@@ -40,7 +40,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 - D-018(installer 기본 release URL과 모든 OS의 Python 3.12 하한)은 PR #72로, D-019(root 리뷰 사본과 README locale 표의 maintainer 검사)는 PR #71로 source에 통합됐습니다. D-019는 이 저장소의 무인자 문서 검사에 바로 적용하고, D-018과 자기 점검 규칙(T-053, PR #73)은 `v3.0.0`에서 공개했습니다.
 - T-055 installer 경로·복구·manifest 검사 보강(PR #77)과 T-060 artifact checker의 주석 해석 수정(PR #80)은 source에 통합됐고 `v3.0.1`에서 공개했습니다. maintainer 도구인 T-056 maintainer 검사 보강(PR #79)과 T-058 candidate E2E(PR #78)는 통합으로 바로 적용됐고, T-058은 `v3.0.1` candidate에서 처음 운영했습니다.
 - T-063 템플릿 행동 검증 사례 보강(PR #83)은 source에 통합됐고 `v3.1.0`에서 공개했습니다. 같은 PR의 T-061 release manifest schema 정합과 T-062 install 경로 조건 안내는 root·maintainer 변경이라 통합으로 바로 적용됐습니다.
-- T-065 위임 입력 규칙(Origin PR #86), D-020의 T-067 검사기 판정 수정(GitLab MR !1)과 T-068 리뷰 라운드·적용 기록 문구(GitLab MR !2)는 source에 통합됐고 T-066 `v3.2.0`으로 공개합니다. T-069 GitLab 이전 반영(MR !3·!4)은 root·maintainer 변경이라 통합으로 바로 적용됐습니다.
+- T-065 위임 입력 규칙(Origin PR #86), D-020의 T-067 검사기 판정 수정(GitLab MR !1)과 T-068 리뷰 라운드·적용 기록 문구(GitLab MR !2)는 source에 통합됐고 `v3.2.0`에서 공개했습니다. T-069 GitLab 이전 반영(MR !3·!4)은 root·maintainer 변경이라 통합으로 바로 적용됐습니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -86,7 +86,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 
 ### Data Flow
 
-exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. packager는 `locales/manifest.json`의 adoption policy도 각 member에 materialize합니다(`schema_version` 2). installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고, `install` 대상이 새 경로 또는 읽을 수 있는 빈 디렉터리인지 확인한 뒤 경로 충돌·부분 실패를 거부하거나 rollback합니다. 기존 저장소에는 `adopt`가 같은 검증 후 artifact 경로만 list·lstat·read로 분류하고, 대상 밖의 빈 output에 `artifact/`와 실험적 `adoption-plan.json`을 원자적으로 게시합니다. 선택형 base-aware 경로는 더 낮은 exact SemVer의 schema 1·2 release를 과거 코드 실행 없이 별도 검증하고 `base ∪ current` 경로를 target과 비교한 format 2 report를 만듭니다. release 검증 도구는 사람이 만든 draft와 공개된 immutable release를 package byte·ref·공개 installer 경로와 대조할 뿐 tag나 release를 변경하지 않습니다. source root 자체는 배포하지 않습니다. `v2.0.0`·`v2.1.0`·`v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`·`v2.5.0`·`v3.0.0`·`v3.0.1`·`v3.1.0`은 실제 immutable GitHub Release에서 각 계약에 맞는 원격 E2E를 검증했습니다.
+exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉터리에 합성하고 artifact checker를 통과한 뒤 원자적으로 게시합니다. packager는 `complete` locale을 고정 ZIP metadata로 묶고 source commit·version·repository·member hash를 release manifest에 결합합니다. packager는 `locales/manifest.json`의 adoption policy도 각 member에 materialize합니다(`schema_version` 2). installer는 GitHub의 `latest` release에서 version을 선택한 뒤 같은 repository의 exact `v<SemVer>` release asset을 검증하고, `install` 대상이 새 경로 또는 읽을 수 있는 빈 디렉터리인지 확인한 뒤 경로 충돌·부분 실패를 거부하거나 rollback합니다. 기존 저장소에는 `adopt`가 같은 검증 후 artifact 경로만 list·lstat·read로 분류하고, 대상 밖의 빈 output에 `artifact/`와 실험적 `adoption-plan.json`을 원자적으로 게시합니다. 선택형 base-aware 경로는 더 낮은 exact SemVer의 schema 1·2 release를 과거 코드 실행 없이 별도 검증하고 `base ∪ current` 경로를 target과 비교한 format 2 report를 만듭니다. release 검증 도구는 사람이 만든 draft와 공개된 immutable release를 package byte·ref·공개 installer 경로와 대조할 뿐 tag나 release를 변경하지 않습니다. source root 자체는 배포하지 않습니다. `v2.0.0`·`v2.1.0`·`v2.1.1`·`v2.2.0`·`v2.3.0`·`v2.3.1`·`v2.3.2`·`v2.3.3`·`v2.4.0`·`v2.5.0`·`v3.0.0`·`v3.0.1`·`v3.1.0`·`v3.2.0`은 실제 immutable GitHub Release에서 각 계약에 맞는 원격 E2E를 검증했습니다.
 
 ### External Boundaries
 
@@ -230,6 +230,6 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 | 기록 시점·리뷰 finding ID 계약 | [2026-09-30-record-timing-and-review-ids](./changes/2026-09-30-record-timing-and-review-ids/01-CHANGE.md) | Accepted — D-013·D-014가 D-009 정본 문서의 기록·리뷰 계약을 확장 | 구현 PR #56 통합; `v2.4.0`으로 공개 |
 | 보고·검증 규범 | [2026-10-07-agent-reporting-and-verification](./changes/2026-10-07-agent-reporting-and-verification/01-CHANGE.md) | Accepted — D-015~D-017이 D-009 정본 문서의 보고·입력 경계·완료 근거 계약을 확장 | 설계 PR #59와 구현 PR #60으로 통합; `v2.5.0`으로 공개 |
 | installer 기본값·Python 하한·maintainer 검사 | [2026-10-08-installer-defaults-and-maintainer-checks](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) | Accepted — D-018이 D-004의 CLI 인자와 D-011의 Python 하한을 바꾸고, D-019가 D-009의 root addendum 정합을 검사로 강제 | 설계 PR #70과 구현 PR #71·#72로 통합; `v3.0.0`으로 공개 |
-| 적용 저장소 역제안 반영 | [2026-10-28-adopter-feedback-v3.1.0](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) | Accepted — D-020이 D-009 정본 문서의 리뷰 라운드·적용 기록 안내와 payload 검사기 판정을 보강 | 구현은 T-067·T-068; `v3.2.0`으로 공개 예정(T-066) |
+| 적용 저장소 역제안 반영 | [2026-10-28-adopter-feedback-v3.1.0](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) | Accepted — D-020이 D-009 정본 문서의 리뷰 라운드·적용 기록 안내와 payload 검사기 판정을 보강 | 구현은 T-067·T-068; `v3.2.0`에서 공개(T-066) |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.

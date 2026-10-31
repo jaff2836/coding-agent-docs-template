@@ -12,7 +12,7 @@
 - **Template source:** https://github.com/jaff2836/coding-agent-docs-template
 - **Template revision:** release 검증 시 exact source commit으로 확정
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-30
+- **Last reviewed:** 2026-10-31
 - **Review cadence:** maintainer 문서 체계 또는 source·artifact 소유권 변경 시
 
 ## 1. Maintainer 문서 지도
@@ -50,8 +50,9 @@ locale source의 가이드는 artifact 정본입니다. root maintainer 가이�
   라벨은 다른 리뷰어에게 다시 주지 않고, 이미 발급한 ID도 고치지 않습니다. 등록되지 않은
   리뷰어의 finding은 `<플랫폼 게시 식별자>/<항목 번호>`로 가리킵니다(D-014). 등록된
   리뷰어라도 게시물에 슬롯 ID를 붙이지 않으면 같은 형식을 쓰고, 덮어쓰는 게시물이면
-  `<플랫폼 게시 식별자>@<head 12자리>/<항목 번호>`로 씁니다([REVIEW_ROUND.md](./REVIEW_ROUND.md) §7). pr-reviewer가
-  여기에 해당하며, 게시 식별자는 GitLab note id입니다.
+  `<플랫폼 게시 식별자>@<head 12자리>/<항목 번호>`로 씁니다([REVIEW_ROUND.md](./REVIEW_ROUND.md) §7). pr-reviewer는
+  슬롯 ID를 붙이지 않고 head마다 note를 따로 남기므로 `<GitLab note id>/<항목 번호>`로 씁니다. 이미 발급한
+  `@<head 12자리>` ID는 고치지 않습니다.
 
 ## 3. 실행·통합·인계
 

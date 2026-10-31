@@ -13,6 +13,13 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
 
 ## 완료 작업 상세
 
+- [x] **T-066 `v3.2.0` release**
+  - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-066 항목. D-007에 따라 준비, tag·draft candidate, 공개·published, 기록 단계를 나눕니다.
+  - version 판단: `v3.2.0`(minor), D-020 [설계](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) §1.5 Q1입니다. `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version`, artifact inventory는 그대로입니다.
+  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.2.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.2.0 이력을, root `CHANGELOG` 영·한에 `unpublished candidate`·`미공개 후보`를 표시한 v3.2.0 항목(공개 시 표시를 release 링크로 교체)을 추가했습니다. 설계대로 검사기 판정이 엄격해진 점과 업그레이드 때 「템플릿 적용 기록」 절로 옮기는 점을 함께 적었습니다. `v3.1.0` 대비 바뀐 artifact 파일은 locale마다 `AGENTS.md`, `.cursor/BUGBOT.md`, `docs/DOCS_GUIDE.md`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/TEMPLATE_GUIDE.md`, `scripts/check-docs.py`, `tests/test_check_docs.py`이고, `installer.py`는 같습니다. 통합: MR !5.
+  - [x] tag·draft candidate: 준비 MR !5의 GitLab merge `48c52a8`을 GitHub `main`에 fast-forward했습니다. 사용자가 annotated `v3.2.0` tag와 draft(asset 5개, 영·한 release notes)를 만들었고, clean exact checkout에서 `verify-release.py candidate --base-version 3.1.0`이 통과했습니다(두 `main` 동기화, 5 assets, loopback installer E2E). release manifest의 member 수(locale마다 30개)와 `schema_version` 2는 `v3.1.0`과 같고, `installer.py`는 byte까지 같습니다.
+  - [x] 공개·published: 사용자가 2026-10-31(KST) draft를 immutable Latest로 공개했습니다. 공개 asset 5개의 digest는 candidate를 통과한 package와 같습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 3.1.0`이 통과했습니다. native Windows에서는 Buildkite `coding-agent-docs-template-windows-ci` Build #190(`main` `48c52a8`, `RELEASE_VERIFY_VERSION=3.2.0`, `RELEASE_VERIFY_BASE_VERSION=3.1.0`)의 published 검증 step이 통과했습니다.
+  - [x] 기록: root `CHANGELOG`(영·한)의 v3.2.0 제목에서 미공개 후보 표시를 release 링크로 바꾸고 공개 검증 문장을 더했으며, PROJECT의 공개 기준과 "`v3.2.0`으로 공개합니다" 표시, release 검증 변경 기록을 고쳤습니다. pr-reviewer가 head별 note로 되돌아간 것(MR !5의 note `4129855307`·`4130257682`)을 root `docs/REVIEW_ROUND.md` §2.1과 root `docs/DOCS_GUIDE.md` §2에 반영했습니다. 통합: 이 변경의 MR.
 - [x] **T-064 `v3.1.0` release**
   - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-064 항목. D-007에 따라 준비, tag·draft candidate, 공개·published, 기록 단계를 나눕니다.
   - version 판단: `v3.1.0`(minor), 2026-10-13 사용자 결정입니다. 지침 내용을 더한 이전 release(`v2.3.0`·`v2.4.0`·`v2.5.0`)처럼 minor로 냅니다. `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version`, artifact inventory는 그대로입니다.
@@ -371,6 +378,10 @@ T-064는 2026-10-13 PR #83에서 등록했고 PR #84에서 version을 `v3.1.0`(m
 
 - [x] **T-064 `v3.1.0` release** — T-063의 en·ko TEMPLATE_GUIDE 변경을 D-007 단계에 따라 minor release로 공개합니다.
 
+T-066은 2026-10-14 PR #86에서 등록했고 MR !1에서 T-067·T-068을 묶어 `v3.2.0`으로 정했으며, MR !5에서 다듬은 설명입니다.
+
+- [x] **T-066 `v3.2.0` release** — T-065·T-067·T-068의 payload 변경을 D-007 단계에 따라 minor release로 공개합니다. candidate·published 검증은 `--base-version 3.1.0`으로 합니다.
+
 T-069는 2026-10-28 MR !2에서 등록했고 MR !3에서 리뷰어 구성을 더한 설명입니다. 등록 당시에는 Linux pipeline을 Buildkite integration으로 연결했다고 적었지만, 2026-10-30 조회에서 그 integration은 꺼져 있었고(마지막 변경 2026-10-28 07:41Z) 두 pipeline 모두 push webhook(Linux는 07:51Z 생성)으로 연결돼 있었습니다.
 
 - [x] **T-069 GitLab 이전 반영** — 2026-10-28 사용자 결정으로 Origin(Cursor)을 비활성화하고 개발·MR·필수 CI를 GitLab으로 옮겼습니다. 이미 바꾼 것은 로컬 remote(`origin`=GitLab, `cursor-origin`=이전 Origin), Buildkite 두 pipeline의 저장소(GitLab SSH, agent deploy key), GitLab push 연결(Linux는 Buildkite integration, Windows는 webhook), Buildkite commit status와 GitLab "Pipelines must succeed"입니다. 이 작업은 그 상태를 root 문서와 maintainer 도구에 반영합니다.
@@ -434,3 +445,4 @@ T-069는 2026-10-28 MR !2에서 등록했고 MR !3에서 리뷰어 구성을 더
 | 47 | `claude/t067-checker-markdown-fixes` | T-067 검사기 Markdown·정책 판정 수정 | **Integrated** — GitLab MR !1 merge `7551c22`·GitHub fast-forward 확인(48의 `7d23741`과 함께). 공개는 T-066 |
 | 48 | `claude/t068-review-adoption-wording` | T-068 리뷰 라운드·적용 기록 문구 | **Integrated** — 47 위에 쌓은 GitLab MR !2를 47 통합 뒤 target `main`으로 바꿔 merge `7d23741`·GitHub fast-forward 확인. 공개는 T-066 |
 | 49 | `claude/t069-gitlab-migration-docs` | T-069 GitLab 이전 반영 | **Integrated** — GitLab MR !4 merge `4b0e734`·GitHub fast-forward 확인. 리뷰어 구성은 `claude/t069-reviewer-roster`(MR !3 merge `018ce5c`)로 먼저 통합. release 불필요 |
+| 50 | `claude/v3.2.0-release-prep` | T-066 `v3.2.0` release | **Integrated·Published** — 준비 GitLab MR !5 merge `48c52a8`·GitHub fast-forward 확인; 2026-10-31(KST) annotated tag·immutable Latest 공개, candidate·published(`--base-version 3.1.0`, Linux·Windows) 통과; 공개 기록은 이 변경의 MR |
