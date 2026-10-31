@@ -14,8 +14,8 @@
 
 ## Current Milestone
 
-- **Name:** `v3.2.0` — 적용 저장소 역제안 반영과 GitLab 이전 (T-066~T-069)
-- **Status:** In Progress — 2026-10-28 v3.1.0을 적용한 저장소가 문서 검사기 결함과 리뷰 라운드·적용 안내 개선을 역제안했습니다. 이 저장소에서 다시 검증해 사용자가 D-020으로 승인했습니다. 검사기(T-067)와 문구(T-068)를 고친 뒤, 보류했던 T-066에 T-065와 함께 묶어 `v3.2.0`으로 공개합니다. 첫 번째 분석의 `SECURITY.md` 제안은 계속 보류이고 T-043은 보류(Blocked)입니다. 같은 날 사용자가 Cursor 구독을 끝내고 Origin을 비활성화해 개발·MR·필수 CI를 private GitLab으로 옮겼습니다(2026-10-29부터 `jaff2836-group/coding-agent-docs-template`). root 문서와 maintainer 도구의 Origin 기준 서술은 T-069(MR !3·!4)에서 고쳤습니다. 이 변경의 통합으로 T-066 준비가 끝나고, tag·draft candidate, 공개·published 검증, 기록 MR은 그 뒤 단계입니다.
+- **Name:** 없음
+- **Status:** `v3.2.0` 공개로 적용 저장소 역제안 반영과 GitLab 이전 마일스톤(T-066~T-069)이 끝났습니다. 첫 번째 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중입니다. 남은 Backlog는 없고 T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
 
 ## 운영 규칙
 
@@ -33,17 +33,11 @@
 
 ## In Progress
 
-- [ ] **T-066 `v3.2.0` release**
-  - 범위: 아래 Backlog의 T-066 항목. D-007에 따라 준비, tag·draft candidate, 공개·published, 기록 단계를 나눕니다.
-  - version 판단: `v3.2.0`(minor), D-020 [설계](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) §1.5 Q1입니다. `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version`, artifact inventory는 그대로입니다.
-  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.2.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.2.0 이력을, root `CHANGELOG` 영·한에 `unpublished candidate`·`미공개 후보`를 표시한 v3.2.0 항목(공개 시 표시를 release 링크로 교체)을 추가했습니다. 설계대로 검사기 판정이 엄격해진 점과 업그레이드 때 「템플릿 적용 기록」 절로 옮기는 점을 함께 적었습니다. `v3.1.0` 대비 바뀐 artifact 파일은 locale마다 `AGENTS.md`, `.cursor/BUGBOT.md`, `docs/DOCS_GUIDE.md`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/TEMPLATE_GUIDE.md`, `scripts/check-docs.py`, `tests/test_check_docs.py`이고, `installer.py`는 같습니다. 통합 근거: 이 변경의 MR.
-  - [ ] tag·draft candidate: 준비가 통합된 exact source에 사용자가 annotated `v3.2.0` tag와 GitHub draft를 만들고, agent가 `verify-release.py candidate --base-version 3.1.0`을 실행합니다. verifier는 두 remote `main`이 같아야 통과하므로, 공개·published 검증이 끝날 때까지 다른 MR을 merge하지 않습니다.
-  - [ ] 공개·published: 사용자가 draft를 immutable release로 공개하고, agent가 Linux에서 `verify-release.py published --base-version 3.1.0`을 실행하고 Windows는 Buildkite `coding-agent-docs-template-windows-ci` 수동 build로 검증합니다.
-  - [ ] 기록: 공개 뒤 기록 MR에서 검증 결과를 남기고, root `CHANGELOG` v3.2.0 제목의 미공개 후보 표시를 release 링크로 바꾸며, PROJECT의 공개 release 기준과 "`v3.2.0`으로 공개합니다" 표시를 고칩니다.
+없음. 다음 작업은 Current Milestone과 Backlog 순서를 따릅니다.
 
 ## Next
 
-T-066 `v3.2.0` release를 검증·공개합니다. 새 작업은 사용자와 정한 뒤 MR 단위로 리뷰·필수 CI·통합을 거칩니다.
+진행할 작업이 없습니다. 새 작업은 사용자와 정한 뒤 MR 단위로 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -57,13 +51,10 @@ T-066 `v3.2.0` release를 검증·공개합니다. 새 작업은 사용자와 �
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
 설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다.
 
-통합된 순서 1~49의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+통합된 순서 1~50의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 50 | `claude/v3.2.0-release-prep` 등 | T-066 `v3.2.0` release | **In Progress** — 상세는 In Progress 항목 |
-
-- [ ] **T-066 `v3.2.0` release** — T-065·T-067·T-068의 payload 변경을 D-007 단계에 따라 minor release로 공개합니다. candidate·published 검증은 `--base-version 3.1.0`으로 합니다.
 
 ## Cancelled
 
@@ -79,7 +70,8 @@ T-066 `v3.2.0` release를 검증·공개합니다. 새 작업은 사용자와 �
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
-- [x] **T-069 GitLab 이전 반영** — 2026-10-28 Origin(Cursor)을 비활성화하고 개발·MR·필수 CI를 GitLab으로 옮긴 상태를 root 문서와 maintainer 도구에 반영했습니다. [CI.md](./CI.md) §6은 GitLab 저장소와 push webhook 연결, 두 Buildkite commit status와 "Pipelines must succeed"를, root TEMPLATE_GUIDE §5는 GitLab MR merge 뒤 GitHub fast-forward, source branch 삭제를 끄는 merge와 tag 정책을 적습니다. DOCS_GUIDE §3의 통합 대상·원장, 이 문서의 Integration target, PROJECT §9 Phase 3의 `main` 일치 조건, `scripts/verify_release.py`의 `--origin-remote` 도움말과 오류 메시지, `.buildkite/verify_published_release.py` 설명도 고쳤습니다. 리뷰어 구성(2026-10-29 사용자 결정)은 Cursor `A`·Codex `B`를 중단하고 pr-reviewer를 상시 리뷰어 `C`로 root `docs/REVIEW_ROUND.md` §2.1에 등록했습니다. 게시 위치는 덮어쓰는 MR note이고 finding 인용은 DOCS_GUIDE §2를 따릅니다. 과거 Origin PR 기록과 `.cursor/BUGBOT.md`는 그대로 둡니다. root 문서와 도구만 바뀌어 release가 필요 없습니다. 등록 당시 설명은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합: GitLab MR !3(리뷰어 구성)과 MR !4.
+- [x] **T-066 `v3.2.0` release** — 준비는 MR !5로 통합됐습니다. 2026-10-31(KST) 사용자가 exact source `48c52a8`에 annotated tag와 draft를 만들어 immutable Latest로 공개했습니다. candidate와 Linux·native Windows(Buildkite `coding-agent-docs-template-windows-ci` Build #190)의 published 검증이 모두 `--base-version 3.1.0`으로 통과했습니다. pr-reviewer가 head별 note로 되돌아간 것도 REVIEW_ROUND §2.1과 DOCS_GUIDE §2에 반영했습니다. 공개 기록은 이 변경의 MR입니다.
+- [x] **T-069 GitLab 이전 반영** — 2026-10-28 Origin(Cursor)을 비활성화하고 개발·MR·필수 CI를 GitLab으로 옮긴 상태를 root 문서와 maintainer 도구에 반영했습니다. [CI.md](./CI.md) §6은 GitLab 저장소와 push webhook 연결, 두 Buildkite commit status와 "Pipelines must succeed"를, root TEMPLATE_GUIDE §5는 GitLab MR merge 뒤 GitHub fast-forward, source branch 삭제를 끄는 merge와 tag 정책을 적습니다. DOCS_GUIDE §3의 통합 대상·원장, 이 문서의 Integration target, PROJECT §9 Phase 3의 `main` 일치 조건, `scripts/verify_release.py`의 `--origin-remote` 도움말과 오류 메시지, `.buildkite/verify_published_release.py` 설명도 고쳤습니다. 리뷰어 구성(2026-10-29 사용자 결정)은 Cursor `A`·Codex `B`를 중단하고 pr-reviewer를 상시 리뷰어 `C`로 root `docs/REVIEW_ROUND.md` §2.1에 등록했습니다. 게시 위치는 덮어쓰는 MR note이고 finding 인용은 DOCS_GUIDE §2를 따릅니다(pr-reviewer가 head별 note로 되돌아가 T-066 기록에서 두 문서를 고쳤습니다). 과거 Origin PR 기록과 `.cursor/BUGBOT.md`는 그대로 둡니다. root 문서와 도구만 바뀌어 release가 필요 없습니다. 등록 당시 설명은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합: GitLab MR !3(리뷰어 구성)과 MR !4.
 - [x] **T-068 리뷰 라운드·적용 기록 문구** — 적용 저장소 역제안의 R-002~R-011입니다(D-020). en·ko payload와 root 사본에 [설계](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) §2.3의 문구를 넣었습니다. `docs/REVIEW_ROUND.md`는 리뷰어 표를 라운드 밖에서 먼저 고치고, `push 자동` 트리거 예시에 webhook 이벤트를 더했습니다. 진행 중 표시를 결과로 바꾸는 리뷰어의 완료 판별을 적게 했고, 빈 commit 재리뷰를 위임하지 않습니다(R-005 A). base branch의 tip만 앞서 나간 경우는 base 변경이 아니며 merge 직전에 새 tip으로 다시 확인받고(R-010 A), 자기 검토 단계를 마치지 못한 결과는 부분 결과입니다. `docs/REVIEW.md` §5에는 결정·정책 변경이 다른 문서와 사본까지 고쳤는지, 선언한 계약이 schema·검사 절차로도 구현됐는지, checkout만으로 확인할 수 없는 주장에 다시 조회할 식별자가 있는지를 더했고, §8에 결정 번복 요구를 더했습니다. `.cursor/BUGBOT.md`의 완료 근거 문단도 같게 넓혔습니다. `docs/DOCS_GUIDE.md`에는 업그레이드 때 옮기는 「템플릿 적용 기록」 절을 두고 기존 안내 네 곳이 그 절을 가리킵니다. `docs/TEMPLATE_GUIDE.md`의 일괄 치환 금지는 기존 이름을 유지하는 방향에도 적용합니다. root 사본 `docs/REVIEW.md`·`docs/REVIEW_ROUND.md`·`.cursor/BUGBOT.md`는 ko와 같은 문장입니다. 공개는 T-066입니다. 통합: GitLab MR !2.
 - [x] **T-067 검사기 Markdown·정책 판정 수정** — 적용 저장소 역제안의 R-001·R-012입니다(D-020). payload `template/common/scripts/check-docs.py`의 판정 16건을 고칩니다. Markdown 12건은 CommonMark에 맞춥니다. escaped backtick, 빈 줄·block 시작·인용문 경계를 넘는 code span, 담은 목록 항목·인용문이 끝나도 닫히지 않던 fence·HTML block, 들여쓴 코드 예시, 구분선과 info string의 backtick이 대상입니다. 수정 전에는 깨진 링크를 놓치거나 코드 예시 안의 링크를 검사했습니다. 나머지 4건은 Codex 명시 호출 정책입니다. YAML 주석 앞의 공백, key 뒤의 공백과 YAML 1.2 core의 boolean 표기만 인정해 `false#note`·`allow_implicit_invocation:false`·`fAlSe`·`policy:#note`를 거부합니다. R-001 수정만 적용한 파일은 적용 저장소 검사기와 byte 단위로 같습니다. 회귀 테스트는 `template/common/tests/test_check_docs.py`에 있고 red-green 결과는 PR 본문에 있습니다. 공개는 T-066입니다. 통합: GitLab MR !1.
 - [x] **T-065 위임 입력 규칙** — 2026-10-14 사용자 결정입니다. en·ko·root `AGENTS.md` Change Rules의 지시 출처 규칙 다음에, 하위 에이전트나 다른 모델에 자연어로 일을 맡길 때는 받는 쪽이 실제로 전달한 입력만 안다고 보고 목적·범위·기준 revision·지킬 조건·금지 행동을 입력에 직접 쓰라는 한 줄을 더했습니다. ko는 root와 같은 문장이고 en은 번역입니다. en·ko TEMPLATE_GUIDE §5 행동 검증 사례에도 이 규칙의 사례를 더했습니다. 공개는 T-066입니다. 통합: PR #86.
