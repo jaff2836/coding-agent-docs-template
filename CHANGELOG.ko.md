@@ -6,7 +6,7 @@
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
 
-## v3.2.0 — 검사기 Markdown 판정, 리뷰 라운드 보강과 적용 기록
+## v3.2.0 (미공개 후보) — 검사기 Markdown 판정, 리뷰 라운드 보강과 적용 기록
 
 - `scripts/check-docs.py`가 escaped backtick, block 경계를 넘는 code span, 목록 항목·인용문 안의 fence·HTML block, 들여쓴 코드 예시, 구분선과 info string의 backtick을 CommonMark대로 판정하고, Codex 명시 호출 정책 값의 주석·key 구분·boolean 표기를 YAML 1.2 core 규칙대로 읽습니다. 판정이 엄격해져 이전 검사기가 놓친 깨진 링크나 정책 값 오류가 보고될 수 있습니다.
 - 적용 가이드는 `docs/DOCS_GUIDE.md`에 「템플릿 적용 기록」 절을 둡니다. 업그레이드할 때 남겨 둔 적용·제외 내역을 이 절로 옮기세요. 파일명 일괄 치환 금지는 기존 `PLAN.md`·`DESIGN.md`·`TODO.md`를 유지하는 경우에도 적용합니다. `AGENTS.md`에는 하위 에이전트나 다른 모델에 맡기는 입력에 목적·범위·조건을 직접 쓰라는 규칙을 더했습니다.

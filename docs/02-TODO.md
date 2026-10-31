@@ -36,10 +36,10 @@
 - [ ] **T-066 `v3.2.0` release**
   - 범위: 아래 Backlog의 T-066 항목. D-007에 따라 준비, tag·draft candidate, 공개·published, 기록 단계를 나눕니다.
   - version 판단: `v3.2.0`(minor), D-020 [설계](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) §1.5 Q1입니다. `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version`, artifact inventory는 그대로입니다.
-  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.2.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.2.0 이력을, root `CHANGELOG`에 링크 없는 v3.2.0 항목(공개 시 release 링크로 교체)을 추가했습니다. 설계대로 검사기 판정이 엄격해진 점과 업그레이드 때 「템플릿 적용 기록」 절로 옮기는 점을 함께 적었습니다. `v3.1.0` 대비 바뀐 artifact 파일은 locale마다 `AGENTS.md`, `.cursor/BUGBOT.md`, `docs/DOCS_GUIDE.md`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/TEMPLATE_GUIDE.md`, `scripts/check-docs.py`, `tests/test_check_docs.py`이고, `installer.py`는 같습니다. 통합 근거: 이 변경의 MR.
+  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.2.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.2.0 이력을, root `CHANGELOG` 영·한에 `unpublished candidate`·`미공개 후보`를 표시한 v3.2.0 항목(공개 시 표시를 release 링크로 교체)을 추가했습니다. 설계대로 검사기 판정이 엄격해진 점과 업그레이드 때 「템플릿 적용 기록」 절로 옮기는 점을 함께 적었습니다. `v3.1.0` 대비 바뀐 artifact 파일은 locale마다 `AGENTS.md`, `.cursor/BUGBOT.md`, `docs/DOCS_GUIDE.md`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/TEMPLATE_GUIDE.md`, `scripts/check-docs.py`, `tests/test_check_docs.py`이고, `installer.py`는 같습니다. 통합 근거: 이 변경의 MR.
   - [ ] tag·draft candidate: 준비가 통합된 exact source에 사용자가 annotated `v3.2.0` tag와 GitHub draft를 만들고, agent가 `verify-release.py candidate --base-version 3.1.0`을 실행합니다. verifier는 두 remote `main`이 같아야 통과하므로, 공개·published 검증이 끝날 때까지 다른 MR을 merge하지 않습니다.
   - [ ] 공개·published: 사용자가 draft를 immutable release로 공개하고, agent가 Linux에서 `verify-release.py published --base-version 3.1.0`을 실행하고 Windows는 Buildkite `coding-agent-docs-template-windows-ci` 수동 build로 검증합니다.
-  - [ ] 기록: 공개 뒤 기록 MR에서 검증 결과를 남기고, root `CHANGELOG`의 v3.2.0 제목을 release 링크로 바꾸며, PROJECT의 공개 release 기준과 "`v3.2.0`으로 공개합니다" 표시를 고칩니다.
+  - [ ] 기록: 공개 뒤 기록 MR에서 검증 결과를 남기고, root `CHANGELOG` v3.2.0 제목의 미공개 후보 표시를 release 링크로 바꾸며, PROJECT의 공개 release 기준과 "`v3.2.0`으로 공개합니다" 표시를 고칩니다.
 
 ## Next
 

@@ -6,7 +6,7 @@
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
 
-## v3.2.0 — Checker Markdown parsing, review round clarifications, and adoption record
+## v3.2.0 (unpublished candidate) — Checker Markdown parsing, review round clarifications, and adoption record
 
 - `scripts/check-docs.py` now follows CommonMark for escaped backticks, code spans across block boundaries, fences and HTML blocks inside list items and blockquotes, indented code examples, and backticks in thematic breaks and info strings, and it reads comments, the key separator, and booleans in the Codex explicit-invocation policy value by YAML 1.2 core rules. The stricter parsing can report broken links or policy values that the previous checker missed.
 - The adoption guides add a Template Adoption Record section to `docs/DOCS_GUIDE.md`; move your recorded included and excluded items into it when you upgrade. The rule against global filename replacement also covers keeping existing `PLAN.md`, `DESIGN.md`, and `TODO.md`. `AGENTS.md` adds a rule for writing the goal, scope, and conditions directly into input handed to a subagent or another model.
