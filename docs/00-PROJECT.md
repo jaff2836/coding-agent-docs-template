@@ -40,6 +40,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 - D-018(installer 기본 release URL과 모든 OS의 Python 3.12 하한)은 PR #72로, D-019(root 리뷰 사본과 README locale 표의 maintainer 검사)는 PR #71로 source에 통합됐습니다. D-019는 이 저장소의 무인자 문서 검사에 바로 적용하고, D-018과 자기 점검 규칙(T-053, PR #73)은 `v3.0.0`에서 공개했습니다.
 - T-055 installer 경로·복구·manifest 검사 보강(PR #77)과 T-060 artifact checker의 주석 해석 수정(PR #80)은 source에 통합됐고 `v3.0.1`에서 공개했습니다. maintainer 도구인 T-056 maintainer 검사 보강(PR #79)과 T-058 candidate E2E(PR #78)는 통합으로 바로 적용됐고, T-058은 `v3.0.1` candidate에서 처음 운영했습니다.
 - T-063 템플릿 행동 검증 사례 보강(PR #83)은 source에 통합됐고 `v3.1.0`에서 공개했습니다. 같은 PR의 T-061 release manifest schema 정합과 T-062 install 경로 조건 안내는 root·maintainer 변경이라 통합으로 바로 적용됐습니다.
+- T-065 위임 입력 규칙(Origin PR #86), D-020의 T-067 검사기 판정 수정(GitLab MR !1)과 T-068 리뷰 라운드·적용 기록 문구(GitLab MR !2)는 source에 통합됐고 T-066 `v3.2.0`으로 공개합니다. T-069 GitLab 이전 반영(MR !3·!4)은 root·maintainer 변경이라 통합으로 바로 적용됐습니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.

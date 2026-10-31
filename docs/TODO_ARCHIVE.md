@@ -6,7 +6,7 @@
 
 - **Status:** Archive
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-30
+- **Last reviewed:** 2026-10-31
 - **Review cadence:** TODO의 완료 이력을 옮길 때
 
 T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원문 그대로 옮겼습니다. 기록 안의 상대 링크는 같은 `docs/` 폴더 기준이라 그대로 유효합니다. 이후 완료 작업은 TODO에 한 줄로 남기고, 상세 근거는 각 PR(원장)과 변경 문서에 둡니다.
@@ -433,3 +433,4 @@ T-069는 2026-10-28 MR !2에서 등록했고 MR !3에서 리뷰어 구성을 더
 | 46 | `claude/t065-delegation-input-rule` | T-065 위임 입력 규칙 | **Integrated** — Origin PR #86 merge `9326c1e`(merge commit 기준)·2026-10-28 GitHub `main` 일치 확인. 공개는 T-066 |
 | 47 | `claude/t067-checker-markdown-fixes` | T-067 검사기 Markdown·정책 판정 수정 | **Integrated** — GitLab MR !1 merge `7551c22`·GitHub fast-forward 확인(48의 `7d23741`과 함께). 공개는 T-066 |
 | 48 | `claude/t068-review-adoption-wording` | T-068 리뷰 라운드·적용 기록 문구 | **Integrated** — 47 위에 쌓은 GitLab MR !2를 47 통합 뒤 target `main`으로 바꿔 merge `7d23741`·GitHub fast-forward 확인. 공개는 T-066 |
+| 49 | `claude/t069-gitlab-migration-docs` | T-069 GitLab 이전 반영 | **Integrated** — GitLab MR !4 merge `4b0e734`·GitHub fast-forward 확인. 리뷰어 구성은 `claude/t069-reviewer-roster`(MR !3 merge `018ce5c`)로 먼저 통합. release 불필요 |

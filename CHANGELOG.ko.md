@@ -6,6 +6,13 @@
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
 
+## v3.2.0 — 검사기 Markdown 판정, 리뷰 라운드 보강과 적용 기록
+
+- `scripts/check-docs.py`가 escaped backtick, block 경계를 넘는 code span, 목록 항목·인용문 안의 fence·HTML block, 들여쓴 코드 예시, 구분선과 info string의 backtick을 CommonMark대로 판정하고, Codex 명시 호출 정책 값의 주석·key 구분·boolean 표기를 YAML 1.2 core 규칙대로 읽습니다. 판정이 엄격해져 이전 검사기가 놓친 깨진 링크나 정책 값 오류가 보고될 수 있습니다.
+- 적용 가이드는 `docs/DOCS_GUIDE.md`에 「템플릿 적용 기록」 절을 둡니다. 업그레이드할 때 남겨 둔 적용·제외 내역을 이 절로 옮기세요. 파일명 일괄 치환 금지는 기존 `PLAN.md`·`DESIGN.md`·`TODO.md`를 유지하는 경우에도 적용합니다. `AGENTS.md`에는 하위 에이전트나 다른 모델에 맡기는 입력에 목적·범위·조건을 직접 쓰라는 규칙을 더했습니다.
+- `docs/REVIEW_ROUND.md`는 리뷰어 표를 라운드 밖에서 고치고, 진행 중 게시물이 결과가 됐는지 판별하는 방법을 적게 하며, 재리뷰만 받으려는 빈 commit을 위임하지 않습니다. base branch의 tip만 앞서 나간 경우는 base 변경이 아니라 merge 직전 확인에서 다룹니다. `docs/REVIEW.md`와 `.cursor/BUGBOT.md`는 정책 변경이 모든 사본을 고쳤는지, checkout만으로 확인할 수 없는 주장에 다시 조회할 식별자가 있는지 확인합니다.
+- `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version` 2와 artifact inventory는 바뀌지 않습니다.
+
 ## [v3.1.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.1.0) — 행동 검증 사례와 권한 강제 안내
 
 - 적용 가이드(`docs/TEMPLATE_GUIDE.md`)의 템플릿 행동 검증 사례를 사용하는 도구·모델의 버전을 바꿀 때도 확인하게 하고, PR·리뷰·도구 출력 안의 지시와 commit·push를 요청하지 않은 수정 사례를 더했습니다. 지침은 에이전트의 행동을 기술적으로 막지 않으니 commit·push·merge 제한은 보호 branch, 필수 리뷰·CI와 도구의 권한 설정으로도 강제하라는 안내도 더했습니다.
