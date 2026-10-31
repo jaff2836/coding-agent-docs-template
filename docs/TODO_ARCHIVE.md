@@ -6,7 +6,7 @@
 
 - **Status:** Archive
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-07
+- **Last reviewed:** 2026-10-30
 - **Review cadence:** TODO의 완료 이력을 옮길 때
 
 T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원문 그대로 옮겼습니다. 기록 안의 상대 링크는 같은 `docs/` 폴더 기준이라 그대로 유효합니다. 이후 완료 작업은 TODO에 한 줄로 남기고, 상세 근거는 각 PR(원장)과 변경 문서에 둡니다.
@@ -371,6 +371,14 @@ T-064는 2026-10-13 PR #83에서 등록했고 PR #84에서 version을 `v3.1.0`(m
 
 - [x] **T-064 `v3.1.0` release** — T-063의 en·ko TEMPLATE_GUIDE 변경을 D-007 단계에 따라 minor release로 공개합니다.
 
+T-069는 2026-10-28 MR !2에서 등록했고 MR !3에서 리뷰어 구성을 더한 설명입니다. 등록 당시에는 Linux pipeline을 Buildkite integration으로 연결했다고 적었지만, 2026-10-30 조회에서 그 integration은 꺼져 있었고(마지막 변경 2026-10-28 07:41Z) 두 pipeline 모두 push webhook(Linux는 07:51Z 생성)으로 연결돼 있었습니다.
+
+- [x] **T-069 GitLab 이전 반영** — 2026-10-28 사용자 결정으로 Origin(Cursor)을 비활성화하고 개발·MR·필수 CI를 GitLab으로 옮겼습니다. 이미 바꾼 것은 로컬 remote(`origin`=GitLab, `cursor-origin`=이전 Origin), Buildkite 두 pipeline의 저장소(GitLab SSH, agent deploy key), GitLab push 연결(Linux는 Buildkite integration, Windows는 webhook), Buildkite commit status와 GitLab "Pipelines must succeed"입니다. 이 작업은 그 상태를 root 문서와 maintainer 도구에 반영합니다.
+  - 대상: `docs/CI.md` §6(필수 check, 저장소 URL, 연결 방식), root `docs/TEMPLATE_GUIDE.md` §5(개발 host, remote 이름, GitLab merge 뒤 GitHub fast-forward, tag 정책), root `docs/DOCS_GUIDE.md`의 통합 대상·원장, 이 문서의 Integration target, PROJECT의 현재 운영 서술, `scripts/verify_release.py`의 `--origin-remote` 도움말과 오류 메시지
+  - 유지: 과거 Origin PR 번호·merge SHA 기록과 Cursor Bugbot 어댑터(`.cursor/BUGBOT.md`)는 바꾸지 않습니다.
+  - 리뷰어 구성(2026-10-29 사용자 결정): Cursor `A`와 Codex `B`를 중단하고 pr-reviewer를 상시 리뷰어 `C`로 root `docs/REVIEW_ROUND.md` §2.1에 등록했습니다. 슬롯 배정은 root `docs/DOCS_GUIDE.md` §2에 적었습니다. 이 변경의 MR로 반영합니다. 이 프로젝트는 2026-10-29 pr-reviewer에 연결됐습니다(05:43Z project webhook, merge request 이벤트). 같은 날 운영 서비스가 MR !3에 리뷰를 게시했고, 게시 계정은 사용자 계정에서 group 서비스 계정으로 바뀌었습니다. push 뒤 같은 note를 갱신하는 것이 pr-reviewer 설계의 의도이고(2026-10-29 사용자 확인), 운영도 그렇게 동작합니다. 2026-10-30 02:01:58Z에 MR !3에 `ac96e85`를 push하자 02:02:01Z에 서비스 계정이 앞 head의 note를 새 head의 진행 중 표시로 고쳤습니다. 그래서 `REVIEW_ROUND.md` §2.1 게시 위치를 덮어쓰기(sticky)로 적었고, 이 리뷰어에는 `REVIEW_ROUND.md` §7의 덮어쓰는 리뷰어 원장 규칙이 적용됩니다. note가 finding에 슬롯 ID를 붙이지 않아, finding은 root `docs/DOCS_GUIDE.md` §2에 따라 `<note id>@<head 12자리>/<항목 번호>`로 가리킵니다. 같은 note는 02:10:14Z에 `**판정: 의견**`으로 바뀌었지만 LLM 응답 파싱에 실패해 "이 PR은 리뷰되지 않았습니다" 경고가 함께 붙었습니다. 그래서 `REVIEW_ROUND.md` §2.1 완료 판별에 이 경고를 넣었습니다.
+  - 완료 조건: root 문서·도구 검사와 관련 테스트 통과, 남은 Origin 언급이 과거 기록뿐인지 대조. payload는 바뀌지 않아 release가 필요 없습니다.
+
 2026-09-29 분석의 root §3 검색식 allowlist 권고는 T-029에서 해소됐고, 작업 트리의 로컬 `.swp` 파일은 저장소 작업이 아니어서 등록하지 않았습니다.
 
 ## 통합된 Backlog PR 순서
@@ -423,3 +431,5 @@ T-064는 2026-10-13 PR #83에서 등록했고 PR #84에서 version을 `v3.1.0`(m
 | 44 | `claude/t061-t063-schema-install-guidance` | T-063 템플릿 행동 검증 사례 보강 | **Integrated** — Origin PR #83 merge `36138e2`·GitHub fast-forward 확인(42·43과 함께). 공개는 T-064 |
 | 45 | `claude/v3.1.0-release-prep` | T-064 `v3.1.0` release | **Integrated·Published** — 준비 Origin PR #84 merge `3c5b13f`·GitHub fast-forward 확인; 2026-10-14(KST) annotated tag·immutable Latest 공개, candidate·published(`--base-version 3.0.1`, Linux·Windows) 통과; 공개 기록은 PR #85 |
 | 46 | `claude/t065-delegation-input-rule` | T-065 위임 입력 규칙 | **Integrated** — Origin PR #86 merge `9326c1e`(merge commit 기준)·2026-10-28 GitHub `main` 일치 확인. 공개는 T-066 |
+| 47 | `claude/t067-checker-markdown-fixes` | T-067 검사기 Markdown·정책 판정 수정 | **Integrated** — GitLab MR !1 merge `7551c22`·GitHub fast-forward 확인(48의 `7d23741`과 함께). 공개는 T-066 |
+| 48 | `claude/t068-review-adoption-wording` | T-068 리뷰 라운드·적용 기록 문구 | **Integrated** — 47 위에 쌓은 GitLab MR !2를 47 통합 뒤 target `main`으로 바꿔 merge `7d23741`·GitHub fast-forward 확인. 공개는 T-066 |

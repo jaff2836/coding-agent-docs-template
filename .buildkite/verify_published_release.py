@@ -3,11 +3,12 @@
 
 The Windows pipeline runs this only on a manually created build that sets
 RELEASE_VERIFY_VERSION and RELEASE_VERIFY_SOURCE_COMMIT, and optionally
-RELEASE_VERIFY_BASE_VERSION. The verifier needs remotes named origin (Origin)
-and github (GitHub), the annotated release tag and the synchronized main
-locally, and a clean exact checkout of the tag source. This script prepares
-those and runs the tag source's own verifier in a temporary worktree, so an
-already published release can be checked from a newer pipeline commit.
+RELEASE_VERIFY_BASE_VERSION. The verifier needs remotes named origin (the
+GitLab development repository) and github (GitHub), the annotated release tag
+and the synchronized main locally, and a clean exact checkout of the tag
+source. This script prepares those and runs the tag source's own verifier in a
+temporary worktree, so an already published release can be checked from a
+newer pipeline commit.
 """
 
 import os
