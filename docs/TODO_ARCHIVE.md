@@ -6,7 +6,7 @@
 
 - **Status:** Archive
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-31
+- **Last reviewed:** 2026-11-01
 - **Review cadence:** TODO의 완료 이력을 옮길 때
 
 T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원문 그대로 옮겼습니다. 기록 안의 상대 링크는 같은 `docs/` 폴더 기준이라 그대로 유효합니다. 이후 완료 작업은 TODO에 한 줄로 남기고, 상세 근거는 각 PR(원장)과 변경 문서에 둡니다.
@@ -19,7 +19,7 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
   - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.2.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.2.0 이력을, root `CHANGELOG` 영·한에 `unpublished candidate`·`미공개 후보`를 표시한 v3.2.0 항목(공개 시 표시를 release 링크로 교체)을 추가했습니다. 설계대로 검사기 판정이 엄격해진 점과 업그레이드 때 「템플릿 적용 기록」 절로 옮기는 점을 함께 적었습니다. `v3.1.0` 대비 바뀐 artifact 파일은 locale마다 `AGENTS.md`, `.cursor/BUGBOT.md`, `docs/DOCS_GUIDE.md`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/TEMPLATE_GUIDE.md`, `scripts/check-docs.py`, `tests/test_check_docs.py`이고, `installer.py`는 같습니다. 통합: MR !5.
   - [x] tag·draft candidate: 준비 MR !5의 GitLab merge `48c52a8`을 GitHub `main`에 fast-forward했습니다. 사용자가 annotated `v3.2.0` tag와 draft(asset 5개, 영·한 release notes)를 만들었고, clean exact checkout에서 `verify-release.py candidate --base-version 3.1.0`이 통과했습니다(두 `main` 동기화, 5 assets, loopback installer E2E). release manifest의 member 수(locale마다 30개)와 `schema_version` 2는 `v3.1.0`과 같고, `installer.py`는 byte까지 같습니다.
   - [x] 공개·published: 사용자가 2026-10-31(KST) draft를 immutable Latest로 공개했습니다. 공개 asset 5개의 digest는 candidate를 통과한 package와 같습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 3.1.0`이 통과했습니다. native Windows에서는 Buildkite `coding-agent-docs-template-windows-ci` Build #190(`main` `48c52a8`, `RELEASE_VERIFY_VERSION=3.2.0`, `RELEASE_VERIFY_BASE_VERSION=3.1.0`)의 published 검증 step이 통과했습니다.
-  - [x] 기록: root `CHANGELOG`(영·한)의 v3.2.0 제목에서 미공개 후보 표시를 release 링크로 바꾸고 공개 검증 문장을 더했으며, PROJECT의 공개 기준과 "`v3.2.0`으로 공개합니다" 표시, release 검증 변경 기록을 고쳤습니다. pr-reviewer가 head별 note로 되돌아간 것(MR !5의 note `4129855307`·`4130257682`)을 root `docs/REVIEW_ROUND.md` §2.1과 root `docs/DOCS_GUIDE.md` §2에 반영했습니다. 통합: 이 변경의 MR.
+  - [x] 기록: root `CHANGELOG`(영·한)의 v3.2.0 제목에서 미공개 후보 표시를 release 링크로 바꾸고 공개 검증 문장을 더했으며, PROJECT의 공개 기준과 "`v3.2.0`으로 공개합니다" 표시, release 검증 변경 기록을 고쳤습니다. pr-reviewer가 head별 note로 되돌아간 것(MR !5의 note `4129855307`·`4130257682`)을 root `docs/REVIEW_ROUND.md` §2.1과 root `docs/DOCS_GUIDE.md` §2에 반영했습니다. 통합: MR !6.
 - [x] **T-064 `v3.1.0` release**
   - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-064 항목. D-007에 따라 준비, tag·draft candidate, 공개·published, 기록 단계를 나눕니다.
   - version 판단: `v3.1.0`(minor), 2026-10-13 사용자 결정입니다. 지침 내용을 더한 이전 release(`v2.3.0`·`v2.4.0`·`v2.5.0`)처럼 minor로 냅니다. `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version`, artifact inventory는 그대로입니다.
@@ -40,7 +40,7 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
   - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.0.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.0.0 이력을, root `CHANGELOG`에 호환성 안내를 담은 링크 없는 v3.0.0 항목(공개 시 release 링크로 교체)을 추가했습니다. `v2.5.0` 대비 바뀐 artifact 파일은 locale마다 `AGENTS.md`, `docs/02-TODO.md`, `docs/TEMPLATE_GUIDE.md`, `docs/DOCS_GUIDE.md`(version만)이고, `installer.py`도 바뀝니다. 통합: PR #74.
   - [x] tag·draft candidate: 준비 PR #74의 Origin merge `2c27a4d`를 GitHub `main`에 fast-forward했습니다. 사용자가 annotated `v3.0.0` tag와 draft(asset 5개, 영·한 release notes)를 만들었고, clean exact checkout에서 `verify-release.py candidate`가 통과했습니다(두 `main` 동기화, 5 assets). release manifest의 member 수(60)와 `schema_version` 2는 `v2.5.0`과 같습니다.
   - [x] 공개·published: 사용자가 2026-10-12(KST) draft를 immutable Latest로 공개했습니다. Linux에서 tag source 자신의 verifier로 `published --base-version 2.5.0`이 통과했습니다. native Windows에서는 Buildkite `windows-ci` Build #135(`main` `2c27a4d`, `RELEASE_VERIFY_VERSION=3.0.0`, `RELEASE_VERIFY_BASE_VERSION=2.5.0`)의 published 검증 step이 통과했다는 사용자 확인을 받았고, Origin check(`windows-ci` Build #135 success)로 대조했습니다.
-  - [x] 기록: root `CHANGELOG`(영·한)의 v3.0.0 제목에 release 링크와 공개 검증 문장을 더했습니다. root README(영·한)의 installer 명령에서 `--release-url`을 빼고 Prerequisites를 Python 3.12 이상으로 고쳤고, PROJECT의 공개 기준과 "`v3.0.0`으로 공개 예정" 표시를 고쳤습니다. 통합 근거: 이 변경의 PR.
+  - [x] 기록: root `CHANGELOG`(영·한)의 v3.0.0 제목에 release 링크와 공개 검증 문장을 더했습니다. root README(영·한)의 installer 명령에서 `--release-url`을 빼고 Prerequisites를 Python 3.12 이상으로 고쳤고, PROJECT의 공개 기준과 "`v3.0.0`으로 공개 예정" 표시를 고쳤습니다. 통합 근거: PR #75.
 - [x] **T-047 자기 점검 규칙 root 시범**
   - 출처: 2026-10-08 T-040 평가 뒤 사용자 결정("일단 root에서 시범을 조금 더 해보자")
   - [x] 도입: root `AGENTS.md` Communication에 바뀐 줄을 다시 읽어 수치·상태·위치·참조와 문체를 점검하는 규칙 한 줄을 넣었습니다. 통합: PR #68.
@@ -61,7 +61,7 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
     - #65: 후보 2, 채택 2(실질 1, 문장 1). 규칙 밖 1건(§4·§5 위치 오기)
     - #66: 후보 1, 채택 1(문장). 리뷰어가 필터로 읽은 줄 안에서 C66-A-001(`docs/02-TODO.md` 76행, 상태 불일치)과 C66-A-002(78행, 파일 수 오기)를 찾았고 필터는 놓쳤습니다.
     - #67: 후보 0. 규칙 밖 1건(보관 문서의 근거 위치)
-    - 5번째(이 변경): 결과는 이 변경의 PR 본문에 있습니다.
+    - #68: 결과는 PR 본문에 있습니다.
     - #64 정정 때 다시 읽으며 Backlog 행의 상태와 설명이 어긋난 것도 찾았습니다(규칙 밖).
 
   - [x] 평가와 결정: 2026-10-08 사용자가 문체 필터 중단을 정했습니다. 문체 규칙(D2~D7)의 채택은 대부분 표현 다듬기였고, 효과가 보인 것은 사실·일관성 확인이었습니다. 이에 따라 짧은 자기 점검 규칙을 root `AGENTS.md` Communication에 넣고 필터 문서와 연결(`AGENTS.md`, [DOCS_GUIDE.md](./DOCS_GUIDE.md) §1)을 지웠습니다. T-044·T-046은 취소했습니다. 사용자 결정에 따라 새 규칙은 root에서 T-047로 더 시범합니다. 통합 근거: T-040 평가 PR.
@@ -72,15 +72,15 @@ T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원
 - [x] **T-039 `v2.5.0` locale release**
   - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-039 항목. D-007에 따라 준비, tag·draft candidate, 공개·published 단계를 나눕니다.
   - version 판단: `v2.5.0`(minor). installer CLI, release manifest schema, artifact inventory는 그대로이고, 적용 프로젝트가 따를 새 규범(D-015~D-017)이 들어갑니다. `v2.4.0`과 같은 성격이라 minor로 둡니다.
-  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 2.5.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v2.5.0 이력을, root `CHANGELOG`에 링크 없는 v2.5.0 항목(공개 시 release 링크로 교체)을 추가했습니다. `v2.4.0` 대비 규범이 바뀐 artifact 파일은 locale마다 `AGENTS.md`, `.cursor/BUGBOT.md`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`이고, `docs/DOCS_GUIDE.md`·`docs/TEMPLATE_GUIDE.md`는 version과 이력이 바뀌었습니다(locale마다 6개). 통합 근거: 이 변경의 PR.
-  - [x] PR #60 인계 C60-B-001(Codex `C60-B-001`, Cursor `C60-A-001`과 같은 원인, P3): 설계 R-002대로 생략한 주제에 요청 안내를 root·en·ko `AGENTS.md`에 더했습니다. 통합 근거: 이 변경의 PR.
+  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 2.5.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v2.5.0 이력을, root `CHANGELOG`에 링크 없는 v2.5.0 항목(공개 시 release 링크로 교체)을 추가했습니다. `v2.4.0` 대비 규범이 바뀐 artifact 파일은 locale마다 `AGENTS.md`, `.cursor/BUGBOT.md`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`이고, `docs/DOCS_GUIDE.md`·`docs/TEMPLATE_GUIDE.md`는 version과 이력이 바뀌었습니다(locale마다 6개). 통합 근거: PR #61.
+  - [x] PR #60 인계 C60-B-001(Codex `C60-B-001`, Cursor `C60-A-001`과 같은 원인, P3): 설계 R-002대로 생략한 주제에 요청 안내를 root·en·ko `AGENTS.md`에 더했습니다. 통합 근거: PR #61.
   - [x] tag·draft candidate: 준비 PR #61의 Origin merge `6d04b97`를 GitHub `main`에 fast-forward했습니다. 사용자가 annotated `v2.5.0` tag와 draft(asset 5개, 영·한 release notes)를 만들었고, clean exact checkout에서 `verify-release.py candidate`가 통과했습니다(두 `main` 동기화, 5 assets). `installer.py`의 SHA-256은 `v2.4.0`과 같습니다.
   - [x] 공개·published: 사용자가 2026-10-07 draft를 immutable Latest로 공개했습니다. tag source 자신의 verifier로 `published --base-version 2.4.0`이 통과했습니다. 기록은 공개 기록 PR에 담았습니다.
 - [x] **T-034 `v2.4.0` locale release**
   - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-034 항목. D-007에 따라 준비, tag·draft candidate, 공개·published 단계를 나눕니다.
   - version 판단: `v2.4.0`(minor). installer CLI, release manifest schema, artifact inventory는 그대로입니다. 적용 프로젝트가 따를 새 규범(D-013 기록 시점, D-014 리뷰 ID·근거)과 placeholder 검색 선언이 들어가므로 같은 성격이던 `v2.3.0`처럼 minor로 둡니다.
-  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 2.4.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v2.4.0 이력을, root `CHANGELOG`에 링크 없는 v2.4.0 항목(공개 시 release 링크로 교체)을 추가했습니다. PR #50 인계대로 검색 선언 단일화·Bash 전제·삭제 전 보관과 바뀐 artifact 파일을 기록했습니다. 통합 근거: 이 변경의 PR.
-  - [x] PR #57 인계 C57-B-001(Codex `C57-B-001`, P3): 보관 표에 빠진 18번 T-033 행을 [완료 작업 보관](./TODO_ARCHIVE.md)에 추가했습니다. 통합 근거: 이 변경의 PR.
+  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 2.4.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v2.4.0 이력을, root `CHANGELOG`에 링크 없는 v2.4.0 항목(공개 시 release 링크로 교체)을 추가했습니다. PR #50 인계대로 검색 선언 단일화·Bash 전제·삭제 전 보관과 바뀐 artifact 파일을 기록했습니다. 통합 근거: PR #58.
+  - [x] PR #57 인계 C57-B-001(Codex `C57-B-001`, P3): 보관 표에 빠진 18번 T-033 행을 [완료 작업 보관](./TODO_ARCHIVE.md)에 추가했습니다. 통합 근거: PR #58.
   - [x] tag·draft candidate: 준비 PR #58의 Origin merge `4fe3f76`를 GitHub `main`에 fast-forward했습니다. agent의 tag push가 권한 분류기에서 거부돼(D-007의 사람 소유 경계) 사용자가 annotated `v2.4.0` tag와 draft(asset 5개, 영·한 release notes)를 만들었습니다. clean exact checkout에서 `verify-release.py candidate`가 통과했습니다(두 `main` 동기화, 5 assets).
   - [x] 공개·published: 사용자가 2026-10-07 draft를 immutable Latest로 공개했습니다. tag source 자신의 verifier로 `published --base-version 2.3.3`이 통과했습니다. 기록은 T-036~T-038 설계 PR(#59)에 담았습니다.
 - [x] **T-030·T-014 기록 시점·리뷰 finding ID 계약 구현**
@@ -382,12 +382,12 @@ T-066은 2026-10-14 PR #86에서 등록했고 MR !1에서 T-067·T-068을 묶어
 
 - [x] **T-066 `v3.2.0` release** — T-065·T-067·T-068의 payload 변경을 D-007 단계에 따라 minor release로 공개합니다. candidate·published 검증은 `--base-version 3.1.0`으로 합니다.
 
-T-069는 2026-10-28 MR !2에서 등록했고 MR !3에서 리뷰어 구성을 더한 설명입니다. 등록 당시에는 Linux pipeline을 Buildkite integration으로 연결했다고 적었지만, 2026-10-30 조회에서 그 integration은 꺼져 있었고(마지막 변경 2026-10-28 07:41Z) 두 pipeline 모두 push webhook(Linux는 07:51Z 생성)으로 연결돼 있었습니다.
+T-069는 2026-10-28 MR !2에서 등록했고 MR !3에서 리뷰어 구성을 더한 설명입니다. 등록 당시에는 Linux pipeline을 Buildkite integration으로 연결했다고 적었지만, 2026-10-30 조회에서 그 integration은 꺼져 있었고(마지막 변경 2026-10-28 07:41Z) 두 pipeline 모두 push webhook(Linux는 07:51Z 생성)으로 연결돼 있었습니다. 리뷰어 구성의 덮어쓰는 note 설명도 당시 기준입니다. 2026-10-31 MR !5에서 앞 head의 note `4129855307`가 남은 채 새 head의 note `4130257682`가 달려 head별 게시를 확인했고, 현재 게시 위치와 finding 인용은 root `docs/REVIEW_ROUND.md` §2.1과 root `docs/DOCS_GUIDE.md` §2를 따릅니다.
 
 - [x] **T-069 GitLab 이전 반영** — 2026-10-28 사용자 결정으로 Origin(Cursor)을 비활성화하고 개발·MR·필수 CI를 GitLab으로 옮겼습니다. 이미 바꾼 것은 로컬 remote(`origin`=GitLab, `cursor-origin`=이전 Origin), Buildkite 두 pipeline의 저장소(GitLab SSH, agent deploy key), GitLab push 연결(Linux는 Buildkite integration, Windows는 webhook), Buildkite commit status와 GitLab "Pipelines must succeed"입니다. 이 작업은 그 상태를 root 문서와 maintainer 도구에 반영합니다.
   - 대상: `docs/CI.md` §6(필수 check, 저장소 URL, 연결 방식), root `docs/TEMPLATE_GUIDE.md` §5(개발 host, remote 이름, GitLab merge 뒤 GitHub fast-forward, tag 정책), root `docs/DOCS_GUIDE.md`의 통합 대상·원장, 이 문서의 Integration target, PROJECT의 현재 운영 서술, `scripts/verify_release.py`의 `--origin-remote` 도움말과 오류 메시지
   - 유지: 과거 Origin PR 번호·merge SHA 기록과 Cursor Bugbot 어댑터(`.cursor/BUGBOT.md`)는 바꾸지 않습니다.
-  - 리뷰어 구성(2026-10-29 사용자 결정): Cursor `A`와 Codex `B`를 중단하고 pr-reviewer를 상시 리뷰어 `C`로 root `docs/REVIEW_ROUND.md` §2.1에 등록했습니다. 슬롯 배정은 root `docs/DOCS_GUIDE.md` §2에 적었습니다. 이 변경의 MR로 반영합니다. 이 프로젝트는 2026-10-29 pr-reviewer에 연결됐습니다(05:43Z project webhook, merge request 이벤트). 같은 날 운영 서비스가 MR !3에 리뷰를 게시했고, 게시 계정은 사용자 계정에서 group 서비스 계정으로 바뀌었습니다. push 뒤 같은 note를 갱신하는 것이 pr-reviewer 설계의 의도이고(2026-10-29 사용자 확인), 운영도 그렇게 동작합니다. 2026-10-30 02:01:58Z에 MR !3에 `ac96e85`를 push하자 02:02:01Z에 서비스 계정이 앞 head의 note를 새 head의 진행 중 표시로 고쳤습니다. 그래서 `REVIEW_ROUND.md` §2.1 게시 위치를 덮어쓰기(sticky)로 적었고, 이 리뷰어에는 `REVIEW_ROUND.md` §7의 덮어쓰는 리뷰어 원장 규칙이 적용됩니다. note가 finding에 슬롯 ID를 붙이지 않아, finding은 root `docs/DOCS_GUIDE.md` §2에 따라 `<note id>@<head 12자리>/<항목 번호>`로 가리킵니다. 같은 note는 02:10:14Z에 `**판정: 의견**`으로 바뀌었지만 LLM 응답 파싱에 실패해 "이 PR은 리뷰되지 않았습니다" 경고가 함께 붙었습니다. 그래서 `REVIEW_ROUND.md` §2.1 완료 판별에 이 경고를 넣었습니다.
+  - 리뷰어 구성(2026-10-29 사용자 결정): Cursor `A`와 Codex `B`를 중단하고 pr-reviewer를 상시 리뷰어 `C`로 root `docs/REVIEW_ROUND.md` §2.1에 등록했습니다. 슬롯 배정은 root `docs/DOCS_GUIDE.md` §2에 적었습니다. MR !3으로 반영합니다. 이 프로젝트는 2026-10-29 pr-reviewer에 연결됐습니다(05:43Z project webhook, merge request 이벤트). 같은 날 운영 서비스가 MR !3에 리뷰를 게시했고, 게시 계정은 사용자 계정에서 group 서비스 계정으로 바뀌었습니다. push 뒤 같은 note를 갱신하는 것이 pr-reviewer 설계의 의도이고(2026-10-29 사용자 확인), 운영도 그렇게 동작합니다. 2026-10-30 02:01:58Z에 MR !3에 `ac96e85`를 push하자 02:02:01Z에 서비스 계정이 앞 head의 note를 새 head의 진행 중 표시로 고쳤습니다. 그래서 `REVIEW_ROUND.md` §2.1 게시 위치를 덮어쓰기(sticky)로 적었고, 이 리뷰어에는 `REVIEW_ROUND.md` §7의 덮어쓰는 리뷰어 원장 규칙이 적용됩니다. note가 finding에 슬롯 ID를 붙이지 않아, finding은 root `docs/DOCS_GUIDE.md` §2에 따라 `<note id>@<head 12자리>/<항목 번호>`로 가리킵니다. 같은 note는 02:10:14Z에 `**판정: 의견**`으로 바뀌었지만 LLM 응답 파싱에 실패해 "이 PR은 리뷰되지 않았습니다" 경고가 함께 붙었습니다. 그래서 `REVIEW_ROUND.md` §2.1 완료 판별에 이 경고를 넣었습니다.
   - 완료 조건: root 문서·도구 검사와 관련 테스트 통과, 남은 Origin 언급이 과거 기록뿐인지 대조. payload는 바뀌지 않아 release가 필요 없습니다.
 
 2026-09-29 분석의 root §3 검색식 allowlist 권고는 T-029에서 해소됐고, 작업 트리의 로컬 `.swp` 파일은 저장소 작업이 아니어서 등록하지 않았습니다.
@@ -430,7 +430,7 @@ T-069는 2026-10-28 MR !2에서 등록했고 MR !3에서 리뷰어 구성을 더
 | 32 | `claude/t049-maintainer-checks` | T-049 root 사본·README locale 표 검사 | **Integrated** — Origin PR #71 merge `05b7007`·GitHub fast-forward 확인 |
 | 33 | `claude/t050-installer-defaults` | T-050 installer 기본 URL과 Python 3.12 하한, T-052 Completed 안내문 | **Integrated** — Origin PR #72 merge `9579191`·GitHub fast-forward 확인(2026-10-11) |
 | 34 | `claude/t053-self-check-payload` | T-053 자기 점검 규칙 payload 반영, T-047 종료 | **Integrated** — Origin PR #73 merge `74ea56b`·GitHub fast-forward 확인 |
-| 35 | `claude/v3.0.0-release-prep` | T-051 `v3.0.0` release | **Integrated·Published** — 준비 Origin PR #74 merge `2c27a4d`·GitHub fast-forward 확인; 2026-10-12(KST) annotated tag·immutable Latest 공개, candidate·published(`--base-version 2.5.0`, Linux·Windows) 통과; 공개 기록은 이 변경의 PR |
+| 35 | `claude/v3.0.0-release-prep` | T-051 `v3.0.0` release | **Integrated·Published** — 준비 Origin PR #74 merge `2c27a4d`·GitHub fast-forward 확인; 2026-10-12(KST) annotated tag·immutable Latest 공개, candidate·published(`--base-version 2.5.0`, Linux·Windows) 통과; 공개 기록은 PR #75 |
 | 36 | `claude/installer-hardening` | T-055 installer 경로·복구·manifest 검사 보강 | **Integrated** — Origin PR #77 merge `de6e666`·GitHub fast-forward 확인. 공개는 T-059 |
 | 37 | `claude/t056-t057-maintainer-and-readme` | T-056 package source 대조와 locale 주석 해석 | **Integrated** — Origin PR #79 merge `56b2cf9`·GitHub fast-forward 확인(38과 함께). release 불필요 |
 | 38 | `claude/t056-t057-maintainer-and-readme` | T-057 root README attestation 순서와 CI 문구 | **Integrated** — Origin PR #79 merge `56b2cf9`·GitHub fast-forward 확인(37과 함께). release 불필요 |
@@ -445,4 +445,4 @@ T-069는 2026-10-28 MR !2에서 등록했고 MR !3에서 리뷰어 구성을 더
 | 47 | `claude/t067-checker-markdown-fixes` | T-067 검사기 Markdown·정책 판정 수정 | **Integrated** — GitLab MR !1 merge `7551c22`·GitHub fast-forward 확인(48의 `7d23741`과 함께). 공개는 T-066 |
 | 48 | `claude/t068-review-adoption-wording` | T-068 리뷰 라운드·적용 기록 문구 | **Integrated** — 47 위에 쌓은 GitLab MR !2를 47 통합 뒤 target `main`으로 바꿔 merge `7d23741`·GitHub fast-forward 확인. 공개는 T-066 |
 | 49 | `claude/t069-gitlab-migration-docs` | T-069 GitLab 이전 반영 | **Integrated** — GitLab MR !4 merge `4b0e734`·GitHub fast-forward 확인. 리뷰어 구성은 `claude/t069-reviewer-roster`(MR !3 merge `018ce5c`)로 먼저 통합. release 불필요 |
-| 50 | `claude/v3.2.0-release-prep` | T-066 `v3.2.0` release | **Integrated·Published** — 준비 GitLab MR !5 merge `48c52a8`·GitHub fast-forward 확인; 2026-10-31(KST) annotated tag·immutable Latest 공개, candidate·published(`--base-version 3.1.0`, Linux·Windows) 통과; 공개 기록은 이 변경의 MR |
+| 50 | `claude/v3.2.0-release-prep` | T-066 `v3.2.0` release | **Integrated·Published** — 준비 GitLab MR !5 merge `48c52a8`·GitHub fast-forward 확인; 2026-10-31(KST) annotated tag·immutable Latest 공개, candidate·published(`--base-version 3.1.0`, Linux·Windows) 통과; 공개 기록은 MR !6 |
