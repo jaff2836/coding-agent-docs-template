@@ -4,6 +4,7 @@ import contextlib
 import importlib.util
 import io
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -1440,6 +1441,66 @@ Translated guidance
             self.assertNotIn("NOT-A-DEFINITION", report)
             for missing in ("MISSING-TITLE.md", "MISSING-ANGLE.md", "MISSING-PAREN.md"):
                 self.assertIn(missing, report)
+
+    def test_reference_definition_label_ends_at_unescaped_bracket(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "[escaped\\]: ./NOT-A-DEFINITION.md\n"
+                "[backslash\\\\]: ./MISSING-BACKSLASH.md\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            self.assertNotIn("NOT-A-DEFINITION", report)
+            self.assertIn("MISSING-BACKSLASH.md", report)
+
+    def test_reference_definition_scan_stays_linear(self) -> None:
+        # Overlapping escape alternatives took seconds on this one line.
+        line = "[" + "\\a" * 26 + "\n"
+        started = time.perf_counter()
+        self.assertEqual(CHECK_DOCS.markdown_reference_definitions(line), [])
+        self.assertLess(time.perf_counter() - started, 1.0)
+
+    def test_blockquoted_reference_definition_link_is_checked(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "> [guide]: ./MISSING.md\n\n"
+                "> > [nested]: ./MISSING-NESTED.md\n\n"
+                "> ```\n"
+                "> [decoy]: ./NOT-CHECKED.md\n"
+                "> ```\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            for missing in ("MISSING.md", "MISSING-NESTED.md"):
+                self.assertIn(missing, report)
+            self.assertNotIn("NOT-CHECKED.md", report)
+
+    def test_blockquoted_reference_definition_section_is_checked(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(root, "docs/TARGET.md", "# Target\n## 1. Existing\n")
+            write(
+                root,
+                "docs/SOURCE.md",
+                "[policy][target] §9\n\n> [target]: ./TARGET.md\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_section_refs(errors, [])
+            self.assertIn("section does not exist", "\n".join(errors))
 
     def test_template_version_compares_complete_values(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
