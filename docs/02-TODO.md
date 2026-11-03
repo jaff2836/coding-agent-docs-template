@@ -8,14 +8,14 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-11-01 (KST)
+- **Last reviewed:** 2026-11-04 (KST)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
 - **Integration target:** GitLab `main`(MR merge, 2026-10-28 전에는 Origin `main`의 PR merge)과 공개 저장소 `jaff2836/coding-agent-docs-template`의 `main`(같은 merge commit의 non-force fast-forward, [TEMPLATE_GUIDE §5](./TEMPLATE_GUIDE.md)); v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
 - **Name:** 없음
-- **Status:** `v3.2.0` 공개로 적용 저장소 역제안 반영과 GitLab 이전 마일스톤(T-066~T-069)이 끝났습니다. 첫 번째 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중입니다. 남은 Backlog는 없고 T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
+- **Status:** `v3.2.0` 공개로 적용 저장소 역제안 반영과 GitLab 이전 마일스톤(T-066~T-069)이 끝났습니다. 첫 번째 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중입니다. Backlog에는 2026-11-03에 등록한 T-071이 있고, T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
 
 ## 운영 규칙
 
@@ -55,6 +55,16 @@
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
+| 51 | 미정 | T-071 `check-docs.py` 참조 정의 처리 결함 수정 | 선행 없음. payload를 바꾸므로 release와 적용 저장소 업그레이드는 통합 뒤 따로 등록합니다 |
+
+- [ ] **T-071 `check-docs.py` 참조 정의 처리 결함 수정** — 2026-11-03 사용자 승인으로 등록했습니다. 두 결함 모두 `template/common/scripts/check-docs.py`의 `markdown_reference_definitions` 경로에 있습니다.
+  - 출처: 적용 저장소 RhythmGameOnWeb PR #18의 pr-reviewer 지적 `6598517309/1`(P3, backtracking)과 `6599227712/2`(P2, blockquote). 둘 다 같은 날 재현했습니다.
+  - 증상 1(backtracking): `template/common/scripts/check-docs.py`의 `REFERENCE_DEFINITION_RE`는 `(?:\\.|[^\]\r\n])+`의 두 대안이 모두 백슬래시를 받습니다. 그래서 `]:`가 없는 `[` 줄에서 백슬래시가 늘어날수록 매칭 시간이 지수적으로 늘어납니다. `[` 뒤에 `\a`를 n번 둔 줄에서 n=18이면 0.021초, 20이면 0.082초, 22이면 0.329초입니다.
+  - 증상 2(blockquote): 정의를 찾을 때 원본 줄에 `REFERENCE_DEFINITION_RE`를 바로 적용해 `> [guide]: ./MISSING.md`처럼 blockquote 안의 정의를 인식하지 못합니다(`markdown_reference_definitions`가 빈 목록을 돌려줌). 그 정의를 쓰는 reference 링크는 대상 파일이나 절이 없어도 `check_relative_links`와 `check_section_refs`를 통과합니다.
+  - 영향: 증상 1은 문서 한 줄로 링크·절 참조 검사가 멈추고, 적용 저장소 CI의 Docs 단계가 job timeout까지 걸릴 수 있습니다. 문서 작성자가 신뢰 경계 안에 있어 P3입니다. 증상 2는 깨진 링크를 놓치는 거짓 통과입니다. root `scripts/check-docs.py`에는 이 정규식이 없습니다.
+  - 범위: 대안이 겹치지 않게 고치고, 같은 파일에서 같은 형태의 정규식을 함께 점검합니다. 정의를 해석하기 전에 blockquote marker를 정규화합니다. blockquote 밖 참조 정의의 기존 판정은 바꾸지 않습니다.
+  - 완료 조건: 긴 백슬래시 줄과 blockquote 안 정의(링크·절 참조 두 경로)를 검사하는 회귀 테스트가 수정을 되돌리면 실패하고 복원하면 통과합니다(red-green). 기존 `template/common/tests/test_check_docs.py`와 root 테스트·locale 검사가 통과합니다.
+  - 적용 저장소: RhythmGameOnWeb, FetchHub, BinaryLDPCSimulator, ai-meters가 v3.2.0 사본을 씁니다. 템플릿 소유 파일이라 사본을 따로 고치지 않습니다.
 
 ## Cancelled
 
