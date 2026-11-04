@@ -1502,6 +1502,83 @@ Translated guidance
                 CHECK_DOCS.check_section_refs(errors, [])
             self.assertIn("section does not exist", "\n".join(errors))
 
+    def test_list_item_reference_definition_link_is_checked(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "- [item]: ./MISSING-ITEM.md\n"
+                "- parent\n"
+                "  - [nested]: ./MISSING-NESTED.md\n\n"
+                "10. wide\n\n"
+                "    [wide]: ./MISSING-WIDE.md\n\n"
+                "> - [quoted]: ./MISSING-QUOTED.md\n\n"
+                "- ```\n"
+                "  [fence]: ./NOT-CHECKED-FENCE.md\n"
+                "  ```\n"
+                "- code\n\n"
+                "      [code]: ./NOT-CHECKED-CODE.md\n\n"
+                "-     [spaced]: ./NOT-CHECKED-SPACED.md\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            for missing in (
+                "MISSING-ITEM.md",
+                "MISSING-NESTED.md",
+                "MISSING-WIDE.md",
+                "MISSING-QUOTED.md",
+            ):
+                self.assertIn(missing, report)
+            for decoy in (
+                "NOT-CHECKED-FENCE.md",
+                "NOT-CHECKED-CODE.md",
+                "NOT-CHECKED-SPACED.md",
+            ):
+                self.assertNotIn(decoy, report)
+
+    def test_list_item_reference_definition_section_is_checked(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(root, "docs/TARGET.md", "# Target\n## 1. Existing\n")
+            write(
+                root,
+                "docs/SOURCE.md",
+                "[policy][target] §9\n\n- [target]: ./TARGET.md\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_section_refs(errors, [])
+            self.assertIn("section does not exist", "\n".join(errors))
+
+    def test_list_reference_definitions_follow_fenced_list_markers(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(
+                root,
+                "docs/SOURCE.md",
+                "- item\n"
+                "```\n"
+                "example\n"
+                "```\n"
+                "    [after]: ./NOT-A-DEFINITION.md\n\n"
+                "10. ```\n"
+                "    example\n"
+                "    ```\n"
+                "    [wide]: ./MISSING-AFTER-FENCE.md\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            self.assertNotIn("NOT-A-DEFINITION.md", report)
+            self.assertIn("MISSING-AFTER-FENCE.md", report)
+
     def test_template_version_compares_complete_values(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -210,7 +210,7 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 
 - `en`·`ko` 외 공식 locale은 v2 계약과 두 필수 locale 지원 검증 후 재검토합니다.
 - 기존 적용 저장소의 자동 update·overwrite는 사용자 문서 손실 위험 때문에 첫 버전에서 제외합니다.
-- payload 검사기에 남은 CommonMark 차이(container 안의 닫히지 않은 HTML 주석, 목록 항목 안의 reference definition, setext 밑줄과 code span 등)와 기준 parser 차분 검사는 D-020에서 보류했습니다. 목록과 근거는 [적용 저장소 역제안 변경](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) §2.3.1·§2.6.2에 있습니다. 그 목록의 인용문 안 reference definition은 적용 저장소 PR 리뷰의 지적을 재현해 사용자가 등록한 T-071이 고쳤습니다. 실제 문서에서 판정이 틀린 사례가 나오거나 사용자가 정하면 새 작업으로 제안합니다.
+- payload 검사기에 남은 CommonMark 차이(container 안의 닫히지 않은 HTML 주석, 목록 항목 안 인용문의 reference definition, setext 밑줄과 code span 등)와 기준 parser 차분 검사는 D-020에서 보류했습니다. 목록과 근거는 [적용 저장소 역제안 변경](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) §2.3.1·§2.6.2에 있습니다. 그 목록의 인용문 안 reference definition은 적용 저장소 PR 리뷰의 지적을 재현해 사용자가 등록한 T-071이, 목록 항목 안 reference definition은 사용자가 정한 T-072가 고쳤습니다. 실제 문서에서 판정이 틀린 사례가 나오거나 사용자가 정하면 새 작업으로 제안합니다.
 
 ## 13. 설계 문서 인덱스
 

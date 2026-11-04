@@ -16,7 +16,7 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import List, Optional, Sequence, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 from urllib.parse import unquote, urlsplit
 
 
@@ -239,7 +239,7 @@ def check_relative_links(errors: List[str], notes: List[str]) -> None:
         text = md.read_text(encoding="utf-8")
         searchable = markdown_searchable_text(text, mask_inline_code=True)
         destinations = markdown_link_destinations(searchable)
-        destinations.extend(markdown_reference_destinations(searchable))
+        destinations.extend(markdown_reference_destinations(text))
         for destination in destinations:
             target = local_link_path(destination)
             if target is None:
@@ -492,7 +492,19 @@ def indented_code_line_indexes(text: str) -> set:
 def markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
     """Return ``(outside_fence, outside_enclosing_comment)`` per line."""
 
+    return markdown_line_scan(text)[0]
+
+
+def markdown_line_scan(
+    text: str,
+) -> Tuple[Tuple[Tuple[bool, bool], ...], Dict[int, int]]:
+    """Return the line context and the list prefix width of each visible line.
+
+    The width counts tab-expanded columns after the blockquote markers.
+    """
+
     context = []
+    list_widths: Dict[int, int] = {}
     fence_character: Optional[str] = None
     fence_length = 0
     block_depth = 0
@@ -582,6 +594,7 @@ def markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
             continue
 
         context.append((True, not in_html_comment))
+        list_widths[index] = len(container_line) - len(fence_candidate)
         cursor = 0
         while cursor < len(line):
             if in_html_comment:
@@ -597,7 +610,7 @@ def markdown_line_context(text: str) -> Tuple[Tuple[bool, bool], ...]:
                     break
                 in_html_comment = True
                 cursor = position + 4
-    return tuple(context)
+    return tuple(context), list_widths
 
 
 class CommentOpenerSearch:
@@ -991,12 +1004,31 @@ def normalize_reference_label(label: str) -> str:
 
 
 def markdown_reference_definitions(text: str) -> List[Tuple[str, str]]:
-    """Extract normalized labels and destinations from link definitions."""
+    """Extract normalized labels and destinations from link definitions.
+
+    *text* is the source Markdown. List items are tracked on it rather than on
+    the masked text, where a fence on a list marker line hides that marker.
+    """
 
     definitions = []
-    for line in text.splitlines():
-        # A definition inside a blockquote still applies to the whole document.
+    searchable = markdown_searchable_text(text, mask_inline_code=True)
+    _, list_widths = markdown_line_scan(text)
+    for index, line in enumerate(searchable.splitlines()):
+        # A definition inside a blockquote or list item still applies to the
+        # whole document.
         _, line = strip_blockquote_markers(line)
+        width = list_widths.get(index, 0)
+        if width:
+            line = line.expandtabs(4)
+            list_item = LIST_ITEM_RE.match(line)
+            # Five or more spaces after a marker start an indented code block.
+            if (
+                list_item is not None
+                and list_item.end() == width
+                and len(list_item.group(3)) > 4
+            ):
+                continue
+            line = line[width:]
         definition = REFERENCE_DEFINITION_RE.match(line)
         if definition is None:
             continue
@@ -1310,9 +1342,7 @@ def check_section_refs(errors: List[str], notes: List[str]) -> None:
             limit = cut_at[1]
         references: List[Tuple[str, str, str]] = []
         definitions = {}
-        for label, destination in markdown_reference_definitions(
-            searchable_without_inline_code
-        ):
+        for label, destination in markdown_reference_definitions(text):
             definitions.setdefault(label, destination)
         links = markdown_inline_links(searchable_without_inline_code)
         links.extend(
