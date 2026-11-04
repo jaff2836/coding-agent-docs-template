@@ -73,8 +73,10 @@ HTML_BLOCK_TAG_RE = re.compile(
 LIST_ITEM_RE = re.compile(
     r"^( *)(?!([-*_])(?:[ \t]*\2){2,}[ \t]*$)(?:[-+*]|\d{1,9}[.)])([ \t]+)"
 )
+# An escape pair and a plain character never share a backslash, so a label
+# ends at its first unescaped `]` and the match stays linear.
 REFERENCE_DEFINITION_RE = re.compile(
-    r"^[ ]{0,3}\[((?:\\.|[^\]\r\n])+)\]:[ \t]*"
+    r"^[ ]{0,3}\[((?:\\.|[^\]\\\r\n])+)\]:[ \t]*"
 )
 REFERENCE_DEFINITION_TAIL_RE = re.compile(
     r"(?:[ \t]+(?:\"(?:\\.|[^\"\\])*\"|'(?:\\.|[^'\\])*'|\((?:\\.|[^()\\])*\)))?[ \t]*"
@@ -993,6 +995,8 @@ def markdown_reference_definitions(text: str) -> List[Tuple[str, str]]:
 
     definitions = []
     for line in text.splitlines():
+        # A definition inside a blockquote still applies to the whole document.
+        _, line = strip_blockquote_markers(line)
         definition = REFERENCE_DEFINITION_RE.match(line)
         if definition is None:
             continue
