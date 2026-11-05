@@ -1013,7 +1013,12 @@ def markdown_reference_definitions(text: str) -> List[Tuple[str, str]]:
     definitions = []
     searchable = markdown_searchable_text(text, mask_inline_code=True)
     _, list_widths = markdown_line_scan(text)
-    for index, line in enumerate(searchable.splitlines()):
+    start = 0
+    for index, source_line in enumerate(text.splitlines(keepends=True)):
+        # Masking keeps offsets but blanks line breaks such as `\x0c` inside
+        # code, so cut the masked text at the source line breaks.
+        line = searchable[start : start + len(source_line.splitlines()[0])]
+        start += len(source_line)
         # A definition inside a blockquote or list item still applies to the
         # whole document.
         _, line = strip_blockquote_markers(line)

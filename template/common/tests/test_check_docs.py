@@ -1579,6 +1579,18 @@ Translated guidance
             self.assertNotIn("NOT-A-DEFINITION.md", report)
             self.assertIn("MISSING-AFTER-FENCE.md", report)
 
+    def test_list_reference_definitions_survive_masked_line_breaks(self) -> None:
+        # Masking turns these line breaks into spaces inside code.
+        text = (
+            "```\n\x0c\n```\n"
+            "`a b`\n"
+            "- [item]: ./MISSING-AFTER-BREAKS.md\n"
+        )
+        self.assertEqual(
+            CHECK_DOCS.markdown_reference_destinations(text),
+            ["./MISSING-AFTER-BREAKS.md"],
+        )
+
     def test_template_version_compares_complete_values(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
