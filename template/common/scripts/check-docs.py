@@ -69,9 +69,12 @@ HTML_BLOCK_TAG_RE = re.compile(
     r"track|ul)(?:[ \t>]|/>|$)",
     re.IGNORECASE,
 )
-# A thematic break such as `- - -` wins over a list item.
+# A thematic break such as `- - -` wins over a list item. Item content starts
+# one column after the marker when the line has none or begins with indented
+# code (five or more spaces), so the match then ends there.
 LIST_ITEM_RE = re.compile(
-    r"^( *)(?!([-*_])(?:[ \t]*\2){2,}[ \t]*$)(?:[-+*]|\d{1,9}[.)])([ \t]+)"
+    r"^( *)(?!([-*_])(?:[ \t]*\2){2,}[ \t]*$)(?:[-+*]|(\d{1,9})[.)])"
+    r"([ \t]{1,4}(?=[^ \t])|[ \t])"
 )
 # An escape pair and a plain character never share a backslash, so a label
 # ends at its first unescaped `]` and the match stays linear.
@@ -443,6 +446,7 @@ def indented_code_line_indexes(text: str) -> set:
     in_code = False
     code_indent = 4
     previous_blank = True
+    empty_item = False
 
     for index, raw_line in enumerate(text.splitlines()):
         depth, line = strip_blockquote_markers(raw_line)
@@ -454,12 +458,17 @@ def indented_code_line_indexes(text: str) -> set:
         if not line.strip():
             if in_code:
                 code_lines.add(index)
+            # A list item can begin with at most one blank line.
+            if empty_item and list_items:
+                list_items.pop()
+            empty_item = False
             previous_blank = True
             continue
+        empty_item = False
 
         # Code comes first: a list marker indented as code is example text.
         leading = len(line) - len(line.lstrip(" "))
-        required_indent = (list_items[-1][1] if list_items else 0) + 4
+        required_indent = list_content_indent(list_items, leading) + 4
         if in_code:
             if leading >= code_indent:
                 code_lines.add(index)
@@ -473,7 +482,10 @@ def indented_code_line_indexes(text: str) -> set:
             previous_blank = False
             continue
 
-        list_item = LIST_ITEM_RE.match(line)
+        # Indented that far, a marker continues the open paragraph instead.
+        list_item = (
+            LIST_ITEM_RE.match(line) if leading < required_indent else None
+        )
         if list_item is not None:
             marker_indent = len(list_item.group(1))
             while list_items and marker_indent <= list_items[-1][0]:
@@ -481,6 +493,12 @@ def indented_code_line_indexes(text: str) -> set:
             while list_items and marker_indent < list_items[-1][1]:
                 list_items.pop()
             list_items.append((marker_indent, list_item.end()))
+            content = line[list_item.end() :]
+            empty_item = not content.strip()
+            # Content indented past the marker is code that later lines extend.
+            if content.startswith("    ") and not empty_item:
+                code_indent = list_item.end() + 4
+                in_code = True
         else:
             while list_items and leading < list_items[-1][1]:
                 list_items.pop()
@@ -515,7 +533,10 @@ def markdown_line_scan(
     openers = CommentOpenerSearch(text)
     list_items: List[Tuple[int, int]] = []
     list_depth = 0
+    empty_item = False
     for index, line in enumerate(text.splitlines()):
+        after_empty_item = empty_item
+        empty_item = False
         blockquote_depth, container_line = strip_blockquote_markers(line)
         container_line = container_line.expandtabs(4)
         if (
@@ -550,17 +571,22 @@ def markdown_line_scan(
                 fence_length = 0
             continue
 
+        # A blockquote depth change ends the lists even on a code line.
+        if not in_html_comment and blockquote_depth != list_depth:
+            list_items.clear()
+            list_depth = blockquote_depth
         if not in_html_comment and index in indented_code_lines:
             context.append((False, False))
             openers.skip_line(index)
             continue
 
-        if not in_html_comment and blockquote_depth != list_depth:
-            list_items.clear()
-            list_depth = blockquote_depth
+        # A list item can begin with at most one blank line.
+        if after_empty_item and list_items and not container_line.strip():
+            list_items.pop()
         fence_candidate = list_relative_line(
             container_line, list_items, update=not in_html_comment
         )
+        empty_item = bool(container_line.strip()) and not fence_candidate.strip()
         # The container of a fenced or HTML block that opens on this line.
         block_depth = blockquote_depth
         block_list_indent = list_items[-1][1] if list_items else 0
@@ -685,7 +711,12 @@ def list_relative_line(
         return line
     leading = len(line) - len(line.lstrip(" "))
     if update:
-        list_item = LIST_ITEM_RE.match(line)
+        # A marker indented four columns past the content is paragraph text.
+        list_item = (
+            LIST_ITEM_RE.match(line)
+            if leading < list_content_indent(list_items, leading) + 4
+            else None
+        )
         if list_item is not None:
             marker_indent = len(list_item.group(1))
             while list_items and marker_indent <= list_items[-1][0]:
@@ -699,6 +730,12 @@ def list_relative_line(
     if list_items and leading >= list_items[-1][1]:
         return line[list_items[-1][1] :]
     return line
+
+
+def list_content_indent(list_items: List[Tuple[int, int]], leading: int) -> int:
+    """Return the content column of the innermost item *leading* reaches."""
+
+    return max((width for _, width in list_items if width <= leading), default=0)
 
 
 def mask_text_range(characters: List[str], start: int, end: int) -> None:
@@ -1013,72 +1050,132 @@ def markdown_reference_definitions(text: str) -> List[Tuple[str, str]]:
     definitions = []
     searchable = markdown_searchable_text(text, mask_inline_code=True)
     _, list_widths = markdown_line_scan(text)
+    paragraph = False
+    # The content column of a marker that only continued a paragraph.
+    text_item: Optional[int] = None
     start = 0
     for index, source_line in enumerate(text.splitlines(keepends=True)):
+        source = source_line.splitlines()[0]
         # Masking keeps offsets but blanks line breaks such as `\x0c` inside
         # code, so cut the masked text at the source line breaks.
-        line = searchable[start : start + len(source_line.splitlines()[0])]
+        line = searchable[start : start + len(source)]
         start += len(source_line)
+        width = list_widths.get(index)
+        _, source = strip_blockquote_markers(source)
+        if width is None:
+            # Code, fences and raw HTML end a paragraph, except when they open
+            # on a marker that CommonMark reads as paragraph text.
+            list_item = LIST_ITEM_RE.match(source.expandtabs(4))
+            if (
+                paragraph
+                and list_item is not None
+                and not interrupts_paragraph(list_item)
+            ):
+                text_item = list_item.end()
+            else:
+                paragraph = False
+            continue
         # A definition inside a blockquote or list item still applies to the
         # whole document.
         _, line = strip_blockquote_markers(line)
-        width = list_widths.get(index, 0)
+        if not source.strip():
+            paragraph = False
+            continue
+        if text_item is not None and width >= text_item:
+            # CommonMark sees no list item here, so read the line as before.
+            width = 0
+        else:
+            text_item = None
         if width:
             line = line.expandtabs(4)
+            source = source.expandtabs(4)[width:]
             list_item = LIST_ITEM_RE.match(line)
-            # Five or more spaces after a marker start an indented code block.
-            if (
-                list_item is not None
-                and list_item.end() == width
-                and len(list_item.group(3)) > 4
-            ):
-                continue
-            line = line[width:]
-        definition = REFERENCE_DEFINITION_RE.match(line)
-        if definition is None:
-            continue
-        label = normalize_reference_label(definition.group(1))
-        cursor = definition.end()
-        destination = []
-        if cursor < len(line) and line[cursor] == "<":
-            cursor += 1
-            while cursor < len(line):
-                character = line[cursor]
-                if character == "\\" and cursor + 1 < len(line):
-                    destination.append(line[cursor + 1])
-                    cursor += 2
+            if list_item is not None and list_item.end() == width:
+                if paragraph and not interrupts_paragraph(list_item):
+                    text_item = width
                     continue
-                if character == ">":
-                    cursor += 1
-                    break
-                destination.append(character)
-                cursor += 1
-            else:
-                continue
+                paragraph = False
+            # A definition cannot interrupt a paragraph, so such a line keeps
+            # its list indentation and is read as before.
+            if not paragraph:
+                line = line[width:]
+        definition = reference_definition(line)
+        if definition is not None:
+            definitions.append(definition)
+        elif (
+            not source.strip()
+            or LINE_BLOCK_RE.match(source)
+            or (not paragraph and source.startswith("    "))
+        ):
+            # Empty items, headings, thematic breaks and code leave no
+            # paragraph open.
+            paragraph = False
         else:
-            depth = 0
-            while cursor < len(line):
-                character = line[cursor]
-                if character == "\\" and cursor + 1 < len(line):
-                    destination.append(line[cursor + 1])
-                    cursor += 2
-                    continue
-                if character == "(":
-                    depth += 1
-                elif character == ")":
-                    if depth == 0:
-                        destination = []
-                        break
-                    depth -= 1
-                elif character.isspace() and depth == 0:
-                    break
-                destination.append(character)
-                cursor += 1
-            if depth != 0:
-                continue
-        if destination and REFERENCE_DEFINITION_TAIL_RE.fullmatch(line[cursor:]):
-            definitions.append((label, "".join(destination)))
+            paragraph = True
     return definitions
+
+
+def interrupts_paragraph(list_item: "re.Match[str]") -> bool:
+    """Return whether a list marker match may start a list inside a paragraph.
+
+    Only a bullet or a `1.` item with content can; any other marker line is
+    paragraph text.
+    """
+
+    start_number = list_item.group(3)
+    return (start_number is None or int(start_number) == 1) and bool(
+        list_item.string[list_item.end() :].strip()
+    )
+
+
+def reference_definition(line: str) -> Optional[Tuple[str, str]]:
+    """Return the normalized label and destination one definition line holds."""
+
+    definition = REFERENCE_DEFINITION_RE.match(line)
+    if definition is None:
+        return None
+    label = normalize_reference_label(definition.group(1))
+    cursor = definition.end()
+    destination = []
+    if cursor < len(line) and line[cursor] == "<":
+        cursor += 1
+        while cursor < len(line):
+            character = line[cursor]
+            if character == "\\" and cursor + 1 < len(line):
+                destination.append(line[cursor + 1])
+                cursor += 2
+                continue
+            if character == ">":
+                cursor += 1
+                break
+            destination.append(character)
+            cursor += 1
+        else:
+            return None
+    else:
+        depth = 0
+        while cursor < len(line):
+            character = line[cursor]
+            if character == "\\" and cursor + 1 < len(line):
+                destination.append(line[cursor + 1])
+                cursor += 2
+                continue
+            if character == "(":
+                depth += 1
+            elif character == ")":
+                if depth == 0:
+                    destination = []
+                    break
+                depth -= 1
+            elif character.isspace() and depth == 0:
+                break
+            destination.append(character)
+            cursor += 1
+        if depth != 0:
+            return None
+    if destination and REFERENCE_DEFINITION_TAIL_RE.fullmatch(line[cursor:]):
+        return label, "".join(destination)
+    return None
 
 
 def markdown_reference_destinations(text: str) -> List[str]:

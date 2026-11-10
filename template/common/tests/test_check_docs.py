@@ -1591,6 +1591,85 @@ Translated guidance
             ["./MISSING-AFTER-BREAKS.md"],
         )
 
+    def test_list_reference_definitions_do_not_interrupt_paragraphs(self) -> None:
+        cases = {
+            "- item\n    [a]: ./a.md\n": [],
+            "10. [a]: ./a.md\n    [b]: ./b.md\n": ["./a.md", "./b.md"],
+            "- item\n\n    [a]: ./a.md\n": ["./a.md"],
+            # These markers cannot interrupt a paragraph, so they are text.
+            "text\n2. [a]: ./a.md\n": [],
+            "text\n- \n    [a]: ./a.md\n": [],
+            "text\n2. text\n    - [a]: ./a.md\n": [],
+            "text\n10. ```\n10. [a]: ./a.md\n": [],
+        }
+        for text, destinations in cases.items():
+            with self.subTest(text=text):
+                self.assertEqual(
+                    CHECK_DOCS.markdown_reference_destinations(text), destinations
+                )
+
+    def test_list_item_content_follows_commonmark_indentation(self) -> None:
+        cases = {
+            # Four columns past the content, a marker continues the line above.
+            "- ## Example\n      - [a]: ./a.md\n": [],
+            "- item\n      - [a]: ./a.md\n": [],
+            "-    [a]: ./a.md\n    - [b]: ./b.md\n": ["./a.md"],
+            # Without content or before indented code, content starts one
+            # column after the marker.
+            "-     example\n\n      [a]: ./a.md\n": [],
+            "-   \n      [a]: ./a.md\n": [],
+            "10. \n    [a]: ./a.md\n": ["./a.md"],
+            # An item can begin with at most one blank line.
+            "- \n\n    [a]: ./a.md\n": [],
+        }
+        for text, destinations in cases.items():
+            with self.subTest(text=text):
+                self.assertEqual(
+                    CHECK_DOCS.markdown_reference_destinations(text), destinations
+                )
+
+    def test_list_item_code_masks_links(self) -> None:
+        cases = {
+            "MARKER-CODE": "-     code\n      [x](./MISSING-MARKER-CODE.md)\n",
+            "CONTINUED": "- item\n      - b\n\n          [x](./MISSING-CONTINUED.md)\n",
+            "EMPTY": "- \n\n    [x](./MISSING-EMPTY.md)\n",
+            "EMPTY-FENCE": "- \n\n  ```\n[x](./MISSING-EMPTY-FENCE.md)\n```\n",
+            "INNER": "   - [a]: ./a.md\n\n    - [x](./MISSING-INNER.md)\n",
+            "QUOTE": "- a\n\n>     code\n\n  ```\n[x](./MISSING-QUOTE.md)\n```\n",
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name, text in cases.items():
+                write(root, "docs/%s.md" % name, text)
+            write(root, "docs/CONTROL.md", "- [x](./MISSING-CONTROL.md)\n")
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            report = "\n".join(errors)
+            self.assertIn("MISSING-CONTROL.md", report)
+            for name in cases:
+                with self.subTest(name=name):
+                    self.assertNotIn("MISSING-%s.md" % name, report)
+
+    def test_list_paragraph_text_does_not_shadow_section_target(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(root, "docs/TARGET.md", "# Target\n## 1. Existing\n")
+            write(
+                root,
+                "docs/SOURCE.md",
+                "[policy][target] §1\n\n"
+                "- item\n"
+                "    [target]: ./MISSING.md\n\n"
+                "[target]: ./TARGET.md\n",
+            )
+
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_section_refs(errors, [])
+            self.assertEqual(errors, [])
+
     def test_template_version_compares_complete_values(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
