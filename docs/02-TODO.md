@@ -15,7 +15,7 @@
 ## Current Milestone
 
 - **Name:** 없음
-- **Status:** `v3.2.0` 공개로 적용 저장소 역제안 반영과 GitLab 이전 마일스톤(T-066~T-069)이 끝났습니다. 첫 번째 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중입니다. 2026-11-03에 등록한 T-071(Backlog 51행)이 payload 검사기의 참조 정의 처리를 고쳤습니다. 그 release와 적용 저장소 업그레이드는 아직 등록하지 않았고, T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
+- **Status:** `v3.2.0` 공개로 적용 저장소 역제안 반영과 GitLab 이전 마일스톤(T-066~T-069)이 끝났습니다. 첫 번째 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중입니다. 2026-11-03에 등록한 T-071과 2026-11-04에 사용자가 정한 T-072가 payload 검사기의 참조 정의 처리를 고쳤습니다. 두 작업의 release와 적용 저장소 업그레이드는 아직 등록하지 않았고, T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
 
 ## 운영 규칙
 
@@ -51,11 +51,10 @@
 아래 순서는 위험과 선행조건을 고려한 권고 PR 순서이며, Backlog 항목을 시작하는 권한은 아닙니다.
 설계 결과에 따라 필요한 구현은 해당 설계 PR과 분리합니다.
 
-통합된 순서 1~50의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
+통합된 순서 1~51의 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 
 | 순서 | PR 단위 | 작업 | 선행조건·통합 경계 |
 | --- | --- | --- | --- |
-| 51 | `claude/t071-check-docs-reference-fix` | T-071 `check-docs.py` 참조 정의 처리 결함 수정 | **In Progress** — MR !9. payload를 바꾸므로 release와 적용 저장소 업그레이드는 통합 뒤 따로 등록합니다 |
 
 ## Cancelled
 
@@ -71,7 +70,8 @@
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
-- [x] **T-071 `check-docs.py` 참조 정의 처리 결함 수정** — 적용 저장소 RhythmGameOnWeb PR #18의 pr-reviewer 지적 `6598517309/1`(P3)과 `6599227712/2`(P2)입니다(2026-11-03 사용자 승인으로 등록). payload `template/common/scripts/check-docs.py`의 `REFERENCE_DEFINITION_RE`는 두 대안이 backslash를 함께 받지 않아, `]:`가 없는 긴 backslash 줄도 선형 시간에 끝납니다. label은 escape되지 않은 첫 `]`에서 닫힙니다. 그래서 이전에만 정의로 읽던 줄은 `[a\]: ./x.md`처럼 CommonMark에서 label이 `]:` 앞에서 닫히지 않는 줄이고, 그 밖의 정의는 같은 label로 읽습니다. 등록 범위의 「blockquote 밖 참조 정의의 기존 판정은 바꾸지 않습니다」는 겹치지 않는 대안과 함께 지킬 수 없어, 이 판정 변경은 2026-11-04 사용자가 승인했습니다. `markdown_reference_definitions`는 blockquote marker를 벗긴 뒤 정의를 읽어, 인용문 안 정의를 쓰는 링크와 절 참조도 검사합니다. D-020이 보류한 container 안 reference definition 가운데 인용문만 고쳤고, 목록 항목 안의 정의는 PROJECT §12에 보류로 남습니다. 회귀 테스트는 `template/common/tests/test_check_docs.py`에 있고 전수 비교와 red-green 결과는 MR 본문에 있습니다. 통합: MR !9.
+- [x] **T-072 `check-docs.py` 목록 항목 안 참조 정의 검사** — T-071이 남긴 D-020 보류 항목으로, 2026-11-04 사용자가 검사기 수정을 정했습니다. payload `template/common/scripts/check-docs.py`의 `markdown_reference_definitions`는 원문을 받아, 정의가 시작될 수 있는 목록 줄에서만 목록 들여쓰기를 벗긴 뒤 정의를 읽습니다. 목록 상태는 `markdown_line_context`가 쓰는 원문 훑기(`markdown_line_scan`)에서 가져오므로, marker 줄에서 열린 fence가 목록을 가리지 않습니다. 정의는 문단을 끊지 못하므로, 목록 항목 안에서 문단이 열려 있는 줄과 문단 안에서 목록을 시작하지 못하는 marker(1이 아닌 번호, 내용 없는 marker) 아래 줄은 이전처럼 읽습니다. fence·코드 판정이 함께 쓰는 공유 목록 모델도 CommonMark에 맞췄습니다. 내용 없이 시작하거나 공백 5칸 이상 뒤 코드로 시작하는 항목은 marker 폭에 한 칸을 더한 값이 내용 들여쓰기이고, 그 코드는 다음 줄로 이어집니다. 내용 들여쓰기보다 4칸 이상 깊은 marker는 목록 항목이 아니며, 내용 없이 시작한 항목은 바로 다음 빈 줄에서 끝나고, 인용문 깊이가 바뀌면 코드 줄에서도 목록이 끝납니다. 목록 밖과 인용문의 문단 이어지는 줄은 이전처럼 정의로 읽습니다. 목록 항목 안 인용문의 정의(`- > [r]: ./x.md`)는 PROJECT §12에 보류로 남고, 그 인용문이 끝난 뒤의 정의와 줄 끝에서 끝나는 marker(`-`) 다음 정의도 읽지 못합니다. 공백 5칸 이상 marker 뒤 코드의 backtick이 뒤 줄의 backtick과 code span을 이루면 그 사이 정의를 놓치고, 빈 `>` 줄에서 HTML block을 끝내는 기존 판정 때문에 그 뒤 목록 안 정의를 읽는 경우가 있습니다. MR !9 리뷰 인계 `4156028979/1`(P3)에 따라 Backlog 51행(T-071)을 [완료 작업 보관](./TODO_ARCHIVE.md)으로 옮겼습니다. 회귀 테스트는 `template/common/tests/test_check_docs.py`에 있고 red-green과 차분 결과는 MR 본문에 있습니다. 통합: MR !10.
+- [x] **T-071 `check-docs.py` 참조 정의 처리 결함 수정** — 적용 저장소 RhythmGameOnWeb PR #18의 pr-reviewer 지적 `6598517309/1`(P3)과 `6599227712/2`(P2)입니다(2026-11-03 사용자 승인으로 등록). payload `template/common/scripts/check-docs.py`의 `REFERENCE_DEFINITION_RE`는 두 대안이 backslash를 함께 받지 않아, `]:`가 없는 긴 backslash 줄도 선형 시간에 끝납니다. label은 escape되지 않은 첫 `]`에서 닫힙니다. 그래서 이전에만 정의로 읽던 줄은 `[a\]: ./x.md`처럼 CommonMark에서 label이 `]:` 앞에서 닫히지 않는 줄이고, 그 밖의 정의는 같은 label로 읽습니다. 등록 범위의 「blockquote 밖 참조 정의의 기존 판정은 바꾸지 않습니다」는 겹치지 않는 대안과 함께 지킬 수 없어, 이 판정 변경은 2026-11-04 사용자가 승인했습니다. `markdown_reference_definitions`는 blockquote marker를 벗긴 뒤 정의를 읽어, 인용문 안 정의를 쓰는 링크와 절 참조도 검사합니다. D-020이 보류한 container 안 reference definition 가운데 인용문만 고쳤고, 목록 항목 안의 정의는 이어서 T-072가 고쳤습니다. 회귀 테스트는 `template/common/tests/test_check_docs.py`에 있고 전수 비교와 red-green 결과는 MR 본문에 있습니다. 통합: MR !9.
 - [x] **T-070 완료 기록의 MR·PR 표기 정리** — MR !6 리뷰의 인계 `4130800512/1`(P3)을 받아 [완료 작업 보관](./TODO_ARCHIVE.md)의 T-069 설명 머리글에 pr-reviewer의 head별 게시를 더했습니다. 이 문서와 보관 문서에 남은 "이 변경의 PR"·"이 변경의 MR" 11곳(T-034·T-039·T-040·T-051·T-066·T-069)은 실제 PR·MR 번호로 바꿨습니다. root 문서만 바뀌어 release가 필요 없습니다. 통합: MR !7.
 - [x] **T-066 `v3.2.0` release** — 준비는 MR !5로 통합됐습니다. 2026-10-31(KST) 사용자가 exact source `48c52a8`에 annotated tag와 draft를 만들어 immutable Latest로 공개했습니다. candidate와 Linux·native Windows(Buildkite `coding-agent-docs-template-windows-ci` Build #190)의 published 검증이 모두 `--base-version 3.1.0`으로 통과했습니다. pr-reviewer가 head별 note로 되돌아간 것도 REVIEW_ROUND §2.1과 DOCS_GUIDE §2에 반영했습니다. 공개 기록은 MR !6입니다.
 - [x] **T-069 GitLab 이전 반영** — 2026-10-28 Origin(Cursor)을 비활성화하고 개발·MR·필수 CI를 GitLab으로 옮긴 상태를 root 문서와 maintainer 도구에 반영했습니다. [CI.md](./CI.md) §6은 GitLab 저장소와 push webhook 연결, 두 Buildkite commit status와 "Pipelines must succeed"를, root TEMPLATE_GUIDE §5는 GitLab MR merge 뒤 GitHub fast-forward, source branch 삭제를 끄는 merge와 tag 정책을 적습니다. DOCS_GUIDE §3의 통합 대상·원장, 이 문서의 Integration target, PROJECT §9 Phase 3의 `main` 일치 조건, `scripts/verify_release.py`의 `--origin-remote` 도움말과 오류 메시지, `.buildkite/verify_published_release.py` 설명도 고쳤습니다. 리뷰어 구성(2026-10-29 사용자 결정)은 Cursor `A`·Codex `B`를 중단하고 pr-reviewer를 상시 리뷰어 `C`로 root `docs/REVIEW_ROUND.md` §2.1에 등록했습니다. 게시 위치는 덮어쓰는 MR note이고 finding 인용은 DOCS_GUIDE §2를 따릅니다(pr-reviewer가 head별 note로 되돌아가 T-066 기록에서 두 문서를 고쳤습니다). 과거 Origin PR 기록과 `.cursor/BUGBOT.md`는 그대로 둡니다. root 문서와 도구만 바뀌어 release가 필요 없습니다. 등록 당시 설명은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합: GitLab MR !3(리뷰어 구성)과 MR !4.
