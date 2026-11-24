@@ -120,6 +120,6 @@ locale source 회귀의 ripgrep·GNU grep 실명령 테스트는 도구가 없�
 ## 7. 제공하지 않는 것
 
 - 템플릿 artifact에 포함할 GitHub Actions 워크플로 파일, Buildkite pipeline 파일, 기타 러너 설정
-- 자동 리뷰 실행 잡, 리뷰 프롬프트, 봇 토큰 설정
+- 자동 리뷰 실행 잡과 봇 토큰 설정. `pr-review` 스킬은 사용자가 호출할 때만 도는 리뷰 절차이며 CI 잡이 아닙니다
 - 배포·릴리스·tag 잡. 품질 게이트와 배포 권한을 한 잡에 섞지 마세요
 - `scripts/check-docs.py`를 다른 언어로 다시 짠 복제 구현

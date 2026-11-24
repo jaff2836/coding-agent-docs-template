@@ -113,12 +113,24 @@ HISTORY_PATH = "docs/TEMPLATE_GUIDE.md"
 
 SKILL_PAIRS: List[Tuple[str, str]] = [
     (
+        ".agents/skills/bugfix/SKILL.md",
+        ".claude/skills/bugfix/SKILL.md",
+    ),
+    (
         ".agents/skills/design/SKILL.md",
         ".claude/skills/design/SKILL.md",
     ),
     (
+        ".agents/skills/pr-review/SKILL.md",
+        ".claude/skills/pr-review/SKILL.md",
+    ),
+    (
         ".agents/skills/project-analysis/SKILL.md",
         ".claude/skills/project-analysis/SKILL.md",
+    ),
+    (
+        ".agents/skills/refactor/SKILL.md",
+        ".claude/skills/refactor/SKILL.md",
     ),
     (
         ".agents/skills/review-round/SKILL.md",
@@ -128,6 +140,18 @@ SKILL_PAIRS: List[Tuple[str, str]] = [
 
 # Codex configuration that blocks implicit invocation and its paired skill source.
 SKILL_CONFIGS: List[Tuple[str, str]] = [
+    (
+        ".agents/skills/bugfix/SKILL.md",
+        ".agents/skills/bugfix/agents/openai.yaml",
+    ),
+    (
+        ".agents/skills/pr-review/SKILL.md",
+        ".agents/skills/pr-review/agents/openai.yaml",
+    ),
+    (
+        ".agents/skills/refactor/SKILL.md",
+        ".agents/skills/refactor/agents/openai.yaml",
+    ),
     (
         ".agents/skills/review-round/SKILL.md",
         ".agents/skills/review-round/agents/openai.yaml",

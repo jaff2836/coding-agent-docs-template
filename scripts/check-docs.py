@@ -68,31 +68,38 @@ def read_source_file(relative_path: str) -> bytes:
     return resolved.read_bytes()
 
 
+# Self-contained skills. No document under docs/ is canonical for them, so the
+# root copies this repository loads must be the Korean payload byte for byte.
+SOURCE_COPY_SKILLS = ("project-analysis", "bugfix", "pr-review", "refactor")
+
+
 def check_source_analysis_copies() -> list[str]:
-    reference = None
-    reference_path = None
     errors = []
-    for relative_path in (
-        ".agents/skills/project-analysis/SKILL.md",
-        ".claude/skills/project-analysis/SKILL.md",
-        "locales/ko/.agents/skills/project-analysis/SKILL.md",
-        "locales/ko/.claude/skills/project-analysis/SKILL.md",
-    ):
-        try:
-            content = read_source_file(relative_path)
-        except (OSError, RuntimeError, ValueError) as error:
-            errors.append(
-                "Cannot read source analysis skill %s: %s" % (relative_path, error)
-            )
-            continue
-        if reference is None:
-            reference = content
-            reference_path = relative_path
-        elif content != reference:
-            errors.append(
-                "Source analysis skill copies differ: %s != %s"
-                % (reference_path, relative_path)
-            )
+    for skill in SOURCE_COPY_SKILLS:
+        reference = None
+        reference_path = None
+        for relative_path in (
+            ".agents/skills/%s/SKILL.md" % skill,
+            ".claude/skills/%s/SKILL.md" % skill,
+            "locales/ko/.agents/skills/%s/SKILL.md" % skill,
+            "locales/ko/.claude/skills/%s/SKILL.md" % skill,
+        ):
+            try:
+                content = read_source_file(relative_path)
+            except (OSError, RuntimeError, ValueError) as error:
+                errors.append(
+                    "Cannot read source analysis skill %s: %s"
+                    % (relative_path, error)
+                )
+                continue
+            if reference is None:
+                reference = content
+                reference_path = relative_path
+            elif content != reference:
+                errors.append(
+                    "Source analysis skill copies differ: %s != %s"
+                    % (reference_path, relative_path)
+                )
     return errors
 
 

@@ -33,7 +33,23 @@
 
 ## In Progress
 
-없음. 다음 작업은 Current Milestone과 Backlog 순서를 따릅니다.
+- [ ] **T-073 `bugfix`·`refactor`·`pr-review` skill 추가**
+  - 변경-ID: `2026-11-25-bugfix-refactor-pr-review-skills`
+  - 범위·우선순위: en·ko payload와 root에 self-contained skill 세 개를 더하고 manifest·locale 검사·artifact 검사·문서를 맞춥니다. 2026-11-25 사용자 요청입니다.
+  - 선행조건: 없음
+  - 관련 결정·SPEC: D-021, [분석·리뷰 skill 변경](./changes/2026-11-25-bugfix-refactor-pr-review-skills/01-CHANGE.md)
+  - 상세 실행의 정본: 이 항목 (별도 PLAN 없음)
+  - 구현 상태: 브랜치 `claude/t073-t074-skills-and-review-round`에 구현했습니다. 기준은 `main` `33a82cc`입니다. 변경 문서 §1.5의 기본값은 2026-11-25 사용자가 확인했습니다.
+  - 통합 완료 조건: MR 리뷰와 필수 CI, GitLab `main` 반영. 공개는 별도 release 작업에서 version·release note·CHANGELOG와 함께 합니다.
+- [ ] **T-074 리뷰 라운드 절차와 기존 skill 보강**
+  - 변경-ID: `2026-11-25-review-round-and-skill-hardening`
+  - 범위·우선순위: en·ko payload와 root 사본의 REVIEW_ROUND, `review-round`·`design`·`project-analysis` skill, `bugfix`·`refactor`의 안전 규칙 한 문장, DOCS_GUIDE 체크리스트 한 줄. 2026-11-25 사용자 요청입니다.
+  - 선행조건: T-073과 같은 작업 트리에 있으며 `bugfix`·`refactor` 파일을 함께 고칩니다.
+  - 관련 결정·SPEC: D-022, [리뷰 라운드·skill 보강](./changes/2026-11-25-review-round-and-skill-hardening/01-CHANGE.md)
+  - 상세 실행의 정본: 이 항목 (별도 PLAN 없음)
+  - 구현 상태: 브랜치 `claude/t073-t074-skills-and-review-round`에 구현했습니다. 기준은 `main` `33a82cc`입니다.
+  - 남은 일: 변경 문서 §1.5 끝의 보완 두 가지 확인. 리뷰어 표를 2026-11-25에 prview로 다시 등록했으므로, 첫 MR에서 prview 결과가 도착하는지와 `지적 0건` 형식을 확인해 표의 미확인 표시를 고칩니다. prview의 요약 게시 방식이 바뀌면 게시 위치 칸을 고칩니다.
+  - 통합 완료 조건: MR 리뷰와 필수 CI, GitLab `main` 반영. 공개는 별도 release 작업에서 합니다.
 
 ## Next
 

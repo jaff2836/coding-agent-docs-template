@@ -31,19 +31,34 @@
 │   └── test_check_docs.py     # 문서 검사의 실패 경로 회귀 테스트
 ├── .agents/
 │   └── skills/
+│       ├── bugfix/
+│       │   ├── SKILL.md       # 버그·품질 분석 보고: Codex, Cursor, OMP
+│       │   └── agents/openai.yaml  # Codex의 명시 호출 전용 설정
 │       ├── design/
 │       │   └── SKILL.md       # 변경 설계 절차 진입점: Codex, Cursor, OMP
+│       ├── pr-review/
+│       │   ├── SKILL.md       # PR 리뷰 게시: Codex, Cursor, OMP
+│       │   └── agents/openai.yaml  # Codex의 명시 호출 전용 설정
 │       ├── project-analysis/
 │       │   └── SKILL.md       # 전체 프로젝트 분석 절차: Codex, Cursor, OMP
+│       ├── refactor/
+│       │   ├── SKILL.md       # 리팩터링 제안서 초안: Codex, Cursor, OMP
+│       │   └── agents/openai.yaml  # Codex의 명시 호출 전용 설정
 │       └── review-round/
 │           ├── SKILL.md       # 리뷰 라운드 진입점: Codex, Cursor, OMP
 │           └── agents/openai.yaml  # Codex의 명시 호출 전용 설정
 ├── .claude/
 │   └── skills/
+│       ├── bugfix/
+│       │   └── SKILL.md       # 버그·품질 분석 보고: Claude Code
 │       ├── design/
 │       │   └── SKILL.md       # 변경 설계 절차 진입점: Claude Code
+│       ├── pr-review/
+│       │   └── SKILL.md       # PR 리뷰 게시: Claude Code
 │       ├── project-analysis/
 │       │   └── SKILL.md       # 전체 프로젝트 분석 절차: Claude Code
+│       ├── refactor/
+│       │   └── SKILL.md       # 리팩터링 제안서 초안: Claude Code
 │       └── review-round/
 │           └── SKILL.md       # 리뷰 라운드 진입점: Claude Code
 ├── .cursor/
@@ -286,9 +301,9 @@ Claude Code는 `CLAUDE.md`와 그 import 대상에서 `@`로 시작하는 토큰
 
 - [.cursor/BUGBOT.md](../.cursor/BUGBOT.md)는 Cursor Bugbot 전용 파일입니다. Bugbot은 `.cursor/rules/`도 링크된 문서도 읽지 않고 이 파일만 프로젝트 규칙으로 사용하므로, [REVIEW.md](./REVIEW.md)의 판정 기준을 의도적으로 복제해 두었습니다. 판정 기준만이 아니라 **§6 불변조건과 §9 Accepted Deferrals, 되돌리지 않을 확정 결정**도 복제해야 Bugbot이 canonical 정책과 같은 blocking 판정을 냅니다. 리뷰 정책을 바꿀 때는 두 파일을 함께 수정하세요.
 - [.omp/WATCHDOG.md](../.omp/WATCHDOG.md)는 OMP advisor(주 에이전트를 감시하는 두 번째 모델) 전용 파일입니다. OMP는 이 파일을 advisor의 system prompt에만 붙이고 주 에이전트 컨텍스트에는 넣지 않으며, `AGENTS.md`와 달리 context file로 취급하지 않습니다. Bugbot과 다르게 `@path` import를 확장하므로 [REVIEW.md](./REVIEW.md)를 복제하지 않고 `@../docs/REVIEW.md`로 import합니다. 발견 위치는 `<dir>/WATCHDOG.md` 또는 `<dir>/.omp/WATCHDOG.md`이며, 루트를 어지르지 않기 위해 후자를 택했습니다. `.omp/` 디렉터리에 `AGENTS.md`를 두지는 마세요(위 지침 파일 절). 함께 두는 `WATCHDOG.yml`(advisor 명단·모델·도구)은 모델과 비용에 관한 프로젝트별 선택이라 템플릿에 포함하지 않습니다. (근거: OMP `docs/advisor-watchdog.md`. import 경로의 `..` 해석을 사용 중인 버전에서 확인하세요.)
-- 스킬(`design`, `project-analysis`, `review-round`)은 같은 내용을 두 경로에 둡니다. `.agents/skills/`는 Codex, Cursor, OMP가 읽고 `.claude/skills/`는 Claude Code가 읽습니다. `design`과 `review-round`는 `docs/`의 정본 절차를 가리키는 어댑터이고, `project-analysis`는 독립적으로 로드할 수 있도록 전체 분석 절차를 본문에 담습니다. Cursor는 두 경로를 모두 로드하므로 슬래시 명령이 중복 표시될 수 있습니다. 내용이 같아 동작 차이는 없으며, Claude Code를 쓰지 않는 저장소라면 `.claude/skills/` 복제본을 생략해도 됩니다.
-- `review-round`는 명시 호출 전용입니다. Claude Code·Cursor·OMP는 `disable-model-invocation: true`를 사용하고 Codex는 아래 별도 설정을 사용합니다. `design`은 합의 전까지 읽기 전용이라 자동 호출을 차단하지 않습니다. `project-analysis`도 자동 호출을 차단하지 않지만 description과 본문이 요구하는 명시적인 전체 분석 요청이 있을 때만 적용합니다. 각 모델은 설명 문구에 맞는 요청에서 절차를 선택하며, `design`의 적용 조건은 [01-DESIGN.md](./01-DESIGN.md) §1이 가릅니다.
-- 자동 호출 차단 키는 Cursor·Claude Code 모두 `disable-model-invocation`이고 OMP는 이 표기를 그대로 인식합니다. Codex는 [.agents/skills/review-round/agents/openai.yaml](../.agents/skills/review-round/agents/openai.yaml)의 `policy.allow_implicit_invocation: false`로 자동 호출을 차단하며 명시적 `$review-round` 호출은 허용합니다([공식 문서](https://learn.chatgpt.com/docs/build-skills)). 이 설정은 Codex 전용이므로 `.claude/skills/`에 복제하지 않습니다. 두 `SKILL.md`의 내용은 동일하게 유지하며 본문에도 명시 호출 조건을 남깁니다. `argument-hint`는 Claude Code 전용 필드이며 다른 도구는 무시합니다.
+- 스킬(`design`, `project-analysis`, `review-round`, `bugfix`, `refactor`, `pr-review`)은 같은 내용을 두 경로에 둡니다. `.agents/skills/`는 Codex, Cursor, OMP가 읽고 `.claude/skills/`는 Claude Code가 읽습니다. `design`과 `review-round`는 `docs/`의 정본 절차를 가리키는 어댑터이고, `project-analysis`, `bugfix`, `refactor`, `pr-review`는 독립적으로 로드할 수 있도록 절차 전체를 본문에 담습니다. Cursor는 두 경로를 모두 로드하므로 슬래시 명령이 중복 표시될 수 있습니다. 내용이 같아 동작 차이는 없으며, Claude Code를 쓰지 않는 저장소라면 `.claude/skills/` 복제본을 생략해도 됩니다.
+- `review-round`, `bugfix`, `refactor`, `pr-review`는 명시 호출 전용입니다. Claude Code·Cursor·OMP는 `disable-model-invocation: true`를 사용하고 Codex는 아래 별도 설정을 사용합니다. `bugfix`와 `refactor`는 이름이 일반적인 수정 요청과 겹치는데 실제로는 분석과 제안만 하고, `pr-review`는 PR에 리뷰를 게시하기 때문입니다. `design`은 합의 전까지 읽기 전용이라 자동 호출을 차단하지 않습니다. `project-analysis`도 자동 호출을 차단하지 않지만 description과 본문이 요구하는 명시적인 전체 분석 요청이 있을 때만 적용합니다. 각 모델은 설명 문구에 맞는 요청에서 절차를 선택하며, `design`의 적용 조건은 [01-DESIGN.md](./01-DESIGN.md) §1이 가릅니다.
+- 자동 호출 차단 키는 Cursor·Claude Code 모두 `disable-model-invocation`이고 OMP는 이 표기를 그대로 인식합니다. Codex는 명시 호출 전용 스킬마다 둔 `agents/openai.yaml`(예: [.agents/skills/review-round/agents/openai.yaml](../.agents/skills/review-round/agents/openai.yaml))의 `policy.allow_implicit_invocation: false`로 자동 호출을 차단하며 `$review-round` 같은 명시적 호출은 허용합니다([공식 문서](https://learn.chatgpt.com/docs/build-skills)). 이 설정은 Codex 전용이므로 `.claude/skills/`에 복제하지 않습니다. 두 `SKILL.md`의 내용은 동일하게 유지하며 본문에도 명시 호출 조건을 남깁니다. `argument-hint`는 Claude Code 전용 필드이며 다른 도구는 무시합니다.
 - Codex의 GitHub 리뷰는 인라인 finding에 `AGENTS.md` 줄 번호를 인용하고 finding 형식(`confidence`, `blocking`)도 그 절을 따릅니다. `AGENTS.md`의 Code Review Rules는 로컬 에이전트만이 아니라 GitHub 리뷰어의 출력 형식에도 영향을 주므로, 링크만 남기고 본문을 줄이지 마세요. Codex가 링크된 `docs/REVIEW.md`까지 읽는지는 확인되지 않았습니다.
 
 ### 외부 방법론·행동 규칙 도구

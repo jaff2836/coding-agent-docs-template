@@ -127,7 +127,7 @@ python3 scripts/verify-release.py published --version {{VERSION}} --source-commi
 
 - **공통 지침:** `AGENTS.md`, `CLAUDE.md`와 도구별 연결 파일
 - **문서 체계:** 프로젝트 기준, 설계, TODO, 리뷰 및 CI 가이드
-- **스킬:** `design`, `project-analysis`, `review-round`
+- **스킬:** `design`, `project-analysis`, `review-round`, `bugfix`, `refactor`, `pr-review`
 - **다국어 배포:** `template/common/`, `locales/en/`, `locales/ko/`, manifest와 schema
 - **도구:** 문서·locale 검사, export, release package·검증, installer
 
@@ -138,6 +138,9 @@ python3 scripts/verify-release.py published --version {{VERSION}} --source-commi
 - **`design`:** 구조나 공개 계약을 바꾸기 전에 필요한 최소 Intent·Spec·실행 계획과 사용자 합의를 정리합니다.
 - **`project-analysis`:** 명시적으로 요청된 프로젝트 전체를 기본 읽기 전용으로 근거 중심 분석하고 GO·조건부 GO·NO-GO·근거 부족 중 하나로 판단합니다.
 - **`review-round`:** 명시적으로 시작한 PR 리뷰·수정 라운드를 exact head 기준으로 진행하고, 설정한 gate 통과와 사용자 확인 후에만 merge합니다.
+- **`bugfix`:** 명시적으로 호출하면 저장소의 버그와 품질 개선 지점을 찾아 보고서 파일 하나로 남깁니다. 코드는 고치지 않습니다.
+- **`refactor`:** 명시적으로 호출하면 구조적 문제를 진단하고 리팩터링 설계 제안서 초안 파일 하나를 씁니다. 코드는 바꾸지 않습니다.
+- **`pr-review`:** 명시적으로 호출하면 지정한 PR을 정적으로 리뷰하고 그 PR에 리뷰를 게시합니다.
 
 Codex·Cursor·OMP는 `.agents/skills/`, Claude Code는 byte-identical한 `.claude/skills/` 복제본을 읽습니다.
 

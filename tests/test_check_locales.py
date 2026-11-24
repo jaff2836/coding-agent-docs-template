@@ -882,6 +882,50 @@ class LocaleFixtureTests(unittest.TestCase):
                 )
                 path.write_text(original, encoding="utf-8")
 
+    def test_every_explicit_only_skill_blocks_model_invocation(self) -> None:
+        for skill_id in ("bugfix", "pr-review", "refactor"):
+            relatives = (
+                "locales/en/.agents/skills/%s/SKILL.md" % skill_id,
+                "locales/en/.claude/skills/%s/SKILL.md" % skill_id,
+            )
+            originals = {
+                relative: self.path(relative).read_text(encoding="utf-8")
+                for relative in relatives
+            }
+            with self.subTest(skill=skill_id, target="front matter"):
+                for relative in relatives:
+                    self.path(relative).write_text(
+                        originals[relative].replace(
+                            "disable-model-invocation: true",
+                            "disable-model-invocation: false",
+                            1,
+                        ),
+                        encoding="utf-8",
+                    )
+                self.assert_error(
+                    "en:.agents/skills/%s/SKILL.md must define one unquoted "
+                    "disable-model-invocation: true boolean" % skill_id
+                )
+                for relative in relatives:
+                    self.path(relative).write_text(
+                        originals[relative], encoding="utf-8"
+                    )
+
+            config = self.path(
+                "template/common/.agents/skills/%s/agents/openai.yaml" % skill_id
+            )
+            original = config.read_text(encoding="utf-8")
+            with self.subTest(skill=skill_id, target="codex policy"):
+                config.write_text(
+                    "policy:\n  allow_implicit_invocation: true\n", encoding="utf-8"
+                )
+                self.assert_error(
+                    "fixture %s-explicit-only common config must define "
+                    "policy.allow_implicit_invocation as one unquoted false boolean"
+                    % skill_id
+                )
+                config.write_text(original, encoding="utf-8")
+
     def test_skill_contract_requires_marker_paths_and_fixture_ids(self) -> None:
         manifest = self.load_manifest()
         manifest["contracts"]["skills"][0]["fixture_ids"] = []
@@ -1036,6 +1080,41 @@ class LocaleFixtureTests(unittest.TestCase):
                 "review-round",
                 "MUST_REQUIRE_USER_CONFIRMATION_BEFORE_MERGE",
                 "MAY_MERGE_WITHOUT_USER_CONFIRMATION",
+            ),
+            (
+                "bugfix",
+                "MUST_ONLY_WRITE_THE_ANALYSIS_REPORT",
+                "MAY_WRITE_OTHER_FILES",
+            ),
+            (
+                "bugfix",
+                "MUST_DISTINGUISH_VERIFIED_INFERRED_UNVERIFIED",
+                "MAY_MERGE_ALL_EVIDENCE_STATES",
+            ),
+            (
+                "pr-review",
+                "MUST_NOT_EXECUTE_REVIEWED_CODE_WITHOUT_AUTHORIZATION",
+                "MAY_EXECUTE_REVIEWED_CODE",
+            ),
+            (
+                "pr-review",
+                "MUST_ONLY_PUBLISH_THE_REVIEW_ON_THE_TARGET_CHANGE_REQUEST",
+                "MAY_WRITE_ELSEWHERE",
+            ),
+            (
+                "pr-review",
+                "MUST_TAKE_REVIEW_POLICY_FROM_THE_BASE_REVISION",
+                "MAY_TAKE_REVIEW_POLICY_FROM_THE_HEAD_REVISION",
+            ),
+            (
+                "refactor",
+                "MUST_ONLY_WRITE_THE_PROPOSAL_DRAFT",
+                "MAY_START_IMPLEMENTING",
+            ),
+            (
+                "refactor",
+                "MUST_COMPARE_AGAINST_KEEPING_CURRENT_STRUCTURE",
+                "MAY_SKIP_THE_CURRENT_STRUCTURE_ALTERNATIVE",
             ),
         )
         for skill_id, expected, replacement in cases:

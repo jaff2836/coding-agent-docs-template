@@ -82,6 +82,21 @@ Treat commands that still contain a `{{...}}` placeholder as unconfigured and do
 - Use it only when the user explicitly requests whole-project analysis, technical due diligence, an architecture assessment, or an adoption decision.
 - It gathers evidence in read-only mode by default, distinguishes verified facts, inferences, and unverified items, and reaches an adoption decision. Do not apply it to ordinary implementation, bug fixes, question answering, or PR reviews.
 
+### [`bugfix`](./.agents/skills/bugfix/SKILL.md) — Bug and Quality Analysis Skill
+
+- Use it only when the user explicitly invokes it. It finds bugs and quality improvements in the repository and records them in a single report file; it does not modify code or project documents.
+- Do not apply it to an ordinary bug-fix request. The user requests fixes separately after reading the report.
+
+### [`refactor`](./.agents/skills/refactor/SKILL.md) — Refactoring Proposal Skill
+
+- Use it only when the user explicitly invokes it. It diagnoses structural problems and writes a single design-proposal draft file; it does not change code.
+- Carry an approved proposal into the [`docs/01-DESIGN.md`](./docs/01-DESIGN.md) procedure before implementing. Do not apply it to an ordinary refactoring request or to the design of a change whose content is already decided.
+
+### [`pr-review`](./.agents/skills/pr-review/SKILL.md) — PR Review Publishing Skill
+
+- Use it only when the user explicitly invokes it. It reviews the named PR statically and publishes the review on that PR. That publication is the only write the invocation delegates.
+- When asked for a review without publication, do not use this skill; apply only [`docs/REVIEW.md`](./docs/REVIEW.md).
+
 ### [`docs/CHANGELOG_GUIDE.md`](./docs/CHANGELOG_GUIDE.md) — Release Notes Guidance
 
 - Read it when introducing or updating release notes.

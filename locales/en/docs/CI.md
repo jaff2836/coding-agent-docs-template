@@ -103,6 +103,6 @@ When agent and human commands run locally differ from CI, the result is “works
 ## 6. Not Provided
 
 - GitHub Actions workflow files, Buildkite pipeline files, or configuration for another runner
-- Automated review jobs, review prompts, or bot token configuration
+- Automated review jobs or bot token configuration. The `pr-review` skill is a review procedure that runs only when a user invokes it; it is not a CI job
 - Deployment, release, or tag jobs. Do not mix quality gate and deployment permissions in one job
 - A duplicate reimplementation of `scripts/check-docs.py` in another language

@@ -74,6 +74,11 @@ class MaintainerCheckDocsTests(unittest.TestCase):
             "locales/ko/.claude/skills/project-analysis/SKILL.md",
         ):
             COMMON_TESTS.write(root, path, "# Analysis\n")
+        for name in ("bugfix", "pr-review", "refactor"):
+            for prefix in (".claude", "locales/ko/.agents", "locales/ko/.claude"):
+                COMMON_TESTS.write(
+                    root, "%s/skills/%s/SKILL.md" % (prefix, name), "# Skill\n"
+                )
         COMMON_TESTS.write(
             root, "docs/TEMPLATE_GUIDE.md",
             "# Source Guide\n\n- **Template version:** 1.0.0\n",
@@ -150,6 +155,22 @@ class MaintainerCheckDocsTests(unittest.TestCase):
             result, stdout, stderr = self.run_wrapper(root, [])
             self.assertEqual(result, 0, stderr)
             self.assertIn("All checks passed", stdout)
+
+    def test_every_self_contained_skill_root_copy_must_match_the_ko_payload(self) -> None:
+        for name in ("bugfix", "pr-review", "refactor"):
+            with self.subTest(skill=name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                self.write_source(root)
+                for adapter in (".agents", ".claude"):
+                    COMMON_TESTS.write(
+                        root, "locales/ko/%s/skills/%s/SKILL.md" % (adapter, name),
+                        "# Skill\n\nPayload moved ahead of the root copy.\n",
+                    )
+                result, stdout, stderr = self.run_wrapper(root, [])
+                self.assertEqual(result, 1)
+                self.assertIn("Source analysis skill copies differ", stderr)
+                self.assertIn(".agents/skills/%s/SKILL.md" % name, stderr)
+                self.assertNotIn("All checks passed", stdout)
 
     def test_analysis_pair_drift_is_rejected_even_when_each_pair_matches(self) -> None:
         for prefix in ("", "locales/ko/"):

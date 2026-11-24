@@ -27,6 +27,9 @@ The root [README.md](../README.md) contains project usage instructions for the a
 | [REVIEW.md](./REVIEW.md) | Review judgment criteria and trust boundaries | PR, diff, or commit review |
 | [REVIEW_ROUND.md](./REVIEW_ROUND.md) | Requested review round remediation and integration process | When the user starts a round. For a previous handoff, apply only §9 |
 | [`project-analysis`](../.agents/skills/project-analysis/SKILL.md) | Evidence-based whole-project analysis and adoption decision | Explicit request for whole-project analysis |
+| [`bugfix`](../.agents/skills/bugfix/SKILL.md) | Finding bugs and quality improvements and reporting them in one report | Explicit user invocation |
+| [`refactor`](../.agents/skills/refactor/SKILL.md) | Structural diagnosis and a refactoring design-proposal draft | Explicit user invocation |
+| [`pr-review`](../.agents/skills/pr-review/SKILL.md) | Static review of a named PR and publication of the review | Explicit user invocation |
 | [CI.md](./CI.md) | Runner-agnostic quality gate order and integration verification | Connecting CI or aligning it with local gates |
 | [CHANGELOG_GUIDE.md](./CHANGELOG_GUIDE.md) | Boundaries and maintenance rules for optional project release notes | Introducing or updating a project changelog |
 
@@ -155,9 +158,9 @@ Fill this in at the first adoption and at each upgrade to a new release. This do
 - [ ] Recorded project invariants and only actually approved deferrals in REVIEW. When using Bugbot, copied §6 and §9, plus the relevant settled decisions.
 - [ ] If REVIEW or PROJECT section numbers changed, compared section references in DESIGN, REVIEW_ROUND, BUGBOT, and WATCHDOG. `scripts/check-docs.py` checks document-qualified references, but a person checks ambiguous references within the same file.
 - [ ] Preserved review-round user-defined thresholds, same-head pass, session handoff, and the next task's documentation update rules.
-- [ ] When using an external reviewer, recorded the verified publication location, head identification, arrival cadence, no-finding behavior, and the `Rereview request method` (parameter `rereview`) in the registry. A local self-review does not require registration.
+- [ ] When using an external reviewer, recorded the verified publishing account, publication location, head identification, arrival cadence, no-finding behavior, and the `Rereview request method` (parameter `rereview`) with any same-head rerun method in the registry. A local self-review does not require registration.
 - [ ] Verified that instructions and skills load in the tools being used. Did not assume a Markdown link triggers automatic loading.
-- [ ] Verified byte-identical copies of each `design`, `project-analysis`, and `review-round` skill and copied the Codex [review-round explicit invocation setting](../.agents/skills/review-round/agents/openai.yaml). `policy.allow_implicit_invocation` is the boolean `false`.
+- [ ] Verified byte-identical copies of each `design`, `project-analysis`, `review-round`, `bugfix`, `refactor`, and `pr-review` skill and copied the Codex [review-round explicit invocation setting](../.agents/skills/review-round/agents/openai.yaml) together with the same setting for `bugfix`, `refactor`, and `pr-review`. `policy.allow_implicit_invocation` is the boolean `false`.
 - [ ] When using OMP, verified the [WATCHDOG](../.omp/WATCHDOG.md) import with the version in use.
 - [ ] Verified relative file links, required anchors, and import paths. `scripts/check-docs.py` passes without error. Broken links, divergent skill copies, missing or non-`false` Codex explicit invocation policy, invalid imports, inconsistent invariant lists, invalid section references, and version mismatches fail the check.
 - [ ] Distinguished global `D-` and `T-` IDs from change-local IDs. Did not delete completed or cancelled change folders, and kept the current baseline in PROJECT.

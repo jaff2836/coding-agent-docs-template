@@ -194,7 +194,103 @@ SKILL_FIXTURE_REGISTRY: Mapping[str, Mapping[str, Any]] = {
         "document": "docs/REVIEW_ROUND.md",
         "document_tokens": ("on_pass", "head", "base", "merge"),
     },
+    "bugfix-explicit-only": {
+        "skill_id": "bugfix",
+        "assertion": (
+            "> [template-contract:v1] "
+            "MUST_REQUIRE_EXPLICIT_USER_INVOCATION"
+        ),
+        "skill_tokens": ("disable-model-invocation: true",),
+        "common_document": ".agents/skills/bugfix/agents/openai.yaml",
+        "common_tokens": ("policy:", "allow_implicit_invocation: false"),
+        "common_implicit_invocation": False,
+    },
+    "bugfix-report-only": {
+        "skill_id": "bugfix",
+        "assertion": (
+            "> [template-contract:v1] MUST_ONLY_WRITE_THE_ANALYSIS_REPORT"
+        ),
+        "skill_tokens": ("mode=report-only",),
+    },
+    "bugfix-evidence-status": {
+        "skill_id": "bugfix",
+        "assertion": (
+            "> [template-contract:v1] "
+            "MUST_DISTINGUISH_VERIFIED_INFERRED_UNVERIFIED"
+        ),
+        "skill_tokens": ("evidence_status=verified|inference|unverified",),
+    },
+    "pr-review-explicit-only": {
+        "skill_id": "pr-review",
+        "assertion": (
+            "> [template-contract:v1] "
+            "MUST_REQUIRE_EXPLICIT_USER_INVOCATION"
+        ),
+        "skill_tokens": ("disable-model-invocation: true",),
+        "common_document": ".agents/skills/pr-review/agents/openai.yaml",
+        "common_tokens": ("policy:", "allow_implicit_invocation: false"),
+        "common_implicit_invocation": False,
+    },
+    "pr-review-static-by-default": {
+        "skill_id": "pr-review",
+        "assertion": (
+            "> [template-contract:v1] "
+            "MUST_NOT_EXECUTE_REVIEWED_CODE_WITHOUT_AUTHORIZATION"
+        ),
+        "skill_tokens": ("execution=static-by-default",),
+    },
+    "pr-review-single-write": {
+        "skill_id": "pr-review",
+        "assertion": (
+            "> [template-contract:v1] "
+            "MUST_ONLY_PUBLISH_THE_REVIEW_ON_THE_TARGET_CHANGE_REQUEST"
+        ),
+        "skill_tokens": ("write_scope=review-on-target", "--no-publish"),
+    },
+    "pr-review-base-policy": {
+        "skill_id": "pr-review",
+        "assertion": (
+            "> [template-contract:v1] "
+            "MUST_TAKE_REVIEW_POLICY_FROM_THE_BASE_REVISION"
+        ),
+        "skill_tokens": ("policy_source=base-revision", "docs/REVIEW.md"),
+    },
+    "refactor-explicit-only": {
+        "skill_id": "refactor",
+        "assertion": (
+            "> [template-contract:v1] "
+            "MUST_REQUIRE_EXPLICIT_USER_INVOCATION"
+        ),
+        "skill_tokens": ("disable-model-invocation: true",),
+        "common_document": ".agents/skills/refactor/agents/openai.yaml",
+        "common_tokens": ("policy:", "allow_implicit_invocation: false"),
+        "common_implicit_invocation": False,
+    },
+    "refactor-proposal-only": {
+        "skill_id": "refactor",
+        "assertion": (
+            "> [template-contract:v1] MUST_ONLY_WRITE_THE_PROPOSAL_DRAFT"
+        ),
+        "skill_tokens": ("mode=proposal-only",),
+    },
+    "refactor-keep-current-alternative": {
+        "skill_id": "refactor",
+        "assertion": (
+            "> [template-contract:v1] "
+            "MUST_COMPARE_AGAINST_KEEPING_CURRENT_STRUCTURE"
+        ),
+        "skill_tokens": ("alternative=keep-current-structure",),
+    },
 }
+
+# Skills whose front matter must block model-initiated invocation. A skill
+# belongs here when one of its fixtures pins the Codex explicit-invocation
+# policy.
+EXPLICIT_INVOCATION_SKILL_IDS = frozenset(
+    rule["skill_id"]
+    for rule in SKILL_FIXTURE_REGISTRY.values()
+    if rule.get("common_implicit_invocation") is False
+)
 
 
 class ManifestError(ValueError):
@@ -1705,7 +1801,7 @@ def _check_skills(
                         "%s:%s front matter name must equal skill id %s exactly once"
                         % (tag, relative, contract["id"])
                     )
-                if contract["id"] == "review-round":
+                if contract["id"] in EXPLICIT_INVOCATION_SKILL_IDS:
                     invocation_values = fields.get("disable-model-invocation", [])
                     if (
                         len(invocation_values) != 1
