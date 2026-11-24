@@ -46,12 +46,15 @@ locale source의 가이드는 artifact 정본입니다. root maintainer 가이�
   릴리스 이력을 여러 문서에 복제하지 않습니다.
 - 리뷰 finding ID는 `C<PR>-<슬롯>-<nnn>` 형식이며(예: `C57-A-001`), 슬롯은
   [REVIEW_ROUND.md](./REVIEW_ROUND.md) §2.1에 등록된 것만 씁니다. Cursor `A`와 Codex `B`는
-  2026-10-01부터 쓰다가 2026-10-29에 중단했고, 같은 날부터 pr-reviewer가 `C`입니다. 중단한
+  2026-10-01부터 쓰다가 2026-10-29에 중단했고, 같은 날부터 pr-reviewer가 `C`였습니다.
+  2026-11-25부터는 pr-reviewer를 대체하는 prview가 같은 역할로 `C`를 이어 씁니다. 중단한
   라벨은 다른 리뷰어에게 다시 주지 않고, 이미 발급한 ID도 고치지 않습니다. 등록되지 않은
   리뷰어의 finding은 `<플랫폼 게시 식별자>/<항목 번호>`로 가리킵니다(D-014). 등록된
   리뷰어라도 게시물에 슬롯 ID를 붙이지 않으면 같은 형식을 쓰고, 덮어쓰는 게시물이면
   `<플랫폼 게시 식별자>@<head 12자리>/<항목 번호>`로 씁니다([REVIEW_ROUND.md](./REVIEW_ROUND.md) §7). pr-reviewer는
-  슬롯 ID를 붙이지 않고 head마다 note를 따로 남기므로 `<GitLab note id>/<항목 번호>`로 씁니다. 이미 발급한
+  슬롯 ID를 붙이지 않고 head마다 note를 따로 남겼으므로 `<GitLab note id>/<항목 번호>`로 씁니다.
+  prview도 슬롯 ID를 붙이지 않으며 MR마다 요약 note 하나를 덮어쓰므로 요약의 지적은
+  `<GitLab note id>@<head 12자리>/<항목 번호>`로 씁니다. 이미 발급한
   `@<head 12자리>` ID는 고치지 않습니다.
 
 ## 3. 실행·통합·인계
@@ -91,8 +94,8 @@ locale source의 가이드는 artifact 정본입니다. root maintainer 가이�
 - [ ] 사용자 승인 범위와 관련 change 문서·TODO만 갱신했다.
 - [ ] manifest inventory와 adoption policy가 모든 locale에 닫혀 있다.
 - [ ] en·ko 가이드 의미와 skill 사본 byte identity를 확인했다.
-- [ ] 무인자 source 문서 검사로 root↔ko `project-analysis` 네 사본, root 리뷰
-  사본 세 개, README locale 표를 확인했다.
+- [ ] 무인자 source 문서 검사로 root↔ko `project-analysis`·`bugfix`·`refactor`·
+  `pr-review`의 사본 네 개씩, root 리뷰 사본 세 개, README locale 표를 확인했다.
 - [ ] root maintainer 문서가 locale 적용 안내를 복제하지 않는다.
 - [ ] README·CHANGELOG·TODO/PLAN의 현재·과거·미래 경계를 유지했다.
 - [ ] `python3 scripts/check-docs.py`와 checker 회귀 테스트를 통과했다.

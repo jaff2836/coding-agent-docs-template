@@ -55,8 +55,9 @@ python3 scripts/check-locales.py --require-stable
 `scripts/check-docs.py`의 **무인자 실행**이 maintainer source 검사입니다.
 root `CHANGELOG.md`에서 현재 version 이력을 확인하고, top-level `locales/`와
 `template/`은 재귀 문서 탐색에서 제외합니다. `docs/locales/` 같은 중첩 경로는
-제외하지 않습니다. 별도로 root와 `locales/ko`의 `.agents`·`.claude`
-`project-analysis/SKILL.md` 네 사본이 byte-identical한지 확인하며, 파일 누락·
+제외하지 않습니다. 별도로 self-contained skill(`project-analysis`, `bugfix`,
+`refactor`, `pr-review`)마다 root와 `locales/ko`의 `.agents`·`.claude`
+`SKILL.md` 네 사본이 byte-identical한지 확인하며, 파일 누락·
 읽기 실패·저장소 밖 경로·사본 차이는 실패로 진단합니다. `design`과
 `review-round`의 root↔ko 본문 차이는 이 동등성 검사 대상이 아닙니다.
 
@@ -100,7 +101,8 @@ source locale 검사는 이 선언·참조·sentinel과 root 안내의 정본 �
 - root [문서 운영 보충 안내](./DOCS_GUIDE.md)는 maintainer 상태·ID·release
   기록 방식을, locale `DOCS_GUIDE.md`는 적용 프로젝트 문서 체계를 소유합니다.
 - `design`과 `review-round` skill은 locale의 정본 절차를 가리키는 adapter이고,
-  `project-analysis`는 독립 로딩 가능한 분석 계약을 본문에 담습니다.
+  `project-analysis`는 독립 로딩 가능한 분석 계약을 본문에 담습니다. `bugfix`,
+  `refactor`, `pr-review`도 절차 전체를 본문에 담습니다.
 - 외부 방법론 도구를 함께 쓰면 같은 역할의 정본을 하나만 지정합니다.
   PROJECT는 결정·정본 인덱스, TODO는 전역 변경 단위, 외부 산출물은 합의한
   상세 설계 또는 실행 상태만 소유하도록 경계를 기록합니다.

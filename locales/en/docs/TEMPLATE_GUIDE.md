@@ -31,19 +31,34 @@ The template does not include an initialization script, review prompts or automa
 │   └── test_check_docs.py     # Regression tests for documentation-check failure paths
 ├── .agents/
 │   └── skills/
+│       ├── bugfix/
+│       │   ├── SKILL.md       # Bug and quality analysis report: Codex, Cursor, OMP
+│       │   └── agents/openai.yaml  # Explicit-invocation-only configuration for Codex
 │       ├── design/
 │       │   └── SKILL.md       # Entry point for change design: Codex, Cursor, OMP
+│       ├── pr-review/
+│       │   ├── SKILL.md       # PR review publication: Codex, Cursor, OMP
+│       │   └── agents/openai.yaml  # Explicit-invocation-only configuration for Codex
 │       ├── project-analysis/
 │       │   └── SKILL.md       # Whole-project analysis process: Codex, Cursor, OMP
+│       ├── refactor/
+│       │   ├── SKILL.md       # Refactoring proposal draft: Codex, Cursor, OMP
+│       │   └── agents/openai.yaml  # Explicit-invocation-only configuration for Codex
 │       └── review-round/
 │           ├── SKILL.md       # Entry point for review rounds: Codex, Cursor, OMP
 │           └── agents/openai.yaml  # Explicit-invocation-only configuration for Codex
 ├── .claude/
 │   └── skills/
+│       ├── bugfix/
+│       │   └── SKILL.md       # Bug and quality analysis report: Claude Code
 │       ├── design/
 │       │   └── SKILL.md       # Entry point for change design: Claude Code
+│       ├── pr-review/
+│       │   └── SKILL.md       # PR review publication: Claude Code
 │       ├── project-analysis/
 │       │   └── SKILL.md       # Whole-project analysis process: Claude Code
+│       ├── refactor/
+│       │   └── SKILL.md       # Refactoring proposal draft: Claude Code
 │       └── review-round/
 │           └── SKILL.md       # Entry point for review rounds: Claude Code
 ├── .cursor/
@@ -286,9 +301,9 @@ The source of truth for shared rules is [AGENTS.md](../AGENTS.md). This layout a
 
 - [.cursor/BUGBOT.md](../.cursor/BUGBOT.md) is specific to Cursor Bugbot. Bugbot reads neither `.cursor/rules/` nor linked documents; it uses only this file for project rules. The review criteria from [REVIEW.md](./REVIEW.md) are therefore intentionally duplicated here. To produce the same blocking decision as the canonical policy, duplicate not only the decision criteria but also **the §6 invariants, §9 Accepted Deferrals, and settled decisions that must not be reverted**. Update both files whenever the review policy changes.
 - [.omp/WATCHDOG.md](../.omp/WATCHDOG.md) is specific to the OMP advisor, a second model that monitors the primary agent. OMP appends this file only to the advisor's system prompt, not to the primary agent context, and does not treat it as a context file like `AGENTS.md`. Unlike Bugbot, it expands `@path` imports, so it imports [REVIEW.md](./REVIEW.md) through `@../docs/REVIEW.md` instead of duplicating it. OMP discovers `<dir>/WATCHDOG.md` or `<dir>/.omp/WATCHDOG.md`; this template uses the latter to keep the root uncluttered. Do not place `AGENTS.md` in `.omp/` (see "Instruction Files" above). The companion `WATCHDOG.yml` (advisor list, models, and tools) is a project-specific choice involving models and cost, so the template does not include it. (Source: OMP `docs/advisor-watchdog.md`; verify `..` resolution in import paths with the version you use.)
-- Skills (`design`, `project-analysis`, `review-round`) contain the same content at two paths. Codex, Cursor, and OMP read `.agents/skills/`; Claude Code reads `.claude/skills/`. `design` and `review-round` are adapters to canonical procedures in `docs/`, while `project-analysis` contains the full analysis process so it can load independently. Cursor loads both paths, so slash commands may appear twice. Their identical content means there is no behavioral difference. If a repository does not use Claude Code, it may omit the `.claude/skills/` copy.
-- `review-round` is explicit-invocation-only. Claude Code, Cursor, and OMP use `disable-model-invocation: true`; Codex uses the separate configuration below. Because `design` is read-only until agreement, its automatic invocation is not blocked. `project-analysis` is also not blocked from automatic selection, but its description and body require an explicit whole-project analysis request. A model may select a process for a matching request, while [01-DESIGN.md](./01-DESIGN.md) §1 determines design applicability.
-- The automatic-invocation blocking key is `disable-model-invocation` for both Cursor and Claude Code, and OMP recognizes the same spelling. For Codex, [.agents/skills/review-round/agents/openai.yaml](../.agents/skills/review-round/agents/openai.yaml) blocks implicit invocation with `policy.allow_implicit_invocation: false` while allowing explicit `$review-round` invocation ([official documentation](https://learn.chatgpt.com/docs/build-skills)). This configuration is Codex-specific, so do not copy it into `.claude/skills/`. Keep the two `SKILL.md` files identical and retain the explicit-invocation requirement in their bodies. `argument-hint` is a Claude Code-specific field and other tools ignore it.
+- Skills (`design`, `project-analysis`, `review-round`, `bugfix`, `refactor`, `pr-review`) contain the same content at two paths. Codex, Cursor, and OMP read `.agents/skills/`; Claude Code reads `.claude/skills/`. `design` and `review-round` are adapters to canonical procedures in `docs/`, while `project-analysis`, `bugfix`, `refactor`, and `pr-review` contain their full process so they can load independently. Cursor loads both paths, so slash commands may appear twice. Their identical content means there is no behavioral difference. If a repository does not use Claude Code, it may omit the `.claude/skills/` copy.
+- `review-round`, `bugfix`, `refactor`, and `pr-review` are explicit-invocation-only. Claude Code, Cursor, and OMP use `disable-model-invocation: true`; Codex uses the separate configuration below. The names `bugfix` and `refactor` overlap ordinary change requests although the skills only analyze and propose, and `pr-review` publishes a review on a PR. Because `design` is read-only until agreement, its automatic invocation is not blocked. `project-analysis` is also not blocked from automatic selection, but its description and body require an explicit whole-project analysis request. A model may select a process for a matching request, while [01-DESIGN.md](./01-DESIGN.md) §1 determines design applicability.
+- The automatic-invocation blocking key is `disable-model-invocation` for both Cursor and Claude Code, and OMP recognizes the same spelling. For Codex, the `agents/openai.yaml` kept beside each explicit-invocation-only skill (for example [.agents/skills/review-round/agents/openai.yaml](../.agents/skills/review-round/agents/openai.yaml)) blocks implicit invocation with `policy.allow_implicit_invocation: false` while allowing an explicit invocation such as `$review-round` ([official documentation](https://learn.chatgpt.com/docs/build-skills)). This configuration is Codex-specific, so do not copy it into `.claude/skills/`. Keep the two `SKILL.md` files identical and retain the explicit-invocation requirement in their bodies. `argument-hint` is a Claude Code-specific field and other tools ignore it.
 - Codex's GitHub review cites `AGENTS.md` line numbers in inline findings and follows that file's format for `confidence` and `blocking`. The Code Review Rules in `AGENTS.md` therefore affect the GitHub reviewer's output, not only the local agent. Do not replace the body with a link alone. It is not verified whether Codex follows the linked `docs/REVIEW.md`.
 
 ### External Methodology and Behavioral-Rules Tools

@@ -65,6 +65,9 @@ Describe how to report vulnerabilities and what information must not be disclose
 - **`design`:** turns structural or public-contract changes into the minimum necessary intent, specification, and execution plan before implementation.
 - **`project-analysis`:** performs an explicitly requested, evidence-based whole-project assessment in read-only mode by default and reaches a GO, conditional, no-go, or insufficient-evidence decision.
 - **`review-round`:** runs an explicitly invoked review/fix cycle against the exact PR head and merges only after the configured gate passes and the user confirms.
+- **`bugfix`:** when explicitly invoked, finds bugs and quality improvements in the repository and records them in a single report file; it does not fix code.
+- **`refactor`:** when explicitly invoked, diagnoses structural problems and writes a single refactoring design-proposal draft file; it does not change code.
+- **`pr-review`:** when explicitly invoked, reviews the named PR statically and publishes the review on that PR.
 
 Codex, Cursor, and OMP load the `.agents/skills/` copies; Claude Code loads the byte-identical `.claude/skills/` copies.
 

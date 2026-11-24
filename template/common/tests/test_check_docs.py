@@ -46,11 +46,14 @@ def write_minimal_artifact(root: Path) -> None:
     write(root, ".agents/skills/design/SKILL.md", "# Design\n")
     write(root, ".agents/skills/project-analysis/SKILL.md", "# Analysis\n")
     write(root, ".agents/skills/review-round/SKILL.md", "# Review\n")
-    write(
-        root,
-        ".agents/skills/review-round/agents/openai.yaml",
-        "policy:\n  allow_implicit_invocation: false\n",
-    )
+    for name in ("bugfix", "pr-review", "refactor", "review-round"):
+        if name != "review-round":
+            write(root, ".agents/skills/%s/SKILL.md" % name, "# Skill\n")
+        write(
+            root,
+            ".agents/skills/%s/agents/openai.yaml" % name,
+            "policy:\n  allow_implicit_invocation: false\n",
+        )
 
 
 class CheckDocsTests(unittest.TestCase):

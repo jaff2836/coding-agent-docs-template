@@ -9,9 +9,9 @@ disable-model-invocation: true
 
 **사용자가 이 스킬을 명시적으로 호출한 경우에만 실행하세요.** 모델 판단으로 자동 실행하지 마세요. 이 절차는 commit과 merge를 수행합니다.
 
-1. `docs/REVIEW_ROUND.md`를 읽고 그 절차를 그대로 적용합니다. → [docs/REVIEW_ROUND.md](../../../docs/REVIEW_ROUND.md)
+1. `docs/REVIEW_ROUND.md`를 읽고 그 절차를 그대로 적용합니다. → [docs/REVIEW_ROUND.md](../../../docs/REVIEW_ROUND.md) 이 문서나 `docs/REVIEW.md`가 저장소에 없으면 시작하지 않고 그 사실을 보고합니다. 문서 없이 절차를 짐작해 commit이나 merge를 하지 않습니다.
 2. 판정 기준은 `docs/REVIEW.md`입니다. → [docs/REVIEW.md](../../../docs/REVIEW.md)
-3. 사용자가 별도 지정하지 않은 파라미터에만 기본값을 사용합니다: 5라운드, 임계값 `모든 P0 = 0, 모든 P1 = 0, blocking P2 = 0`, `rereview = auto`, branch 삭제 없음. 외부 리뷰어를 사용하는데 리뷰어 표(§2.1)가 비어 있으면 시작하지 않고 등록을 요청합니다. `reviewers = self`는 등록 없이 시작하며 외부 리뷰를 요청하거나 기다리지 않습니다. PR이 없으면 `on_pass = merge 안 함`을 기본으로 합니다.
+3. 사용자가 별도 지정하지 않은 파라미터에만 `docs/REVIEW_ROUND.md` §2 표의 기본값을 사용합니다. 기본값은 그 표가 정본이며 이 파일에 옮겨 적지 않습니다. 외부 리뷰어를 사용하는데 리뷰어 표(§2.1)가 비어 있으면 시작하지 않고 등록을 요청합니다. `reviewers = self`는 등록 없이 시작하며 외부 리뷰를 요청하거나 기다리지 않습니다. PR이 없으면 `on_pass = merge 안 함`을 기본으로 합니다.
 4. 사용자가 지정한 임계값을 포함해 확정한 파라미터를 되읽어 준 뒤 시작하세요. 진행 중 사용자가 명시적으로 바꾸면 §2에 따라 기록하고 재평가하며, 임의로 기본값을 강제하거나 완화하지 않습니다.
 5. 통과하면 head를 동결하고 남은 항목은 세션 인계 목록에 기록합니다. 현재 PR에 기록용 commit·push를 추가하지 않으며, 저장소 문서 반영은 §9에 따라 다음 작업에서 수행합니다.
 

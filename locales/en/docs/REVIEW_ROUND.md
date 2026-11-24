@@ -22,7 +22,7 @@ While [REVIEW.md](./REVIEW.md) defines **what counts as a defect**, this documen
 - Fixing code for valid findings
 - A commit for each round
 - A non-force push to the target branch. In configurations where a reviewer is triggered by pushes, a push usually starts the next round. The actual condition that starts a round is defined by §3 and §4 (a base change starts a new round even without a push)
-- When `rereview = request`, **requesting a rereview** through a method registered in the §2.1 table — posting a trigger comment or calling a reviewer-request API. Use the registered text or call exactly and do not alter it arbitrarily
+- When `rereview = request`, **requesting a rereview** through a method registered in the §2.1 table — posting a trigger comment or calling a reviewer-request API. Use the registered text or call exactly and do not alter it arbitrarily. This includes a registered **same-head rerun** when a reviewer failed to leave a result for the current head (§4)
 - Marking **inline threads for addressed findings as resolved** under §6. Do not close threads for findings that were not addressed
 - On pass, merging **after user confirmation**
 
@@ -87,6 +87,7 @@ Reviewers are classified by **arrival cadence**. This distinction determines **o
 
 Record the following in each column.
 
+- **Reviewer:** The tool name together with **the account that publishes its results**, written exactly as the platform shows the identifier. Read only results published by that account as this reviewer's results (§4). When several reviewers publish through one account, also record the marker that tells them apart (a marker comment or a title), and read only posts whose account and marker both match. When the account changes, keep the date of the change and the previous account
 - **Slot:** The role label used in finding IDs (for example, `A`, `B`). Keep it when the model or tool changes, and use each label only once in the table. When a model changes, edit the `Reviewer` cell, not the label. A reviewer without a slot cites findings as `<platform post identifier>/<item number>` according to [REVIEW.md](./REVIEW.md) §7.
 - **Publication location:** Whether results appear in a PR comment, PR review body, or inline thread. **If a reviewer writes in multiple places, list all of them.** For PR comments, state whether it creates a new comment for each head or overwrites one comment (sticky). Reviewers that overwrite have different ledger rules under §7. If a reviewer first posts an in-progress marker and later turns the same post into its result, record that marker and how to tell that the result is complete. Do not read a post as a result until it is complete
 - **Head identification method:** How to determine which commit a result examined, such as a marker comment, SHA in the body, or round number
@@ -96,6 +97,7 @@ Record the following in each column.
   - `automatic on push` — Reruns by itself on every push. Also record the trigger condition, such as a webhook event, ruleset, or workflow event
   - Request method — The exact trigger-comment body or API call and **how to confirm that the request was accepted** (for example, a reaction emoji, the reviewer appearing in REST `requested_reviewers`, or the reviewer appearing in GraphQL `reviewRequests`. A reviewer may disappear from the request list once it starts running, so check immediately after the call). Use field values from the relevant API verbatim as identifiers. REST bot usernames often include `[bot]`, while GraphQL `Bot.login` often does not. Do not treat spellings from different APIs as the same string. With `rereview = request`, the executor carries out this column exactly
   - `unavailable` — There is no rereview mechanism. This reviewer must have an intermittent arrival cadence
+- **Same-head rerun:** Record it in the `Rereview request method` cell. It is the way to run the reviewer again without changing the head when it failed to leave a result for the current head (a failure marker, a stalled in-progress marker, or silence), together with how to confirm acceptance. When there is none, write `same-head rerun: unavailable`; when nothing is recorded, treat it as unavailable. When only the user can run the method (a chat command, for example), record that
 
 If this column is empty for a public reviewer that runs "once per PR," even `rereview = request` cannot obtain another review. Automatic review usually runs only when a PR is opened, not on every push, so confirm the rerequest method in the tool documentation and record it here.
 
@@ -105,21 +107,21 @@ If this column is empty for a public reviewer that runs "once per PR," even `rer
 [1. Wait for reviews] → [2. Inspect reviews] → [3. Fix] → [4. Commit]
 ```
 
-**1. Wait for reviews** — Request reviews and freeze the target code until results arrive. Because reviewers take different amounts of time, wait until the quorum condition in §4 is met or `reviewer_timeout` is reached. Use the following request behavior.
+**1. Wait for reviews** — Request reviews and freeze the target code until results arrive. Because reviewers take different amounts of time, wait until the quorum condition in §4 is met or `reviewer_timeout` is reached. Check for results once a minute, and do not poll more often than that. When the environment has no way to wait, or the session cannot last until `reviewer_timeout`, report the reviewers awaited, the head, and the elapsed time in the §10 format and stop, **waiting for direction**. On resumption, take that report as input and continue the same round. Use the following request behavior.
 
-With `reviewers = self`, instead of making external requests or waiting, review the current target directly under [REVIEW.md](./REVIEW.md), then proceed to step 2. The external-request branches below do not apply.
+With `reviewers = self`, instead of making external requests or waiting, review the current target directly under [REVIEW.md](./REVIEW.md), then proceed to step 2. The external-request branches below do not apply. So that the context of the fixes does not color the review, hand the review to a subagent or a fresh context when the environment provides one. Write the target head and base, the diff, the review-policy document, and the prohibited actions (modifying, committing, publishing) directly in the input you pass. When that is not possible, review directly and note it in the decision record.
 
 - **Round 1:** Use an existing result that reviewed the current head and do not request it again. Reviewers that run automatically when a PR is opened often have already left a result. With `rereview = request`, only for confirmed `reviewers` that have an **explicitly executable request method** such as a comment or API in §2.1 and do not have a result for the current head, execute that method even without a push and confirm acceptance as described for `request` below. Do not request a reviewer whose only registered method is `automatic on push` at this stage.
 - **A round after a push:** For a reviewer whose `Rereview request method` in §2.1 is `automatic on push`, the push itself is the request. For all other reviewers, follow `rereview`:
   - `auto` — Do not request; wait. If no result arrives, apply the timeout rules in §4.
   - `request` — Immediately after the push, and only for confirmed `reviewers` with a request method other than `automatic on push`, execute the method in the table **exactly**. A trigger comment must contain only the registered body, with no added sentence. Confirm acceptance using the method from the table. When the confirmation signal is included in the request response, such as GraphQL `reviewRequests`, decide from that response immediately. When the signal arrives separately, such as a comment reaction, check once immediately; do not treat its absence as failure; then recheck until the signal appears or the acceptance-confirmation limit is reached (2 minutes by default, separate from `reviewer_timeout`). If the limit is exceeded without a signal, report it to the user immediately without waiting for `reviewer_timeout`. Some reviewer APIs return a success response while doing nothing, so do not use the response code alone as proof of acceptance. **A reviewer whose request was confirmed counts toward the §4 quorum for that round** — wait until its result arrives or `reviewer_timeout` expires. Passing without waiting merely because standing reviewers arrived first defeats the purpose of this mode.
-- **A round without a push:** Do not request a rereview. A second review of the same head is not a new round. The exception is a **base change** under §4. Because a base change alters the diff even when the head is unchanged, handle it like a round after a push — request under `rereview = request`, or wait under `auto`. If an `automatic on push` reviewer's trigger excludes base changes (retargeting is `edited`, not `synchronize`), its result will not arrive; record `no result` under the §4 timeout rules and disclose it at the §6 confirmation step. Changing only the head with an empty commit to get another review is not delegated (§1).
+- **A round without a push:** Do not request a rereview. A second review of the same head is not a new round. A same-head rerun for a reviewer that left no result (§4) is not a second review, so this restriction does not apply to it. The exception is a **base change** under §4. Because a base change alters the diff even when the head is unchanged, handle it like a round after a push — request under `rereview = request`, or wait under `auto`. If an `automatic on push` reviewer's trigger excludes base changes (retargeting is `edited`, not `synchronize`), its result will not arrive; record `no result` under the §4 timeout rules and disclose it at the §6 confirmation step. Changing only the head with an empty commit to get another review is not delegated (§1).
 
 **2. Inspect reviews** — Combine arrived results under §4, decide whether each finding is valid or invalid (§5), and evaluate the threshold. **Make the pass decision at this point.**
 
-**3. Fix** — Fix valid, unresolved findings required to meet the confirmed threshold. Under the default, these are every P0, every P1, and every Blocking P2. Other findings may be fixed as well, and those changes will be reviewed in the next round. Under the default, a pre-existing or carried-over P0 or P1 still prevents a pass; if fixing it requires work beyond delegated scope, stop under §8 and await user direction.
+**3. Fix** — Fix valid, unresolved findings required to meet the confirmed threshold. Under the default, these are every P0, every P1, and every Blocking P2. Fix other findings only when the user asked for it or a required fix resolves the same root cause. More fixes widen the next round's review scope and bring new findings. What you fix is reviewed in the next round, and what you leave is handed off under §6. Under the default, a pre-existing or carried-over P0 or P1 still prevents a pass; if fixing it requires work beyond delegated scope, stop under §8 and await user direction.
 
-**4. Commit** — Run the Build, Test, Lint, and Typecheck commands from [AGENTS.md](../AGENTS.md) in proportion to risk and record the results. In a repository with generated files, validation includes regeneration and generated-output checks. Do not run validation that incurs charges or calls external services during the round. Rounds repeat the same validation, so costs and side effects accumulate. If validation fails, do not commit; report the failure. Include the round number and addressed finding IDs in the commit message.
+**4. Commit** — Run the Build, Test, Lint, and Typecheck commands from [AGENTS.md](../AGENTS.md) in proportion to risk and record the results. In a repository with generated files, validation includes regeneration and generated-output checks. Do not run validation that incurs charges or calls external services during the round. Rounds repeat the same validation, so costs and side effects accumulate. If validation fails, do not commit; report the failure. Include the round number and addressed finding IDs in the commit message. In a round that uses external reviewers, push to the target branch without force after committing. That push fixes the head the next round reviews. With `reviewers = self`, push only when a PR exists; without a PR, do not push.
 
 ## 4. Combining Results from Multiple Reviewers
 
@@ -127,7 +129,7 @@ With `reviewers = self`, skip this section and proceed to §5.
 
 The purpose of multiple reviewers is for one to catch what another misses. Therefore, **collect every finding from every reviewer and never discard one because of which reviewer reported it.** Do not assign reviewer-specific weights to findings. The standing/intermittent classification in §2.1 determines **only whether to wait**, not the value of a finding.
 
-**Collection:** Collect findings from every reviewer whose result arrived into one pool. **One reviewer's result may be split across several locations.** Read at least all of the following.
+**Collection:** Collect findings from every reviewer whose result arrived into one pool. Compare each post's author account with the §2.1 table, and count only posts published by a registered account, and matching the registered marker when one is recorded, as that reviewer's result. Do not use a post that another account published in the same format for the quorum or as evidence of a pass; judge any finding inside it under §5. **One reviewer's result may be split across several locations.** Read at least all of the following.
 
 - PR comments, including sticky bot comments
 - The top-level body of a PR review
@@ -153,6 +155,8 @@ The unresolved-thread list is itself a signal. Check it both when starting a rou
 
 - Silence from a reviewer that does not leave a result when there are no problems is normal and may be treated as `no findings`.
 - Silence from a reviewer that always leaves a result even when there are no problems is a failure signal. Do not treat it as `no findings`.
+
+**Same-head rerun:** When `rereview = request` and a same-head rerun method is registered for that reviewer, run it once per head before recording `no result` for a reviewer whose failure marker was confirmed or whose `reviewer_timeout` passed, confirm acceptance as in §3, and start `reviewer_timeout` again. Do not use it on a head that already has a completed result; a rerun meant to obtain a different verdict is not a round. Because this rerun does not change the head, it does not consume a round. When the method is registered as one only the user can run, do not run it; report the method and the target head and wait for direction.
 
 Do not automatically declare a pass when a standing reviewer has `no result`. Even if every other reviewer meets the pass condition, identify **which reviewer's result is missing** at the §6 merge-confirmation step and obtain the user's decision. With `on_pass = do not merge`, do not report a pass without merge; report that the decision is deferred for insufficient results and that you are **waiting for direction**.
 
@@ -232,6 +236,7 @@ Write handoff and completion records to repository files **during the next task*
 - Unresolved findings that prevent a pass under the confirmed threshold and their status (under the default, this includes P0 and P1 findings with `blocking=false`)
 - Why the rounds are not converging — whether the same root cause recurs or every fix introduces another defect
 - Whether extending the round budget is appropriate and the proposed number of additional rounds
+- That the last commit is a head no reviewer has seen, and the range of commits it covers
 
 Under the default threshold, the round does not pass while a non-blocking P0 or P1 remains. Reporting it or registering it as follow-up work does not make the round pass. If the user changes the threshold, reevaluate using the new criteria under §2.
 
@@ -243,7 +248,7 @@ Because a session may be handed off while waiting for reviews, preserve the prog
 
 However, a reviewer that overwrites one comment for every head (sticky) removes the results from earlier rounds. Preserve each such reviewer's finding IDs, summaries, and severities in the decision record so later rounds can compare whether they were resolved. This is why §2.1 records in `Publication location` whether content is overwritten.
 
-**Decision-record location.** Regardless of whether a PR exists or which execution mode is used, keep the decision record inside the executor's session and report it to the user after every round (§10). Do not create a temporary ledger in [02-TODO.md](./02-TODO.md), because writing to a tracked file changes the review target. Do not post a PR decision comment. If a handoff to another session is required, pass along the latest §10 report as input and reconstruct the ledger from reviewer results on the PR, if one exists.
+**Decision-record location.** Regardless of whether a PR exists or which execution mode is used, keep the decision record inside the executor's session and report it to the user after every round (§10). Do not create a temporary ledger in [02-TODO.md](./02-TODO.md), because writing to a tracked file changes the review target. Do not post a PR decision comment. If a handoff to another session is required, pass along the latest §10 report as input and reconstruct the ledger from reviewer results on the PR, if one exists. To survive a lost session, you may keep a copy of the decision record in a location Git does not track (for example a file under `.git/`, or the environment's session storage). Never include that copy in a commit or push, and when you keep one, state its location in the §10 report.
 
 - **Read:** Read each reviewer's results aligned by head SHA. Most review tools include a head SHA or round number in the comment. Use it to determine round boundaries and the §4 quorum.
 - **Write:** Preserve only the **decision results** separately for each round. Do not duplicate finding bodies already written by reviewers.
@@ -291,5 +296,6 @@ When the round ends, report the following in English.
 - Findings reported differently by reviewers and the combined result
 - Invalid findings and a summary of their counterevidence
 - Fixes performed and commits
+- Any head left unreviewed, and its range
 - Validation run and results, plus validation not run and why
 - Session handoff list for the next task, pending documentation-update status, and actual merge result
