@@ -1,4 +1,4 @@
-# AI Agent Docs Template
+# Coding Agent Docs Template
 
 A documentation template for people and AI coding agents to collaborate with the **same document structure, design process, and review criteria**. It provides project documentation and agent instructions, not an application framework.
 

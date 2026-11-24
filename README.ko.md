@@ -1,4 +1,4 @@
-# AI Agent Docs Template
+# Coding Agent Docs Template
 
 AI 코딩 에이전트와 사람이 **같은 문서 체계, 설계 절차, 리뷰 기준**으로 협업하기 위한 템플릿입니다. 앱 프레임워크가 아니라 프로젝트 문서와 에이전트 지침을 제공합니다.
 
