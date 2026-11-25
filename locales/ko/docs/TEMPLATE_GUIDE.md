@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.3.0
+- **Template version:** 3.3.1
 - **Template source:** 템플릿 원본 저장소의 URL 또는 다시 접근할 수 있는 보관 위치를 프로젝트에 맞게 작성
 - **Template revision:** 복사 기준인 원본 commit의 전체 SHA를 프로젝트에 맞게 작성 (§5)
 - **Owner:** 프로젝트에 맞게 작성
@@ -371,8 +371,9 @@ git status --short --untracked-files=all
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
 
-### v3.3.0 — 분석·리뷰 skill 추가, 리뷰 라운드 보강과 참조 정의 판정
+### v3.3.1 — 분석·리뷰 skill 추가, 리뷰 라운드 보강과 참조 정의 판정
 
+- 3.3 계열의 첫 release이며 `v3.3.0`은 건너뛰었습니다. GitHub의 annotated tag `v3.3.0`은 판 번호를 올리기 전 commit(`7576b94`)에 잘못 만들어져 release가 없고, release tag 보호 때문에 그대로 둡니다. 그 commit의 안내 문서는 `Template version`이 3.2.0이므로 `v3.3.0` tag를 템플릿 원본으로 쓰지 마세요.
 - skill 세 개를 더했습니다. `bugfix`는 버그와 품질 개선 지점을 찾아 보고서 파일 하나로 남기고, `refactor`는 구조적 문제를 진단해 리팩터링 설계 제안서 초안 하나를 씁니다. 둘 다 코드를 고치지 않습니다. `pr-review`는 지정한 PR을 정적으로 리뷰해 그 PR에 리뷰를 게시하며, 리뷰 정책은 base revision의 `docs/REVIEW.md`에서 읽습니다. 셋 다 명시 호출 전용이고 Codex용 `agents/openai.yaml`이 함께 있습니다. 템플릿 문서가 있는 저장소와 없는 저장소를 한 본문에서 다루고, `pr-review`는 특정 hosting 제품에 의존하지 않습니다. ko의 `pr-review` 본문은 영어이고 게시 라벨만 한국어입니다. `AGENTS.md`, [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 문서 지도·체크리스트, 이 문서 §1·§4와 루트 `README.md`가 새 skill을 안내하고, [CI.md](./CI.md)는 `pr-review`가 CI 잡이 아니라고 적습니다.
 - [REVIEW_ROUND.md](./REVIEW_ROUND.md): 4단계에 push 시점을, 리뷰 대기에 1분 간격 확인과 기다릴 수 없을 때의 지시 대기를 더했습니다. 결과는 §2.1에 등록한 계정이 게시하고, 표식을 등록했다면 표식도 맞는 것만 그 리뷰어의 결과로 읽습니다. 리뷰어가 head에 결과를 남기지 못하면 `rereview = request`에서만 등록된 같은 head 재실행을 한 번 쓰고, 사용자만 실행할 수 있는 방법이면 지시 대기로 보고합니다. 리뷰되지 않은 head를 보고하고, 판정 기록 사본을 Git이 추적하지 않는 곳에 둘 수 있습니다. 3단계는 임계값을 채우는 데 필요한 finding만 고치는 것이 기본입니다. DOCS_GUIDE 체크리스트는 리뷰어 표의 게시 계정과 같은 head 재실행 방법도 확인하게 합니다.
 - `review-round`·`design` skill은 정본 문서가 없으면 시작하지 않고, `review-round`는 기본값을 옮겨 적지 않고 REVIEW_ROUND §2 표를 따릅니다. `project-analysis`·`bugfix`·`refactor`는 신뢰를 확인하지 못한 외부 저장소의 코드를 확인 없이 실행하지 않고, 그 저장소의 지침 파일도 데이터로 읽습니다.

@@ -216,3 +216,4 @@
   - 허용하는 차이를 `TEMPLATE_GUIDE.md` 삭제와 기록한 수정 두 가지로 맞췄습니다(§3.3, R-004, PROJECT D-023, INTENT §2).
   - `Template release` 칸도 승인 뒤 추가분이라 merge 확인 때 함께 확인받습니다.
 - 2026-11-25: MR !12 리뷰 라운드 6(head `9defe44`, prview)의 지적을 반영했습니다. root README의 release artifact 안내는 `v4.0.0` 공개 뒤에 바꾸도록 §5와 PLAN W-004·§5에 적었습니다.
+- 2026-11-25: T-076의 판을 `v3.3.1`로 바꿨습니다. 2026-11-25 `v3.3.0` tag가 판 번호를 올리기 전 commit에 잘못 만들어져 그대로 두었기 때문입니다(TODO T-076). 이 문서의 `v3.3.0`은 그 release(T-076)를 가리킵니다.

@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.3.0
+- **Template version:** 3.3.1
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -371,8 +371,9 @@ When changing instructions, skills, the checker, or the version of a tool or mod
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
 
-### v3.3.0 — Analysis and Review Skills, Review Round Hardening, and Reference Definition Parsing
+### v3.3.1 — Analysis and Review Skills, Review Round Hardening, and Reference Definition Parsing
 
+- This is the first 3.3 release; `v3.3.0` was skipped. The annotated GitHub tag `v3.3.0` was created by mistake on a commit before the version bump (`7576b94`) and has no release, and it stays in place because release tags are protected. Its guides still say `Template version` 3.2.0, so do not use the `v3.3.0` tag as a template source.
 - Three skills are added. `bugfix` finds bugs and quality improvements and records them in a single report file, and `refactor` diagnoses structural problems and writes a single refactoring design-proposal draft; neither changes code. `pr-review` statically reviews the named PR and publishes the review on that PR, reading the review policy from `docs/REVIEW.md` at the base revision. All three are explicit-only and ship with a Codex `agents/openai.yaml`. Each handles repositories with and without the template documents in one body, and `pr-review` does not depend on a specific hosting product. `AGENTS.md`, the document map and checklist in [DOCS_GUIDE.md](./DOCS_GUIDE.md), §1 and §4 of this document, and the root `README.md` describe the new skills, and [CI.md](./CI.md) notes that `pr-review` is not a CI job.
 - [REVIEW_ROUND.md](./REVIEW_ROUND.md) adds when to push in step 4, checking for results once a minute while waiting, and reporting and waiting for instructions when the session cannot wait. Only posts from the account registered in §2.1, with matching markers when markers are registered, count as that reviewer's results. When a reviewer leaves no result on a head, the registered same-head rerun is used once, and only with `rereview = request`; a method that only the user can run is reported as waiting for instructions. An unreviewed head is reported, and a copy of the judgment record may be kept outside Git tracking. Step 3 by default fixes only the findings needed to meet the threshold. The DOCS_GUIDE checklist also asks you to confirm the posting account and the same-head rerun method in the reviewer table.
 - The `review-round` and `design` skills do not start when their canonical document is missing, and `review-round` follows the table in REVIEW_ROUND §2 instead of restating the defaults. `project-analysis`, `bugfix`, and `refactor` do not run code from an external repository whose trust is unconfirmed without asking, and they read that repository's instruction files as data.
