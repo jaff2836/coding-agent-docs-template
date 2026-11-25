@@ -29,19 +29,19 @@
   - 검증 방법: 질문 Q1~Q5의 답과 승인 문구를 Approval에 기록
   - 결과·근거: 2026-11-25 사용자가 "추천안대로"로 답했습니다. INTENT·SPEC을 `Accepted`로 바꾸고 PROJECT에 D-023, TODO에 T-076을 더했습니다. branch `claude/t075-template-docs-folder`의 작업 트리에 기록했고 commit하지 않았습니다.
 - [ ] **W-002 payload 이동과 칸 분리**
-  - 범위·변경 파일: `locales/en`·`locales/ko`의 `docs/` 여덟 개 이동, 프로젝트 기록 문서 추가, 네 문서의 Metadata 정리, DOCS_GUIDE 문서 지도·Metadata Convention·체크리스트, TEMPLATE_GUIDE §1 구조·§2 단계·§3 검색 명령·§4 CODEOWNERS·§5, `merge` 정책 문서 `02-TODO.md`·`CI.md`·`REVIEW_ROUND.md`의 링크, `AGENTS.md`, skill 여섯 개 중 경로를 쓰는 것(`design`, `project-analysis`, `bugfix`, `refactor`), `.omp/WATCHDOG.md`, `README.md` 양식
-  - 대응 요구사항·상위 완료 조건: R-001~R-005
+  - 범위·변경 파일: `locales/en`·`locales/ko`의 `docs/` 여덟 개 이동, 프로젝트 기록 문서 추가, 네 문서의 Metadata 정리, DOCS_GUIDE 문서 지도·Metadata Convention·체크리스트, TEMPLATE_GUIDE §1 구조·§2 단계·§3 검색 명령·§4 CODEOWNERS·§5, `merge` 정책 문서 `02-TODO.md`·`CI.md`·`REVIEW_ROUND.md`의 링크, `AGENTS.md`, skill 여섯 개 중 경로를 쓰는 것(`design`, `project-analysis`, `bugfix`, `refactor`), `.omp/WATCHDOG.md`, `README.md` 양식. 옮기는 문서에서 지울 수 있는 경로로 가는 링크를 코드 경로로 바꾸고, 선택 파일 삭제 안내를 프로젝트 소유 문서의 링크로 좁힙니다(SPEC §3.3)
+  - 대응 요구사항·상위 완료 조건: R-001~R-005, R-011
   - 선행조건: W-001, T-076의 `main` 통합
   - 검증 방법: `check-locales.py --require-stable`, en·ko export 결과물의 `check-docs.py`
   - 결과·근거:
 - [ ] **W-003 검사기와 도구**
-  - 범위·변경 파일: SPEC §3.4의 표 전체와 해당 테스트
-  - 대응 요구사항·상위 완료 조건: R-002, R-005~R-008
+  - 범위·변경 파일: SPEC §3.4의 표 전체, 파일명 참조의 대체 규칙(SPEC §3.4)과 해당 테스트
+  - 대응 요구사항·상위 완료 조건: R-002, R-005~R-008, R-011
   - 선행조건: W-002와 같은 MR
-  - 검증 방법: `unittest discover -s tests`, `unittest discover -s template/common/tests`. R-002와 R-006의 새 사례는 규칙을 잠시 되돌려 실패를 확인(red-green)
+  - 검증 방법: `unittest discover -s tests`, `unittest discover -s template/common/tests`. R-002·R-006·R-011의 새 사례는 규칙을 잠시 되돌려 실패를 확인(red-green). R-006에는 `docs/template/DESIGN.md`만 있는 저장소의 `01-DESIGN.md §1` 사례를 넣습니다
   - 결과·근거:
 - [ ] **W-004 root 유지관리 영역**
-  - 범위·변경 파일: root `docs/template/`, root skill 사본, root `README.md`·`README.ko.md`의 guide 링크와 `artifact/docs/TEMPLATE_GUIDE.md` 안내, root DOCS_GUIDE·TEMPLATE_GUIDE 보충 문서, root `AGENTS.md`, 이력 문서의 링크 27개(SPEC §3.5)
+  - 범위·변경 파일: root `docs/template/`, root skill 사본, root `README.md`·`README.ko.md`의 guide 링크와 `artifact/docs/TEMPLATE_GUIDE.md` 안내, root DOCS_GUIDE·TEMPLATE_GUIDE 보충 문서, root `AGENTS.md`, 이력 문서의 링크 27개와 이 변경 폴더의 링크 4개(SPEC §3.5). 구현할 때 다시 세어 그 뒤에 생긴 링크도 포함합니다
   - 대응 요구사항·상위 완료 조건: R-009
   - 선행조건: W-002와 같은 MR
   - 검증 방법: 무인자 `scripts/check-docs.py`, 이력 문서 diff가 링크 목적지에만 있는지 확인
@@ -50,7 +50,7 @@
   - 범위·변경 파일: 없음(검증만)
   - 대응 요구사항·상위 완료 조건: R-010
   - 선행조건: W-002~W-004
-  - 검증 방법: `v3.2.0`으로 만든 적용 저장소 사본에 이 head의 로컬 package로 `adopt --base-version 3.2.0`을 돌려 옛 경로 여덟 개와 새 경로 아홉 개의 분류를 확인합니다. SPEC §5의 절차대로 옮긴 뒤 그 저장소의 `check-docs.py`가 통과하는지 봅니다.
+  - 검증 방법: `v3.2.0`으로 만든 적용 저장소 사본에 이 head의 로컬 package로 `adopt --base-version 3.2.0`을 돌려, SPEC §5 표의 경우마다 분류를 확인합니다. 옛 문서를 고치지 않은 사본, 고친 사본, `TEMPLATE_GUIDE.md`를 지운 사본, 새 경로에 파일이 있는 사본이 대상입니다. 그 뒤 SPEC §5의 절차(모든 `copy` 파일 교체 포함)대로 옮기고 그 저장소의 `check-docs.py`가 통과하는지 봅니다.
   - 결과·근거:
 
 ## 3. 검증 기록
@@ -63,6 +63,7 @@
 
 - 2026-11-25: 최초 작성. SPEC이 `Draft`라 구현을 시작하지 않았습니다.
 - 2026-11-25: W-001 완료. SPEC Q5에 따라 §1에 T-076 선행 단계를 넣고 W-002의 선행조건과 Baseline을 고쳤습니다.
+- 2026-11-25: MR !12 리뷰 라운드 1의 지적을 따라 W-002~W-005에 R-011, 파일명 참조 대체 규칙, 이 폴더의 링크, 업그레이드 경우별 분류를 더했습니다(SPEC §7).
 
 ## 5. 인계
 
