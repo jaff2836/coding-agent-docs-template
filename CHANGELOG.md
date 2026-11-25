@@ -6,6 +6,14 @@
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
 
+## v3.3.1 (unpublished candidate) — Analysis and review skills, review round hardening, and reference definition parsing
+
+- Adds three explicit-only skills: `bugfix` records bugs and quality improvements in one report file, `refactor` writes one refactoring design-proposal draft, and `pr-review` statically reviews a named PR and publishes the review on it. Each ships with a Codex `agents/openai.yaml`, and the artifact checker requires the `.agents/skills/` copies, so copy them when you upgrade.
+- `docs/REVIEW_ROUND.md` adds when to push, once-a-minute checks while waiting, matching the registered posting account and markers, a same-head rerun only with `rereview = request`, reporting an unreviewed head, and a copy of the judgment record; step 3 fixes only what the threshold needs by default. The `review-round` and `design` skills stop when their canonical document is missing, and the analysis skills do not run code from an unconfirmed external repository without asking.
+- `scripts/check-docs.py` reads reference definitions inside blockquotes and list items, closes a label at the first unescaped `]`, and no longer backtracks on long backslash lines. Links that use those definitions are now checked, so previously hidden broken links can be reported.
+- `installer.py`, the Python 3.12 requirement, the installer commands, and release manifest `schema_version` 2 are unchanged; the artifact inventory adds nine skill files.
+- `v3.3.0` was skipped. The GitHub tag `v3.3.0` was created by mistake on the commit before the version bump and has no release; it stays in place because release tags are protected. Do not use it as a template source.
+
 ## [v3.2.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.2.0) — Checker Markdown parsing, review round clarifications, and adoption record
 
 - `scripts/check-docs.py` now follows CommonMark for escaped backticks, code spans across block boundaries, fences and HTML blocks inside list items and blockquotes, indented code examples, and backticks in thematic breaks and info strings, and it reads comments, the key separator, and booleans in the Codex explicit-invocation policy value by YAML 1.2 core rules. The stricter parsing can report broken links or policy values that the previous checker missed.

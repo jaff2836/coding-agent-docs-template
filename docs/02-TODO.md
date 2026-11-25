@@ -8,14 +8,14 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-11-04 (KST)
+- **Last reviewed:** 2026-11-25 (KST)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
 - **Integration target:** GitLab `main`(MR merge, 2026-10-28 전에는 Origin `main`의 PR merge)과 공개 저장소 `jaff2836/coding-agent-docs-template`의 `main`(같은 merge commit의 non-force fast-forward, [TEMPLATE_GUIDE §5](./TEMPLATE_GUIDE.md)); v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
-- **Name:** 없음
-- **Status:** `v3.2.0` 공개로 적용 저장소 역제안 반영과 GitLab 이전 마일스톤(T-066~T-069)이 끝났습니다. 첫 번째 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중입니다. 2026-11-03에 등록한 T-071과 2026-11-04에 사용자가 정한 T-072가 payload 검사기의 참조 정의 처리를 고쳤고, T-073·T-074가 skill을 더하고 보강했습니다. 이 네 작업은 T-076 `v3.3.0`으로 공개하고, 2026-11-25에 합의한 T-075(D-023)는 그 뒤에 구현해 `v4.0.0`으로 냅니다. 적용 저장소 업그레이드는 아직 등록하지 않았고, T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
+- **Name:** `v3.3.1` — 미공개 검사기 수정과 skill 공개 (T-071~T-074, T-076)
+- **Status:** In Progress — `v3.2.0` 공개로 적용 저장소 역제안 반영과 GitLab 이전 마일스톤(T-066~T-069)이 끝났습니다. 첫 번째 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중입니다. 2026-11-03에 등록한 T-071과 2026-11-04에 사용자가 정한 T-072가 payload 검사기의 참조 정의 처리를 고쳤고, T-073·T-074가 skill을 더하고 보강했습니다. 이 네 작업은 T-076 `v3.3.1`로 공개하고, 2026-11-25에 합의한 T-075(D-023)는 그 뒤에 구현해 `v4.0.0`으로 냅니다. 적용 저장소 업그레이드는 아직 등록하지 않았고, T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
 
 ## 운영 규칙
 
@@ -33,6 +33,14 @@
 
 ## In Progress
 
+- [ ] **T-076 `v3.3.1` release (`v3.3.0` 건너뜀)**
+  - 범위: `v3.2.0` 뒤 `main`에 통합된 미공개 payload 변경 T-071·T-072(검사기의 참조 정의 처리)와 T-073·T-074(skill 세 개 추가, 리뷰 라운드·skill 보강)를 D-007 단계로 공개합니다. 2026-11-25 사용자 요청("release 준비 시작")입니다.
+  - version 판단: D-023 Q5의 `v3.3.0`(minor)을 아래 tag 사고 때문에 `v3.3.1`로 냅니다. artifact inventory에 skill 파일 9개가 늘고 검사기 판정이 엄격해졌습니다. `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version` 2는 그대로입니다.
+  - tag 사고: 2026-11-25(KST 17:31) 준비 MR !13을 merge하기 전에 tag 단계를 실행해, annotated `v3.3.0` tag(`c03d452`)가 판 번호를 올리기 전 commit `7576b94`에 만들어져 GitHub에 push됐습니다. 이어서 돌린 `package-release.py`는 판 번호가 3.2.0이라 멈췄고, draft와 release는 만들지 않았습니다. ruleset이 tag의 갱신·삭제를 막으므로 이 tag는 그대로 두고, 사용자 결정("v3.3.1로 내기")으로 `v3.3.0`을 건너뜁니다. `7576b94`와 준비 head의 차이는 판 번호와 이력 문서뿐입니다. 같은 때 GitHub `main`은 `7576b94`로 fast-forward됐고, 이것은 정상 단계였습니다. tag 단계의 명령에는 준비 merge commit과 판 번호를 확인하는 검사를 넣습니다.
+  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.3.1로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.3.1 이력(건너뛴 `v3.3.0` tag 안내 포함)을, root `CHANGELOG` 영·한에 `unpublished candidate`·`미공개 후보`를 표시한 v3.3.1 항목(공개 시 표시를 release 링크로 교체)을 더했습니다. `v3.2.0` 대비 바뀐 artifact 파일은 locale마다 18개(새 skill 6개, 기존 skill 6개, `AGENTS.md`, `README.md`, `docs/CI.md`, `docs/DOCS_GUIDE.md`, `docs/REVIEW_ROUND.md`, `docs/TEMPLATE_GUIDE.md`)와 공통 5개(새 Codex 설정 3개, `scripts/check-docs.py`, `tests/test_check_docs.py`)입니다.
+  - [ ] tag·draft candidate: 준비가 통합된 exact source에 사용자가 annotated `v3.3.1` tag와 GitHub draft를 만들고, agent가 `verify-release.py candidate --base-version 3.2.0`을 실행합니다. verifier는 두 remote `main`이 같아야 통과하므로 GitHub `main`을 그 merge commit으로 fast-forward한 뒤 실행하고, 공개·published 검증이 끝날 때까지 다른 MR을 merge하지 않습니다.
+  - [ ] 공개·published: 사용자가 draft를 immutable release로 공개하고, agent가 Linux에서 `verify-release.py published --base-version 3.2.0`을 실행하고 Windows는 Buildkite `coding-agent-docs-template-windows-ci` 수동 build로 검증합니다.
+  - [ ] 기록: 공개 뒤 기록 MR에서 검증 결과를 남기고, root `CHANGELOG` v3.3.1 제목의 미공개 후보 표시를 release 링크로 바꾸며, PROJECT의 "`v3.3.1`로 공개합니다" 표시를 고칩니다.
 - [ ] **T-075 템플릿 소유 문서를 `docs/template/`로 분리**
   - 변경-ID: `2026-11-25-template-owned-docs-folder`
   - 범위·우선순위: en·ko payload의 `copy` 문서 네 개와 변경 양식 네 개를 `docs/template/`로 옮기고, 그 문서에서 프로젝트가 채우는 칸을 `docs/TEMPLATE_RECORD.md`로 뺍니다. 검사기·도구·root 구조를 맞춥니다. 2026-11-25 사용자 요청입니다.
@@ -44,11 +52,7 @@
 
 ## Next
 
-- [ ] **T-076 `v3.3.0` release**
-  - 범위·우선순위: `v3.2.0` 뒤 `main`에 통합된 미공개 payload 변경을 minor로 공개합니다. T-071·T-072(검사기의 참조 정의 처리)와 T-073·T-074(skill 세 개 추가, 리뷰 라운드·skill 보강)입니다. version, 두 guide의 `Template version`, locale TEMPLATE_GUIDE의 release 이력과 root CHANGELOG를 고치고 D-007 단계로 검증합니다. 적용 저장소가 확인할 것: 새 skill 세 쌍과 Codex 설정을 함께 복사해야 `check-docs.py`가 통과하고, 엄격해진 참조 정의 판정이 숨어 있던 깨진 링크를 보고할 수 있습니다.
-  - 선행조건: 없음. D-023이 이 작업을 T-075보다 먼저 하도록 정했습니다(2026-11-25 "추천안대로").
-  - 게시: tag와 release는 사용자가 만듭니다(T-066과 같은 절차).
-  - 통합 완료 조건: 준비 MR의 리뷰·필수 CI·GitLab `main` 반영, 사용자의 게시, candidate·published 검증.
+T-076 `v3.3.1` release를 검증·공개합니다. T-075 구현은 T-076이 `main`에 통합된 뒤 그 `main`에서 시작합니다(D-023). 새 작업은 사용자와 정한 뒤 MR 단위로 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
