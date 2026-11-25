@@ -16,8 +16,8 @@
 |---|---|---|---|---|
 | R-001 | 템플릿 소유 문서 네 개와 변경 양식 네 개가 `docs/template/` 아래에 있고 옛 경로에는 없다. en·ko가 같은 경로를 가진다 | en·ko export | inventory가 §3.1 표의 새 경로와 일치하고 옛 경로가 없다 | `tests/test_export_template.py`, `check-locales.py --require-stable` |
 | R-002 | `docs/template/` 바로 아래의 안내 문서 네 개에는 프로젝트가 채우는 칸이 없다. 복사용 양식(`docs/template/changes/`)은 제외한다. 양식의 칸(`Owner` 등)은 복사한 변경 폴더에서 채우고 양식 자체는 고치지 않는다 | payload의 `docs/template/*.md`에 `Owner`, `Last reviewed`, `Template source`, `Template revision` 칸이나 「템플릿 적용 기록」 절을 다시 넣음 | locale 검사가 실패한다 | `tests/test_check_locales.py`의 새 사례(red-green) |
-| R-003 | 프로젝트가 채우는 값은 프로젝트 소유 문서 `docs/TEMPLATE_RECORD.md`(§3.2)에 모이고 adoption policy는 `merge`다 | 새 프로젝트에 `install` | 그 문서에 source·revision·적용 기록 칸이 있고, DOCS_GUIDE의 placeholder 검색이 그 문서의 미작성 칸을 찾으며 검색 선언 자체는 찾지 않는다(§3.3) | export inventory, placeholder 검색 명령 실행 |
-| R-004 | 적용 안내가 `docs/template/`을 artifact 판으로 통째로 바꾸는 폴더로 정의한다. 허용하는 차이는 `TEMPLATE_GUIDE.md` 삭제뿐이고, 고친 것은 프로젝트 기록에 남긴다 | DOCS_GUIDE·TEMPLATE_GUIDE 읽기 | 문서 지도에 소유 구분이 있고, 업그레이드 절차가 폴더 교체로 적혀 있다 | 문서 검토 |
+| R-003 | 프로젝트가 채우는 값은 프로젝트 소유 문서 `docs/TEMPLATE_RECORD.md`(§3.2)에 모이고 adoption policy는 `merge`다 | 새 프로젝트에 `install` | 그 문서에 source·revision·`Template release`·적용 기록 칸이 있고, DOCS_GUIDE의 placeholder 검색이 그 문서의 미작성 칸을 찾으며 검색 선언 자체는 찾지 않는다(§3.3) | export inventory, placeholder 검색 명령 실행 |
+| R-004 | 적용 안내가 `docs/template/`을 artifact 판으로 통째로 바꾸는 폴더로 정의한다. 허용하는 차이는 `TEMPLATE_GUIDE.md` 삭제와 프로젝트 기록에 적은 수정 두 가지다(§3.3) | DOCS_GUIDE·TEMPLATE_GUIDE 읽기 | 문서 지도에 소유 구분이 있고, 업그레이드 절차가 폴더 교체로 적혀 있다 | 문서 검토 |
 | R-005 | 변경 양식의 링크는 양식 위치와 복사한 위치(`docs/changes/<변경-ID>/`) 양쪽에서 같은 파일을 가리킨다 | 양식 네 개를 `docs/changes/example/`로 복사한 artifact | `check-docs.py`가 통과한다 | `template/common/tests/test_check_docs.py`의 새 사례 |
 | R-006 | 검사기가 `docs/template/`의 문서를 짧은 이름으로 찾는다. 옛 경로를 가리키는 파일명 참조는 새 문서로 풀리지 않고 실패한다(§3.4의 대체 규칙) | `DESIGN §3` 같은 이름 참조, `docs/template/DESIGN.md`만 있는 저장소의 `01-DESIGN.md §1`, `docs/changes/x/`에서 쓴 `00-PROJECT.md §8` | 첫째는 절 번호까지 검사되고, 둘째는 "document target does not exist"로 실패하고, 셋째는 지금처럼 `docs/00-PROJECT.md`로 풀린다 | `template/common/tests/test_check_docs.py`의 새 사례(red-green) |
 | R-007 | 판 번호 검사와 release 이력 검사가 새 경로를 읽고, `TEMPLATE_GUIDE.md`를 지운 저장소에서도 동작한다 | `docs/template/DOCS_GUIDE.md`만 있는 artifact | `Template version` 검사가 DOCS_GUIDE만으로 통과한다 | 기존 생략 허용 테스트의 경로 갱신 |
@@ -69,14 +69,15 @@
 | `Owner`, `Last reviewed` | 네 문서 Metadata | 지웁니다. D-009에서 `project-analysis`의 프로젝트별 Metadata를 지운 것과 같은 이유입니다 |
 | `Status`, `Review cadence` | 네 문서 Metadata | 그대로. 템플릿이 정한 값입니다 |
 
-- `Template version`이 폴더 안에만 있으므로, 폴더를 바꾸면 판 번호도 함께 바뀝니다. 프로젝트 기록에는 판 번호를 다시 적지 않습니다(두 곳에 두면 어긋납니다).
+- `Template version`은 폴더 안에만 둡니다. 폴더를 바꾸면 판 번호도 함께 바뀌고, 프로젝트 기록에는 판 번호를 다시 적지 않습니다(두 곳에 두면 어긋납니다).
+- 적용한 원본이 exact release가 아닐 수 있습니다. tag 이후 commit, tag 없는 원본, source checkout에서 export한 artifact, 미커밋 변경을 포함한 경우입니다. 이때 폴더 안의 `Template version`은 원본 파일에 적힌 값 그대로 두고, 프로젝트 기록의 `Template release` 칸에 그 사실을 적습니다. 값은 지금 TEMPLATE_GUIDE의 규칙과 같습니다(`미릴리스 (최근 tag: v1.2)` 또는 `미릴리스 (tag 없음)`). 미커밋 변경은 `Template revision`의 `미확정 (…)`으로 적습니다. exact release면 `release`로 둡니다.
 - 프로젝트 기록의 `Template source`·`Template revision`은 지금 적용한 판의 원본을 가리킵니다. 업그레이드할 때 이전 값은 「이전 기준」에 남기고 두 칸을 새 원본으로 고칩니다(§5).
 - DOCS_GUIDE의 Metadata Convention과 체크리스트의 "Owner·검토 주기·날짜를 기록했다"는 프로젝트 소유 문서에만 적용하도록 고칩니다.
 
 ### 3.3 소유 규칙
 
 - `docs/template/` 아래는 artifact와 byte 단위로 같습니다. 업그레이드는 이 폴더의 파일을 새 artifact 판으로 바꾸는 것입니다. 이 폴더에는 artifact의 파일만 두고 프로젝트 파일은 두지 않습니다. 업그레이드 전부터 있던 inventory 밖 파일은 옮깁니다(§5).
-- 허용하는 차이는 `TEMPLATE_GUIDE.md` 삭제 하나입니다(지금의 생략 허용을 유지).
+- 허용하는 차이는 두 가지입니다. 하나는 `TEMPLATE_GUIDE.md` 삭제(지금의 생략 허용을 유지)이고, 다른 하나는 프로젝트 기록의 「템플릿 소유 파일의 수정」에 적은 수정(아래 넷째 항목)입니다. 수정한 파일은 업그레이드 때 artifact 판에서 시작해 그 수정을 다시 적용합니다(§5 4단계). 그 밖의 차이는 두지 않습니다.
 - 선택 파일을 지우는 보통의 적용에서는 이 폴더를 고칠 일이 없어야 합니다. 그래서 이 폴더의 문서는 지울 수 있는 경로를 링크 대신 코드 경로(`` `docs/10-EXTENSION.md` ``)로 적습니다(R-011). 2026-11-25 `65e5f3d`의 ko 기준으로 지금 그렇게 링크하는 곳은 18개입니다(`01-DESIGN.md` 3개, `DOCS_GUIDE.md` 4개, `TEMPLATE_GUIDE.md` 11개). en도 같은 수입니다.
 - 코드 경로라도 뒤에 절 번호가 붙으면 검사기가 따라갑니다. `SECTION_PATH_RE`는 inline code 안의 `` `<경로>.md` §n``을, `SECTION_FILENAME_RE`는 `TEMPLATE_GUIDE.md §n`을 찾고, 대상이 없으면 실패로 보고합니다. 그래서 지울 수 있는 문서의 절은 제목(예: TEMPLATE_GUIDE의 「외부 방법론·행동 규칙 도구」)이나 짧은 이름(`TEMPLATE_GUIDE §4`)으로 가리킵니다. 짧은 이름 참조는 대상이 없으면 검사기가 건너뜁니다(§3.4). 지금 `01-DESIGN.md`의 `[TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §4`가 이 경우입니다.
 - 선택 파일을 지울 때 "들어오는 링크도 지운다"는 지금의 안내(DOCS_GUIDE 「번호와 파일 수」와 체크리스트, TEMPLATE_GUIDE §2 5단계와 §5)는 프로젝트 소유 문서의 링크만 가리키도록 고칩니다.
@@ -209,3 +210,7 @@
   - `docs/template/`의 inventory 밖 파일을 직접 찾아 옮깁니다. report에 나오지 않습니다.
   - `docs/TEMPLATE_RECORD.md`가 이미 있으면 제자리에서 병합합니다.
   - 지웠던 `TEMPLATE_GUIDE.md`는 새 경로에도 넣지 않을 수 있습니다.
+- 2026-11-25: MR !12 리뷰 라운드 5(head `cf9287a`, prview)의 지적 두 건을 반영했습니다.
+  - release가 아닌 원본에서 적용한 사실을 프로젝트 기록의 `Template release` 칸에 적도록 §3.2와 R-003을 고쳤습니다.
+  - 허용하는 차이를 `TEMPLATE_GUIDE.md` 삭제와 기록한 수정 두 가지로 맞췄습니다(§3.3, R-004, PROJECT D-023, INTENT §2).
+  - `Template release` 칸도 승인 뒤 추가분이라 merge 확인 때 함께 확인받습니다.
