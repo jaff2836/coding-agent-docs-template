@@ -75,7 +75,7 @@
 
 ### 3.3 소유 규칙
 
-- `docs/template/` 아래는 artifact와 byte 단위로 같습니다. 업그레이드는 이 폴더를 새 artifact의 같은 폴더로 바꾸는 것입니다.
+- `docs/template/` 아래는 artifact와 byte 단위로 같습니다. 업그레이드는 이 폴더의 파일을 새 artifact 판으로 바꾸는 것입니다. 이 폴더에는 artifact의 파일만 두고 프로젝트 파일은 두지 않습니다. 업그레이드 전부터 있던 inventory 밖 파일은 옮깁니다(§5).
 - 허용하는 차이는 `TEMPLATE_GUIDE.md` 삭제 하나입니다(지금의 생략 허용을 유지).
 - 선택 파일을 지우는 보통의 적용에서는 이 폴더를 고칠 일이 없어야 합니다. 그래서 이 폴더의 문서는 지울 수 있는 경로를 링크 대신 코드 경로(`` `docs/10-EXTENSION.md` ``)로 적습니다(R-011). 2026-11-25 `65e5f3d`의 ko 기준으로 지금 그렇게 링크하는 곳은 18개입니다(`01-DESIGN.md` 3개, `DOCS_GUIDE.md` 4개, `TEMPLATE_GUIDE.md` 11개). en도 같은 수입니다.
 - 코드 경로라도 뒤에 절 번호가 붙으면 검사기가 따라갑니다. `SECTION_PATH_RE`는 inline code 안의 `` `<경로>.md` §n``을, `SECTION_FILENAME_RE`는 `TEMPLATE_GUIDE.md §n`을 찾고, 대상이 없으면 실패로 보고합니다. 그래서 지울 수 있는 문서의 절은 제목(예: TEMPLATE_GUIDE의 「외부 방법론·행동 규칙 도구」)이나 짧은 이름(`TEMPLATE_GUIDE §4`)으로 가리킵니다. 짧은 이름 참조는 대상이 없으면 검사기가 건너뜁니다(§3.4). 지금 `01-DESIGN.md`의 `[TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §4`가 이 경우입니다.
@@ -139,9 +139,11 @@
 - **적용 저장소의 링크:** 프로젝트 문서, README, 변경 문서가 옛 경로를 가리키면 깨집니다. 새 `check-docs.py`가 깨진 링크와 옛 파일명 참조를 보고합니다. release 이력에 옛 경로→새 경로 표를 둡니다.
 - **업그레이드 절차(locale TEMPLATE_GUIDE의 release 이력에 적을 내용):**
   1. `adopt --base-version <이전 판>`을 돌립니다. 옛 경로 여덟 개와 새 경로 아홉 개가 아래 표처럼 나옵니다(R-010). 네 문서는 프로젝트가 Metadata를 채웠으므로 대부분 `diverged`일 것입니다(추론).
-  2. report의 `blocked`와 `diverged`를 먼저 봅니다. `blocked` 경로는 정리한 뒤 다시 돌립니다. 새 경로에 다른 내용의 파일이 이미 있으면(`diverged`) 그 내용을 프로젝트 소유 위치로 옮겨 보존하고 프로젝트 기록의 「보존·제외」에 적습니다.
+  2. report의 `blocked`와 `diverged`를 먼저 봅니다. `blocked` 경로는 정리한 뒤 다시 돌립니다. 새 경로에 이미 있는 파일은 policy에 따라 다르게 다룹니다.
+     - `docs/template/` 아래(`copy`): 다른 내용의 파일(`diverged`)을 프로젝트 소유 위치로 옮겨 보존하고 프로젝트 기록의 「보존·제외」에 적습니다. inventory 밖 파일(예: 프로젝트가 만든 `docs/template/notes.md`)도 같습니다. 이런 파일은 report에 나오지 않습니다. `scripts/installer.py`의 upgrade report는 base와 current inventory의 합집합만 보므로(1244행) 폴더를 직접 훑어 찾습니다.
+     - `docs/TEMPLATE_RECORD.md`(`merge`): 기존 문서를 제자리에 두고 템플릿 절을 병합합니다. 다른 `merge` 문서와 같습니다.
   3. 옛 문서의 「템플릿 적용 기록」과 의도한 수정을 프로젝트 기록 문서로 옮깁니다. 옛 `Template source`·`Template revision`은 「이전 기준」에 남기고, 두 칸은 이번 artifact의 원본 위치와 commit으로 새로 씁니다. locale TEMPLATE_GUIDE의 「템플릿 개정 반영하기」와 같은 규칙입니다.
-  4. 옛 파일을 지우고 artifact의 `docs/template/`을 그대로 넣습니다. 나머지 `copy` 정책 파일(`.agents/`·`.claude/`의 skill과 Codex 설정, `scripts/check-docs.py`, `tests/test_check_docs.py`)은 지금의 `copy` 처리처럼 artifact 판에서 시작해, 프로젝트 기록의 「템플릿 소유 파일의 수정」에 적은 의도한 수정만 다시 적용합니다. `docs/template/` 안의 수정(§3.3)도 같습니다. 옛 검사기는 `docs/DOCS_GUIDE.md`를 필수로 읽고, 옛 `design` skill은 `docs/01-DESIGN.md`가 없으면 절차를 적용하지 않으므로 이 파일들은 한 번에 바꿉니다.
+  4. 옛 파일을 지우고 artifact의 `docs/template/` 파일을 그대로 넣습니다. 옛 `docs/TEMPLATE_GUIDE.md`를 지웠던 저장소(옛 경로가 `converged`)는 새 `docs/template/TEMPLATE_GUIDE.md`도 넣지 않을 수 있습니다(§3.3의 허용 차이). 그 선택을 「보존·제외」에 적습니다. 나머지 `copy` 정책 파일(`.agents/`·`.claude/`의 skill과 Codex 설정, `scripts/check-docs.py`, `tests/test_check_docs.py`)은 지금의 `copy` 처리처럼 artifact 판에서 시작해, 프로젝트 기록의 「템플릿 소유 파일의 수정」에 적은 의도한 수정만 다시 적용합니다. `docs/template/` 안의 수정(§3.3)도 같습니다. 옛 검사기는 `docs/DOCS_GUIDE.md`를 필수로 읽고, 옛 `design` skill은 `docs/01-DESIGN.md`가 없으면 절차를 적용하지 않으므로 이 파일들은 한 번에 바꿉니다.
   5. `merge` 정책 문서(`AGENTS.md`, `README.md`, `02-TODO.md`, `CI.md`, `REVIEW_ROUND.md`)의 바뀐 링크를 평소처럼 병합하고, 프로젝트가 직접 단 링크를 고칩니다.
   6. `check-docs.py`와 테스트를 돌립니다.
 - **업그레이드 분류(R-010):** `scripts/installer.py`의 `_upgrade_status`를 읽고 낸 추론이며, W-005에서 실행해 확인합니다.
@@ -155,6 +157,7 @@
   | 새 경로 | 같은 내용의 파일이 이미 있음 | `converged` |
   | 새 경로 | 다른 내용의 파일이 이미 있음 | `diverged` |
   | 어느 경로든 | symlink, 일반 파일이 아님 등 | `blocked` |
+  | `docs/template/` 아래의 inventory 밖 파일 | 있음 | report에 나오지 않음. 2단계에서 직접 찾음 |
 
 - **순서 의존:** 새 `check-docs.py`는 새 경로를, 옛 검사기와 옛 skill은 옛 경로를 요구합니다. 한쪽만 바꾸면 검사가 실패하거나 `design` skill이 멈추므로, 업그레이드 안내는 4단계에서 모든 `copy` 파일을 한 번에 바꾸라고 적습니다.
 - **version:** artifact 경로와 adoption plan의 `guide` 값이 바뀌고 적용 저장소의 링크가 깨지므로 `v4.0.0`(major)으로 냅니다(Q5). v2(artifact 구조 변경)와 v3(Python 하한, installer 명령 계약 변경)를 major로 낸 선례가 있습니다.
@@ -202,3 +205,7 @@
   - R-002의 금지 범위를 안내 문서 네 개로 좁히고 복사용 양식을 제외했습니다. 양식의 칸은 복사한 변경 폴더에서 채웁니다.
   - PROJECT §6에 D-023의 목표 구조를 넣었습니다(1라운드 P3 지적과 같은 원인).
   - 선언을 옮기는 것도 승인 뒤 추가분이라 merge 확인 때 함께 확인받습니다.
+- 2026-11-25: MR !12 리뷰 라운드 4(head `a7d540f`, prview)의 지적 세 건을 §3.3과 §5 업그레이드 절차에 반영했습니다.
+  - `docs/template/`의 inventory 밖 파일을 직접 찾아 옮깁니다. report에 나오지 않습니다.
+  - `docs/TEMPLATE_RECORD.md`가 이미 있으면 제자리에서 병합합니다.
+  - 지웠던 `TEMPLATE_GUIDE.md`는 새 경로에도 넣지 않을 수 있습니다.
