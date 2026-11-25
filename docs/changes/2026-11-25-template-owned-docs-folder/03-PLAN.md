@@ -41,16 +41,16 @@
   - 검증 방법: `unittest discover -s tests`, `unittest discover -s template/common/tests`. R-002·R-006·R-011의 새 사례는 규칙을 잠시 되돌려 실패를 확인(red-green). R-006에는 `docs/template/DESIGN.md`만 있는 저장소의 `01-DESIGN.md §1` 사례를 넣습니다
   - 결과·근거:
 - [ ] **W-004 root 유지관리 영역**
-  - 범위·변경 파일: root `docs/template/`, root skill 사본, root `README.md`·`README.ko.md`의 guide 링크와 `artifact/docs/TEMPLATE_GUIDE.md` 안내, root DOCS_GUIDE·TEMPLATE_GUIDE 보충 문서, root `AGENTS.md`, 이력 문서의 링크 27개와 이 변경 폴더의 링크 4개(SPEC §3.5). 구현할 때 다시 세어 그 뒤에 생긴 링크도 포함합니다
+  - 범위·변경 파일: root `docs/template/`, root skill 사본, root `README.md`·`README.ko.md`의 guide 링크와 `artifact/docs/TEMPLATE_GUIDE.md` 안내, root DOCS_GUIDE·TEMPLATE_GUIDE 보충 문서, root `AGENTS.md`, 이력 문서의 링크 27개와 절 참조 10개, 이 변경 폴더의 링크 4개(SPEC §3.5). 구현할 때 다시 세어 그 뒤에 생긴 참조도 포함합니다
   - 대응 요구사항·상위 완료 조건: R-009
   - 선행조건: W-002와 같은 MR
-  - 검증 방법: 무인자 `scripts/check-docs.py`, 이력 문서 diff가 링크 목적지에만 있는지 확인
+  - 검증 방법: 무인자 `scripts/check-docs.py`, 이력 문서 diff가 링크 목적지와 절 번호 앞의 경로·파일명에만 있는지 확인
   - 결과·근거:
 - [ ] **W-005 업그레이드 E2E**
   - 범위·변경 파일: 없음(검증만)
   - 대응 요구사항·상위 완료 조건: R-010
   - 선행조건: W-002~W-004
-  - 검증 방법: `v3.2.0`으로 만든 적용 저장소 사본에 이 head의 로컬 package로 `adopt --base-version 3.2.0`을 돌려, SPEC §5 표의 경우마다 분류를 확인합니다. 옛 문서를 고치지 않은 사본, 고친 사본, `TEMPLATE_GUIDE.md`를 지운 사본, 새 경로에 파일이 있는 사본이 대상입니다. 그 뒤 SPEC §5의 절차(모든 `copy` 파일 교체 포함)대로 옮기고 그 저장소의 `check-docs.py`가 통과하는지 봅니다.
+  - 검증 방법: `v3.2.0`으로 만든 적용 저장소 사본에 이 head의 로컬 package로 `adopt --base-version 3.2.0`을 돌려, SPEC §5 표의 경우마다 분류를 확인합니다. 옛 문서를 고치지 않은 사본, 고친 사본, `TEMPLATE_GUIDE.md`를 지운 사본, 새 경로에 파일이 있는 사본, skill에 의도한 수정이 있는 사본이 대상입니다. 그 뒤 SPEC §5의 절차대로 옮기고 확인합니다. 새 경로의 기존 내용이 보존됐는지, 의도한 수정이 다시 적용됐는지, 프로젝트 기록의 `Template source`·`Template revision`이 새 원본이고 이전 값이 「이전 기준」에 있는지, 그 저장소의 `check-docs.py`가 통과하는지입니다.
   - 결과·근거:
 
 ## 3. 검증 기록
@@ -64,6 +64,7 @@
 - 2026-11-25: 최초 작성. SPEC이 `Draft`라 구현을 시작하지 않았습니다.
 - 2026-11-25: W-001 완료. SPEC Q5에 따라 §1에 T-076 선행 단계를 넣고 W-002의 선행조건과 Baseline을 고쳤습니다.
 - 2026-11-25: MR !12 리뷰 라운드 1의 지적을 따라 W-002~W-005에 R-011, 파일명 참조 대체 규칙, 이 폴더의 링크, 업그레이드 경우별 분류를 더했습니다(SPEC §7).
+- 2026-11-25: 리뷰 라운드 2의 지적을 따라 W-004에 이력 문서의 절 참조 10개를, W-005에 보존·재적용·원본 갱신 확인을 더했습니다(SPEC §7).
 
 ## 5. 인계
 

@@ -22,9 +22,9 @@
 | R-006 | 검사기가 `docs/template/`의 문서를 짧은 이름으로 찾는다. 옛 경로를 가리키는 파일명 참조는 새 문서로 풀리지 않고 실패한다(§3.4의 대체 규칙) | `DESIGN §3` 같은 이름 참조, `docs/template/DESIGN.md`만 있는 저장소의 `01-DESIGN.md §1`, `docs/changes/x/`에서 쓴 `00-PROJECT.md §8` | 첫째는 절 번호까지 검사되고, 둘째는 "document target does not exist"로 실패하고, 셋째는 지금처럼 `docs/00-PROJECT.md`로 풀린다 | `template/common/tests/test_check_docs.py`의 새 사례(red-green) |
 | R-007 | 판 번호 검사와 release 이력 검사가 새 경로를 읽고, `TEMPLATE_GUIDE.md`를 지운 저장소에서도 동작한다 | `docs/template/DOCS_GUIDE.md`만 있는 artifact | `Template version` 검사가 DOCS_GUIDE만으로 통과한다 | 기존 생략 허용 테스트의 경로 갱신 |
 | R-008 | installer, packager, release 검증기, locale 검사기가 새 경로를 쓴다 | `adopt` 실행, `package-release.py`, `verify-release.py candidate` | plan의 `guide`가 `artifact/docs/template/TEMPLATE_GUIDE.md §2`이고, packager가 두 guide의 판 번호를 새 경로에서 읽는다 | `tests/test_install_release.py`, `tests/test_package_release.py`, `tests/test_verify_release.py` |
-| R-009 | root 유지관리 영역도 같은 구조이며 root skill 사본은 ko payload와 byte 동일하다. 과거 기록은 링크 목적지만 바뀐다 | 무인자 `scripts/check-docs.py` | 통과한다. 이력 문서의 diff는 링크 목적지에만 있다 | 무인자 source 검사, diff 검토 |
+| R-009 | root 유지관리 영역도 같은 구조이며 root skill 사본은 ko payload와 byte 동일하다. 과거 기록은 검사기가 따라가는 참조의 경로·파일명만 바뀐다 | 무인자 `scripts/check-docs.py` | 통과한다. 이력 문서의 diff는 링크 목적지와 절 번호 앞의 경로·파일명에만 있다 | 무인자 source 검사, diff 검토 |
 | R-010 | 이전 판을 base로 한 업그레이드에서 옛 경로와 새 경로가 모두 report에 나오고, 대상 상태별 분류가 §5의 표와 같다 | v3 적용 저장소에 `adopt --base-version <v3 판>`. 옛 문서를 고치지 않은 저장소, 고친 저장소, `TEMPLATE_GUIDE.md`를 지운 저장소, 새 경로에 이미 파일이 있는 저장소 | 각 경우가 §5 표의 분류로 나온다 | 로컬 package로 만든 E2E(PLAN W-005) |
-| R-011 | `docs/template/` 아래 문서는 지울 수 있는 경로를 Markdown 링크로 가리키지 않는다. 지울 수 있는 경로는 `decide` 정책 파일(`LICENSE`, `docs/10-EXTENSION.md`, `.cursor/BUGBOT.md`, `.omp/WATCHDOG.md`)과 `docs/template/TEMPLATE_GUIDE.md`다 | 이 파일들을 모두 지운 en·ko artifact | `docs/template/`을 고치지 않고도 `check-docs.py`가 통과한다 | locale 검사의 새 사례와 지운 artifact의 검사 실행(red-green) |
+| R-011 | `docs/template/` 아래 문서는 지울 수 있는 경로를 Markdown 링크로 가리키지 않고, 그 경로나 파일명 뒤에 절 번호를 붙이지도 않는다. 지울 수 있는 경로는 `decide` 정책 파일(`LICENSE`, `docs/10-EXTENSION.md`, `.cursor/BUGBOT.md`, `.omp/WATCHDOG.md`)과 `docs/template/TEMPLATE_GUIDE.md`다 | 이 파일들을 모두 지운 en·ko artifact | `docs/template/`을 고치지 않고도 `check-docs.py`가 통과한다 | locale 검사의 새 사례(링크와 경로·파일명 절 참조를 모두 거부)와 지운 artifact의 검사 실행(red-green) |
 
 `R-nnn`은 이 변경 폴더 안에서만 고유합니다. R-010의 분류는 `scripts/installer.py`의 `_upgrade_status`를 읽고 낸 추론이며 아직 실행하지 않았습니다.
 
@@ -70,6 +70,7 @@
 | `Status`, `Review cadence` | 네 문서 Metadata | 그대로. 템플릿이 정한 값입니다 |
 
 - `Template version`이 폴더 안에만 있으므로, 폴더를 바꾸면 판 번호도 함께 바뀝니다. 프로젝트 기록에는 판 번호를 다시 적지 않습니다(두 곳에 두면 어긋납니다).
+- 프로젝트 기록의 `Template source`·`Template revision`은 지금 적용한 판의 원본을 가리킵니다. 업그레이드할 때 이전 값은 「이전 기준」에 남기고 두 칸을 새 원본으로 고칩니다(§5).
 - DOCS_GUIDE의 Metadata Convention과 체크리스트의 "Owner·검토 주기·날짜를 기록했다"는 프로젝트 소유 문서에만 적용하도록 고칩니다.
 
 ### 3.3 소유 규칙
@@ -77,6 +78,7 @@
 - `docs/template/` 아래는 artifact와 byte 단위로 같습니다. 업그레이드는 이 폴더를 새 artifact의 같은 폴더로 바꾸는 것입니다.
 - 허용하는 차이는 `TEMPLATE_GUIDE.md` 삭제 하나입니다(지금의 생략 허용을 유지).
 - 선택 파일을 지우는 보통의 적용에서는 이 폴더를 고칠 일이 없어야 합니다. 그래서 이 폴더의 문서는 지울 수 있는 경로를 링크 대신 코드 경로(`` `docs/10-EXTENSION.md` ``)로 적습니다(R-011). 2026-11-25 `65e5f3d`의 ko 기준으로 지금 그렇게 링크하는 곳은 18개입니다(`01-DESIGN.md` 3개, `DOCS_GUIDE.md` 4개, `TEMPLATE_GUIDE.md` 11개). en도 같은 수입니다.
+- 코드 경로라도 뒤에 절 번호가 붙으면 검사기가 따라갑니다. `SECTION_PATH_RE`는 inline code 안의 `` `<경로>.md` §n``을, `SECTION_FILENAME_RE`는 `TEMPLATE_GUIDE.md §n`을 찾고, 대상이 없으면 실패로 보고합니다. 그래서 지울 수 있는 문서의 절은 제목(예: TEMPLATE_GUIDE의 「외부 방법론·행동 규칙 도구」)이나 짧은 이름(`TEMPLATE_GUIDE §4`)으로 가리킵니다. 짧은 이름 참조는 대상이 없으면 검사기가 건너뜁니다(§3.4). 지금 `01-DESIGN.md`의 `[TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §4`가 이 경우입니다.
 - 선택 파일을 지울 때 "들어오는 링크도 지운다"는 지금의 안내(DOCS_GUIDE 「번호와 파일 수」와 체크리스트, TEMPLATE_GUIDE §2 5단계와 §5)는 프로젝트 소유 문서의 링크만 가리키도록 고칩니다.
 - 그 밖의 이유로 이 폴더의 파일을 고쳐야 했다면 프로젝트 기록의 「템플릿 소유 파일의 수정」에 남기고, 다음 업그레이드에서 다시 적용합니다. 예를 들어 기존 `REVIEW.md`와 병합해 절 번호가 바뀌어, `DESIGN.md`의 `REVIEW.md §6` 참조를 고쳐야 하는 경우입니다. 지금 DOCS_GUIDE에 있는 규칙과 같습니다.
 - 이 규칙은 검사로 강제하지 않습니다. 적용 저장소에는 비교할 artifact가 없습니다. [ko TEMPLATE_GUIDE](../../../locales/ko/docs/TEMPLATE_GUIDE.md) §4의 CODEOWNERS 목록에 `docs/template/`을 넣어 보호를 권합니다.
@@ -89,7 +91,7 @@
 | `template/common/scripts/check-docs.py` | `HISTORY_PATH`, `check_versions`의 두 guide 경로와 오류 문구, `doc_short_names`가 `docs/template/*.md`도 모음, 파일명 참조의 대체 규칙(아래) |
 | `scripts/check-docs.py` (root wrapper) | 인자가 있을 때 되돌리는 `HISTORY_PATH` |
 | `scripts/check_locales.py` | `design` skill 계약의 `skill_links`·`document`, guide 대조 경로, root maintainer guide가 가리키는 locale guide 경로, R-002·R-011 검사 |
-| `locales/manifest.json` | localized inventory(옛 경로 여덟 개 → 새 경로 여덟 개와 프로젝트 기록 문서), adoption policy, `contracts.skills`의 `design` 문서 경로 |
+| `locales/manifest.json` | localized inventory(옛 경로 여덟 개 → 새 경로 여덟 개와 프로젝트 기록 문서), adoption policy, `contracts.skills`의 `design` 문서 경로, `contracts.section_markers`의 `release-history`와 `contracts.required_commands` 일곱 항목이 가리키는 두 guide 경로 |
 | `scripts/installer.py` | `ADOPTION_GUIDE` 상수. adoption plan의 `guide` 값이 바뀝니다(plan 형식은 `stability: experimental`) |
 | `scripts/package_release.py` | 판 번호를 읽는 두 guide 경로 |
 | `scripts/verify_release.py` | plan `guide` 대조 값 |
@@ -104,7 +106,8 @@
 
 - root skill 사본은 ko payload와 byte 동일해야 하므로 root도 같은 경로를 가집니다(Q4). root `docs/template/`에는 `DESIGN.md`(지금도 ko와 같음), 양식 네 개(지금도 ko와 같음), maintainer 보충 문서인 `DOCS_GUIDE.md`·`TEMPLATE_GUIDE.md`가 들어갑니다. root에는 `CHANGELOG_GUIDE.md`와 프로젝트 기록 문서가 없습니다.
 - root의 `docs/template/`은 이 저장소가 템플릿을 적용한 결과가 아니라 템플릿 공통 절차의 원본 사본입니다. root DOCS_GUIDE 보충 문서에 이 차이를 적습니다.
-- 과거 변경 문서와 완료 기록(`docs/changes/*`, `docs/TODO_ARCHIVE.md`)의 링크 중 옮기는 파일을 가리키는 것은 `65e5f3d` 기준 8개 파일에 27개입니다. 링크 목적지만 고치고 본문은 그대로 둡니다. root CHANGELOG는 이 파일들을 링크로 가리키지 않습니다.
+- 과거 변경 문서와 완료 기록(`docs/changes/*`, `docs/TODO_ARCHIVE.md`)에서 검사기가 따라가는 참조 가운데 옮기는 파일을 가리키는 것은 `65e5f3d` 기준으로 두 종류입니다. 링크 27개(파일 8개)와, 경로나 번호 붙은 파일명 뒤에 절 번호를 붙인 참조 10개(파일 3개)입니다. 그 경로·파일명만 새 이름으로 고치고 나머지 본문은 그대로 둡니다(INTENT §4).
+- 번호 없는 파일명 참조(`TEMPLATE_GUIDE.md §5`)와 짧은 이름 참조(`DESIGN §3`)는 §3.4의 규칙으로 새 문서에 풀리므로 고치지 않습니다. root CHANGELOG에는 이런 참조가 없습니다.
 - 이 변경 폴더에도 ko TEMPLATE_GUIDE를 가리키는 링크가 4개 있습니다(SPEC 3개, PLAN 1개). 구현에서 함께 고칩니다. 구현할 때 옮기는 파일을 가리키는 링크를 다시 세어, 그 뒤에 생긴 링크도 빠뜨리지 않습니다.
 
 ### 3.6 참조 수정 범위
@@ -119,7 +122,7 @@
 | `CHANGELOG_GUIDE` | 13/4 | 13/4 | 0/0 | 5/3 | 0/0 | 6/5 |
 | `_template` | 34/11 | 34/11 | 2/1 | 23/11 | 16/8 | 5/4 |
 
-- root 이력은 `docs/changes/*`, `docs/TODO_ARCHIVE.md`, root CHANGELOG입니다. 이 가운데 고치는 것은 §3.5의 링크 27개뿐입니다.
+- root 이력은 `docs/changes/*`, `docs/TODO_ARCHIVE.md`, root CHANGELOG입니다. 이 가운데 고치는 것은 §3.5의 링크 27개와 절 참조 10개입니다.
 - `02-TODO`는 ko payload와 common에만 90번(파일 23개) 나옵니다. 그래서 번호를 당기지 않습니다(§3.1).
 
 ## 4. 상위 설계에 미치는 영향
@@ -135,10 +138,11 @@
 - **적용 저장소의 링크:** 프로젝트 문서, README, 변경 문서가 옛 경로를 가리키면 깨집니다. 새 `check-docs.py`가 깨진 링크와 옛 파일명 참조를 보고합니다. release 이력에 옛 경로→새 경로 표를 둡니다.
 - **업그레이드 절차(locale TEMPLATE_GUIDE의 release 이력에 적을 내용):**
   1. `adopt --base-version <이전 판>`을 돌립니다. 옛 경로 여덟 개와 새 경로 아홉 개가 아래 표처럼 나옵니다(R-010). 네 문서는 프로젝트가 Metadata를 채웠으므로 대부분 `diverged`일 것입니다(추론).
-  2. 옛 문서의 `Template source`·`Template revision`, 「템플릿 적용 기록」, 의도한 수정을 프로젝트 기록 문서로 옮깁니다.
-  3. 옛 파일을 지우고 artifact의 `docs/template/`을 그대로 넣습니다. 나머지 `copy` 정책 파일(`.agents/`·`.claude/`의 skill과 Codex 설정, `scripts/check-docs.py`, `tests/test_check_docs.py`)도 같은 artifact 판으로 한 번에 바꿉니다. 옛 검사기는 `docs/DOCS_GUIDE.md`를 필수로 읽고, 옛 `design` skill은 `docs/01-DESIGN.md`가 없으면 절차를 적용하지 않습니다.
-  4. `merge` 정책 문서(`AGENTS.md`, `README.md`, `02-TODO.md`, `CI.md`, `REVIEW_ROUND.md`)의 바뀐 링크를 평소처럼 병합하고, 프로젝트가 직접 단 링크를 고칩니다.
-  5. `check-docs.py`와 테스트를 돌립니다.
+  2. report의 `blocked`와 `diverged`를 먼저 봅니다. `blocked` 경로는 정리한 뒤 다시 돌립니다. 새 경로에 다른 내용의 파일이 이미 있으면(`diverged`) 그 내용을 프로젝트 소유 위치로 옮겨 보존하고 프로젝트 기록의 「보존·제외」에 적습니다.
+  3. 옛 문서의 「템플릿 적용 기록」과 의도한 수정을 프로젝트 기록 문서로 옮깁니다. 옛 `Template source`·`Template revision`은 「이전 기준」에 남기고, 두 칸은 이번 artifact의 원본 위치와 commit으로 새로 씁니다. locale TEMPLATE_GUIDE의 「템플릿 개정 반영하기」와 같은 규칙입니다.
+  4. 옛 파일을 지우고 artifact의 `docs/template/`을 그대로 넣습니다. 나머지 `copy` 정책 파일(`.agents/`·`.claude/`의 skill과 Codex 설정, `scripts/check-docs.py`, `tests/test_check_docs.py`)은 지금의 `copy` 처리처럼 artifact 판에서 시작해, 프로젝트 기록의 「템플릿 소유 파일의 수정」에 적은 의도한 수정만 다시 적용합니다. `docs/template/` 안의 수정(§3.3)도 같습니다. 옛 검사기는 `docs/DOCS_GUIDE.md`를 필수로 읽고, 옛 `design` skill은 `docs/01-DESIGN.md`가 없으면 절차를 적용하지 않으므로 이 파일들은 한 번에 바꿉니다.
+  5. `merge` 정책 문서(`AGENTS.md`, `README.md`, `02-TODO.md`, `CI.md`, `REVIEW_ROUND.md`)의 바뀐 링크를 평소처럼 병합하고, 프로젝트가 직접 단 링크를 고칩니다.
+  6. `check-docs.py`와 테스트를 돌립니다.
 - **업그레이드 분류(R-010):** `scripts/installer.py`의 `_upgrade_status`를 읽고 낸 추론이며, W-005에서 실행해 확인합니다.
 
   | 경로 | 대상 상태 | 분류 |
@@ -151,7 +155,7 @@
   | 새 경로 | 다른 내용의 파일이 이미 있음 | `diverged` |
   | 어느 경로든 | symlink, 일반 파일이 아님 등 | `blocked` |
 
-- **순서 의존:** 새 `check-docs.py`는 새 경로를, 옛 검사기와 옛 skill은 옛 경로를 요구합니다. 한쪽만 바꾸면 검사가 실패하거나 `design` skill이 멈추므로, 업그레이드 안내는 3단계에서 모든 `copy` 파일을 한 번에 바꾸라고 적습니다.
+- **순서 의존:** 새 `check-docs.py`는 새 경로를, 옛 검사기와 옛 skill은 옛 경로를 요구합니다. 한쪽만 바꾸면 검사가 실패하거나 `design` skill이 멈추므로, 업그레이드 안내는 4단계에서 모든 `copy` 파일을 한 번에 바꾸라고 적습니다.
 - **version:** artifact 경로와 adoption plan의 `guide` 값이 바뀌고 적용 저장소의 링크가 깨지므로 `v4.0.0`(major)으로 냅니다(Q5). v2(artifact 구조 변경)와 v3(Python 하한, installer 명령 계약 변경)를 major로 낸 선례가 있습니다.
 - **리뷰 부담:** 바뀌는 파일이 많습니다. 구현 MR은 이동만 하는 commit과 내용을 고치는 commit을 나눠 rename을 따로 볼 수 있게 합니다.
 - **rollback:** release 전에는 구현 MR을 revert합니다. release 뒤에는 게시한 판을 바꾸지 않고 patch로 고칩니다(D-004). 적용 저장소는 v3 판을 계속 쓸 수 있습니다.
@@ -186,3 +190,9 @@
   - 지울 수 있는 경로를 링크하지 않는 R-011과 §3.3의 규칙을 더했습니다.
   - §3.5와 PLAN W-004에 이 폴더의 링크를 넣었습니다.
   - R-011, §3.3의 링크 규칙, §3.4의 대체 규칙은 승인("추천안대로") 뒤에 더한 요구라 그 승인에 들어 있지 않습니다. merge 확인 때 함께 확인받습니다.
+- 2026-11-25: MR !12 리뷰 라운드 2(head `2f4108d`, prview)의 지적 다섯 건을 반영했습니다.
+  - 이력 문서에서 검사기가 따라가는 절 참조 10개를 이동 범위에 넣고, 경로·파일명만 고치도록 INTENT §4를 바꿨습니다. 사용자가 "허용하고 계속"으로 승인했습니다(§3.5, R-009).
+  - §5 업그레이드 절차에 `blocked`·`diverged` 처리, 의도한 수정의 재적용, `Template source`·`Template revision` 갱신을 넣었습니다(§3.2).
+  - R-011과 §3.3에 "지울 수 있는 문서에는 경로·파일명 뒤 절 번호도 쓰지 않는다"를 더했습니다.
+  - §3.4 manifest 행에 `section_markers`·`required_commands`의 guide 경로를 넣었습니다.
+  - R-011 확장은 1라운드 추가분과 같이 merge 확인 때 함께 확인받습니다.
