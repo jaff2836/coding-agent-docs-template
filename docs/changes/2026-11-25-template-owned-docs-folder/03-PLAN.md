@@ -41,7 +41,7 @@
   - 검증 방법: `unittest discover -s tests`, `unittest discover -s template/common/tests`. R-002·R-006·R-011의 새 사례는 규칙을 잠시 되돌려 실패를 확인(red-green). R-006에는 `docs/template/DESIGN.md`만 있는 저장소의 `01-DESIGN.md §1` 사례를 넣습니다
   - 결과·근거:
 - [ ] **W-004 root 유지관리 영역**
-  - 범위·변경 파일: root `docs/template/`, root skill 사본, root `README.md`·`README.ko.md`의 guide 링크와 `artifact/docs/TEMPLATE_GUIDE.md` 안내, root DOCS_GUIDE·TEMPLATE_GUIDE 보충 문서, root `AGENTS.md`, 이력 문서의 링크 27개와 절 참조 10개, 이 변경 폴더의 링크 4개(SPEC §3.5). 구현할 때 다시 세어 그 뒤에 생긴 참조도 포함합니다
+  - 범위·변경 파일: root `docs/template/`, root skill 사본, root `README.md`·`README.ko.md`에서 source guide로 가는 링크, root DOCS_GUIDE·TEMPLATE_GUIDE 보충 문서, root `AGENTS.md`, 이력 문서의 링크 27개와 절 참조 10개, 이 변경 폴더의 링크 4개(SPEC §3.5). 구현할 때 다시 세어 그 뒤에 생긴 참조도 포함합니다. README의 `artifact/docs/TEMPLATE_GUIDE.md` 안내는 `latest` release로 받은 artifact 안의 경로라 여기서 바꾸지 않습니다. `v4.0.0` 공개 뒤의 기록 작업에서 바꿉니다(§5, T-051 선례)
   - 대응 요구사항·상위 완료 조건: R-009
   - 선행조건: W-002와 같은 MR
   - 검증 방법: 무인자 `scripts/check-docs.py`, 이력 문서 diff가 링크 목적지와 절 번호 앞의 경로·파일명에만 있는지 확인
@@ -68,8 +68,10 @@
 - 2026-11-25: 리뷰 라운드 3의 지적을 따라 W-002에 placeholder 검색 선언의 이동을 더했습니다(SPEC §7).
 - 2026-11-25: 리뷰 라운드 4의 지적을 따라 W-005에 inventory 밖 파일, 기존 `TEMPLATE_RECORD.md`, 지웠던 `TEMPLATE_GUIDE.md`의 경우를 더했습니다(SPEC §7).
 - 2026-11-25: 리뷰 라운드 5의 지적을 따라 W-002의 프로젝트 기록에 `Template release` 칸을 더했습니다(SPEC §7).
+- 2026-11-25: 리뷰 라운드 6의 지적을 따라 root README의 release artifact 안내를 W-004에서 빼고 `v4.0.0` 공개 뒤로 옮겼습니다(§5, SPEC §5·§7).
 
 ## 5. 인계
 
 - 선행 release는 TODO의 T-076(`v3.3.0`, T-071~T-074 공개)입니다.
 - 이 변경의 `v4.0.0` release는 T-075가 통합된 뒤 TODO에 등록합니다. 그 작업이 [locale TEMPLATE_GUIDE](../../../locales/ko/docs/TEMPLATE_GUIDE.md) §6에 옛 경로→새 경로 표와 SPEC §5의 업그레이드 절차를 적습니다.
+- root README의 `artifact/docs/TEMPLATE_GUIDE.md` 안내는 `v4.0.0`이 Latest로 공개된 뒤의 기록 작업에서 새 경로로 바꿉니다. 그 전까지 `latest`는 옛 경로의 `v3.3.0` artifact를 받기 때문입니다.

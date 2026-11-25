@@ -162,6 +162,7 @@
 
 - **순서 의존:** 새 `check-docs.py`는 새 경로를, 옛 검사기와 옛 skill은 옛 경로를 요구합니다. 한쪽만 바꾸면 검사가 실패하거나 `design` skill이 멈추므로, 업그레이드 안내는 4단계에서 모든 `copy` 파일을 한 번에 바꾸라고 적습니다.
 - **version:** artifact 경로와 adoption plan의 `guide` 값이 바뀌고 적용 저장소의 링크가 깨지므로 `v4.0.0`(major)으로 냅니다(Q5). v2(artifact 구조 변경)와 v3(Python 하한, installer 명령 계약 변경)를 major로 낸 선례가 있습니다.
+- **root README의 release 안내:** README가 `latest` release로 받은 artifact 안의 경로(`artifact/docs/TEMPLATE_GUIDE.md`)를 안내하는 문장은, 구현 MR이 아니라 `v4.0.0`이 Latest로 공개된 뒤의 기록 작업에서 바꿉니다. 그 전까지 `latest`는 옛 경로의 artifact를 받습니다. README에서 source 문서로 가는 링크는 파일과 함께 옮겨야 깨지지 않으므로 구현 MR에서 바꿉니다.
 - **리뷰 부담:** 바뀌는 파일이 많습니다. 구현 MR은 이동만 하는 commit과 내용을 고치는 commit을 나눠 rename을 따로 볼 수 있게 합니다.
 - **rollback:** release 전에는 구현 MR을 revert합니다. release 뒤에는 게시한 판을 바꾸지 않고 patch로 고칩니다(D-004). 적용 저장소는 v3 판을 계속 쓸 수 있습니다.
 - **확인하지 못한 것:** 템플릿 밖 도구가 `docs/changes/_template/`이나 `docs/01-DESIGN.md`를 고정 경로로 읽는지는 확인하지 않았습니다. 이 저장소의 코드에서는 §3.4의 위치뿐입니다.
@@ -214,3 +215,4 @@
   - release가 아닌 원본에서 적용한 사실을 프로젝트 기록의 `Template release` 칸에 적도록 §3.2와 R-003을 고쳤습니다.
   - 허용하는 차이를 `TEMPLATE_GUIDE.md` 삭제와 기록한 수정 두 가지로 맞췄습니다(§3.3, R-004, PROJECT D-023, INTENT §2).
   - `Template release` 칸도 승인 뒤 추가분이라 merge 확인 때 함께 확인받습니다.
+- 2026-11-25: MR !12 리뷰 라운드 6(head `9defe44`, prview)의 지적을 반영했습니다. root README의 release artifact 안내는 `v4.0.0` 공개 뒤에 바꾸도록 §5와 PLAN W-004·§5에 적었습니다.
