@@ -29,7 +29,7 @@
   - 검증 방법: 질문 Q1~Q5의 답과 승인 문구를 Approval에 기록
   - 결과·근거: 2026-11-25 사용자가 "추천안대로"로 답했습니다. INTENT·SPEC을 `Accepted`로 바꾸고 PROJECT에 D-023, TODO에 T-076을 더했습니다. branch `claude/t075-template-docs-folder`의 작업 트리에 기록했고 commit하지 않았습니다.
 - [ ] **W-002 payload 이동과 칸 분리**
-  - 범위·변경 파일: `locales/en`·`locales/ko`의 `docs/` 여덟 개 이동, 프로젝트 기록 문서 추가, 네 문서의 Metadata 정리, DOCS_GUIDE 문서 지도·Metadata Convention·체크리스트, TEMPLATE_GUIDE §1 구조·§2 단계·§3 검색 명령·§4 CODEOWNERS·§5, `merge` 정책 문서 `02-TODO.md`·`CI.md`·`REVIEW_ROUND.md`의 링크, `AGENTS.md`, skill 여섯 개 중 경로를 쓰는 것(`design`, `project-analysis`, `bugfix`, `refactor`), `.omp/WATCHDOG.md`, `README.md` 양식. 옮기는 문서에서 지울 수 있는 경로로 가는 링크를 코드 경로로 바꾸고, 선택 파일 삭제 안내를 프로젝트 소유 문서의 링크로 좁힙니다(SPEC §3.3)
+  - 범위·변경 파일: `locales/en`·`locales/ko`의 `docs/` 여덟 개 이동, 프로젝트 기록 문서 추가, 네 문서의 Metadata 정리, DOCS_GUIDE 문서 지도·Metadata Convention·체크리스트, TEMPLATE_GUIDE §1 구조·§2 단계·§3 검색 명령·§4 CODEOWNERS·§5, `merge` 정책 문서 `02-TODO.md`·`CI.md`·`REVIEW_ROUND.md`의 링크, `AGENTS.md`, skill 여섯 개 중 경로를 쓰는 것(`design`, `project-analysis`, `bugfix`, `refactor`), `.omp/WATCHDOG.md`, `README.md` 양식. 옮기는 문서에서 지울 수 있는 경로로 가는 링크를 코드 경로로 바꾸고, 선택 파일 삭제 안내를 프로젝트 소유 문서의 링크로 좁힙니다(SPEC §3.3). placeholder 검색 선언과 두 명령을 TEMPLATE_GUIDE §3에서 DOCS_GUIDE로 옮기고, TEMPLATE_GUIDE §5의 "삭제 전에 선언을 보관한다" 안내를 지웁니다
   - 대응 요구사항·상위 완료 조건: R-001~R-005, R-011
   - 선행조건: W-001, T-076의 `main` 통합
   - 검증 방법: `check-locales.py --require-stable`, en·ko export 결과물의 `check-docs.py`
@@ -65,6 +65,7 @@
 - 2026-11-25: W-001 완료. SPEC Q5에 따라 §1에 T-076 선행 단계를 넣고 W-002의 선행조건과 Baseline을 고쳤습니다.
 - 2026-11-25: MR !12 리뷰 라운드 1의 지적을 따라 W-002~W-005에 R-011, 파일명 참조 대체 규칙, 이 폴더의 링크, 업그레이드 경우별 분류를 더했습니다(SPEC §7).
 - 2026-11-25: 리뷰 라운드 2의 지적을 따라 W-004에 이력 문서의 절 참조 10개를, W-005에 보존·재적용·원본 갱신 확인을 더했습니다(SPEC §7).
+- 2026-11-25: 리뷰 라운드 3의 지적을 따라 W-002에 placeholder 검색 선언의 이동을 더했습니다(SPEC §7).
 
 ## 5. 인계
 

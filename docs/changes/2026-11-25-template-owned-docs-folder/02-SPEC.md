@@ -15,8 +15,8 @@
 | 요구사항 ID | 요구사항 | 상황·입력 | 관찰 가능한 결과 | 검증 방법 |
 |---|---|---|---|---|
 | R-001 | 템플릿 소유 문서 네 개와 변경 양식 네 개가 `docs/template/` 아래에 있고 옛 경로에는 없다. en·ko가 같은 경로를 가진다 | en·ko export | inventory가 §3.1 표의 새 경로와 일치하고 옛 경로가 없다 | `tests/test_export_template.py`, `check-locales.py --require-stable` |
-| R-002 | `docs/template/` 아래 문서에는 프로젝트가 채우는 칸이 없다 | payload의 `docs/template/*.md`에 `Owner`, `Last reviewed`, `Template source`, `Template revision` 칸이나 「템플릿 적용 기록」 절을 다시 넣음 | locale 검사가 실패한다 | `tests/test_check_locales.py`의 새 사례(red-green) |
-| R-003 | 프로젝트가 채우는 값은 프로젝트 소유 문서 `docs/TEMPLATE_RECORD.md`(§3.2)에 모이고 adoption policy는 `merge`다 | 새 프로젝트에 `install` | 그 문서에 source·revision·적용 기록 칸이 있고, TEMPLATE_GUIDE §3의 placeholder 검색이 그 문서의 미작성 칸을 찾는다 | export inventory, placeholder 검색 명령 실행 |
+| R-002 | `docs/template/` 바로 아래의 안내 문서 네 개에는 프로젝트가 채우는 칸이 없다. 복사용 양식(`docs/template/changes/`)은 제외한다. 양식의 칸(`Owner` 등)은 복사한 변경 폴더에서 채우고 양식 자체는 고치지 않는다 | payload의 `docs/template/*.md`에 `Owner`, `Last reviewed`, `Template source`, `Template revision` 칸이나 「템플릿 적용 기록」 절을 다시 넣음 | locale 검사가 실패한다 | `tests/test_check_locales.py`의 새 사례(red-green) |
+| R-003 | 프로젝트가 채우는 값은 프로젝트 소유 문서 `docs/TEMPLATE_RECORD.md`(§3.2)에 모이고 adoption policy는 `merge`다 | 새 프로젝트에 `install` | 그 문서에 source·revision·적용 기록 칸이 있고, DOCS_GUIDE의 placeholder 검색이 그 문서의 미작성 칸을 찾으며 검색 선언 자체는 찾지 않는다(§3.3) | export inventory, placeholder 검색 명령 실행 |
 | R-004 | 적용 안내가 `docs/template/`을 artifact 판으로 통째로 바꾸는 폴더로 정의한다. 허용하는 차이는 `TEMPLATE_GUIDE.md` 삭제뿐이고, 고친 것은 프로젝트 기록에 남긴다 | DOCS_GUIDE·TEMPLATE_GUIDE 읽기 | 문서 지도에 소유 구분이 있고, 업그레이드 절차가 폴더 교체로 적혀 있다 | 문서 검토 |
 | R-005 | 변경 양식의 링크는 양식 위치와 복사한 위치(`docs/changes/<변경-ID>/`) 양쪽에서 같은 파일을 가리킨다 | 양식 네 개를 `docs/changes/example/`로 복사한 artifact | `check-docs.py`가 통과한다 | `template/common/tests/test_check_docs.py`의 새 사례 |
 | R-006 | 검사기가 `docs/template/`의 문서를 짧은 이름으로 찾는다. 옛 경로를 가리키는 파일명 참조는 새 문서로 풀리지 않고 실패한다(§3.4의 대체 규칙) | `DESIGN §3` 같은 이름 참조, `docs/template/DESIGN.md`만 있는 저장소의 `01-DESIGN.md §1`, `docs/changes/x/`에서 쓴 `00-PROJECT.md §8` | 첫째는 절 번호까지 검사되고, 둘째는 "document target does not exist"로 실패하고, 셋째는 지금처럼 `docs/00-PROJECT.md`로 풀린다 | `template/common/tests/test_check_docs.py`의 새 사례(red-green) |
@@ -65,7 +65,7 @@
 | `Template version` | DOCS_GUIDE·TEMPLATE_GUIDE Metadata. 템플릿이 씁니다 | 그대로. 폴더 내용의 판 번호입니다 |
 | `Template source`, `Template revision` | 두 guide Metadata. 프로젝트가 채웁니다 | 프로젝트 기록 문서 |
 | 「템플릿 적용 기록」 절 | DOCS_GUIDE | 프로젝트 기록 문서 |
-| TEMPLATE_GUIDE를 지울 때 보관하는 placeholder 검색 선언 | "DOCS_GUIDE 같은 프로젝트 소유 문서"([ko TEMPLATE_GUIDE](../../../locales/ko/docs/TEMPLATE_GUIDE.md) §5) | 프로젝트 기록 문서 |
+| TEMPLATE_GUIDE를 지울 때 보관하는 placeholder 검색 선언 | "DOCS_GUIDE 같은 프로젝트 소유 문서"([ko TEMPLATE_GUIDE](../../../locales/ko/docs/TEMPLATE_GUIDE.md) §5) | 보관할 필요가 없어집니다. 선언과 두 검색 명령을 DOCS_GUIDE로 옮깁니다(§3.3) |
 | `Owner`, `Last reviewed` | 네 문서 Metadata | 지웁니다. D-009에서 `project-analysis`의 프로젝트별 Metadata를 지운 것과 같은 이유입니다 |
 | `Status`, `Review cadence` | 네 문서 Metadata | 그대로. 템플릿이 정한 값입니다 |
 
@@ -83,6 +83,7 @@
 - 그 밖의 이유로 이 폴더의 파일을 고쳐야 했다면 프로젝트 기록의 「템플릿 소유 파일의 수정」에 남기고, 다음 업그레이드에서 다시 적용합니다. 예를 들어 기존 `REVIEW.md`와 병합해 절 번호가 바뀌어, `DESIGN.md`의 `REVIEW.md §6` 참조를 고쳐야 하는 경우입니다. 지금 DOCS_GUIDE에 있는 규칙과 같습니다.
 - 이 규칙은 검사로 강제하지 않습니다. 적용 저장소에는 비교할 artifact가 없습니다. [ko TEMPLATE_GUIDE](../../../locales/ko/docs/TEMPLATE_GUIDE.md) §4의 CODEOWNERS 목록에 `docs/template/`을 넣어 보호를 권합니다.
 - [ko TEMPLATE_GUIDE](../../../locales/ko/docs/TEMPLATE_GUIDE.md) §3의 placeholder 검색은 두 guide 파일 대신 `docs/template/`을 통째로 제외합니다. 프로젝트 기록 문서는 검색 대상에 남습니다.
+- 검색 선언(`template_placeholder_pattern`)과 두 검색 명령은 TEMPLATE_GUIDE §3에서 DOCS_GUIDE로 옮기고, TEMPLATE_GUIDE는 그 절을 가리킵니다. 선언 문자열에는 패턴 자체(`프로젝트에 맞게 작성` 등)가 들어 있어 검색 대상 문서에 두면 자기 자신이 걸립니다. DOCS_GUIDE는 지울 수 없고 검색에서 제외되므로 그런 일이 없고, TEMPLATE_GUIDE를 지울 때 따로 보관할 것도 없어집니다. `check_locales.py`가 선언을 정확히 한 번 찾는 문서도 DOCS_GUIDE로 바꿉니다(§3.4).
 
 ### 3.4 검사기와 도구
 
@@ -90,7 +91,7 @@
 |---|---|
 | `template/common/scripts/check-docs.py` | `HISTORY_PATH`, `check_versions`의 두 guide 경로와 오류 문구, `doc_short_names`가 `docs/template/*.md`도 모음, 파일명 참조의 대체 규칙(아래) |
 | `scripts/check-docs.py` (root wrapper) | 인자가 있을 때 되돌리는 `HISTORY_PATH` |
-| `scripts/check_locales.py` | `design` skill 계약의 `skill_links`·`document`, guide 대조 경로, root maintainer guide가 가리키는 locale guide 경로, R-002·R-011 검사 |
+| `scripts/check_locales.py` | `design` skill 계약의 `skill_links`·`document`, guide 대조 경로, root maintainer guide가 가리키는 locale guide 경로, placeholder 검색 선언을 찾는 문서(TEMPLATE_GUIDE → DOCS_GUIDE), R-002·R-011 검사 |
 | `locales/manifest.json` | localized inventory(옛 경로 여덟 개 → 새 경로 여덟 개와 프로젝트 기록 문서), adoption policy, `contracts.skills`의 `design` 문서 경로, `contracts.section_markers`의 `release-history`와 `contracts.required_commands` 일곱 항목이 가리키는 두 guide 경로 |
 | `scripts/installer.py` | `ADOPTION_GUIDE` 상수. adoption plan의 `guide` 값이 바뀝니다(plan 형식은 `stability: experimental`) |
 | `scripts/package_release.py` | 판 번호를 읽는 두 guide 경로 |
@@ -196,3 +197,8 @@
   - R-011과 §3.3에 "지울 수 있는 문서에는 경로·파일명 뒤 절 번호도 쓰지 않는다"를 더했습니다.
   - §3.4 manifest 행에 `section_markers`·`required_commands`의 guide 경로를 넣었습니다.
   - R-011 확장은 1라운드 추가분과 같이 merge 확인 때 함께 확인받습니다.
+- 2026-11-25: MR !12 리뷰 라운드 3(head `f324158`, prview)의 지적 세 건을 반영했습니다.
+  - placeholder 검색 선언과 두 명령을 DOCS_GUIDE로 옮기도록 §3.2·§3.3·§3.4와 R-003을 고쳤습니다. 프로젝트 기록에 두면 선언이 자기 자신을 검출합니다.
+  - R-002의 금지 범위를 안내 문서 네 개로 좁히고 복사용 양식을 제외했습니다. 양식의 칸은 복사한 변경 폴더에서 채웁니다.
+  - PROJECT §6에 D-023의 목표 구조를 넣었습니다(1라운드 P3 지적과 같은 원인).
+  - 선언을 옮기는 것도 승인 뒤 추가분이라 merge 확인 때 함께 확인받습니다.
