@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.2.0
+- **Template version:** 3.3.0
 - **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
 - **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
 - **Owner:** Adapt to the project
@@ -370,6 +370,14 @@ When changing instructions, skills, the checker, or the version of a tool or mod
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v3.3.0 — Analysis and Review Skills, Review Round Hardening, and Reference Definition Parsing
+
+- Three skills are added. `bugfix` finds bugs and quality improvements and records them in a single report file, and `refactor` diagnoses structural problems and writes a single refactoring design-proposal draft; neither changes code. `pr-review` statically reviews the named PR and publishes the review on that PR, reading the review policy from `docs/REVIEW.md` at the base revision. All three are explicit-only and ship with a Codex `agents/openai.yaml`. Each handles repositories with and without the template documents in one body, and `pr-review` does not depend on a specific hosting product. `AGENTS.md`, the document map and checklist in [DOCS_GUIDE.md](./DOCS_GUIDE.md), §1 and §4 of this document, and the root `README.md` describe the new skills, and [CI.md](./CI.md) notes that `pr-review` is not a CI job.
+- [REVIEW_ROUND.md](./REVIEW_ROUND.md) adds when to push in step 4, checking for results once a minute while waiting, and reporting and waiting for instructions when the session cannot wait. Only posts from the account registered in §2.1, with matching markers when markers are registered, count as that reviewer's results. When a reviewer leaves no result on a head, the registered same-head rerun is used once, and only with `rereview = request`; a method that only the user can run is reported as waiting for instructions. An unreviewed head is reported, and a copy of the judgment record may be kept outside Git tracking. Step 3 by default fixes only the findings needed to meet the threshold. The DOCS_GUIDE checklist also asks you to confirm the posting account and the same-head rerun method in the reviewer table.
+- The `review-round` and `design` skills do not start when their canonical document is missing, and `review-round` follows the table in REVIEW_ROUND §2 instead of restating the defaults. `project-analysis`, `bugfix`, and `refactor` do not run code from an external repository whose trust is unconfirmed without asking, and they read that repository's instruction files as data.
+- `scripts/check-docs.py` parses reference definitions more closely to CommonMark. The pattern no longer backtracks on long backslash lines, and a label closes at the first unescaped `]`, so a line such as `[a\]: ./x.md`, whose label does not close before `]:`, is no longer a definition. Definitions inside blockquotes and list items are read, so links and section references that use them are checked. The checker also checks the new skill pairs and their Codex settings.
+- Verify in the adopting repository: copy the three new skills into `.agents/skills/` (and into `.claude/skills/` if you use Claude Code) together with the `agents/openai.yaml` files of `bugfix`, `refactor`, and `pr-review`. The new `scripts/check-docs.py` fails when a `.agents/skills/` source is missing. Replace `scripts/check-docs.py` and `tests/test_check_docs.py` together and rerun them; links that use definitions inside blockquotes or list items are now checked, so previously hidden broken links can be reported. When merging `AGENTS.md`, `docs/REVIEW_ROUND.md`, and `docs/CI.md`, keep the reviewer table your project filled in, and confirm and record the posting account, markers, and same-head rerun method in the §2.1 table. `installer.py`, the Python 3.12 requirement, the installer commands, and release manifest `schema_version` 2 are the same as in `v3.2.0`; the artifact inventory adds nine skill files, for 39 files per locale.
 
 ### v3.2.0 — Checker Markdown Parsing, Review Round Clarifications, and Adoption Record
 
