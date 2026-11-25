@@ -6,13 +6,14 @@
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
 
-## v3.3.1 (미공개 후보) — 분석·리뷰 skill 추가, 리뷰 라운드 보강과 참조 정의 판정
+## [v3.3.1](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.3.1) — 분석·리뷰 skill 추가, 리뷰 라운드 보강과 참조 정의 판정
 
 - 명시 호출 전용 skill 세 개를 더했습니다. `bugfix`는 버그·품질 개선 지점을 보고서 파일 하나로 남기고, `refactor`는 리팩터링 설계 제안서 초안 하나를 쓰며, `pr-review`는 지정한 PR을 정적으로 리뷰해 그 PR에 게시합니다. 각각 Codex용 `agents/openai.yaml`이 함께 있고, artifact 검사기가 `.agents/skills/` 사본을 요구하므로 업그레이드할 때 함께 복사하세요.
 - `docs/REVIEW_ROUND.md`에 push 시점, 리뷰 대기의 1분 간격 확인, 등록 계정·표식 대조, `rereview = request`에서만 쓰는 같은 head 재실행, 리뷰되지 않은 head의 보고와 판정 기록 사본을 더했습니다. 3단계는 임계값에 필요한 것만 고치는 것이 기본입니다. `review-round`·`design` skill은 정본 문서가 없으면 멈추고, 분석 skill은 신뢰를 확인하지 못한 외부 저장소의 코드를 확인 없이 실행하지 않습니다.
 - `scripts/check-docs.py`가 인용문과 목록 항목 안의 참조 정의를 읽고, label을 escape되지 않은 첫 `]`에서 닫으며, 긴 backslash 줄에서 역추적하지 않습니다. 그 정의를 쓰는 링크도 검사하므로 숨어 있던 깨진 링크가 보고될 수 있습니다.
 - `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version` 2는 바뀌지 않습니다. artifact inventory는 skill 파일 9개가 늘었습니다.
 - `v3.3.0`은 건너뛰었습니다. GitHub tag `v3.3.0`은 판 번호를 올리기 전 commit에 잘못 만들어져 release가 없고, release tag는 보호되므로 그대로 둡니다. 이 tag를 템플릿 원본으로 쓰지 마세요.
+- 공개 전 candidate verifier가 draft byte를 loopback release root로 제공해 `v3.2.0` base-aware upgrade까지 installer E2E를 실행했습니다. 검증된 draft asset 5개를 그대로 immutable Latest로 공개했습니다. native Windows(Buildkite)와 Windows 로컬의 published 검증에서 latest·exact의 두 locale 경로, `v3.2.0` base-aware upgrade와 비어 있지 않은 install 대상의 거부·tree 불변을 확인했습니다. 이번 판은 Linux published 검증을 실행하지 않았습니다.
 
 ## [v3.2.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.2.0) — 검사기 Markdown 판정, 리뷰 라운드 보강과 적용 기록
 

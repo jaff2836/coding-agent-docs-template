@@ -6,13 +6,21 @@
 
 - **Status:** Archive
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-11-04
+- **Last reviewed:** 2026-11-25
 - **Review cadence:** TODO의 완료 이력을 옮길 때
 
 T-033(2026-10-01)에서 TODO의 Completed 상세와 통합된 Backlog 행을 원문 그대로 옮겼습니다. 기록 안의 상대 링크는 같은 `docs/` 폴더 기준이라 그대로 유효합니다. 이후 완료 작업은 TODO에 한 줄로 남기고, 상세 근거는 각 PR(원장)과 변경 문서에 둡니다.
 
 ## 완료 작업 상세
 
+- [x] **T-076 `v3.3.1` release (`v3.3.0` 건너뜀)**
+  - 범위: `v3.2.0` 뒤 `main`에 통합된 미공개 payload 변경 T-071·T-072(검사기의 참조 정의 처리)와 T-073·T-074(skill 세 개 추가, 리뷰 라운드·skill 보강)를 D-007 단계로 공개합니다. 2026-11-25 사용자 요청("release 준비 시작")입니다.
+  - version 판단: D-023 Q5의 `v3.3.0`(minor)을 아래 tag 사고 때문에 `v3.3.1`로 냅니다. artifact inventory에 skill 파일 9개가 늘고 검사기 판정이 엄격해졌습니다. `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version` 2는 그대로입니다.
+  - tag 사고: 2026-11-25(KST 17:31) 준비 MR !13을 merge하기 전에 tag 단계를 실행해, annotated `v3.3.0` tag(`c03d452`)가 판 번호를 올리기 전 commit `7576b94`에 만들어져 GitHub에 push됐습니다. 이어서 돌린 `package-release.py`는 판 번호가 3.2.0이라 멈췄고, draft와 release는 만들지 않았습니다. ruleset이 tag의 갱신·삭제를 막으므로 이 tag는 그대로 두고, 사용자 결정("v3.3.1로 내기")으로 `v3.3.0`을 건너뜁니다. `7576b94`와 준비 head의 차이는 판 번호와 이력 문서뿐입니다. 같은 때 GitHub `main`은 `7576b94`로 fast-forward됐고, 이것은 정상 단계였습니다. tag 단계의 명령에는 준비 merge commit과 판 번호를 확인하는 검사를 넣습니다.
+  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.3.1로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.3.1 이력(건너뛴 `v3.3.0` tag 안내 포함)을, root `CHANGELOG` 영·한에 `unpublished candidate`·`미공개 후보`를 표시한 v3.3.1 항목(공개 시 표시를 release 링크로 교체)을 더했습니다. `v3.2.0` 대비 바뀐 artifact 파일은 locale마다 18개(새 skill 6개, 기존 skill 6개, `AGENTS.md`, `README.md`, `docs/CI.md`, `docs/DOCS_GUIDE.md`, `docs/REVIEW_ROUND.md`, `docs/TEMPLATE_GUIDE.md`)와 공통 5개(새 Codex 설정 3개, `scripts/check-docs.py`, `tests/test_check_docs.py`)입니다. 통합: MR !13(`90747da`).
+  - [x] tag·draft candidate: 준비 MR !13의 GitLab merge `90747da`를 GitHub `main`에 fast-forward했습니다. 사용자가 package를 먼저 만든 뒤 annotated `v3.3.1` tag(`30c7c4e`)와 draft(asset 5개, 영·한 release notes)를 만들었고, clean exact checkout에서 `verify-release.py candidate --base-version 3.2.0`(이 checkout의 remote 이름에 맞춰 `--origin-remote gitlab --github-remote origin`)이 통과했습니다(두 `main` 동기화, 5 assets, loopback installer E2E). locale마다 artifact member는 39개이고, release manifest `schema_version` 2와 `installer.py`는 `v3.2.0`과 같습니다.
+  - [x] 공개·published: 사용자가 2026-11-25(KST 18:02) draft를 immutable Latest로 공개했습니다. Windows 로컬 checkout(Python 3.14)에서 tag source의 verifier로 `published --base-version 3.2.0`이 통과해 공개 asset 5개가 candidate를 통과한 package와 같음을 확인했습니다. native Windows에서는 Buildkite `coding-agent-docs-template-windows-ci` Build #220(`main` `90747da`, Python 3.12-CI)의 published 검증 step이 `v3.3.1` 검증을 통과했습니다. Linux published 검증은 실행하지 않았습니다.
+  - [x] 기록: root `CHANGELOG`(영·한)의 v3.3.1 제목에서 미공개 후보 표시를 release 링크로 바꾸고 공개 검증 문장을 더했으며, PROJECT의 공개 기준·상태와 release 검증 변경 기록을 고쳤습니다. prview가 head마다 요약 note를 따로 남기는 것(MR !12의 note `4318332978`·`4318404335`)을 root `docs/REVIEW_ROUND.md` §2.1과 root `docs/DOCS_GUIDE.md` §2에 반영했습니다. 통합: 이 변경의 MR.
 - [x] **T-066 `v3.2.0` release**
   - 범위: 이 문서 「완료된 Backlog 항목의 등록 당시 설명」의 T-066 항목. D-007에 따라 준비, tag·draft candidate, 공개·published, 기록 단계를 나눕니다.
   - version 판단: `v3.2.0`(minor), D-020 [설계](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) §1.5 Q1입니다. `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version`, artifact inventory는 그대로입니다.
