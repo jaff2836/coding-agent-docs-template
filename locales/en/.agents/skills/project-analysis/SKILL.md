@@ -105,7 +105,7 @@ Check the following first.
 - [00-PROJECT.md](../../../docs/00-PROJECT.md), [02-TODO.md](../../../docs/02-TODO.md), linked product and extension designs, actual change-specific INTENT, SPEC, and PLAN documents, and ADRs
 - README files, the license, contribution guides, and the security policy
 
-Keep existing user changes separate from the analysis target; do not modify or revert them. Do not count copy templates in `changes/_template/` as actual designs or active work.
+Keep existing user changes separate from the analysis target; do not modify or revert them. Do not count copy templates in `docs/template/changes/` as actual designs or active work.
 
 ### 5.2 Build a Project Inventory
 

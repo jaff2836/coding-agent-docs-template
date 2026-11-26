@@ -1,6 +1,6 @@
 # 변경 의도: 다국어 템플릿 소스와 배포 구조
 
-> 이 변경은 템플릿 저장소 자체에 [변경 설계 절차](../../01-DESIGN.md)를 적용한 기록입니다. 구현 전까지 현재 `v1.7.1` 한국어 템플릿 계약은 유지하며, 이 폴더는 locale artifact에 포함하지 않습니다.
+> 이 변경은 템플릿 저장소 자체에 [변경 설계 절차](../../template/DESIGN.md)를 적용한 기록입니다. 구현 전까지 현재 `v1.7.1` 한국어 템플릿 계약은 유지하며, 이 폴더는 locale artifact에 포함하지 않습니다.
 
 ## Metadata
 
@@ -8,7 +8,7 @@
 - **Status:** Accepted
 - **Originator:** Chae Sangwon
 - **Source:** 2026-09-09 사용자 대화 — locale별 소스 관리, BCP 47, 언어 선택형 다운로드·변환 방식 검토 요청
-- **Parent:** [Template Guide](../../TEMPLATE_GUIDE.md) §1·§2·§4·§5의 배포 구조와 고정 도구 진입점
+- **Parent:** [Template Guide](../../template/TEMPLATE_GUIDE.md) §1·§2·§4·§5의 배포 구조와 고정 도구 진입점
 - **Approval:** Chae Sangwon, 2026-09-09 사용자 대화 — locale별 source, BCP 47 tag, 언어 선택형 installer, `v2.0.0` breaking contract와 PLAN 전체 구현 착수 승인. skill 현지화는 권고안 S2(설명·본문·출력 정책을 locale별 작성)를 채택하며, 공개 release host는 구현 중 별도 확정
 - **Spec:** [02-SPEC.md](./02-SPEC.md)
 

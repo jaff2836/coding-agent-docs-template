@@ -1,6 +1,6 @@
 # Project Work List
 
-> This document manages project-wide changes, milestones, priorities, and dependencies. Follow [00-PROJECT.md](./00-PROJECT.md) for the product baseline and decisions, and [DOCS_GUIDE.md](./DOCS_GUIDE.md) for ownership of detailed status.
+> This document manages project-wide changes, milestones, priorities, and dependencies. Follow [00-PROJECT.md](./00-PROJECT.md) for the product baseline and decisions, and [DOCS_GUIDE.md](./template/DOCS_GUIDE.md) for ownership of detailed status.
 >
 > The items below are copyable examples. Replace them with actual work when adopting the template, and do not count the examples as completed work.
 
@@ -27,8 +27,8 @@
 - Each branch updates the detailed records for its own change. Do not use a stale copy to reverse another branch's work from complete to incomplete or vice versa.
 - Update shared items only when scope, dependencies, or integration results change. Resolve conflicts by comparing the latest baseline and change-IDs, then recheck affected contracts and verification assumptions.
 - Put under `Completed` only items whose required verification and integration into the specified target have been confirmed, or items that a work branch completes at the same moment its own final head is integrated (a merge-bound description). Record completion that happens after integration, such as release or support verification, only after it has happened. Distinguish branch implementation completion, review-round pass, merge, release, and support verification, and evaluate the item against its own completion criteria.
-- Keep your own PR's CI builds, review decisions, and merge SHA in the PR as the ledger, and keep only a PR reference in this document. Follow the Local Git and Parallel Branches section of [DOCS_GUIDE.md](./DOCS_GUIDE.md) for the detailed rules and the user-request exception.
-- `T-nnn` is a global task ID in this document. It has a different scope from change-IDs, PROJECT `D-nnn`, and change-folder `R-nnn`/`W-nnn`. Follow the identifier scopes in [DOCS_GUIDE.md](./DOCS_GUIDE.md) for issuance and collision handling. `T-001` and similar IDs below are placeholders.
+- Keep your own PR's CI builds, review decisions, and merge SHA in the PR as the ledger, and keep only a PR reference in this document. Follow the Local Git and Parallel Branches section of [DOCS_GUIDE.md](./template/DOCS_GUIDE.md) for the detailed rules and the user-request exception.
+- `T-nnn` is a global task ID in this document. It has a different scope from change-IDs, PROJECT `D-nnn`, and change-folder `R-nnn`/`W-nnn`. Follow the identifier scopes in [DOCS_GUIDE.md](./template/DOCS_GUIDE.md) for issuance and collision handling. `T-001` and similar IDs below are placeholders.
 - Keep cancelled changes under Cancelled and retain their change folders. Do not read a completed SPEC as the current product baseline; after integration, reflect implemented contracts in PROJECT.
 - A remote repository or PR is not required. For local work, preserve evidence using the baseline revision and the target branch or reviewed worktree scope. Do not claim that an uncommitted result is reproducible from a commit SHA.
 - Documentation updates do not grant commit, push, or merge authority. Follow [REVIEW_ROUND.md](./REVIEW_ROUND.md) §9 for updates deferred until after a review round passes.

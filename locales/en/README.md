@@ -2,7 +2,7 @@
 
 {{PROJECT_DESCRIPTION}}
 
-> This is the project-root README template placed by the selected locale artifact. Do not replace it with the template source repository's introduction. Replace the placeholders and guidance below with actual project values, and record the adopted Template source, version, and revision in the [Template Guide](./docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./docs/DOCS_GUIDE.md).
+> This is the project-root README template placed by the selected locale artifact. Do not replace it with the template source repository's introduction. Replace the placeholders and guidance below with actual project values, and record the adopted Template source, revision, and release status in the [Template Adoption Record](./docs/TEMPLATE_RECORD.md).
 
 ## Requirements
 
@@ -43,15 +43,16 @@ Run the documentation checker regression tests when changing `scripts/check-docs
 
 ## Project Documentation
 
-- [Template Guide](./docs/TEMPLATE_GUIDE.md): how to apply this template to a project for the first time
+- [Template Guide](./docs/template/TEMPLATE_GUIDE.md): how to apply this template to a project for the first time
 - [AGENTS.md](./AGENTS.md): shared project instructions for AI development tools
-- [Documentation Guide](./docs/DOCS_GUIDE.md): documentation system, sources of truth, and template completion checklist
-- [Changelog Guide](./docs/CHANGELOG_GUIDE.md): boundaries and maintenance rules for optional project release notes
+- [Documentation Guide](./docs/template/DOCS_GUIDE.md): documentation system, sources of truth, and template completion checklist
+- [Changelog Guide](./docs/template/CHANGELOG_GUIDE.md): boundaries and maintenance rules for optional project release notes
 - [00-PROJECT.md](./docs/00-PROJECT.md): product overview, base design, current and target structures, decisions, and design index
-- [01-DESIGN.md](./docs/01-DESIGN.md): pre-implementation design process for changes to structure or contracts
+- [DESIGN.md](./docs/template/DESIGN.md): pre-implementation design process for changes to structure or contracts
 - [02-TODO.md](./docs/02-TODO.md): project-wide changes, priorities, dependencies, and integration results
 - [10-EXTENSION.md](./docs/10-EXTENSION.md): optional long-term extension design and phase-specific completion criteria
-- Change template set: combined [01-CHANGE.md](./docs/changes/_template/01-CHANGE.md), split [01-INTENT.md](./docs/changes/_template/01-INTENT.md) and [02-SPEC.md](./docs/changes/_template/02-SPEC.md), and optional [03-PLAN.md](./docs/changes/_template/03-PLAN.md). When applying the template, copy the entire `_template/` set. For an actual change, copy only the necessary format into a separate change-ID folder.
+- [TEMPLATE_RECORD.md](./docs/TEMPLATE_RECORD.md): applied template source, revision, release status, and adoption details
+- Change template set: combined [01-CHANGE.md](./docs/template/changes/01-CHANGE.md), split [01-INTENT.md](./docs/template/changes/01-INTENT.md) and [02-SPEC.md](./docs/template/changes/02-SPEC.md), and optional [03-PLAN.md](./docs/template/changes/03-PLAN.md). When applying the template, copy the entire `docs/template/changes/` set. For an actual change, copy only the necessary format into a separate change-ID folder.
 - [REVIEW.md](./docs/REVIEW.md): PR review policy
 - [REVIEW_ROUND.md](./docs/REVIEW_ROUND.md): review round process and delegated authority
 - [CI.md](./docs/CI.md): runner-agnostic quality gate workflow and integration checklist

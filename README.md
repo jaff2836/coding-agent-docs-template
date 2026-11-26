@@ -131,7 +131,7 @@ python3 scripts/verify-release.py published --version {{VERSION}} --source-commi
 - **Multilingual delivery:** `template/common/`, `locales/en/`, `locales/ko/`, the manifest, and the schema
 - **Tools:** documentation and locale checks, export, release packaging and verification, and installation
 
-Structure and adoption checklists: [English Template Guide](./locales/en/docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./locales/en/docs/DOCS_GUIDE.md), or [Korean Template Guide](./locales/ko/docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./locales/ko/docs/DOCS_GUIDE.md). The root [Template Guide](./docs/TEMPLATE_GUIDE.md) and [Documentation Guide](./docs/DOCS_GUIDE.md) are maintainer addenda. The template artifact contains no application code and no pipelines for a specific CI product; this repository runs its own quality gates on Buildkite (`.buildkite/`, [CI guide](./docs/CI.md)).
+Structure and adoption checklists: [English Template Guide](./locales/en/docs/template/TEMPLATE_GUIDE.md) and [Documentation Guide](./locales/en/docs/template/DOCS_GUIDE.md), or [Korean Template Guide](./locales/ko/docs/template/TEMPLATE_GUIDE.md) and [Documentation Guide](./locales/ko/docs/template/DOCS_GUIDE.md). The root [Template Guide](./docs/template/TEMPLATE_GUIDE.md) and [Documentation Guide](./docs/template/DOCS_GUIDE.md) are maintainer addenda. The template artifact contains no application code and no pipelines for a specific CI product; this repository runs its own quality gates on Buildkite (`.buildkite/`, [CI guide](./docs/CI.md)).
 
 ## Bundled skills
 

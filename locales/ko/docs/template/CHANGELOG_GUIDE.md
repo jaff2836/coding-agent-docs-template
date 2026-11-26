@@ -7,8 +7,6 @@
 ## Metadata
 
 - **Status:** Active
-- **Owner:** 프로젝트에 맞게 작성
-- **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** 릴리스 절차 또는 문서 소유권 변경 시
 
 ## 1. 문서 경계
@@ -20,7 +18,7 @@
 | 현재 설치·사용법과 지원 동작 | `README.md` |
 | 공개가 끝난 릴리스의 사용자 가시적 변경 | 프로젝트가 선택해 관리하는 root `CHANGELOG.md` |
 | 계획 또는 미완료 작업 | `docs/02-TODO.md` 또는 변경별 PLAN |
-| 템플릿 적용 source·version·revision | `docs/DOCS_GUIDE.md`와 `docs/TEMPLATE_GUIDE.md` |
+| 템플릿 적용 source·revision·release 구분 | `docs/TEMPLATE_RECORD.md`. 판 번호는 `docs/template/DOCS_GUIDE.md` |
 
 계획한 동작을 README의 현재 동작이나 공개 릴리스 이력처럼 서술하지
 마세요. 제품 changelog를 상세 작업 추적기로 사용하지도 마세요.
@@ -36,7 +34,7 @@
   TODO 또는 PLAN이 소유합니다. 프로젝트가 `Unreleased` 절을 의도적으로
   사용할 수는 있지만, 공개 완료 릴리스와 명확히 구분해야 합니다.
 - 템플릿 upgrade는 사용자에게 보이는 동작이 바뀔 때만 제품 changelog에
-  기록합니다. 템플릿 provenance는 안내 문서에 별도로 기록합니다.
+  기록합니다. 템플릿 provenance는 `docs/TEMPLATE_RECORD.md`에 별도로 기록합니다.
 
 ## 3. 공개 릴리스 항목
 
@@ -79,4 +77,4 @@ raw commit 목록, review 이력, 사용자에게 영향이 없는 내부 refact
 - [ ] 호환성·migration·보안·제거 영향을 명시했습니다.
 - [ ] 계획 작업은 공개 항목이 아니라 TODO 또는 PLAN에 남아 있습니다.
 - [ ] 기존 changelog 구조와 프로젝트 소유 내용을 보존했습니다.
-- [ ] 안내 문서의 템플릿 provenance가 정확합니다.
+- [ ] `docs/TEMPLATE_RECORD.md`의 템플릿 provenance가 정확합니다.

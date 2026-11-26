@@ -26,7 +26,7 @@
 | R-010 | 이전 판을 base로 한 업그레이드에서 옛 경로와 새 경로가 모두 report에 나오고, 대상 상태별 분류가 §5의 표와 같다 | v3 적용 저장소에 `adopt --base-version <v3 판>`. 옛 문서를 고치지 않은 저장소, 고친 저장소, `TEMPLATE_GUIDE.md`를 지운 저장소, 새 경로에 이미 파일이 있는 저장소 | 각 경우가 §5 표의 분류로 나온다 | 로컬 package로 만든 E2E(PLAN W-005) |
 | R-011 | `docs/template/` 아래 문서는 지울 수 있는 경로를 Markdown 링크로 가리키지 않고, 그 경로나 파일명 뒤에 절 번호를 붙이지도 않는다. 지울 수 있는 경로는 `decide` 정책 파일(`LICENSE`, `docs/10-EXTENSION.md`, `.cursor/BUGBOT.md`, `.omp/WATCHDOG.md`)과 `docs/template/TEMPLATE_GUIDE.md`다 | 이 파일들을 모두 지운 en·ko artifact | `docs/template/`을 고치지 않고도 `check-docs.py`가 통과한다 | locale 검사의 새 사례(링크와 경로·파일명 절 참조를 모두 거부)와 지운 artifact의 검사 실행(red-green) |
 
-`R-nnn`은 이 변경 폴더 안에서만 고유합니다. R-010의 분류는 `scripts/installer.py`의 `_upgrade_status`를 읽고 낸 추론이며 아직 실행하지 않았습니다.
+`R-nnn`은 이 변경 폴더 안에서만 고유합니다. R-010의 분류는 `scripts/installer.py`의 `_upgrade_status`를 읽고 낸 추론이었고, 2026-11-26 PLAN W-005에서 실행해 확인했습니다.
 
 ## 2. 대안과 선택 이유
 
@@ -65,7 +65,7 @@
 | `Template version` | DOCS_GUIDE·TEMPLATE_GUIDE Metadata. 템플릿이 씁니다 | 그대로. 폴더 내용의 판 번호입니다 |
 | `Template source`, `Template revision` | 두 guide Metadata. 프로젝트가 채웁니다 | 프로젝트 기록 문서 |
 | 「템플릿 적용 기록」 절 | DOCS_GUIDE | 프로젝트 기록 문서 |
-| TEMPLATE_GUIDE를 지울 때 보관하는 placeholder 검색 선언 | "DOCS_GUIDE 같은 프로젝트 소유 문서"([ko TEMPLATE_GUIDE](../../../locales/ko/docs/TEMPLATE_GUIDE.md) §5) | 보관할 필요가 없어집니다. 선언과 두 검색 명령을 DOCS_GUIDE로 옮깁니다(§3.3) |
+| TEMPLATE_GUIDE를 지울 때 보관하는 placeholder 검색 선언 | "DOCS_GUIDE 같은 프로젝트 소유 문서"([ko TEMPLATE_GUIDE](../../../locales/ko/docs/template/TEMPLATE_GUIDE.md) §5) | 보관할 필요가 없어집니다. 선언과 두 검색 명령을 DOCS_GUIDE로 옮깁니다(§3.3) |
 | `Owner`, `Last reviewed` | 네 문서 Metadata | 지웁니다. D-009에서 `project-analysis`의 프로젝트별 Metadata를 지운 것과 같은 이유입니다 |
 | `Status`, `Review cadence` | 네 문서 Metadata | 그대로. 템플릿이 정한 값입니다 |
 
@@ -82,8 +82,8 @@
 - 코드 경로라도 뒤에 절 번호가 붙으면 검사기가 따라갑니다. `SECTION_PATH_RE`는 inline code 안의 `` `<경로>.md` §n``을, `SECTION_FILENAME_RE`는 `TEMPLATE_GUIDE.md §n`을 찾고, 대상이 없으면 실패로 보고합니다. 그래서 지울 수 있는 문서의 절은 제목(예: TEMPLATE_GUIDE의 「외부 방법론·행동 규칙 도구」)이나 짧은 이름(`TEMPLATE_GUIDE §4`)으로 가리킵니다. 짧은 이름 참조는 대상이 없으면 검사기가 건너뜁니다(§3.4). 지금 `01-DESIGN.md`의 `[TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §4`가 이 경우입니다.
 - 선택 파일을 지울 때 "들어오는 링크도 지운다"는 지금의 안내(DOCS_GUIDE 「번호와 파일 수」와 체크리스트, TEMPLATE_GUIDE §2 5단계와 §5)는 프로젝트 소유 문서의 링크만 가리키도록 고칩니다.
 - 그 밖의 이유로 이 폴더의 파일을 고쳐야 했다면 프로젝트 기록의 「템플릿 소유 파일의 수정」에 남기고, 다음 업그레이드에서 다시 적용합니다. 예를 들어 기존 `REVIEW.md`와 병합해 절 번호가 바뀌어, `DESIGN.md`의 `REVIEW.md §6` 참조를 고쳐야 하는 경우입니다. 지금 DOCS_GUIDE에 있는 규칙과 같습니다.
-- 이 규칙은 검사로 강제하지 않습니다. 적용 저장소에는 비교할 artifact가 없습니다. [ko TEMPLATE_GUIDE](../../../locales/ko/docs/TEMPLATE_GUIDE.md) §4의 CODEOWNERS 목록에 `docs/template/`을 넣어 보호를 권합니다.
-- [ko TEMPLATE_GUIDE](../../../locales/ko/docs/TEMPLATE_GUIDE.md) §3의 placeholder 검색은 두 guide 파일 대신 `docs/template/`을 통째로 제외합니다. 프로젝트 기록 문서는 검색 대상에 남습니다.
+- 이 규칙은 검사로 강제하지 않습니다. 적용 저장소에는 비교할 artifact가 없습니다. [ko TEMPLATE_GUIDE](../../../locales/ko/docs/template/TEMPLATE_GUIDE.md) §4의 CODEOWNERS 목록에 `docs/template/`을 넣어 보호를 권합니다.
+- [ko TEMPLATE_GUIDE](../../../locales/ko/docs/template/TEMPLATE_GUIDE.md) §3의 placeholder 검색은 두 guide 파일 대신 `docs/template/`을 통째로 제외합니다. 프로젝트 기록 문서는 검색 대상에 남습니다.
 - 검색 선언(`template_placeholder_pattern`)과 두 검색 명령은 TEMPLATE_GUIDE §3에서 DOCS_GUIDE로 옮기고, TEMPLATE_GUIDE는 그 절을 가리킵니다. 선언 문자열에는 패턴 자체(`프로젝트에 맞게 작성` 등)가 들어 있어 검색 대상 문서에 두면 자기 자신이 걸립니다. DOCS_GUIDE는 지울 수 없고 검색에서 제외되므로 그런 일이 없고, TEMPLATE_GUIDE를 지울 때 따로 보관할 것도 없어집니다. `check_locales.py`가 선언을 정확히 한 번 찾는 문서도 DOCS_GUIDE로 바꿉니다(§3.4).
 
 ### 3.4 검사기와 도구
@@ -147,7 +147,7 @@
   4. 옛 파일을 지우고 artifact의 `docs/template/` 파일을 그대로 넣습니다. 옛 `docs/TEMPLATE_GUIDE.md`를 지웠던 저장소(옛 경로가 `converged`)는 새 `docs/template/TEMPLATE_GUIDE.md`도 넣지 않을 수 있습니다(§3.3의 허용 차이). 그 선택을 「보존·제외」에 적습니다. 나머지 `copy` 정책 파일(`.agents/`·`.claude/`의 skill과 Codex 설정, `scripts/check-docs.py`, `tests/test_check_docs.py`)은 지금의 `copy` 처리처럼 artifact 판에서 시작해, 프로젝트 기록의 「템플릿 소유 파일의 수정」에 적은 의도한 수정만 다시 적용합니다. `docs/template/` 안의 수정(§3.3)도 같습니다. 옛 검사기는 `docs/DOCS_GUIDE.md`를 필수로 읽고, 옛 `design` skill은 `docs/01-DESIGN.md`가 없으면 절차를 적용하지 않으므로 이 파일들은 한 번에 바꿉니다.
   5. `merge` 정책 문서(`AGENTS.md`, `README.md`, `02-TODO.md`, `CI.md`, `REVIEW_ROUND.md`)의 바뀐 링크를 평소처럼 병합하고, 프로젝트가 직접 단 링크를 고칩니다.
   6. `check-docs.py`와 테스트를 돌립니다.
-- **업그레이드 분류(R-010):** `scripts/installer.py`의 `_upgrade_status`를 읽고 낸 추론이며, W-005에서 실행해 확인합니다.
+- **업그레이드 분류(R-010):** `scripts/installer.py`의 `_upgrade_status`를 읽고 낸 추론이었고, 2026-11-26 W-005에서 아래 표대로 나오는 것을 실행해 확인했습니다(PLAN §3).
 
   | 경로 | 대상 상태 | 분류 |
   |---|---|---|
@@ -217,3 +217,4 @@
   - `Template release` 칸도 승인 뒤 추가분이라 merge 확인 때 함께 확인받습니다.
 - 2026-11-25: MR !12 리뷰 라운드 6(head `9defe44`, prview)의 지적을 반영했습니다. root README의 release artifact 안내는 `v4.0.0` 공개 뒤에 바꾸도록 §5와 PLAN W-004·§5에 적었습니다.
 - 2026-11-25: T-076의 판을 `v3.3.1`로 바꿨습니다. 2026-11-25 `v3.3.0` tag가 판 번호를 올리기 전 commit에 잘못 만들어져 그대로 두었기 때문입니다(TODO T-076). 이 문서의 `v3.3.0`은 그 release(T-076)를 가리킵니다.
+- 2026-11-26: 구현(PLAN W-002~W-005)에서 R-010의 분류를 실행으로 확인해 §1과 §5의 "추론" 표시를 고쳤습니다. 계약은 바뀌지 않았습니다.

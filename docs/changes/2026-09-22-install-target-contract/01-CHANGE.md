@@ -79,7 +79,7 @@ A안에 따라 release와 archive 검증을 마친 뒤 첫 파일을 쓰기 전�
 
 A안의 구현·문서 범위는 `scripts/installer.py`의 preflight·오류 메시지,
 `tests/test_install_release.py`, root `README.md`·`README.ko.md`와 en·ko locale
-`docs/TEMPLATE_GUIDE.md` §2입니다. 기존 저장소에는 `adopt`를 권장하는 이유와
+`docs/template/TEMPLATE_GUIDE.md` §2입니다. 기존 저장소에는 `adopt`를 권장하는 이유와
 대상 보존 경계를 유지합니다.
 
 ### 2.4 상위 설계에 미치는 영향

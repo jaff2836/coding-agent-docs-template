@@ -55,9 +55,9 @@
 | G-type | 타입 검사 | AGENTS.md / README의 Typecheck | 위와 같음 | 위와 같음 |
 | G-test | 프로젝트 테스트 | AGENTS.md / README의 Test | 위와 같음 | 위와 같음 |
 | G-build | 빌드 | AGENTS.md / README의 Build | 산출물이 있고 명령이 `N/A`가 아닌 때 | 위와 같음 |
-| G-adopt | placeholder 검색 | [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §3의 `rg`/`grep` | 템플릿을 적용한 직후 한 번 | 원본 템플릿 저장소. 이미 값을 채운 뒤의 매 파이프라인. TEMPLATE_GUIDE를 삭제했다면 적용 당시 복사한 검색 명령 또는 [DOCS_GUIDE.md](./DOCS_GUIDE.md) 체크리스트로 대체 |
+| G-adopt | placeholder 검색 | [DOCS_GUIDE.md](./template/DOCS_GUIDE.md)의 「placeholder 검색」 `rg`/`grep` | 템플릿을 적용한 직후 한 번 | 원본 템플릿 저장소. 이미 값을 채운 뒤의 매 파이프라인 |
 
-G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니다. 적용 저장소의 placeholder는 G-adopt와 [DOCS_GUIDE.md](./DOCS_GUIDE.md) 체크리스트로 확인합니다.
+G-docs는 원본 템플릿의 placeholder 잔존을 실패로 보지 않습니다. 적용 저장소의 placeholder는 G-adopt와 [DOCS_GUIDE.md](./template/DOCS_GUIDE.md) 체크리스트로 확인합니다.
 
 새 프로젝트 게이트를 추가할 때는 이 표에 행을 넣고 AGENTS.md·README 명령과 같은 문자열을 씁니다. 표에만 있고 문서 명령에 없는 검사를 두지 마세요.
 

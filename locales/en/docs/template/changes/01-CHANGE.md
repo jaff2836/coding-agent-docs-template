@@ -1,6 +1,6 @@
 # Change: {{CHANGE_TITLE}}
 
-> This is a combined-form template for copying, not an actual work or approval record. Use it to manage Intent and Spec in one file for a typical design change. For changes spanning multiple sessions, components, or contracts, use the split-form `01-INTENT.md` and `02-SPEC.md`. Follow [01-DESIGN.md](../../01-DESIGN.md) §2 and §4 for the selection criteria and process.
+> This is a combined-form template for copying, not an actual work or approval record. Use it to manage Intent and Spec in one file for a typical design change. For changes spanning multiple sessions, components, or contracts, use the split-form `01-INTENT.md` and `02-SPEC.md`. Follow [DESIGN.md](../../template/DESIGN.md) §2 and §4 for the selection criteria and process.
 
 ## Metadata
 

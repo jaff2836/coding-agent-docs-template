@@ -55,9 +55,9 @@ change arrives → revision checkout → runtime → (if needed) install
 | G-type | Type check | Typecheck from AGENTS.md / README | Same as above | Same as above |
 | G-test | Project tests | Test from AGENTS.md / README | Same as above | Same as above |
 | G-build | Build | Build from AGENTS.md / README | An artifact exists and the command is not `N/A` | Same as above |
-| G-adopt | Placeholder search | `rg`/`grep` from [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) §3 | Once immediately after applying the template | Original template repository; every pipeline after values have already been filled in. If TEMPLATE_GUIDE was removed, use the search command copied at adoption time or the [DOCS_GUIDE.md](./DOCS_GUIDE.md) checklist |
+| G-adopt | Placeholder search | `rg`/`grep` from "Placeholder Search" in [DOCS_GUIDE.md](./template/DOCS_GUIDE.md) | Once immediately after applying the template | Original template repository; every pipeline after values have already been filled in |
 
-G-docs does not treat placeholders remaining in the original template as a failure. Check placeholders in an adopting repository with G-adopt and the [DOCS_GUIDE.md](./DOCS_GUIDE.md) checklist.
+G-docs does not treat placeholders remaining in the original template as a failure. Check placeholders in an adopting repository with G-adopt and the [DOCS_GUIDE.md](./template/DOCS_GUIDE.md) checklist.
 
 When adding a project gate, add a row to this table and use the exact same command string as in AGENTS.md and README. Do not keep a check only in this table with no corresponding documented command.
 

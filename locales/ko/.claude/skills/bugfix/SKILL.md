@@ -53,7 +53,7 @@ disable-model-invocation: true
 | 앞으로 하려는 것 | `docs/02-TODO.md`의 In Progress·Next·Blocked·Backlog, 있으면 `docs/10-EXTENSION.md` | 로드맵 문서, 코드의 `TODO`·`FIXME`·`HACK` 주석 |
 
 - `{{...}}` placeholder가 남았거나 `N/A`인 명령은 실행하지 않고 "미설정"으로 기록합니다.
-- `docs/02-TODO.md`의 Completed·Cancelled 항목, `docs/changes/_template/`, 자리 표시용 `T-001` 같은 예시는 계획으로 세지 않습니다.
+- `docs/02-TODO.md`의 Completed·Cancelled 항목, `docs/template/changes/`, 자리 표시용 `T-001` 같은 예시는 계획으로 세지 않습니다.
 - 문서의 절은 헤딩 이름으로 찾습니다. 번호가 달라졌어도 이름이 같은 절을 씁니다.
 
 ## 4. 분석 기준

@@ -252,7 +252,7 @@ def check_readme_locale_table() -> list[str]:
 def main(argv: Optional[Sequence[str]] = None) -> int:
     arguments = list(sys.argv[1:] if argv is None else argv)
     if arguments:
-        CHECK_DOCS.HISTORY_PATH = "docs/TEMPLATE_GUIDE.md"
+        CHECK_DOCS.HISTORY_PATH = "docs/template/TEMPLATE_GUIDE.md"
         return CHECK_DOCS.main(arguments)
     CHECK_DOCS.HISTORY_PATH = "CHANGELOG.md"
     errors = (

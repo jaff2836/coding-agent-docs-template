@@ -1,6 +1,6 @@
 # Change Intent: {{CHANGE_TITLE}}
 
-> This is a template for copying, not an actual work or approval record. Copy it into a change-ID directory only when needed. Follow [01-DESIGN.md](../../01-DESIGN.md).
+> This is a template for copying, not an actual work or approval record. Copy it into a change-ID directory only when needed. Follow [DESIGN.md](../../template/DESIGN.md).
 
 ## Metadata
 

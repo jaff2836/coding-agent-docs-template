@@ -2,8 +2,8 @@
 
 > 이 문서는 source 저장소 maintainer가 locale artifact를 구성·검증·배포할
 > 때 필요한 보충 규칙만 소유합니다. 적용 프로젝트용 정본은
-> [영문](../locales/en/docs/TEMPLATE_GUIDE.md)과
-> [한국어](../locales/ko/docs/TEMPLATE_GUIDE.md) locale 가이드입니다.
+> [영문](../../locales/en/docs/template/TEMPLATE_GUIDE.md)과
+> [한국어](../../locales/ko/docs/template/TEMPLATE_GUIDE.md) locale 가이드입니다.
 
 ## Metadata
 
@@ -12,7 +12,7 @@
 - **Template source:** https://github.com/jaff2836/coding-agent-docs-template
 - **Template revision:** release 검증 시 exact source commit으로 확정
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-30
+- **Last reviewed:** 2026-11-26
 - **Review cadence:** source·artifact 경계 또는 배포 계약 변경 시
 
 ## 1. Source와 artifact 구조
@@ -21,7 +21,7 @@
   영역이며 artifact에서 제외합니다.
 - `template/common/`은 언어 비의존 payload, `locales/<tag>/`는 BCP 47
   locale별 payload source입니다.
-- [manifest](../locales/manifest.json)의 닫힌 inventory만 exporter와 packager가
+- [manifest](../../locales/manifest.json)의 닫힌 inventory만 exporter와 packager가
   합성합니다. 생성된 artifact를 직접 고치지 말고 source 또는 manifest를
   수정한 뒤 다시 export합니다.
 - locale 안 `.agents`와 `.claude`의 같은 skill은 byte-identical해야 합니다.
@@ -34,8 +34,8 @@ artifact 자체의 문서 검사를 함께 실행합니다.
 새 프로젝트의 `install`, 기존 저장소의 읽기 전용 `adopt`, 빈 디렉터리로의
 `export` 계약과 실제 병합 절차는 locale 가이드 §2가 소유합니다.
 
-- [영문 적용 가이드](../locales/en/docs/TEMPLATE_GUIDE.md)
-- [한국어 적용 가이드](../locales/ko/docs/TEMPLATE_GUIDE.md)
+- [영문 적용 가이드](../../locales/en/docs/template/TEMPLATE_GUIDE.md)
+- [한국어 적용 가이드](../../locales/ko/docs/template/TEMPLATE_GUIDE.md)
 
 maintainer 문서에 status 표나 적용 절차를 복제하지 않습니다. 기존 저장소의
 README, LICENSE, `.gitignore`, 지침, 결정과 프로젝트 소유 changelog는 자동
@@ -72,31 +72,33 @@ tag가 `locales/manifest.json`의 `complete` locale이고 상태 열이 `complet
 것은 허용하고, 공개 뒤 추가는 §5의 절차가 맡습니다.
 
 CLI 인자를 하나라도 주면 canonical artifact checker에 위임합니다.
-`--root <export된 artifact 경로>`는 artifact의 `docs/TEMPLATE_GUIDE.md` 이력을
+`--root <export된 artifact 경로>`는 artifact의 `docs/template/TEMPLATE_GUIDE.md` 이력을
 검사하고 source 제외 범위나 root↔ko 의존성을 사용하지 않습니다.
 `--root .`도 artifact 의미이므로 source 검사를 대신하지 않습니다.
 
-root [`.gitattributes`](../.gitattributes)의 `* text=auto eol=lf`는 Windows를
+root [`.gitattributes`](../../.gitattributes)의 `* text=auto eol=lf`는 Windows를
 포함한 maintainer checkout에서 텍스트를 LF로 유지합니다. payload source의
 UTF-8·LF·최종 newline은 locale 검사로도 확인합니다. 이 attribute 파일은
 artifact inventory에 포함되지 않으며 적용 프로젝트의 Git 설정을 바꾸지 않습니다.
 
 템플릿을 적용한 직후 실제 변경 폴더와 프로젝트 소유 문서에 남은
 placeholder를 확인합니다. 검색 선언·rg/grep 명령의 정본은
-[영문 가이드](../locales/en/docs/TEMPLATE_GUIDE.md) §3과
-[한국어 가이드](../locales/ko/docs/TEMPLATE_GUIDE.md) §3입니다.
-해당 locale의 Bash·동일 shell 실행 순서와 §5의 선언·명령 보관 절차를 따릅니다.
+[영문 가이드](../../locales/en/docs/template/DOCS_GUIDE.md)와
+[한국어 가이드](../../locales/ko/docs/template/DOCS_GUIDE.md)의 placeholder 검색 절입니다.
+해당 locale의 Bash·동일 shell 실행 순서를 따릅니다. DOCS_GUIDE는 지울 수 없는
+문서라 TEMPLATE_GUIDE를 지운 적용 저장소에도 선언과 명령이 남습니다.
 source locale 검사는 이 선언·참조·sentinel과 root 안내의 정본 위임을 확인합니다.
 이 절의 코드 블록에는 위 세 source 검사 명령과 `#` 주석만 둘 수 있고, 코드 블록
 밖에도 locale 검색식에 걸리는 어휘를 옮겨 적지 않습니다. 검색 도구와 관계없이
 적용됩니다.
-안내 문서와 `changes/_template/`의 설명·복사용 placeholder는 문맥에 따라
-판정하며, 검색 0건을 적용 완료로 해석하지 않습니다. 전체 체크리스트는 locale
-`docs/DOCS_GUIDE.md`가 소유합니다.
+locale 검색은 `docs/template/`을 통째로 제외하므로 안내 문서와 변경 양식의
+설명·복사용 placeholder는 걸리지 않고, 프로젝트 기록 `docs/TEMPLATE_RECORD.md`의
+미작성 칸은 걸립니다. 검색 0건을 적용 완료로 해석하지 않습니다. 전체
+체크리스트는 locale `docs/template/DOCS_GUIDE.md`가 소유합니다.
 
 ## 4. 문서·도구 소유권
 
-- root [AGENTS.md](../AGENTS.md)는 source 저장소 작업 규칙,
+- root [AGENTS.md](../../AGENTS.md)는 source 저장소 작업 규칙,
   locale `AGENTS.md`는 export되는 프로젝트 규칙입니다.
 - root [문서 운영 보충 안내](./DOCS_GUIDE.md)는 maintainer 상태·ID·release
   기록 방식을, locale `DOCS_GUIDE.md`는 적용 프로젝트 문서 체계를 소유합니다.
@@ -119,7 +121,7 @@ base-aware adopt까지 확인합니다. 공개 후에는 published verifier로 i
 asset, latest·exact 설치, export와 지원 locale 경로를 확인합니다. published
 검증은 Linux와 native Windows에서 모두 실행하며, Windows는 Buildkite
 `coding-agent-docs-template-windows-ci`의 수동 build로 실행합니다
-([CI.md](./CI.md) §6). 그 release로 새
+([CI.md](../CI.md) §6). 그 release로 새
 `complete` locale을 처음 공개했으면 공개 기록 PR에서 root `README.md`·
 `README.ko.md`의 locale 표에 넣습니다. 무인자 문서 검사는 표에 없는 locale을
 잡지 못합니다(§3).
@@ -133,7 +135,7 @@ locale 가이드의 `Template source`, `Template version`, `Template revision`�
 ### 원격 저장소와 통합
 
 개발 MR·리뷰·필수 CI는 private GitLab 저장소
-`jaff2836-group/coding-agent-docs-template`([CI.md](./CI.md) §6)에서, 공개
+`jaff2836-group/coding-agent-docs-template`([CI.md](../CI.md) §6)에서, 공개
 `main`·release tag·GitHub Release는 `jaff2836/coding-agent-docs-template`에서
 관리합니다. 두 저장소는 mirror가 아니며 release verifier의 기본 remote 이름은
 각각 `origin`과 `github`입니다. 2026-10-28까지 개발 host였던 Cursor Origin은
@@ -167,12 +169,12 @@ locale 가이드의 `Template source`, `Template version`, `Template revision`�
 
 ## 6. 릴리스 노트 소유권
 
-- source 저장소의 공개 이력 정본은 [CHANGELOG.md](../CHANGELOG.md)와
-  [CHANGELOG.ko.md](../CHANGELOG.ko.md)입니다.
-- README는 현재 공개 동작만 설명하고 미래 작업은 [02-TODO.md](./02-TODO.md)
+- source 저장소의 공개 이력 정본은 [CHANGELOG.md](../../CHANGELOG.md)와
+  [CHANGELOG.ko.md](../../CHANGELOG.ko.md)입니다.
+- README는 현재 공개 동작만 설명하고 미래 작업은 [02-TODO.md](../02-TODO.md)
   또는 변경별 PLAN에 둡니다.
 - 적용 프로젝트의 changelog 규칙은 locale
-  `docs/CHANGELOG_GUIDE.md`가 소유합니다. artifact는 안내를 제공하지만 실제
+  `docs/template/CHANGELOG_GUIDE.md`가 소유합니다. artifact는 안내를 제공하지만 실제
   root `CHANGELOG.md`를 만들거나 기존 형식을 덮어쓰지 않습니다.
 - 버전별 적용 변화는 locale `TEMPLATE_GUIDE.md` §6에 유지합니다. source
   changelog와 같은 이력을 이 문서에 다시 복제하지 않습니다.

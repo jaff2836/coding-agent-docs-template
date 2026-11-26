@@ -107,7 +107,7 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 
 현재 합의했지만 구현하지 않은 목표 구조는 하나입니다.
 
-- **템플릿 소유 문서 분리(D-023):** 적용 저장소에서 템플릿이 설치하고 프로젝트가 읽기만 하는 문서를 `docs/template/`에 모으고, 프로젝트가 채우는 값은 `docs/TEMPLATE_RECORD.md`에 둡니다. 정본은 [템플릿 소유 문서 분리 SPEC](./changes/2026-11-25-template-owned-docs-folder/02-SPEC.md)입니다. 구현(T-075)은 T-076 `v3.3.1`이 통합된 뒤 시작하며, 그때까지 현재 구조는 §5와 같습니다.
+- **템플릿 소유 문서 분리(D-023):** 적용 저장소에서 템플릿이 설치하고 프로젝트가 읽기만 하는 문서를 `docs/template/`에 모으고, 프로젝트가 채우는 값은 `docs/TEMPLATE_RECORD.md`에 둡니다. 정본은 [템플릿 소유 문서 분리 SPEC](./changes/2026-11-25-template-owned-docs-folder/02-SPEC.md)입니다. 구현(T-075)은 source에 통합되면 `v4.0.0`으로 공개하며, 그 전까지 공개 artifact의 구조는 §5와 같습니다.
 
 그 밖에 합의한 구조는 모두 구현되어 §5에 있고, 결정과 상세 설계는 §8과 §13이 연결합니다.
 
@@ -241,6 +241,6 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 | 적용 저장소 역제안 반영 | [2026-10-28-adopter-feedback-v3.1.0](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) | Accepted — D-020이 D-009 정본 문서의 리뷰 라운드·적용 기록 안내와 payload 검사기 판정을 보강 | 구현은 T-067·T-068; `v3.2.0`에서 공개(T-066) |
 | 분석·리뷰 skill | [2026-11-25-bugfix-refactor-pr-review-skills](./changes/2026-11-25-bugfix-refactor-pr-review-skills/01-CHANGE.md) | Accepted — D-021이 D-005의 self-contained skill 계약과 D-002의 locale skill bundle을 확장 | 구현은 T-073; `v3.3.1`(T-076)에서 공개 |
 | 리뷰 라운드·skill 보강 | [2026-11-25-review-round-and-skill-hardening](./changes/2026-11-25-review-round-and-skill-hardening/01-CHANGE.md) | Accepted — D-022가 D-009 정본 문서의 리뷰 라운드 절차와 D-005의 skill 안전 규칙을 보강 | 구현은 T-074; `v3.3.1`(T-076)에서 공개 |
-| 템플릿 소유 문서 분리 | [2026-11-25-template-owned-docs-folder SPEC](./changes/2026-11-25-template-owned-docs-folder/02-SPEC.md) | Accepted — D-023이 D-002의 artifact inventory, D-006의 adoption policy 표, D-009의 문서 소유권을 확장 | 구현은 T-075(T-076 `v3.3.1` 통합 뒤 시작); `v4.0.0`에서 공개 |
+| 템플릿 소유 문서 분리 | [2026-11-25-template-owned-docs-folder SPEC](./changes/2026-11-25-template-owned-docs-folder/02-SPEC.md) | Accepted — D-023이 D-002의 artifact inventory, D-006의 adoption policy 표, D-009의 문서 소유권을 확장 | 구현은 T-075; `v4.0.0`에서 공개 |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.

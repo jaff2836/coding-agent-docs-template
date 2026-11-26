@@ -1790,7 +1790,7 @@ class ReleaseManifestSchemaTests(unittest.TestCase):
         cases = {
             "AGENTS.md": True,
             ".agents/skills/design/SKILL.md": True,
-            "docs/changes/_template/01-CHANGE.md": True,
+            "docs/template/changes/01-CHANGE.md": True,
             "docs/console.md": True,
             "docs/com10.md": True,
             "docs/a b.md": True,

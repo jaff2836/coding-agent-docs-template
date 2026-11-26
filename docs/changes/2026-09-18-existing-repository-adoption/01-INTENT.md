@@ -62,4 +62,4 @@
 ## 6. 변경 기록
 
 - 2026-09-18: 기존 저장소가 실제 주 consumer라는 사용자 판단과 `claude-review-e2e` 임시 clone 관찰을 바탕으로 합본형 `01-CHANGE.md` Draft를 작성했습니다.
-- 2026-09-19: 사용자가 해결 범위(`adopt` 구현), policy 위치, report 형식, agent prompt, `decide` 범위, 완료 기준, consumer E2E 방식을 모두 권고안으로 결정했습니다. 구성요소·PR이 여러 개로 늘어 [01-DESIGN.md](../../01-DESIGN.md) §2에 따라 분리형 INTENT·SPEC·PLAN으로 전환하고 `01-CHANGE.md`는 정본으로 남기지 않았습니다. 원래 Draft는 `5eefc11`에서 확인할 수 있습니다.
+- 2026-09-19: 사용자가 해결 범위(`adopt` 구현), policy 위치, report 형식, agent prompt, `decide` 범위, 완료 기준, consumer E2E 방식을 모두 권고안으로 결정했습니다. 구성요소·PR이 여러 개로 늘어 [01-DESIGN.md](../../template/DESIGN.md) §2에 따라 분리형 INTENT·SPEC·PLAN으로 전환하고 `01-CHANGE.md`는 정본으로 남기지 않았습니다. 원래 Draft는 `5eefc11`에서 확인할 수 있습니다.

@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import functools
 import json
+import posixpath
 import re
 import shlex
 import stat
@@ -84,6 +85,34 @@ PLACEHOLDER_SEARCH_SENTINELS: Mapping[str, Tuple[str, ...]] = {
         "| 예시 |", "예시 결정", "예시 완료", "**예시:**",
     ),
 }
+PLACEHOLDER_SEARCH_DOCUMENT = "docs/template/DOCS_GUIDE.md"
+TEMPLATE_FOLDER = "docs/template/"
+TEMPLATE_RECORD_PATH = "docs/TEMPLATE_RECORD.md"
+# Files an adopter may delete. Documents under docs/template/ must keep working
+# when they are gone, so they neither link to them nor cite their sections.
+DELETABLE_PATHS = frozenset((
+    "LICENSE",
+    "docs/10-EXTENSION.md",
+    ".cursor/BUGBOT.md",
+    ".omp/WATCHDOG.md",
+    "docs/template/TEMPLATE_GUIDE.md",
+))
+DELETABLE_FILENAMES = frozenset(
+    PurePosixPath(path).name for path in DELETABLE_PATHS if path.endswith(".md")
+)
+# Project-filled fields that belong in TEMPLATE_RECORD, never in template-owned guides.
+TEMPLATE_RECORD_FIELDS = frozenset((
+    "Owner", "Last reviewed", "Template source", "Template revision", "Template release",
+))
+TEMPLATE_GUIDE_METADATA_FIELDS = frozenset(("Status", "Template version", "Review cadence"))
+LABELED_BULLET_RE = re.compile(r"^[-*+][ \t]+\*\*([^*\r\n]+?):\*\*")
+HEADING_TEXT_RE = re.compile(r"^(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$")
+SECTION_REF_GROUP = r"§\d+(?:\.\d+)*"
+SECTION_PATH_REF_RE = re.compile(r"`([^`\s]+\.md)`[ \t]*" + SECTION_REF_GROUP)
+SECTION_FILENAME_REF_RE = re.compile(
+    r"(?<![\w./-])([A-Za-z0-9][A-Za-z0-9_.-]*\.md)[ \t]+" + SECTION_REF_GROUP,
+    re.IGNORECASE,
+)
 # Root guide section 3 delegates placeholder searches to the locale guides. Its code
 # may hold only the maintainer checks from AGENTS.md, and its other visible text must
 # not match any locale's declared placeholder search pattern.
@@ -113,7 +142,7 @@ SKILL_FIXTURE_REGISTRY: Mapping[str, Mapping[str, Any]] = {
             "> [template-contract:v1] "
             "MUST_USE_MINIMUM_REQUIRED_DESIGN_ARTIFACTS"
         ),
-        "skill_links": ("../../../docs/01-DESIGN.md",),
+        "skill_links": ("../../../docs/template/DESIGN.md",),
         "skill_tokens": ("§1", "§2", "§3"),
     },
     "design-requires-approval": {
@@ -122,7 +151,7 @@ SKILL_FIXTURE_REGISTRY: Mapping[str, Mapping[str, Any]] = {
             "> [template-contract:v1] "
             "MUST_NOT_IMPLEMENT_BEFORE_USER_AGREEMENT"
         ),
-        "document": "docs/01-DESIGN.md",
+        "document": "docs/template/DESIGN.md",
         "document_tokens": ("Draft", "Accepted", "Superseded", "Rejected"),
     },
     "design-reuses-accepted-spec": {
@@ -1556,15 +1585,13 @@ def _check_placeholder_searches(
 
     patterns = []
     for tag, sentinels in PLACEHOLDER_SEARCH_SENTINELS.items():
-        text = texts.get((tag, "docs/TEMPLATE_GUIDE.md"))
+        text = texts.get((tag, PLACEHOLDER_SEARCH_DOCUMENT))
         if text is None:
             continue  # Inventory validation reports the missing source.
-        label = "%s:docs/TEMPLATE_GUIDE.md" % tag
-        section = _replacement_section(text)
-        if section is None:
-            errors.append("%s must have one replacement section 3" % label)
-            continue
-        bash = [code for language, code in _fenced_code_blocks(section) if language == "bash"]
+        label = "%s:%s" % (tag, PLACEHOLDER_SEARCH_DOCUMENT)
+        # DOCS_GUIDE cannot be deleted and lies inside the folder the search
+        # skips, so the declaration never matches itself.
+        bash = [code for language, code in _fenced_code_blocks(text) if language == "bash"]
         lines = "\n".join(bash).splitlines()
         definitions = [
             (index, line.strip()) for index, line in enumerate(lines)
@@ -1609,13 +1636,31 @@ def _check_placeholder_searches(
                     arguments = shlex.split(line, comments=True)
                 except ValueError:
                     arguments = []
-                operand = arguments[-2:-1] if command == "rg" else arguments[2:3]
+                if command == "rg":
+                    search, rest = arguments, []
+                else:
+                    pipe = arguments.index("|") if "|" in arguments else len(arguments)
+                    search, rest = arguments[:pipe], arguments[pipe:]
+                operand = search[-2:-1] if command == "rg" else search[2:3]
                 valid = (
                     index > definitions[0][0]
                     and line.count('"$template_placeholder_pattern"') == 1
                     and arguments.count("$template_placeholder_pattern") == 1
                     and operand == ["$template_placeholder_pattern"]
                 )
+                skips_template = (
+                    any(
+                        search[position:position + 2]
+                        == ["--glob", "!" + TEMPLATE_FOLDER + "**"]
+                        for position in range(len(search))
+                    )
+                    if command == "rg"
+                    else rest == ["|", "grep", "-v", "^\\./" + TEMPLATE_FOLDER]
+                )
+                if valid and not skips_template:
+                    errors.append(
+                        "%s %s must exclude %s from the search" % (label, command, TEMPLATE_FOLDER)
+                    )
             if not valid:
                 errors.append(
                     "%s %s must use the quoted shared pattern as its regex operand "
@@ -1627,14 +1672,14 @@ def _check_placeholder_searches(
 def _check_root_search_delegation(
     root: Path, patterns: Sequence[re.Pattern[str]], errors: List[str]
 ) -> None:
-    path = root / "docs/TEMPLATE_GUIDE.md"
+    path = root / "docs/template/TEMPLATE_GUIDE.md"
     try:
         resolved = path.resolve(strict=True)
         resolved.relative_to(root.resolve())
         if not resolved.is_file():
             raise ValueError("expected a regular file")
     except (OSError, RuntimeError, ValueError) as error:
-        errors.append("cannot read maintainer docs/TEMPLATE_GUIDE.md: %s" % error)
+        errors.append("cannot read maintainer docs/template/TEMPLATE_GUIDE.md: %s" % error)
         return
     text = _check_utf8_lf_file(resolved, "maintainer", errors)
     if text is None:
@@ -1642,7 +1687,7 @@ def _check_root_search_delegation(
     section = _mask_html_comments(_replacement_section(text) or "")
     targets = _relative_link_target_sequence(section)
     for tag in PLACEHOLDER_SEARCH_SENTINELS:
-        target = "../locales/%s/docs/TEMPLATE_GUIDE.md" % tag
+        target = "../../locales/%s/%s" % (tag, PLACEHOLDER_SEARCH_DOCUMENT)
         if target not in targets:
             errors.append("maintainer search section must delegate to %s" % target)
     # A closed grammar instead of a search-tool denylist: any tool or wrapper can
@@ -1671,6 +1716,87 @@ def _check_root_search_delegation(
             "maintainer guide must not define an independent placeholder search "
             "in section 3; %s" % reason
         )
+
+
+def _template_record_shape(text: str) -> Tuple[Set[str], Set[str]]:
+    """Return the bullet labels and section headings of TEMPLATE_RECORD."""
+
+    labels: Set[str] = set()
+    headings: Set[str] = set()
+    for line in _observable_markdown_text(text).splitlines():
+        label = LABELED_BULLET_RE.match(line)
+        if label is not None:
+            labels.add(label.group(1).strip())
+        heading = HEADING_TEXT_RE.match(line)
+        if heading is not None and len(heading.group(1)) >= 2:
+            headings.add(heading.group(2))
+    return labels, headings - {"Metadata"}
+
+
+def _check_deletable_references(label: str, relative: str, text: str, errors: List[str]) -> None:
+    """Reject links and section citations that break when an adopter deletes a file."""
+
+    base = PurePosixPath(relative).parent
+    for target in LINK_TARGET_RE.findall(_structural_markdown_text(text)):
+        if target.startswith("/") or URI_SCHEME_RE.match(target):
+            continue
+        resolved = posixpath.normpath((base / target).as_posix())
+        if resolved in DELETABLE_PATHS and resolved != relative:
+            errors.append("%s links to deletable %s" % (label, resolved))
+    # The release history is not checked for section numbers, so it may keep
+    # citing the paths of its time.
+    marker = text.find("<!-- template-section:release-history -->")
+    current = text if marker < 0 else text[:marker]
+    own_name = PurePosixPath(relative).name
+    for regex, visible in (
+        (SECTION_PATH_REF_RE, _observable_markdown_text(current)),
+        (SECTION_FILENAME_REF_RE, _structural_markdown_text(current)),
+    ):
+        for match in regex.finditer(visible):
+            name = PurePosixPath(match.group(1)).name
+            if name in DELETABLE_FILENAMES and name != own_name:
+                errors.append(
+                    "%s cites a section of deletable %s; use its short name or heading"
+                    % (label, match.group(1))
+                )
+
+
+def _check_template_folder(
+    manifest: Mapping[str, Any], texts: Mapping[Tuple[str, str], str], errors: List[str]
+) -> None:
+    """Keep docs/template/ free of project fields and of deletable-file references."""
+
+    for tag in manifest["locales"]:
+        record_labels, record_headings = _template_record_shape(
+            texts.get((tag, TEMPLATE_RECORD_PATH), "")
+        )
+        forbidden_labels = (
+            record_labels | TEMPLATE_RECORD_FIELDS
+        ) - TEMPLATE_GUIDE_METADATA_FIELDS
+        for relative in manifest["artifact"]["localized_paths"]:
+            if not relative.startswith(TEMPLATE_FOLDER):
+                continue
+            text = texts.get((tag, relative))
+            if text is None:
+                continue
+            label = "%s:%s" % (tag, relative)
+            # Copy templates under docs/template/changes/ keep the fields that a
+            # copied change folder fills in.
+            if "/" not in relative[len(TEMPLATE_FOLDER):]:
+                for line in _observable_markdown_text(text).splitlines():
+                    field = LABELED_BULLET_RE.match(line)
+                    if field is not None and field.group(1).strip() in forbidden_labels:
+                        errors.append(
+                            "%s holds project field %s; keep it in %s"
+                            % (label, field.group(1).strip(), TEMPLATE_RECORD_PATH)
+                        )
+                    heading = HEADING_TEXT_RE.match(line)
+                    if heading is not None and heading.group(2) in record_headings:
+                        errors.append(
+                            "%s holds the %s section %r"
+                            % (label, TEMPLATE_RECORD_PATH, heading.group(2))
+                        )
+            _check_deletable_references(label, relative, text, errors)
 
 
 def _frontmatter_fields(text: str) -> Optional[Dict[str, List[str]]]:
@@ -2123,6 +2249,7 @@ def check_locales(root: Path = ROOT, require_stable: bool = False) -> List[str]:
     _check_structural_parity(manifest, texts, errors)
     _check_markers(manifest, texts, errors)
     _check_commands(manifest, texts, errors)
+    _check_template_folder(manifest, texts, errors)
     patterns = _check_placeholder_searches(texts, errors)
     _check_root_search_delegation(root, patterns, errors)
     _check_skills(manifest, texts, errors)

@@ -10,7 +10,7 @@ This file contains instructions only for the OMP advisor (watchdog model). It is
 - Changes that reverse, without justification, a decision recorded as `Accepted` in `docs/00-PROJECT.md` §8. If there is evidence that the decision's premise has broken, include that evidence.
 - Violations of the Change Rules in `AGENTS.md` — refactoring beyond the requested scope, a new production dependency without agreement, a commit or push without an explicit request, or secrets left in code, logs, or documentation.
 - Cases where the primary agent proceeds based on assumptions about code it has not read. Changing a function signature without checking its callers is a representative example.
-- Cases where the primary agent starts implementing a change covered by the applicability criteria in `docs/01-DESIGN.md` §1 without following the design procedure.
+- Cases where the primary agent starts implementing a change covered by the applicability criteria in `docs/template/DESIGN.md` §1 without following the design procedure.
 
 ## Do Not Report
 

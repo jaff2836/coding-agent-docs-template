@@ -21,7 +21,7 @@ import package_release as PACKAGE_RELEASE  # noqa: E402
 
 # The packager requires the release version to equal the guides' Template version.
 SOURCE_VERSION = PACKAGE_RELEASE.TEMPLATE_VERSION_RE.search(
-    (REPOSITORY_ROOT / "locales/en/docs/TEMPLATE_GUIDE.md").read_text(encoding="utf-8")
+    (REPOSITORY_ROOT / "locales/en/docs/template/TEMPLATE_GUIDE.md").read_text(encoding="utf-8")
 ).group(1)
 
 
@@ -48,10 +48,10 @@ class PackageReleaseTests(unittest.TestCase):
             self.repository / "template",
             ignore=_ignore_generated,
         )
-        self.repository.joinpath("docs").mkdir()
+        self.repository.joinpath("docs/template").mkdir(parents=True)
         shutil.copy2(
-            REPOSITORY_ROOT / "docs/TEMPLATE_GUIDE.md",
-            self.repository / "docs/TEMPLATE_GUIDE.md",
+            REPOSITORY_ROOT / "docs/template/TEMPLATE_GUIDE.md",
+            self.repository / "docs/template/TEMPLATE_GUIDE.md",
         )
         self.installer = self.repository / "scripts/installer.py"
         self.installer.parent.mkdir()

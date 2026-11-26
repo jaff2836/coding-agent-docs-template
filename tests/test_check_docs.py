@@ -80,7 +80,7 @@ class MaintainerCheckDocsTests(unittest.TestCase):
                     root, "%s/skills/%s/SKILL.md" % (prefix, name), "# Skill\n"
                 )
         COMMON_TESTS.write(
-            root, "docs/TEMPLATE_GUIDE.md",
+            root, "docs/template/TEMPLATE_GUIDE.md",
             "# Source Guide\n\n- **Template version:** 1.0.0\n",
         )
         COMMON_TESTS.write(
@@ -139,7 +139,7 @@ class MaintainerCheckDocsTests(unittest.TestCase):
             self.assertEqual(MAINTAINER_CHECKER.main(arguments), 0)
         self.assertEqual(
             MAINTAINER_CHECKER.CHECK_DOCS.HISTORY_PATH,
-            "docs/TEMPLATE_GUIDE.md",
+            "docs/template/TEMPLATE_GUIDE.md",
         )
         artifact_main.assert_called_once_with(arguments)
 
@@ -387,7 +387,7 @@ class MaintainerCheckDocsTests(unittest.TestCase):
             self.write_source(source)
             COMMON_TESTS.write_minimal_artifact(artifact)
             COMMON_TESTS.write(
-                artifact, "docs/TEMPLATE_GUIDE.md",
+                artifact, "docs/template/TEMPLATE_GUIDE.md",
                 "# Artifact Guide\n\n- **Template version:** 1.0.0\n\n"
                 "## History\n<!-- template-section:release-history -->\n\n"
                 "### v1.0.0\n",
@@ -407,7 +407,7 @@ class MaintainerCheckDocsTests(unittest.TestCase):
                     result, _, stderr = self.run_wrapper(source, arguments)
                     self.assertEqual(result, expected, stderr)
                     if expected:
-                        self.assertIn("docs/TEMPLATE_GUIDE.md", stderr)
+                        self.assertIn("docs/template/TEMPLATE_GUIDE.md", stderr)
                         self.assertIn("template-section:release-history", stderr)
                     self.assertEqual(checker.ROOT, initial_root)
                     self.assertEqual(checker.EXCLUDED_TOP_LEVEL_NAMES, initial_exclusions)
@@ -454,7 +454,7 @@ class MaintainerCheckDocsTests(unittest.TestCase):
     def test_source_git_attributes_keep_maintainer_and_payload_paths_lf(self) -> None:
         paths = (
             "AGENTS.md", "scripts/check-docs.py",
-            "template/common/scripts/check-docs.py", "locales/ko/docs/TEMPLATE_GUIDE.md",
+            "template/common/scripts/check-docs.py", "locales/ko/docs/template/TEMPLATE_GUIDE.md",
         )
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

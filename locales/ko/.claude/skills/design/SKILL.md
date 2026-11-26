@@ -17,9 +17,9 @@ argument-hint: "[변경 요약]"
 <!-- template-skill-fixture:design-reuses-accepted-spec -->
 > [template-contract:v1] MUST_REUSE_ACCEPTED_SCOPE_WITHOUT_REAPPROVAL
 
-1. [docs/01-DESIGN.md](../../../docs/01-DESIGN.md) §1 적용 조건을 확인합니다. 전체 절차 대상이 아니면 관련 상위 설계와 필요한 실행 계획만 확인하고 요청을 수행합니다. 이 문서가 저장소에 없으면 이 절차를 적용하지 않고 그 사실을 알립니다.
+1. [docs/template/DESIGN.md](../../../docs/template/DESIGN.md) §1 적용 조건을 확인합니다. 전체 절차 대상이 아니면 관련 상위 설계와 필요한 실행 계획만 확인하고 요청을 수행합니다. 이 문서가 저장소에 없으면 이 절차를 적용하지 않고 그 사실을 알립니다.
 2. 대상이면 §2의 최소 산출물 형식을 고르고 §3을 진행합니다. 맥락은 [docs/00-PROJECT.md](../../../docs/00-PROJECT.md)와 연결된 제품·확장 설계, 불변조건은 [docs/REVIEW.md](../../../docs/REVIEW.md) §6입니다.
 3. 합의 전에는 구현하지 않습니다. 기존 대화에서 승인한 범위는 재승인 없이 진행합니다. §4에 따라 의도·명세·결정 근거와 [docs/02-TODO.md](../../../docs/02-TODO.md)를 연결합니다.
 4. 변경별 PLAN이 있으면 상세 작업·검증 상태는 그곳에만 기록합니다. 승인된 단계 구현에 INTENT·SPEC을 재작성하거나 모든 변경에 세 파일을 강제하지 않습니다.
 
-이 파일은 어댑터입니다. 절차와 문서 수명은 docs/01-DESIGN.md, 소유권·브랜치 운영은 [docs/DOCS_GUIDE.md](../../../docs/DOCS_GUIDE.md)가 기준입니다.
+이 파일은 어댑터입니다. 절차와 문서 수명은 docs/template/DESIGN.md, 소유권·브랜치 운영은 [docs/template/DOCS_GUIDE.md](../../../docs/template/DOCS_GUIDE.md)가 기준입니다.
