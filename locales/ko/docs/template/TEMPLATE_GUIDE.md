@@ -7,7 +7,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.3.1
+- **Template version:** 4.0.0
 - **Review cadence:** 템플릿 구조 또는 도구 연결 방식 변경 시
 
 이 문서는 템플릿이 소유하는 `docs/template/`에 있습니다. `Template version`은 이 폴더 내용의 판이며 프로젝트가 고치지 않습니다. 적용한 원본의 위치·commit과 release 여부는 프로젝트 소유 문서 [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md)에 적습니다. 기록 규칙은 §5, 판별 변경 내용은 §6에 있습니다.
@@ -345,6 +345,32 @@ git status --short --untracked-files=all
 <!-- template-section:release-history -->
 
 적용 저장소가 어느 변경을 아직 반영하지 않았는지 확인하는 용도입니다. 각 항목은 "무엇이 바뀌었고, 적용 저장소에서 무엇을 확인해야 하는지"만 적습니다. 템플릿 저장소는 각 판을 git tag(`v1.1`, `v1.2`, …)로 남기므로, 이력이 요약한 내용의 원문은 `git diff v1.1 v1.2`로 봅니다. `v1.1` 이전 판은 tag가 없습니다.
+
+### v4.0.0 — 템플릿 소유 문서를 `docs/template/`로 분리
+
+- 템플릿이 소유하고 프로젝트는 읽기만 하는 문서를 `docs/template/`에 모았습니다. 경로가 바뀌어 적용 저장소의 링크가 깨질 수 있으므로 major입니다.
+
+| 이전 경로 | 새 경로 |
+|---|---|
+| `docs/01-DESIGN.md` | `docs/template/DESIGN.md` |
+| `docs/DOCS_GUIDE.md` | `docs/template/DOCS_GUIDE.md` |
+| `docs/TEMPLATE_GUIDE.md` | `docs/template/TEMPLATE_GUIDE.md` |
+| `docs/CHANGELOG_GUIDE.md` | `docs/template/CHANGELOG_GUIDE.md` |
+| `docs/changes/_template/`의 양식 네 개 | `docs/template/changes/` |
+| 없음 | `docs/TEMPLATE_RECORD.md` (`merge`, 프로젝트 소유) |
+
+- 프로젝트가 채우던 `Template source`·`Template revision`과 「템플릿 적용 기록」 절은 [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md)로 옮기고, release가 아닌 원본을 적는 `Template release` 칸을 더했습니다. 네 안내 문서의 `Owner`·`Last reviewed`는 지웠습니다. `Template version`은 이 폴더의 두 안내 문서에만 남습니다.
+- `docs/template/`은 artifact 판 그대로 두고 업그레이드 때 통째로 바꿉니다. 허용하는 차이는 이 문서를 지우는 것과 TEMPLATE_RECORD의 「템플릿 소유 파일의 수정」에 적은 수정입니다. 이 폴더의 문서는 지울 수 있는 파일을 링크하지 않으므로 선택 파일을 지워도 고칠 필요가 없습니다.
+- placeholder 검색 선언과 명령은 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 「placeholder 검색」으로 옮겼습니다. 검색은 `docs/template/`을 통째로 제외하고, 이 문서를 지운 저장소에도 남습니다.
+- `scripts/check-docs.py`는 새 경로에서 판 번호와 이 이력을 읽고, `DESIGN §3` 같은 짧은 이름을 `docs/template/`에서도 찾습니다. 번호 붙은 파일명은 같은 이름의 파일로만 풀어, 옛 `01-DESIGN.md §1` 같은 참조가 남아 있으면 실패로 보고합니다. adoption plan의 `guide`는 `artifact/docs/template/TEMPLATE_GUIDE.md §2`입니다.
+- 적용 저장소에서 확인할 것: 아래 순서로 업그레이드하세요.
+  1. `adopt --base-version <이전 판>`을 돌립니다. 옛 경로와 새 경로가 모두 report에 나옵니다. 옛 경로는 고치지 않았으면 `template-only`(제거), Metadata를 채웠으면 `diverged`, 이미 지웠으면 `converged`입니다. 새 경로는 없으면 `template-only`(추가), 같은 내용이면 `converged`, 다른 내용이면 `diverged`입니다.
+  2. `blocked` 경로를 먼저 정리하고 다시 돌립니다. `docs/template/` 아래에 이미 있는 다른 내용의 파일과 inventory 밖 파일은 프로젝트 소유 위치로 옮기고 TEMPLATE_RECORD의 「보존·제외」에 적습니다. inventory 밖 파일은 report에 나오지 않으므로 폴더를 직접 훑어 찾습니다. `docs/TEMPLATE_RECORD.md`가 이미 있으면 제자리에 두고 템플릿 절을 병합합니다.
+  3. 옛 `docs/DOCS_GUIDE.md`의 「템플릿 적용 기록」과 의도한 수정을 TEMPLATE_RECORD로 옮깁니다. 옛 `Template source`·`Template revision`은 「이전 기준」에 남기고, 두 칸은 이번 artifact의 원본 위치와 commit으로 새로 씁니다.
+  4. 옛 파일을 지우고 artifact의 `docs/template/` 파일을 그대로 넣습니다. 옛 `docs/TEMPLATE_GUIDE.md`를 지웠던 저장소는 새 `docs/template/TEMPLATE_GUIDE.md`도 넣지 않을 수 있고, 그 선택을 「보존·제외」에 적습니다. 나머지 `copy` 정책 파일(skill과 Codex 설정, `scripts/check-docs.py`, `tests/test_check_docs.py`)도 artifact 판에서 시작해 기록한 의도한 수정만 다시 적용합니다. 옛 검사기와 옛 `design` skill은 옛 경로를 요구하므로 이 파일들은 한 번에 바꿉니다.
+  5. `AGENTS.md`, `README.md`, `docs/02-TODO.md`, `docs/CI.md`, `docs/REVIEW_ROUND.md`의 바뀐 링크를 병합하고, 프로젝트가 직접 단 옛 경로 링크를 고칩니다.
+  6. `scripts/check-docs.py`와 `tests/test_check_docs.py`를 돌립니다.
+- `installer.py`는 adoption plan의 `guide` 값만 바뀌었습니다. Python 3.12 하한, installer 명령, release manifest `schema_version` 2는 `v3.3.1`과 같습니다. artifact inventory는 `docs/TEMPLATE_RECORD.md`가 늘어 locale마다 40개입니다.
 
 ### v3.3.1 — 분석·리뷰 skill 추가, 리뷰 라운드 보강과 참조 정의 판정
 

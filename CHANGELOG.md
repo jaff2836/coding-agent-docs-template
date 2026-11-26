@@ -6,6 +6,14 @@
 
 This file records version-specific changes. See [README.md](./README.md) for current installation and usage instructions, and [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases) for immutable assets.
 
+## v4.0.0 (unpublished candidate) — Template-owned documents move to `docs/template/`
+
+- Documents that the template owns and a project only reads now live in `docs/template/`. `docs/01-DESIGN.md` becomes `docs/template/DESIGN.md`, and `DOCS_GUIDE.md`, `TEMPLATE_GUIDE.md`, `CHANGELOG_GUIDE.md`, and the change templates (`docs/changes/_template/` → `docs/template/changes/`) move into that folder. The paths change and links in adopting repositories can break, so this is a major release.
+- The fields a project filled in, `Template source`, `Template revision`, and the template adoption record, move to the new project-owned `docs/TEMPLATE_RECORD.md`, which adds a `Template release` field for sources that are not a release. Keep `docs/template/` identical to the artifact and replace it as a whole when you upgrade.
+- The placeholder search declaration and commands move to `docs/template/DOCS_GUIDE.md`, so they remain after `TEMPLATE_GUIDE.md` is deleted, and the search skips `docs/template/`.
+- `scripts/check-docs.py` reads the new paths and reports an old numbered file name such as `01-DESIGN.md §1` as an error. The adoption plan's `guide` is `artifact/docs/template/TEMPLATE_GUIDE.md §2`.
+- To upgrade, read the report from `adopt --base-version 3.3.1` and follow the old-to-new path table and the steps in the v4.0.0 entry of the artifact's `docs/template/TEMPLATE_GUIDE.md` §6. The Python 3.12 requirement, the installer commands, and release manifest `schema_version` 2 are unchanged.
+
 ## [v3.3.1](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.3.1) — Analysis and review skills, review round hardening, and reference definition parsing
 
 - Adds three explicit-only skills: `bugfix` records bugs and quality improvements in one report file, `refactor` writes one refactoring design-proposal draft, and `pr-review` statically reviews a named PR and publishes the review on it. Each ships with a Codex `agents/openai.yaml`, and the artifact checker requires the `.agents/skills/` copies, so copy them when you upgrade.

@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.3.1
+- **Template version:** 4.0.0
 - **Review cadence:** When the documentation system changes
 
 The root [README.md](../../README.md) contains project usage instructions for the adopting repository. The locale artifact places the project README template at that path. Follow `docs/template/TEMPLATE_GUIDE.md` for initial adoption and migration from an existing structure. This document defines ownership and usage rules for the shared template documentation.

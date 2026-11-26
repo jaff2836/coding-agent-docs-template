@@ -3,7 +3,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.3.1
+- **Template version:** 4.0.0
 - **Review cadence:** 문서 체계 변경 시
 
 적용 저장소의 프로젝트 사용법은 루트 [README.md](../../README.md)입니다. locale artifact가 이미 적용 프로젝트용 README 양식을 이 경로에 배치합니다. 최초 적용·기존 구조 이관은 `docs/template/TEMPLATE_GUIDE.md`를 따릅니다. 이 문서는 공통 템플릿의 문서 소유권과 사용 규칙을 정의합니다.

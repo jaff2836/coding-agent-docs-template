@@ -14,8 +14,8 @@
 
 ## Current Milestone
 
-- **Name:** `v3.3.1` — 미공개 검사기 수정과 skill 공개 (T-071~T-074, T-076)
-- **Status:** In Progress — 2026-11-25 `v3.3.1`을 공개해 T-071~T-074가 들어갔고, candidate와 native Windows published 검증이 통과했습니다. `v3.3.0`은 tag만 잘못 만들어져 건너뛰었습니다. Linux published 검증이 남아 T-076은 끝나지 않았습니다. 2026-11-25에 합의한 T-075(D-023)는 구현을 시작할 수 있고 `v4.0.0`으로 냅니다. 첫 번째 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중이고, 적용 저장소 업그레이드는 아직 등록하지 않았으며, T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
+- **Name:** `v4.0.0` — 템플릿 소유 문서 분리 공개 (T-075, T-077)
+- **Status:** In Progress — 2026-11-25에 합의한 T-075(D-023)가 MR !15로 통합됐고 T-077 `v4.0.0`으로 공개합니다. 앞선 `v3.3.1`(T-071~T-074 공개)은 candidate와 native Windows published 검증이 통과했지만 Linux published 검증이 남아 T-076이 끝나지 않았습니다. `v3.3.0`은 tag만 잘못 만들어져 건너뛰었습니다. 첫 번째 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중이고, 적용 저장소 업그레이드는 아직 등록하지 않았으며, T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
 
 ## 운영 규칙
 
@@ -42,18 +42,17 @@
   - [x] 공개·native Windows published: 사용자가 2026-11-25(KST 18:02) draft를 immutable Latest로 공개했습니다. Windows 로컬 checkout(Python 3.14)에서 tag source의 verifier로 `published --base-version 3.2.0`이 통과해 공개 asset 5개가 candidate를 통과한 package와 같음을 확인했습니다. native Windows에서는 Buildkite `coding-agent-docs-template-windows-ci` Build #220(`main` `90747da`, Python 3.12-CI)의 published 검증 step이 `v3.3.1` 검증을 통과했습니다.
   - [ ] Linux published: [TEMPLATE_GUIDE](./template/TEMPLATE_GUIDE.md) §5는 published 검증을 Linux와 native Windows에서 모두 실행하도록 정합니다. Linux에서 tag `v3.3.1` source의 verifier로 `verify-release.py published --base-version 3.2.0`을 실행합니다. verifier는 GitLab·GitHub `main`이 같고 exact source가 그 조상이어야 통과하므로, 공개 뒤 merge한 MR이 있으면 GitHub `main`을 먼저 fast-forward합니다. 통과하면 PROJECT·root `CHANGELOG`·release 검증 변경 기록에서 Linux를 실행하지 않았다는 문장을 고치고, T-076을 Completed로, 이 항목의 상세를 [완료 작업 보관](./TODO_ARCHIVE.md)으로 옮깁니다.
   - [x] 공개 기록: root `CHANGELOG`(영·한)의 v3.3.1 제목에서 미공개 후보 표시를 release 링크로 바꾸고 공개 검증 문장을 더했으며, PROJECT의 공개 기준·상태와 release 검증 변경 기록을 고쳤습니다. prview가 head마다 요약 note를 따로 남기는 것(MR !12의 note `4318332978`·`4318404335`)을 root `docs/REVIEW_ROUND.md` §2.1과 root `docs/template/DOCS_GUIDE.md` §2에 반영했습니다. 통합: MR !14.
-- [ ] **T-075 템플릿 소유 문서를 `docs/template/`로 분리**
-  - 변경-ID: `2026-11-25-template-owned-docs-folder`
-  - 범위·우선순위: en·ko payload의 `copy` 문서 네 개와 변경 양식 네 개를 `docs/template/`로 옮기고, 그 문서에서 프로젝트가 채우는 칸을 `docs/TEMPLATE_RECORD.md`로 뺍니다. 검사기·도구·root 구조를 맞춥니다. 2026-11-25 사용자 요청입니다.
-  - 선행조건: T-076 `v3.3.1`의 준비가 MR !13으로 `main`에 통합되고 2026-11-25에 공개돼 구현을 시작할 수 있습니다(D-023). T-076에 남은 Linux published 검증은 구현 시작을 막지 않습니다. 2026-11-26 사용자 요청으로 구현을 시작했습니다.
-  - 관련 결정·SPEC: D-023, [INTENT](./changes/2026-11-25-template-owned-docs-folder/01-INTENT.md), [SPEC](./changes/2026-11-25-template-owned-docs-folder/02-SPEC.md)
-  - 상세 실행의 정본: [PLAN](./changes/2026-11-25-template-owned-docs-folder/03-PLAN.md)
-  - 구현 상태: 설계 Accepted(2026-11-25 "추천안대로")이고 설계 문서는 MR !12로 통합됐습니다. 2026-11-26 branch `claude/t075-template-docs-impl`(기준 `main` `5d3d0cf`)에서 PLAN W-002~W-005를 구현·검증했고, 아직 commit하지 않았습니다.
-  - 통합 완료 조건: MR 리뷰와 필수 CI, GitLab `main` 반영. 공개는 T-075 통합 뒤 등록할 `v4.0.0` release 작업에서 합니다.
+- [ ] **T-077 `v4.0.0` release**
+  - 범위: T-075(D-023, MR !15)의 템플릿 소유 문서 분리를 D-007 단계로 공개합니다. 2026-11-26 사용자 요청("release 준비 시작")입니다.
+  - version 판단: D-023 Q5에 따라 `v4.0.0`(major)입니다. artifact 경로와 adoption plan의 `guide` 값이 바뀌고 적용 저장소의 링크가 깨질 수 있습니다. Python 3.12 하한, installer 명령, release manifest `schema_version` 2는 그대로이고, `installer.py`는 `guide` 값만 바뀝니다.
+  - [x] 준비: root·en·ko `docs/template/`의 `DOCS_GUIDE`·`TEMPLATE_GUIDE` Template version을 4.0.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v4.0.0 이력(옛 경로→새 경로 표와 업그레이드 절차, T-075 PLAN §5)을, root `CHANGELOG` 영·한에 `unpublished candidate`·`미공개 후보`를 표시한 v4.0.0 항목(공개 시 표시를 release 링크로 교체)을 더했습니다. MR !15 리뷰 인계 `4329053365/2`(P3, 같은 지적 `4329614784/1`)에 따라 root `docs/template/TEMPLATE_GUIDE.md` §5의 적용 기준 기록 위치를 `docs/TEMPLATE_RECORD.md`로 고쳤습니다. `v3.3.1` 대비 artifact는 locale마다 39개에서 40개가 됐습니다. 이동 8개, 새 파일 `docs/TEMPLATE_RECORD.md`, 내용이 바뀐 파일 16개(skill 8개, `.omp/WATCHDOG.md`, `AGENTS.md`, `README.md`, `docs/02-TODO.md`, `docs/CI.md`, `docs/REVIEW_ROUND.md`, 공통 `scripts/check-docs.py`·`tests/test_check_docs.py`)입니다. 통합: 이 변경의 MR.
+  - [ ] tag·draft candidate: 준비가 통합된 exact source에 사용자가 annotated `v4.0.0` tag와 GitHub draft를 만들고, agent가 `verify-release.py candidate --base-version 3.3.1`을 실행합니다. tag 명령은 GitHub `main`이 준비 MR의 merge commit인지와 두 guide의 판 번호를 확인하고, package를 먼저 만든 뒤에 실행합니다(T-076의 tag 사고). verifier는 GitLab·GitHub `main`이 같고 exact source가 그 조상이어야 통과합니다.
+  - [ ] 공개·published: 사용자가 draft를 immutable release로 공개하고, agent가 Linux에서 `verify-release.py published --base-version 3.3.1`을 실행하고 Windows는 Buildkite `coding-agent-docs-template-windows-ci` 수동 build로 검증합니다.
+  - [ ] 기록: 공개 뒤 기록 MR에서 검증 결과를 남기고, root `CHANGELOG` v4.0.0 제목의 미공개 후보 표시를 release 링크로 바꾸며, PROJECT의 "`v4.0.0`으로 공개합니다" 표시를 고칩니다. root `README.md`·`README.ko.md`의 `artifact/docs/TEMPLATE_GUIDE.md` 안내도 새 경로로 바꿉니다(T-075 PLAN §5).
 
 ## Next
 
-T-076의 Linux published 검증을 Linux 환경에서 실행하고 기록합니다. T-075 구현은 branch에서 끝났으므로 MR 리뷰·필수 CI·통합을 거친 뒤 `v4.0.0` release 작업을 등록합니다(D-023). 새 작업은 사용자와 정한 뒤 MR 단위로 리뷰·필수 CI·통합을 거칩니다.
+T-077 `v4.0.0` release를 준비 MR 통합 뒤 검증·공개합니다. T-076의 Linux published 검증은 Linux 환경에서 실행하고 기록합니다. 새 작업은 사용자와 정한 뒤 MR 단위로 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -86,6 +85,7 @@ T-076의 Linux published 검증을 Linux 환경에서 실행하고 기록합니�
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
+- [x] **T-075 템플릿 소유 문서를 `docs/template/`로 분리** — D-023, 변경-ID `2026-11-25-template-owned-docs-folder`, [PLAN](./changes/2026-11-25-template-owned-docs-folder/03-PLAN.md). en·ko payload의 `copy` 문서 네 개와 변경 양식 네 개를 `docs/template/`로 옮기고, 프로젝트가 채우던 칸은 `docs/TEMPLATE_RECORD.md`로 뺐습니다. 검사기·도구는 새 경로를 읽고, locale 검사는 템플릿 소유 문서의 프로젝트 칸과 지울 수 있는 파일의 링크·절 참조를 거부합니다. root는 같은 구조이고, 이력 문서는 검사기가 따라가는 경로만 바꿨습니다. red-green과 업그레이드 E2E 결과는 PLAN §3에 있습니다. 리뷰 인계 `4329053365/2`(P3)는 T-077 준비에서 반영했습니다. 공개는 T-077입니다. 통합: MR !15.
 - [x] **T-074 리뷰 라운드 절차와 기존 skill 보강** — D-022, [리뷰 라운드·skill 보강](./changes/2026-11-25-review-round-and-skill-hardening/01-CHANGE.md). en·ko payload와 root의 REVIEW_ROUND에 push 시점, 리뷰 대기(1분 간격 확인), 등록 계정·표식 대조, 같은 head 재실행(`rereview = request`에서만), 리뷰되지 않은 head의 보고, 판정 기록 사본을 더했습니다. `review-round`·`design` 어댑터는 정본 문서가 없으면 멈추고, `project-analysis`·`bugfix`·`refactor`는 신뢰를 확인하지 못한 외부 저장소의 코드를 확인 없이 실행하지 않습니다. root 리뷰어 표는 prview(슬롯 `C`)로 다시 등록했습니다. prview의 head별 요약 게시는 T-076 기록에서 리뷰어 표에 반영했고, 실패 표시는 아직 게시물로 확인하지 못했습니다. 공개는 T-076입니다. 통합: MR !11.
 - [x] **T-073 `bugfix`·`refactor`·`pr-review` skill 추가** — D-021, [분석·리뷰 skill 변경](./changes/2026-11-25-bugfix-refactor-pr-review-skills/01-CHANGE.md). en·ko payload와 root에 명시 호출 전용 self-contained skill 세 개를 더하고, manifest의 skill 계약, locale 검사의 fixture, artifact 검사의 skill 쌍·Codex 설정 쌍, 무인자 source 검사의 root↔ko 대조와 안내 문서를 맞췄습니다. 회귀 테스트와 red-green 결과는 MR 본문에 있습니다. 공개는 T-076입니다. 통합: MR !11.
 - [x] **T-072 `check-docs.py` 목록 항목 안 참조 정의 검사** — T-071이 남긴 D-020 보류 항목으로, 2026-11-04 사용자가 검사기 수정을 정했습니다. payload `template/common/scripts/check-docs.py`의 `markdown_reference_definitions`는 원문을 받아, 정의가 시작될 수 있는 목록 줄에서만 목록 들여쓰기를 벗긴 뒤 정의를 읽습니다. 목록 상태는 `markdown_line_context`가 쓰는 원문 훑기(`markdown_line_scan`)에서 가져오므로, marker 줄에서 열린 fence가 목록을 가리지 않습니다. 정의는 문단을 끊지 못하므로, 목록 항목 안에서 문단이 열려 있는 줄과 문단 안에서 목록을 시작하지 못하는 marker(1이 아닌 번호, 내용 없는 marker) 아래 줄은 이전처럼 읽습니다. fence·코드 판정이 함께 쓰는 공유 목록 모델도 CommonMark에 맞췄습니다. 내용 없이 시작하거나 공백 5칸 이상 뒤 코드로 시작하는 항목은 marker 폭에 한 칸을 더한 값이 내용 들여쓰기이고, 그 코드는 다음 줄로 이어집니다. 내용 들여쓰기보다 4칸 이상 깊은 marker는 목록 항목이 아니며, 내용 없이 시작한 항목은 바로 다음 빈 줄에서 끝나고, 인용문 깊이가 바뀌면 코드 줄에서도 목록이 끝납니다. 목록 밖과 인용문의 문단 이어지는 줄은 이전처럼 정의로 읽습니다. 목록 항목 안 인용문의 정의(`- > [r]: ./x.md`)는 PROJECT §12에 보류로 남고, 그 인용문이 끝난 뒤의 정의와 줄 끝에서 끝나는 marker(`-`) 다음 정의도 읽지 못합니다. 공백 5칸 이상 marker 뒤 코드의 backtick이 뒤 줄의 backtick과 code span을 이루면 그 사이 정의를 놓치고, 빈 `>` 줄에서 HTML block을 끝내는 기존 판정 때문에 그 뒤 목록 안 정의를 읽는 경우가 있습니다. MR !9 리뷰 인계 `4156028979/1`(P3)에 따라 Backlog 51행(T-071)을 [완료 작업 보관](./TODO_ARCHIVE.md)으로 옮겼습니다. 회귀 테스트는 `template/common/tests/test_check_docs.py`에 있고 red-green과 차분 결과는 MR 본문에 있습니다. 통합: MR !10.
