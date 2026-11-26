@@ -6,6 +6,14 @@
 
 이 문서는 버전별 변경 사항을 기록합니다. 현재 설치·사용 방법은 [README.ko.md](./README.ko.md), 변경할 수 없는 배포 asset은 [GitHub Releases](https://github.com/jaff2836/coding-agent-docs-template/releases)를 참고하세요.
 
+## v4.0.0 (미공개 후보) — 템플릿 소유 문서를 `docs/template/`로 분리
+
+- 템플릿이 소유하고 프로젝트는 읽기만 하는 문서를 `docs/template/`에 모았습니다. `docs/01-DESIGN.md`는 `docs/template/DESIGN.md`가 되고, `DOCS_GUIDE.md`·`TEMPLATE_GUIDE.md`·`CHANGELOG_GUIDE.md`와 변경 양식(`docs/changes/_template/` → `docs/template/changes/`)도 이 폴더로 옮겼습니다. 경로가 바뀌어 적용 저장소의 링크가 깨질 수 있으므로 major입니다.
+- 프로젝트가 채우던 `Template source`·`Template revision`과 「템플릿 적용 기록」은 새 프로젝트 소유 문서 `docs/TEMPLATE_RECORD.md`로 옮기고, release가 아닌 원본을 적는 `Template release` 칸을 더했습니다. `docs/template/`은 artifact 판 그대로 두고 업그레이드 때 통째로 바꿉니다.
+- placeholder 검색 선언과 명령은 `docs/template/DOCS_GUIDE.md`로 옮겨 `TEMPLATE_GUIDE.md`를 지운 저장소에도 남고, 검색은 `docs/template/`을 제외합니다.
+- `scripts/check-docs.py`는 새 경로를 읽고, 옛 번호 붙은 파일명(`01-DESIGN.md §1` 등)이 남아 있으면 실패로 보고합니다. adoption plan의 `guide`는 `artifact/docs/template/TEMPLATE_GUIDE.md §2`입니다.
+- 업그레이드할 때는 `adopt --base-version 3.3.1`의 report를 보고 artifact의 `docs/template/TEMPLATE_GUIDE.md` §6 v4.0.0 항목에 있는 옛 경로→새 경로 표와 절차를 따르세요. Python 3.12 하한, installer 명령, release manifest `schema_version` 2는 바뀌지 않습니다.
+
 ## [v3.3.1](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.3.1) — 분석·리뷰 skill 추가, 리뷰 라운드 보강과 참조 정의 판정
 
 - 명시 호출 전용 skill 세 개를 더했습니다. `bugfix`는 버그·품질 개선 지점을 보고서 파일 하나로 남기고, `refactor`는 리팩터링 설계 제안서 초안 하나를 쓰며, `pr-review`는 지정한 PR을 정적으로 리뷰해 그 PR에 게시합니다. 각각 Codex용 `agents/openai.yaml`이 함께 있고, artifact 검사기가 `.agents/skills/` 사본을 요구하므로 업그레이드할 때 함께 복사하세요.

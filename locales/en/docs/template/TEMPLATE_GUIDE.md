@@ -7,7 +7,7 @@ The template does not include an initialization script, review prompts or automa
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.3.1
+- **Template version:** 4.0.0
 - **Review cadence:** When the template structure or tool integration changes
 
 This document is in `docs/template/`, which the template owns. `Template version` is the version of this folder's contents, and the project does not change it. Record the location and commit of the applied source, and whether it is a release, in the project-owned [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md). Recording rules are in §5, and release-specific changes are in §6.
@@ -345,6 +345,32 @@ When changing instructions, skills, the checker, or the version of a tool or mod
 <!-- template-section:release-history -->
 
 Use this history to identify changes that an adopted repository has not yet applied. Each entry records only what changed and what to verify in the adopted repository. The template repository preserves each version with a Git tag (`v1.1`, `v1.2`, and so on), so inspect the source summarized here with `git diff v1.1 v1.2`. Versions before `v1.1` have no tag.
+
+### v4.0.0 — Template-Owned Documents Move to `docs/template/`
+
+- Documents that the template owns and a project only reads now live in `docs/template/`. The paths change and links in adopting repositories can break, so this is a major release.
+
+| Old path | New path |
+|---|---|
+| `docs/01-DESIGN.md` | `docs/template/DESIGN.md` |
+| `docs/DOCS_GUIDE.md` | `docs/template/DOCS_GUIDE.md` |
+| `docs/TEMPLATE_GUIDE.md` | `docs/template/TEMPLATE_GUIDE.md` |
+| `docs/CHANGELOG_GUIDE.md` | `docs/template/CHANGELOG_GUIDE.md` |
+| The four templates in `docs/changes/_template/` | `docs/template/changes/` |
+| None | `docs/TEMPLATE_RECORD.md` (`merge`, project-owned) |
+
+- The `Template source` and `Template revision` fields and the template adoption record section that a project filled in move to [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md), which adds a `Template release` field for sources that are not a release. `Owner` and `Last reviewed` are removed from the four guide documents. `Template version` stays only in the two guides in this folder.
+- Keep `docs/template/` identical to the artifact and replace it as a whole when you upgrade. The only allowed differences are deleting this document and the changes recorded under "Changes to template-owned files" in TEMPLATE_RECORD. Documents in this folder do not link to deletable files, so deleting an optional file needs no change here.
+- The placeholder search declaration and commands move to "Placeholder Search" in [DOCS_GUIDE.md](./DOCS_GUIDE.md). The search skips `docs/template/` as a whole and remains in repositories that delete this document.
+- `scripts/check-docs.py` reads the version and this history from the new paths and also looks up short names such as `DESIGN §3` in `docs/template/`. A numbered file name resolves only to a file of that exact name, so a leftover reference such as the old `01-DESIGN.md §1` is reported as an error. The adoption plan's `guide` is `artifact/docs/template/TEMPLATE_GUIDE.md §2`.
+- Verify in the adopting repository: upgrade in this order.
+  1. Run `adopt --base-version <previous version>`. The report lists both the old and the new paths. An old path is `template-only` (removed) if you did not edit it, `diverged` if you filled in its Metadata, and `converged` if you already deleted it. A new path is `template-only` (added) if it is absent, `converged` if a file with the same content exists, and `diverged` if a file with different content exists.
+  2. Clear `blocked` paths first and run it again. Move any file under `docs/template/` that has different content, and any file there outside the inventory, to a project-owned location and record it under "Kept or excluded" in TEMPLATE_RECORD. Files outside the inventory do not appear in the report, so scan the folder yourself. If `docs/TEMPLATE_RECORD.md` already exists, keep it in place and merge the template sections into it.
+  3. Move the template adoption record and any intended changes from the old `docs/DOCS_GUIDE.md` into TEMPLATE_RECORD. Keep the old `Template source` and `Template revision` under "Previous baseline", and write the two fields again with the source location and commit of this artifact.
+  4. Delete the old files and copy the artifact's `docs/template/` files unchanged. A repository that had deleted the old `docs/TEMPLATE_GUIDE.md` may also leave out the new `docs/template/TEMPLATE_GUIDE.md`; record that choice under "Kept or excluded". Start the other `copy` policy files (skills and Codex settings, `scripts/check-docs.py`, `tests/test_check_docs.py`) from the artifact version too and reapply only the recorded intended changes. The old checker and the old `design` skill require the old paths, so replace these files together.
+  5. Merge the changed links in `AGENTS.md`, `README.md`, `docs/02-TODO.md`, `docs/CI.md`, and `docs/REVIEW_ROUND.md`, and fix links to old paths that the project added itself.
+  6. Run `scripts/check-docs.py` and `tests/test_check_docs.py`.
+- `installer.py` changes only the adoption plan's `guide` value. The Python 3.12 requirement, the installer commands, and release manifest `schema_version` 2 are the same as in `v3.3.1`; the artifact inventory adds `docs/TEMPLATE_RECORD.md`, for 40 files per locale.
 
 ### v3.3.1 — Analysis and Review Skills, Review Round Hardening, and Reference Definition Parsing
 

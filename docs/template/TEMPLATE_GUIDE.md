@@ -8,7 +8,7 @@
 ## Metadata
 
 - **Status:** Active
-- **Template version:** 3.3.1
+- **Template version:** 4.0.0
 - **Template source:** https://github.com/jaff2836/coding-agent-docs-template
 - **Template revision:** release 검증 시 exact source commit으로 확정
 - **Owner:** Chae Sangwon
@@ -128,9 +128,10 @@ asset, latest·exact 설치, export와 지원 locale 경로를 확인합니다. 
 
 source 변경을 적용 프로젝트에 이관할 때는 기록된 이전 revision과 새 revision을
 원본 저장소에서 비교하고 프로젝트가 의도적으로 바꾼 내용을 보존합니다.
-locale 가이드의 `Template source`, `Template version`, `Template revision`은
-실제 복사 기준을 기록하며 미커밋 또는 일부 반영을 exact release처럼 표시하지
-않습니다.
+적용 프로젝트는 실제 복사 기준을 프로젝트 기록 `docs/TEMPLATE_RECORD.md`의
+`Template source`·`Template revision`·`Template release`에 적고, 미커밋 또는
+일부 반영을 exact release처럼 표시하지 않습니다. locale 가이드의
+`Template version`은 `docs/template/` 내용의 판이며 프로젝트가 고치지 않습니다.
 
 ### 원격 저장소와 통합
 

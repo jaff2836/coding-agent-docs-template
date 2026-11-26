@@ -41,7 +41,7 @@ Claude, Codex, Cursor와 OMP가 같은 문서·설계·리뷰 계약을 사용�
 - T-055 installer 경로·복구·manifest 검사 보강(PR #77)과 T-060 artifact checker의 주석 해석 수정(PR #80)은 source에 통합됐고 `v3.0.1`에서 공개했습니다. maintainer 도구인 T-056 maintainer 검사 보강(PR #79)과 T-058 candidate E2E(PR #78)는 통합으로 바로 적용됐고, T-058은 `v3.0.1` candidate에서 처음 운영했습니다.
 - T-063 템플릿 행동 검증 사례 보강(PR #83)은 source에 통합됐고 `v3.1.0`에서 공개했습니다. 같은 PR의 T-061 release manifest schema 정합과 T-062 install 경로 조건 안내는 root·maintainer 변경이라 통합으로 바로 적용됐습니다.
 - T-065 위임 입력 규칙(Origin PR #86), D-020의 T-067 검사기 판정 수정(GitLab MR !1)과 T-068 리뷰 라운드·적용 기록 문구(GitLab MR !2)는 source에 통합됐고 `v3.2.0`에서 공개했습니다. T-069 GitLab 이전 반영(MR !3·!4)은 root·maintainer 변경이라 통합으로 바로 적용됐습니다.
-- T-071·T-072 검사기 참조 정의 처리(GitLab MR !9·!10), D-021의 T-073 분석·리뷰 skill과 D-022의 T-074 리뷰 라운드·skill 보강(MR !11)은 source에 통합됐고 `v3.3.1`에서 공개했습니다(T-076). `v3.3.0`은 tag만 잘못 만들어져 건너뛰었습니다. D-023 설계(T-075, MR !12)는 root 문서만 바꿨습니다.
+- T-071·T-072 검사기 참조 정의 처리(GitLab MR !9·!10), D-021의 T-073 분석·리뷰 skill과 D-022의 T-074 리뷰 라운드·skill 보강(MR !11)은 source에 통합됐고 `v3.3.1`에서 공개했습니다(T-076). `v3.3.0`은 tag만 잘못 만들어져 건너뛰었습니다. D-023의 T-075 템플릿 소유 문서 분리(설계 MR !12, 구현 MR !15)는 source에 통합됐고 T-077 `v4.0.0`으로 공개합니다.
 - 기존 적용 저장소의 사용자 수정 문서는 자동 덮어쓰기나 locale 자동 전환 대상이 아닙니다.
 
 현재 구현·검증된 지원 범위와 그 근거를 기록합니다. 설계 승인·코드 구현·통합·릴리스·지원 검증을 구분합니다. 열린 PR이나 브랜치별 상세 상태를 여기에 복제하지 않습니다.
@@ -107,7 +107,7 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 
 현재 합의했지만 구현하지 않은 목표 구조는 하나입니다.
 
-- **템플릿 소유 문서 분리(D-023):** 적용 저장소에서 템플릿이 설치하고 프로젝트가 읽기만 하는 문서를 `docs/template/`에 모으고, 프로젝트가 채우는 값은 `docs/TEMPLATE_RECORD.md`에 둡니다. 정본은 [템플릿 소유 문서 분리 SPEC](./changes/2026-11-25-template-owned-docs-folder/02-SPEC.md)입니다. 구현(T-075)은 source에 통합되면 `v4.0.0`으로 공개하며, 그 전까지 공개 artifact의 구조는 §5와 같습니다.
+- **템플릿 소유 문서 분리(D-023):** 적용 저장소에서 템플릿이 설치하고 프로젝트가 읽기만 하는 문서를 `docs/template/`에 모으고, 프로젝트가 채우는 값은 `docs/TEMPLATE_RECORD.md`에 둡니다. 정본은 [템플릿 소유 문서 분리 SPEC](./changes/2026-11-25-template-owned-docs-folder/02-SPEC.md)입니다. 구현(T-075)은 MR !15로 source에 통합됐고 T-077 `v4.0.0`으로 공개하며, 그 전까지 공개 artifact의 구조는 §5와 같습니다.
 
 그 밖에 합의한 구조는 모두 구현되어 §5에 있고, 결정과 상세 설계는 §8과 §13이 연결합니다.
 
@@ -241,6 +241,6 @@ exporter는 manifest의 common과 선택 locale inventory만 외부 빈 디렉�
 | 적용 저장소 역제안 반영 | [2026-10-28-adopter-feedback-v3.1.0](./changes/2026-10-28-adopter-feedback-v3.1.0/01-CHANGE.md) | Accepted — D-020이 D-009 정본 문서의 리뷰 라운드·적용 기록 안내와 payload 검사기 판정을 보강 | 구현은 T-067·T-068; `v3.2.0`에서 공개(T-066) |
 | 분석·리뷰 skill | [2026-11-25-bugfix-refactor-pr-review-skills](./changes/2026-11-25-bugfix-refactor-pr-review-skills/01-CHANGE.md) | Accepted — D-021이 D-005의 self-contained skill 계약과 D-002의 locale skill bundle을 확장 | 구현은 T-073; `v3.3.1`(T-076)에서 공개 |
 | 리뷰 라운드·skill 보강 | [2026-11-25-review-round-and-skill-hardening](./changes/2026-11-25-review-round-and-skill-hardening/01-CHANGE.md) | Accepted — D-022가 D-009 정본 문서의 리뷰 라운드 절차와 D-005의 skill 안전 규칙을 보강 | 구현은 T-074; `v3.3.1`(T-076)에서 공개 |
-| 템플릿 소유 문서 분리 | [2026-11-25-template-owned-docs-folder SPEC](./changes/2026-11-25-template-owned-docs-folder/02-SPEC.md) | Accepted — D-023이 D-002의 artifact inventory, D-006의 adoption policy 표, D-009의 문서 소유권을 확장 | 구현은 T-075; `v4.0.0`에서 공개 |
+| 템플릿 소유 문서 분리 | [2026-11-25-template-owned-docs-folder SPEC](./changes/2026-11-25-template-owned-docs-folder/02-SPEC.md) | Accepted — D-023이 D-002의 artifact inventory, D-006의 adoption policy 표, D-009의 문서 소유권을 확장 | 구현은 T-075(MR !15); `v4.0.0`(T-077)에서 공개 |
 
 선택형 문서를 사용하지 않으면 해당 행과 링크를 제거합니다. 개별 변경 SPEC은 §8의 결정에서 연결합니다. 문서 번호나 작성일만으로 다른 설계 전체를 대체하지 않습니다.
