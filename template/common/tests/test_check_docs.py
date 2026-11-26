@@ -25,14 +25,15 @@ def write(root: Path, relative_path: str, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def combined_form_source() -> Path:
-    materialized = REPOSITORY_ROOT / "docs/changes/_template/01-CHANGE.md"
+def change_form_source(name: str = "01-CHANGE.md") -> Path:
+    materialized = REPOSITORY_ROOT / "docs/template/changes" / name
     if materialized.is_file():
         return materialized
-    return (
-        REPOSITORY_ROOT.parents[1]
-        / "locales/en/docs/changes/_template/01-CHANGE.md"
-    )
+    return REPOSITORY_ROOT.parents[1] / "locales/en/docs/template/changes" / name
+
+
+def combined_form_source() -> Path:
+    return change_form_source()
 
 
 def write_minimal_artifact(root: Path) -> None:
@@ -40,7 +41,7 @@ def write_minimal_artifact(root: Path) -> None:
     write(root, "CLAUDE.md", "@AGENTS.md\n")
     write(
         root,
-        "docs/DOCS_GUIDE.md",
+        "docs/template/DOCS_GUIDE.md",
         "# Documentation Guide\n\n- **Template version:** 1.0.0\n",
     )
     write(root, ".agents/skills/design/SKILL.md", "# Design\n")
@@ -1006,6 +1007,58 @@ Translated guidance
                 CHECK_DOCS.check_relative_links(errors, [])
             self.assertIn("MISSING.md", "\n".join(errors))
 
+    def test_template_folder_short_names_are_checked(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(root, "docs/template/DESIGN.md", "# Design\n## 3. Plan\n")
+            write(root, "docs/template/changes/02-SPEC.md", "# Spec form\n## 1. Form\n")
+            write(root, "docs/SOURCE.md", "DESIGN §3, DESIGN.md §3\n")
+            errors, notes = [], []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_section_refs(errors, notes)
+            self.assertEqual(errors, [])
+            self.assertIn("checked 2", "\n".join(notes))
+
+            write(root, "docs/SOURCE.md", "DESIGN §9 and SPEC §7\n")
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_section_refs(errors, [])
+            # DESIGN resolves into docs/template/; the SPEC copy template does not.
+            self.assertEqual(len(errors), 2, errors)
+            self.assertIn("DESIGN §9 (section does not exist in docs/template/DESIGN.md)", errors[1])
+
+    def test_numbered_file_name_resolves_only_to_that_exact_name(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write(root, "docs/00-PROJECT.md", "# Project\n## 8. Decisions\n")
+            write(root, "docs/template/DESIGN.md", "# Design\n## 1. When\n")
+            write(root, "docs/changes/x/01-CHANGE.md", "See 00-PROJECT.md §8.\n")
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_section_refs(errors, [])
+            self.assertEqual(errors, [])
+
+            # The old name of a moved document must not resolve to its new file.
+            write(root, "docs/changes/x/01-CHANGE.md", "See 01-DESIGN.md §1.\n")
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_section_refs(errors, [])
+            self.assertIn("01-DESIGN.md §1 (document target does not exist)", "\n".join(errors))
+
+    def test_change_forms_link_correctly_from_both_locations(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ("00-PROJECT.md", "02-TODO.md", "REVIEW_ROUND.md", "template/DESIGN.md"):
+                write(root, "docs/" + name, "# Placeholder\n")
+            for name in ("01-CHANGE.md", "01-INTENT.md", "02-SPEC.md", "03-PLAN.md"):
+                text = change_form_source(name).read_text(encoding="utf-8")
+                write(root, "docs/template/changes/" + name, text)
+                write(root, "docs/changes/example/" + name, text)
+            errors = []
+            with patch.object(CHECK_DOCS, "ROOT", root):
+                CHECK_DOCS.check_relative_links(errors, [])
+            self.assertEqual(errors, [])
+
     def test_reference_style_section_link_is_checked(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -1131,7 +1184,7 @@ Translated guidance
 
 `docs/REMOVED.md` §99
 """
-            write(root, "docs/TEMPLATE_GUIDE.md", guide)
+            write(root, "docs/template/TEMPLATE_GUIDE.md", guide)
 
             errors = []
             with patch.object(CHECK_DOCS, "ROOT", root):
@@ -1145,7 +1198,7 @@ Translated guidance
                     "translated guidance\n<!-- template-section:release-history -->",
                 ),
             ):
-                write(root, "docs/TEMPLATE_GUIDE.md", invalid)
+                write(root, "docs/template/TEMPLATE_GUIDE.md", invalid)
                 errors = []
                 with patch.object(CHECK_DOCS, "ROOT", root):
                     CHECK_DOCS.check_section_refs(errors, [])
@@ -1157,12 +1210,12 @@ Translated guidance
             root = Path(directory)
             write(
                 root,
-                "docs/DOCS_GUIDE.md",
+                "docs/template/DOCS_GUIDE.md",
                 "# Docs\n\n- **Template version:** 1.2.3\n",
             )
             write(
                 root,
-                "docs/TEMPLATE_GUIDE.md",
+                "docs/template/TEMPLATE_GUIDE.md",
                 "# Guide\n\n"
                 "- **Template version:** 1.2.3\n\n"
                 "### v1.2.3 — unrelated heading\n\n"
@@ -1179,7 +1232,7 @@ Translated guidance
                 CHECK_DOCS.check_versions(errors, [])
 
             self.assertIn(
-                "Current version is absent from docs/TEMPLATE_GUIDE.md history: 1.2.3",
+                "Current version is absent from docs/template/TEMPLATE_GUIDE.md history: 1.2.3",
                 errors,
             )
 
@@ -1188,12 +1241,12 @@ Translated guidance
             root = Path(directory)
             write(
                 root,
-                "docs/DOCS_GUIDE.md",
+                "docs/template/DOCS_GUIDE.md",
                 "# Docs\n\n- **Template version:** 1.2.3\n",
             )
             write(
                 root,
-                "docs/TEMPLATE_GUIDE.md",
+                "docs/template/TEMPLATE_GUIDE.md",
                 "# Guide\n\n- **Template version:** 1.2.3\n",
             )
             write(
@@ -1234,14 +1287,14 @@ Translated guidance
             root = Path(directory)
             write(
                 root,
-                "docs/DOCS_GUIDE.md",
+                "docs/template/DOCS_GUIDE.md",
                 "# Guide\n"
                 "- **Template version:** 1.0.0\n"
                 "- **Template version:** 0.9.0\n",
             )
             write(
                 root,
-                "docs/TEMPLATE_GUIDE.md",
+                "docs/template/TEMPLATE_GUIDE.md",
                 "# Template\n"
                 "- **Template version:** 1.0.0\n\n"
                 "## History\n"
@@ -1259,7 +1312,7 @@ Translated guidance
             root = Path(directory)
             write(
                 root,
-                "docs/DOCS_GUIDE.md",
+                "docs/template/DOCS_GUIDE.md",
                 "# Guide\n- **Template version:** 1.0.0\n",
             )
 
@@ -1275,7 +1328,7 @@ Translated guidance
             root = Path(directory)
             write(
                 root,
-                "docs/DOCS_GUIDE.md",
+                "docs/template/DOCS_GUIDE.md",
                 "# Guide\n- **Template version:** 1.0.0\n",
             )
             external = Path(outside) / "TEMPLATE_GUIDE.md"
@@ -1283,12 +1336,12 @@ Translated guidance
                 "# Guide\n- **Template version:** 1.0.0\n",
                 encoding="utf-8",
             )
-            self.symlink_or_skip(root / "docs/TEMPLATE_GUIDE.md", external)
+            self.symlink_or_skip(root / "docs/template/TEMPLATE_GUIDE.md", external)
             errors = []
             notes = []
             with patch.object(CHECK_DOCS, "ROOT", root):
                 CHECK_DOCS.check_versions(errors, notes)
-            self.assertEqual(errors, ["docs/TEMPLATE_GUIDE.md escapes artifact root"])
+            self.assertEqual(errors, ["docs/template/TEMPLATE_GUIDE.md escapes artifact root"])
             self.assertNotIn("omitted", "\n".join(notes))
 
     def test_template_guide_must_be_a_file(self) -> None:
@@ -1296,15 +1349,15 @@ Translated guidance
             root = Path(directory)
             write(
                 root,
-                "docs/DOCS_GUIDE.md",
+                "docs/template/DOCS_GUIDE.md",
                 "# Guide\n- **Template version:** 1.0.0\n",
             )
-            (root / "docs/TEMPLATE_GUIDE.md").mkdir()
+            (root / "docs/template/TEMPLATE_GUIDE.md").mkdir()
             errors = []
             notes = []
             with patch.object(CHECK_DOCS, "ROOT", root):
                 CHECK_DOCS.check_versions(errors, notes)
-            self.assertEqual(errors, ["docs/TEMPLATE_GUIDE.md is not a file"])
+            self.assertEqual(errors, ["docs/template/TEMPLATE_GUIDE.md is not a file"])
             self.assertNotIn("omitted", "\n".join(notes))
 
     def test_deep_section_reference_is_not_truncated(self) -> None:
@@ -1683,12 +1736,12 @@ Translated guidance
             )
             write(
                 root,
-                "docs/DOCS_GUIDE.md",
+                "docs/template/DOCS_GUIDE.md",
                 "# Docs\n\n- **Template version:** 미릴리스 (tag 없음)\n",
             )
             write(
                 root,
-                "docs/TEMPLATE_GUIDE.md",
+                "docs/template/TEMPLATE_GUIDE.md",
                 "# Guide\n\n- **Template version:** 미릴리스 (최근 tag: v1.2)\n\n"
                 + history % "미릴리스 (최근 tag: v1.2)",
             )
@@ -1703,12 +1756,12 @@ Translated guidance
             ):
                 write(
                     root,
-                    "docs/DOCS_GUIDE.md",
+                    "docs/template/DOCS_GUIDE.md",
                     "# Docs\n\n- **Template version:** %s\n" % value,
                 )
                 write(
                     root,
-                    "docs/TEMPLATE_GUIDE.md",
+                    "docs/template/TEMPLATE_GUIDE.md",
                     "# Guide\n\n- **Template version:** %s\n\n" % value
                     + history % heading,
                 )
@@ -1784,7 +1837,8 @@ Translated guidance
             docs = root / "docs"
             change = docs / "changes/example"
             change.mkdir(parents=True)
-            for name in ("00-PROJECT.md", "01-DESIGN.md", "02-TODO.md"):
+            (docs / "template").mkdir()
+            for name in ("00-PROJECT.md", "template/DESIGN.md", "02-TODO.md"):
                 (docs / name).write_text("# Placeholder\n", encoding="utf-8")
             (change / "01-CHANGE.md").write_text(
                 combined_form_source().read_text(encoding="utf-8"),

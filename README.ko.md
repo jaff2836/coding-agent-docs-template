@@ -131,7 +131,7 @@ python3 scripts/verify-release.py published --version {{VERSION}} --source-commi
 - **다국어 배포:** `template/common/`, `locales/en/`, `locales/ko/`, manifest와 schema
 - **도구:** 문서·locale 검사, export, release package·검증, installer
 
-구조와 적용 체크리스트: [한국어 Template Guide](./locales/ko/docs/TEMPLATE_GUIDE.md)·[Documentation Guide](./locales/ko/docs/DOCS_GUIDE.md), [영문 Template Guide](./locales/en/docs/TEMPLATE_GUIDE.md)·[Documentation Guide](./locales/en/docs/DOCS_GUIDE.md). root [Template Guide](./docs/TEMPLATE_GUIDE.md)와 [Documentation Guide](./docs/DOCS_GUIDE.md)는 maintainer 보충 안내입니다. 템플릿 artifact에는 애플리케이션 코드나 특정 CI 제품의 pipeline이 없습니다. 이 저장소 자체의 품질 게이트는 Buildkite(`.buildkite/`)에서 실행합니다([CI 가이드](./docs/CI.md)).
+구조와 적용 체크리스트: [한국어 Template Guide](./locales/ko/docs/template/TEMPLATE_GUIDE.md)·[Documentation Guide](./locales/ko/docs/template/DOCS_GUIDE.md), [영문 Template Guide](./locales/en/docs/template/TEMPLATE_GUIDE.md)·[Documentation Guide](./locales/en/docs/template/DOCS_GUIDE.md). root [Template Guide](./docs/template/TEMPLATE_GUIDE.md)와 [Documentation Guide](./docs/template/DOCS_GUIDE.md)는 maintainer 보충 안내입니다. 템플릿 artifact에는 애플리케이션 코드나 특정 CI 제품의 pipeline이 없습니다. 이 저장소 자체의 품질 게이트는 Buildkite(`.buildkite/`)에서 실행합니다([CI 가이드](./docs/CI.md)).
 
 ## 번들 스킬
 

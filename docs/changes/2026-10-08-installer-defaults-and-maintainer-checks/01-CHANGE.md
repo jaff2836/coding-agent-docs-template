@@ -54,7 +54,7 @@
 
 ### 1.4 제약
 
-- **README 시점:** root [TEMPLATE_GUIDE.md](../../TEMPLATE_GUIDE.md) §6은 README가 현재 공개 동작만 설명한다고 정합니다. `--release-url`을 뺀 명령은 새 installer를 공개한 뒤에만 README에 씁니다.
+- **README 시점:** root [TEMPLATE_GUIDE.md](../../template/TEMPLATE_GUIDE.md) §6은 README가 현재 공개 동작만 설명한다고 정합니다. `--release-url`을 뺀 명령은 새 installer를 공개한 뒤에만 README에 씁니다.
 - **D-004:** release root, exact tag 검증, redirect 경계는 그대로 둡니다. 기본값도 명시한 값과 같은 검증을 거칩니다.
 - **공통:** 새 의존성이나 CI 제품을 추가하지 않습니다. en·ko 구조 parity와 기존 검사를 통과해야 합니다.
 
@@ -94,7 +94,7 @@
   - 검증: 소유 절 밖 차이를 넣으면 실패, 안의 차이는 통과하는 회귀 테스트와 red-green. 현재 저장소에서는 통과해야 합니다.
 - **R-005 README locale 표 (리뷰 C70-B-001로 변경)**
   - 상황: root `README.md` 또는 `README.ko.md`의 locale 표(첫 열 머리글 `Locale`)에 manifest의 `complete` locale이 아닌 tag가 있거나, 상태 열이 `complete`가 아님
-  - 결과: 파일과 차이를 보고하며 실패합니다. 표는 공개된 release를 설명하므로, source manifest에만 있고 아직 공개되지 않은 `complete` locale이 표에 없어도 실패하지 않습니다(부분집합 검사). 새 locale은 그 release의 공개 기록 PR에서 표에 추가하며, 이 단계를 root [TEMPLATE_GUIDE.md](../../TEMPLATE_GUIDE.md) §5의 release 절차에 적습니다. 언어 이름 열은 비교하지 않습니다.
+  - 결과: 파일과 차이를 보고하며 실패합니다. 표는 공개된 release를 설명하므로, source manifest에만 있고 아직 공개되지 않은 `complete` locale이 표에 없어도 실패하지 않습니다(부분집합 검사). 새 locale은 그 release의 공개 기록 PR에서 표에 추가하며, 이 단계를 root [TEMPLATE_GUIDE.md](../../template/TEMPLATE_GUIDE.md) §5의 release 절차에 적습니다. 언어 이름 열은 비교하지 않습니다.
   - 한계: 공개 뒤 표 갱신을 잊으면 검사가 잡지 못하고 release 절차에 맡깁니다.
   - 검증: 표에 manifest에 없는 tag를 넣거나 상태를 바꾸면 실패하고, manifest에만 있는 `complete` locale은 통과하는 회귀 테스트와 red-green
 
@@ -133,8 +133,8 @@
 - 두 검사는 인자 없는 maintainer 실행에서만 돕니다. `--root`로 artifact를 검사할 때는 실행하지 않습니다.
 
 **문서**
-- T-049 PR: root [TEMPLATE_GUIDE.md](../../TEMPLATE_GUIDE.md) §3(무인자 maintainer 검사 설명)과 §5(공개 기록 PR에서 README locale 표 갱신), root `DOCS_GUIDE.md`의 점검 목록
-- T-050 PR: [en](../../../locales/en/docs/TEMPLATE_GUIDE.md)·[ko](../../../locales/ko/docs/TEMPLATE_GUIDE.md) 적용 가이드 §2(Python 하한)와 PROJECT External Boundaries
+- T-049 PR: root [TEMPLATE_GUIDE.md](../../template/TEMPLATE_GUIDE.md) §3(무인자 maintainer 검사 설명)과 §5(공개 기록 PR에서 README locale 표 갱신), root `DOCS_GUIDE.md`의 점검 목록
+- T-050 PR: [en](../../../locales/en/docs/template/TEMPLATE_GUIDE.md)·[ko](../../../locales/ko/docs/template/TEMPLATE_GUIDE.md) 적용 가이드 §2(Python 하한)와 PROJECT External Boundaries
 - T-050 PR: en·ko 적용 가이드의 installer 명령과 manifest `required_commands`, root `AGENTS.md` Commands에서 `--release-url` 제거
 - 기록 PR(공개 뒤): root README 명령에서 `--release-url`을 빼고 Prerequisites를 "Python 3.12 이상"으로 바꿉니다.
 

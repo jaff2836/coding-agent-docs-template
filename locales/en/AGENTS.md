@@ -43,7 +43,7 @@ Treat commands that still contain a `{{...}}` placeholder as unconfigured and do
 - Update it only when a decision has been agreed with the user or the actual implementation or support scope has changed. Keep the base product design and existing design index together, and do not duplicate detailed work status.
 - Keep rejected, deferred, and proposed states distinct from current decisions.
 
-### [`docs/01-DESIGN.md`](./docs/01-DESIGN.md) — Change Design Process
+### [`docs/template/DESIGN.md`](./docs/template/DESIGN.md) — Change Design Process
 
 - Read and apply it before implementation for changes involving structure, the technology stack, public contracts, data schemas, migrations, or trade-offs, or for feature changes whose requirements are ambiguous or whose intent must persist across sessions.
 - Do not apply it to a bug fix whose cause is not structural, a change contained within one module that does not alter an external contract, or implementation of an already `Accepted` design. Do not expand a small user request into this process.
@@ -60,7 +60,8 @@ Treat commands that still contain a `{{...}}` placeholder as unconfigured and do
 ### Product and Extension Designs and Change Documents
 
 - Use the optional [`docs/10-EXTENSION.md`](./docs/10-EXTENSION.md) or an existing design linked from PROJECT for long-term extensions. State what it preserves, extends, or replaces in the base design.
-- Store the intent, specification, and optional execution plan for a change in `docs/changes/<change-ID>/`. `docs/changes/_template/` contains copyable templates and is not approved or active work. Do not require every file for every task.
+- Store the intent, specification, and optional execution plan for a change in `docs/changes/<change-ID>/`. `docs/template/changes/` contains copyable templates and is not approved or active work. Do not require every file for every task.
+- `docs/template/` holds the template-owned process documents and templates. Do not write project content there; keep the template adoption record in [`docs/TEMPLATE_RECORD.md`](./docs/TEMPLATE_RECORD.md).
 - In a new session, compare the relevant change documents on the current branch with the integration target. Do not treat the global TODO as real-time status for another branch. Numbers control sorting; they do not indicate approval or priority.
 - Keep folders for completed and cancelled changes, and treat PROJECT as the current product baseline. Do not mix global decision and task IDs (`D-`/`T-`) with change-local IDs.
 
@@ -90,14 +91,14 @@ Treat commands that still contain a `{{...}}` placeholder as unconfigured and do
 ### [`refactor`](./.agents/skills/refactor/SKILL.md) — Refactoring Proposal Skill
 
 - Use it only when the user explicitly invokes it. It diagnoses structural problems and writes a single design-proposal draft file; it does not change code.
-- Carry an approved proposal into the [`docs/01-DESIGN.md`](./docs/01-DESIGN.md) procedure before implementing. Do not apply it to an ordinary refactoring request or to the design of a change whose content is already decided.
+- Carry an approved proposal into the [`docs/template/DESIGN.md`](./docs/template/DESIGN.md) procedure before implementing. Do not apply it to an ordinary refactoring request or to the design of a change whose content is already decided.
 
 ### [`pr-review`](./.agents/skills/pr-review/SKILL.md) — PR Review Publishing Skill
 
 - Use it only when the user explicitly invokes it. It reviews the named PR statically and publishes the review on that PR. That publication is the only write the invocation delegates.
 - When asked for a review without publication, do not use this skill; apply only [`docs/REVIEW.md`](./docs/REVIEW.md).
 
-### [`docs/CHANGELOG_GUIDE.md`](./docs/CHANGELOG_GUIDE.md) — Release Notes Guidance
+### [`docs/template/CHANGELOG_GUIDE.md`](./docs/template/CHANGELOG_GUIDE.md) — Release Notes Guidance
 
 - Read it when introducing or updating release notes.
 - Keep current behavior in README, published history in a project-owned root CHANGELOG when one exists, and future work in TODO or PLAN.

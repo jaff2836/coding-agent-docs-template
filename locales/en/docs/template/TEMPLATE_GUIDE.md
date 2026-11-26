@@ -1,20 +1,16 @@
 # Template Guide
 
-This document explains how to adopt the documentation-centered project template for the first time. In this locale artifact, the root [README.md](../README.md) is the adopting project's overview, setup, and run template. It does not include the template source repository's introductory README.
+This document explains how to adopt the documentation-centered project template for the first time. In this locale artifact, the root [README.md](../../README.md) is the adopting project's overview, setup, and run template. It does not include the template source repository's introductory README.
 
-The template does not include an initialization script, review prompts or automatic review configuration for GitHub Actions, or pipeline files for a particular CI product. Copy the files and fill in the project values yourself. Follow [CI.md](./CI.md) for quality-gate order and integration checks.
+The template does not include an initialization script, review prompts or automatic review configuration for GitHub Actions, or pipeline files for a particular CI product. Copy the files and fill in the project values yourself. Follow [CI.md](../CI.md) for quality-gate order and integration checks.
 
 ## Metadata
 
 - **Status:** Active
 - **Template version:** 3.3.1
-- **Template source:** Adapt to the project — URL of the original template repository, or another location you can open again later
-- **Template revision:** Adapt to the project — full SHA of the source commit used for copying (§5)
-- **Owner:** Adapt to the project
-- **Last reviewed:** YYYY-MM-DD
 - **Review cadence:** When the template structure or tool integration changes
 
-`Template version` records the release used for copying; `Template source` and `Template revision` record its original location and exact commit. Do not change these values for ordinary documentation edits in the adopted repository. Fill in the source and revision guidance from the original template when copying; do not try to place the adopted repository's own future commit SHA here. Recording rules are in §5, and release-specific changes are in §6.
+This document is in `docs/template/`, which the template owns. `Template version` is the version of this folder's contents, and the project does not change it. Record the location and commit of the applied source, and whether it is a release, in the project-owned [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md). Recording rules are in §5, and release-specific changes are in §6.
 
 ## 1. Included Layout
 
@@ -66,22 +62,23 @@ The template does not include an initialization script, review prompts or automa
 ├── .omp/
 │   └── WATCHDOG.md            # Optional: OMP advisor review priorities; imports REVIEW.md
 └── docs/
-    ├── CHANGELOG_GUIDE.md     # Boundaries for optional project release notes
-    ├── DOCS_GUIDE.md          # Document index, operating rules, and adoption checklist
-    ├── TEMPLATE_GUIDE.md      # This document: first-time adoption instructions
     ├── 00-PROJECT.md          # Product baseline, base design, decisions, and design index
-    ├── 01-DESIGN.md           # Shared design process
     ├── 02-TODO.md             # Global changes, priorities, dependencies, and integration results
     ├── 10-EXTENSION.md        # Optional extension design and phased completion criteria
-    ├── changes/
-    │   └── _template/        # Copyable templates; actual work uses a separate change-ID directory
-    │       ├── 01-CHANGE.md   # Combined form: Intent and Spec in one file
-    │       ├── 01-INTENT.md   # Request, problem, and expected outcome
-    │       ├── 02-SPEC.md     # Requirements, scenarios, and design
-    │       └── 03-PLAN.md     # Optional detailed work and verification record
     ├── REVIEW.md              # Shared PR review policy
     ├── REVIEW_ROUND.md        # Review-round process and delegated authority
-    └── CI.md                  # Runner-agnostic quality-gate workflow and integration checklist
+    ├── CI.md                  # Runner-agnostic quality-gate workflow and integration checklist
+    ├── TEMPLATE_RECORD.md     # Applied template source, revision, release status, and adoption details
+    └── template/              # Template-owned; replaced with the artifact version on upgrade
+        ├── DESIGN.md          # Shared design process
+        ├── DOCS_GUIDE.md      # Document index, operating rules, and adoption checklist
+        ├── TEMPLATE_GUIDE.md  # This document: first-time adoption instructions
+        ├── CHANGELOG_GUIDE.md # Boundaries for optional project release notes
+        └── changes/           # Copyable templates; actual work goes in docs/changes/<change-ID>/
+            ├── 01-CHANGE.md   # Combined form: Intent and Spec in one file
+            ├── 01-INTENT.md   # Request, problem, and expected outcome
+            ├── 02-SPEC.md     # Requirements, scenarios, and design
+            └── 03-PLAN.md     # Optional detailed work and verification record
 ```
 
 ## 2. Applying to a Project
@@ -154,42 +151,42 @@ To obtain only the verified artifact without a plan, export it to an empty direc
 python3 installer.py export --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}
 ```
 
-1. In a new project created with `install`, or in a repository merged according to the `adopt` report, record its version and source commit in both guide documents as described in §5. Confirm that the artifact inventory includes the hidden `.agents/`, `.claude/`, `.cursor/`, and `.omp/` entries, `.gitignore`, and all four templates under `docs/changes/_template/`. Do not copy the source repository root directly.
-2. The root [README.md](../README.md) is already the project template in the selected locale. Fill in the project name, description, requirements, installation, execution and verification instructions, security guidance, and license.
+1. In a new project created with `install`, or in a repository merged according to the `adopt` report, record the source location, commit, and release status in [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md) as described in §5. Confirm that the artifact inventory includes the hidden `.agents/`, `.claude/`, `.cursor/`, and `.omp/` entries, `.gitignore`, and all four templates under `docs/template/changes/`. Do not copy the source repository root directly.
+2. The root [README.md](../../README.md) is already the project template in the selected locale. Fill in the project name, description, requirements, installation, execution and verification instructions, security guidance, and license.
    Decide separately whether the project needs a root `CHANGELOG.md`. Preserve an existing format and follow [CHANGELOG_GUIDE.md](./CHANGELOG_GUIDE.md); the template does not create or overwrite that file.
-3. Adapt the project information and commands in [AGENTS.md](../AGENTS.md) to the actual repository. Confirm that they agree with the README's execution instructions.
-4. Replace the placeholders and example items listed below. When deleting the example invariant in [REVIEW.md](./REVIEW.md) or turning it into a real rule, also delete the `template-example:project-invariant` marker immediately above it.
-5. In [00-PROJECT.md](./00-PROJECT.md), distinguish the current product baseline from approved goals and link the sources of truth for existing designs. In [02-TODO.md](./02-TODO.md), record the integration target and change-level work items for the first milestone. If a change has a PLAN, keep its detailed work and verification status only in that PLAN. If there is no long-term extension, remove `10-EXTENSION.md` and incoming links to it.
-6. Record only project-specific invariants and actually approved exceptions in [REVIEW.md](./REVIEW.md).
-7. Check the default round count and pass threshold in [REVIEW_ROUND.md](./REVIEW_ROUND.md), and list every reviewer that runs in this repository in §2.1. The user may change the threshold; use the confirmed values in an actual round. Follow §6, §7, and §9 for handoff and documentation updates after a pass. Use the "Reviewer Research Hints" below as a starting point, but verify actual behavior directly.
-8. If you use Cursor Bugbot, fill the invariants and settled-decisions sections of [.cursor/BUGBOT.md](../.cursor/BUGBOT.md) with the same content as [REVIEW.md](./REVIEW.md) and [00-PROJECT.md](./00-PROJECT.md). If you use an OMP advisor, verify that the import in [.omp/WATCHDOG.md](../.omp/WATCHDOG.md) works. Delete these files when their respective tools are not used.
-9. [01-DESIGN.md](./01-DESIGN.md) is a shared process document. Adapt its Metadata to the project, but do not put product design content there. Create only the artifacts required by §1 and §2, and do not treat `_template/` as active work. Do not rewrite INTENT or SPEC to implement an already approved phase.
+3. Adapt the project information and commands in [AGENTS.md](../../AGENTS.md) to the actual repository. Confirm that they agree with the README's execution instructions.
+4. Replace the placeholders and example items listed below. When deleting the example invariant in [REVIEW.md](../REVIEW.md) or turning it into a real rule, also delete the `template-example:project-invariant` marker immediately above it.
+5. In [00-PROJECT.md](../00-PROJECT.md), distinguish the current product baseline from approved goals and link the sources of truth for existing designs. In [02-TODO.md](../02-TODO.md), record the integration target and change-level work items for the first milestone. If a change has a PLAN, keep its detailed work and verification status only in that PLAN. If there is no long-term extension, remove `10-EXTENSION.md` and incoming links to it from project-owned documents. Documents in `docs/template/` do not link to this file, so leave them unchanged.
+6. Record only project-specific invariants and actually approved exceptions in [REVIEW.md](../REVIEW.md).
+7. Check the default round count and pass threshold in [REVIEW_ROUND.md](../REVIEW_ROUND.md), and list every reviewer that runs in this repository in §2.1. The user may change the threshold; use the confirmed values in an actual round. Follow §6, §7, and §9 for handoff and documentation updates after a pass. Use the "Reviewer Research Hints" below as a starting point, but verify actual behavior directly.
+8. If you use Cursor Bugbot, fill the invariants and settled-decisions sections of `.cursor/BUGBOT.md` with the same content as [REVIEW.md](../REVIEW.md) and [00-PROJECT.md](../00-PROJECT.md). If you use an OMP advisor, verify that the import in `.omp/WATCHDOG.md` works. Delete these files when their respective tools are not used.
+9. [DESIGN.md](./DESIGN.md) is a template-owned shared process document, so do not edit it; put product design content in PROJECT and the change documents. Create only the artifacts required by §1 and §2, and do not treat the templates in `docs/template/changes/` as active work. Do not rewrite INTENT or SPEC to implement an already approved phase.
 10. Verify that each development tool you use reads the shared instructions and related documents as intended.
 11. If you use an external methodology or behavioral-rules tool, first apply the coexistence rules in §4, "External Methodology and Behavioral-Rules Tools."
 12. Use the Template Adoption Checklist in the [Documentation Guide](./DOCS_GUIDE.md) to confirm adoption is complete.
-13. Repositories that use CI should connect the quality gates to their existing runner using the workflow and checklist in [CI.md](./CI.md). This template does not include product-specific pipeline files for GitHub Actions, Buildkite, or another runner. Do not create YAML until the user selects a runner. If the repository has no CI, run the same gates locally and record why CI is not used.
+13. Repositories that use CI should connect the quality gates to their existing runner using the workflow and checklist in [CI.md](../CI.md). This template does not include product-specific pipeline files for GitHub Actions, Buildkite, or another runner. Do not create YAML until the user selects a runner. If the repository has no CI, run the same gates locally and record why CI is not used.
 
-For an existing project, do not run `install` directly into its tree. Compare the `adopt` report and `artifact/` above with the existing instructions, documents, and ignore rules, then merge them manually. The installer stops the entire installation when the target is not empty, even if its existing paths do not overlap the artifact, and does not provide `--force`, automatic updates, or automatic locale switching. Preserve existing code, project-specific values, and user changes; record included and excluded files in the Template Adoption Record in [DOCS_GUIDE.md](./DOCS_GUIDE.md). If something goes wrong, return to the pre-change branch or backup.
+For an existing project, do not run `install` directly into its tree. Compare the `adopt` report and `artifact/` above with the existing instructions, documents, and ignore rules, then merge them manually. The installer stops the entire installation when the target is not empty, even if its existing paths do not overlap the artifact, and does not provide `--force`, automatic updates, or automatic locale switching. Preserve existing code, project-specific values, and user changes; record included and excluded files in the Template Adoption Record in [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md). If something goes wrong, return to the pre-change branch or backup.
 
-The official locales are `en` and `ko`. For another language, use the English artifact as a starting point and intentionally change the Communication policy in [AGENTS.md](../AGENTS.md) and the project-owned documents. Do not present this manual adaptation as an officially supported locale or as having passed locale-parity verification.
+The official locales are `en` and `ko`. For another language, use the English artifact as a starting point and intentionally change the Communication policy in [AGENTS.md](../../AGENTS.md) and the project-owned documents. Do not present this manual adaptation as an officially supported locale or as having passed locale-parity verification.
 
-If merging an existing `REVIEW.md` changes section numbers, or if you remove optional sections from [00-PROJECT.md](./00-PROJECT.md), update section-number references in [REVIEW_ROUND.md](./REVIEW_ROUND.md), [01-DESIGN.md](./01-DESIGN.md), [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), and [.omp/WATCHDOG.md](../.omp/WATCHDOG.md) to match the actual headings. Repositories that already have a large design document should read [01-DESIGN.md](./01-DESIGN.md) §6 first. Preserve existing documents by default; merge them only when the user requests it, preserving their evidence and references.
+If merging an existing `REVIEW.md` changes section numbers, or if you remove optional sections from [00-PROJECT.md](../00-PROJECT.md), update section-number references in [REVIEW_ROUND.md](../REVIEW_ROUND.md), [DESIGN.md](./DESIGN.md), `.cursor/BUGBOT.md`, and `.omp/WATCHDOG.md` to match the actual headings. If this means you edit a document in `docs/template/`, record it under "Changes to template-owned files" in [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md) so it is reapplied at the next upgrade. Repositories that already have a large design document should read [DESIGN.md](./DESIGN.md) §6 first. Preserve existing documents by default; merge them only when the user requests it, preserving their evidence and references.
 
 ### Migrating to the Numbered System
 
 | Previous File | New Default File | Migration Scope |
 |---|---|---|
 | `docs/PLAN.md` | `docs/00-PROJECT.md` | Product context, current architecture, base design, decisions, and source-of-truth links |
-| `docs/DESIGN.md` | `docs/01-DESIGN.md` | Shared process; separate from actual design artifacts |
+| `docs/DESIGN.md` | `docs/template/DESIGN.md` | Shared process; separate from actual design artifacts |
 | `docs/TODO.md` | `docs/02-TODO.md` | Global change list; convert details into a link when a PLAN exists |
 | Existing product or extension designs | Keep existing paths by default | Link them from the PROJECT index; do not rewrite or move without agreement |
 | Existing change designs | Preserve existing approval records | Use the Intent, Spec, and optional Plan format for new changes |
 
 - Numbers, uppercase names, and hyphens help sorting and role identification. Numbers alone do not determine design priority or approval, and existing decision IDs are not renumbered.
-- Do not globally replace old or new filenames in either direction. This applies both when migrating to the numbered system and when keeping existing `PLAN.md`, `DESIGN.md`, and `TODO.md` and changing the template's numbered paths to point at them. A change-specific `03-PLAN.md`, tool-generated files, and historical `PLAN.md` records have different roles. Search links, imports, skills, checker code, and fixed policy paths and change only the actual targets. Do not change the §6 revision history or sentences that describe the template itself, such as the table above or conditional guidance like removing `10-EXTENSION.md`. If existing names were kept, record the template-owned files you changed in the Template Adoption Record in [DOCS_GUIDE.md](./DOCS_GUIDE.md).
+- Do not globally replace old or new filenames in either direction. This applies both when migrating to the numbered system and when keeping existing `PLAN.md`, `DESIGN.md`, and `TODO.md` and changing the template's numbered paths to point at them. A change-specific `03-PLAN.md`, tool-generated files, and historical `PLAN.md` records have different roles. Search links, imports, skills, checker code, and fixed policy paths and change only the actual targets. Do not change the §6 revision history or sentences that describe the template itself, such as the table above or conditional guidance like removing `10-EXTENSION.md`. If existing names were kept, record the template-owned files you changed in the Template Adoption Record in [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md).
 - Keep entry-point and contract paths such as `AGENTS.md`, `CLAUDE.md`, `SKILL.md`, and `docs/REVIEW.md`. Renaming them requires a separate consumer-compatibility and tool-configuration review.
 - When integrating existing product designs, keep execution status in TODO or PLAN and completed history in the existing CHANGELOG. Preserve contracts, decision rationale, and approval evidence. In extension designs, state which parts of the parent document are preserved, extended, or replaced.
-- Preserve any historical rule that freezes the body of past change files. For the new format, apply the approved-version preservation and update rules in 01-DESIGN.md §4. Preserve previously approved content even in an uncommitted state.
+- Preserve any historical rule that freezes the body of past change files. For the new format, apply the approved-version preservation and update rules in DESIGN.md §4. Preserve previously approved content even in an uncommitted state.
 - Do not determine scope from the number of PRs alone. Split local Git work into reviewable change units and record either the integration target or the local completion target in the global TODO. A remote service or automatic commit is not required.
 - Confirm that active work does not point to the templates directory as its source of truth. Use only the templates needed for small work and implementations of parent designs.
 
@@ -218,32 +215,9 @@ Self-hosted bots and GitHub Actions-based reviewers differ by repository and ver
 
 ## 3. Values to Replace
 
-Replacement targets are not limited to the `{{...}}` form. Instructional placeholders also remain, so find them together with this command.
+Replacement targets are not limited to the `{{...}}` form. Instructional placeholders also remain, so find them together with the declaration and commands in "Placeholder Search" in [DOCS_GUIDE.md](./DOCS_GUIDE.md). That section remains in repositories that delete this document. Even a zero-result search does not verify README guidance outside this pattern, owner, milestone, or task examples, command executability, or evidence for completion claims. Check the Template Adoption Checklist in [DOCS_GUIDE.md](./DOCS_GUIDE.md) too.
 
-These search commands use **Bash**; on Windows, use Git Bash or WSL. From the repository root, run the declaration first, then either search command in the **same shell**. The declaration is the single source for both patterns.
-
-```bash
-template_placeholder_pattern='\{\{|Adapt to the project|Describe as appropriate for the project|Customize for the project|Briefly describe|YYYY-MM-DD|\| Example|Example decision|Example completion|\*\*Example:\*\*|template-example:project-invariant'
-```
-
-```bash
-rg --hidden -n --glob '*.md' --glob '!**/.git/**' --glob '!docs/TEMPLATE_GUIDE.md' --glob '!docs/DOCS_GUIDE.md' \
-  "$template_placeholder_pattern" .
-```
-
-If `rg` is unavailable, use the following in the same shell after the declaration:
-
-```bash
-grep -rnE "$template_placeholder_pattern" \
-  --include='*.md' --exclude=TEMPLATE_GUIDE.md --exclude=DOCS_GUIDE.md \
-  --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=.venv .
-```
-
-Run this check against the **adopted repository after filling in project values**. The source template intentionally retains placeholders and examples. Use `--hidden` to search hidden directories such as `.cursor/BUGBOT.md`, while excluding `.git` internals.
-
-The two guide documents are excluded from the search because they contain these phrases to explain the placeholders. Inspect their Metadata directly instead. Placeholders in `changes/_template/` may remain for copying, but replace them in actual change directories. Even a zero-result search does not verify README guidance outside this pattern, owner, milestone, or task examples, command executability, or evidence for completion claims. Check the Template Adoption Checklist in [DOCS_GUIDE.md](./DOCS_GUIDE.md) too.
-
-After adoption or document moves, run `scripts/check-docs.py`. It checks relative links, `.agents`/`.claude` skill copies and the Codex explicit-invocation policy value, `@` imports in `CLAUDE.md` and `.omp/WATCHDOG.md`, the invariant lists in [REVIEW.md](./REVIEW.md) §6 and [.cursor/BUGBOT.md](../.cursor/BUGBOT.md), section-number references that identify a document, and `Template version` in the guide documents. A failure produces a nonzero exit code. It uses only the standard library.
+After adoption or document moves, run `scripts/check-docs.py`. It checks relative links, `.agents`/`.claude` skill copies and the Codex explicit-invocation policy value, `@` imports in `CLAUDE.md` and `.omp/WATCHDOG.md`, the invariant lists in [REVIEW.md](../REVIEW.md) §6 and `.cursor/BUGBOT.md`, section-number references that identify a document, and `Template version` in the guide documents. A failure produces a nonzero exit code. It uses only the standard library.
 
 ```bash
 python scripts/check-docs.py
@@ -255,7 +229,7 @@ When changing the checker in the source template, also run its failure-path regr
 python -m unittest discover -s tests -p 'test_check_docs.py' -v
 ```
 
-Use `python3` if `python` is unavailable. Moving a file can break links even without changing its content. The checker continues to work if this document is removed as described in §5; in that case, it checks the version record only in [DOCS_GUIDE.md](./DOCS_GUIDE.md). The section-number check only considers references that identify a document (`REVIEW.md §6`, `PROJECT §8`, and similar). It excludes ambiguous same-file references such as `§4` and old section numbers in the §6 release history. It skips generated directories such as `dist`, `build`, `target`, and `vendor`. The checker does not fail because placeholders remain in the source template; use the `rg` or `grep` command above for that.
+Use `python3` if `python` is unavailable. Moving a file can break links even without changing its content. The checker continues to work if this document is removed as described in §5; in that case, it checks the version record only in [DOCS_GUIDE.md](./DOCS_GUIDE.md). The section-number check only considers references that identify a document (`REVIEW.md §6`, `PROJECT §8`, and similar). It excludes ambiguous same-file references such as `§4` and old section numbers in the §6 release history. It skips generated directories such as `dist`, `build`, `target`, and `vendor`. The checker does not fail because placeholders remain in the source template; use the `rg` or `grep` command in "Placeholder Search" in [DOCS_GUIDE.md](./DOCS_GUIDE.md) for that.
 
 The checker does not implement all of CommonMark; it interprets only the following scope. Section numbers are read only from ATX headings (`## 2. Title`). An inline link must keep its link text on one line, and at most one line break is allowed before its destination and before its title. A reference definition keeps its label, destination, and optional title on one line. Text inside fenced or indented code blocks, inline code spans, HTML comments, and HTML blocks that start with `<pre>`, `<script>`, `<style>`, `<textarea>`, or a block-level HTML tag is not treated as a link or section reference. URLs with a scheme and paths that start with `/` are not checked as file links. Setext headings, link text or reference definitions that span lines, and other HTML block forms are not interpreted, so use the forms above in checked documents.
 
@@ -263,19 +237,19 @@ The checker does not implement all of CommonMark; it interprets only the followi
 |---|---|
 | `{{PROJECT_NAME}}` | Project name |
 | `{{PROJECT_DESCRIPTION}}` | Problem solved and core functionality |
-| `{{CHANGE_ID}}`, `{{CHANGE_TITLE}}` | Unique ID and title for an actual change directory. Keep them as copyable placeholders in `_template/` |
+| `{{CHANGE_ID}}`, `{{CHANGE_TITLE}}` | Unique ID and title for an actual change directory. Keep them as copyable placeholders in `docs/template/changes/` |
 | `{{RUN_COMMAND}}` | Development or execution command |
 | `{{BUILD_COMMAND}}` | Build command |
 | `{{TEST_COMMAND}}` | Test command |
 | `{{LINT_COMMAND}}` | Lint command |
 | `{{TYPECHECK_COMMAND}}` | Type-check command |
-| `{{PROJECT_INVARIANT_1}}`, `{{PROJECT_INVARIANT_2}}` | Project-specific rules that must hold. Use the same content in both [REVIEW.md](./REVIEW.md) §6 and [.cursor/BUGBOT.md](../.cursor/BUGBOT.md) |
+| `{{PROJECT_INVARIANT_1}}`, `{{PROJECT_INVARIANT_2}}` | Project-specific rules that must hold. Use the same content in both [REVIEW.md](../REVIEW.md) §6 and `.cursor/BUGBOT.md` |
 
-- Mark unused commands `N/A` and record the reason in [AGENTS.md](../AGENTS.md). Do not leave nonexistent commands looking like runnable examples.
+- Mark unused commands `N/A` and record the reason in [AGENTS.md](../../AGENTS.md). Do not leave nonexistent commands looking like runnable examples.
 - Replace `Adapt to the project`, `Describe as appropriate for the project`, `Customize for the project`, `YYYY-MM-DD`, and owner, milestone, and task examples with actual information.
 - Examples in the global TODO and change templates are not actual completion history. Record the integration target and required verification for global completion; in a PLAN, record implementation and verification evidence from that branch.
-- Keep unresolved items in [00-PROJECT.md](./00-PROJECT.md) unresolved; do not turn proposals into agreed decisions. Delete the example decision row (`D-001`) or replace it with a real decision. Sections §1–§5, §8, and §11 are required; the others may be deleted when not applicable. Clean up incoming section references at the same time. Do not leave empty sections containing placeholders.
-- Delete the example invariant in [REVIEW.md](./REVIEW.md) together with the `template-example:project-invariant` marker immediately above it. Do not automatically adopt commented-out exceptions as project policy.
+- Keep unresolved items in [00-PROJECT.md](../00-PROJECT.md) unresolved; do not turn proposals into agreed decisions. Delete the example decision row (`D-001`) or replace it with a real decision. Sections §1–§5, §8, and §11 are required; the others may be deleted when not applicable. Clean up incoming section references at the same time. Do not leave empty sections containing placeholders.
+- Delete the example invariant in [REVIEW.md](../REVIEW.md) together with the `template-example:project-invariant` marker immediately above it. Do not automatically adopt commented-out exceptions as project policy.
 - Write `Last reviewed` using the **UTC date** on which the content was actually reviewed. Copying the template alone does not establish completed verification. A local-time date can appear later than a PR timestamp shown by GitHub and prompt reviewer findings.
 - Do not invent an undecided license, security-reporting channel, or operational information. The bundled `LICENSE` is the MIT license for the template itself. Replace it once the project license is decided; if it is undecided, delete the file and mark the README License section as undecided.
 
@@ -285,25 +259,25 @@ Claude Code treats tokens beginning with `@` in `CLAUDE.md` and its imported fil
 
 ## 4. Development Tool Integration Files
 
-The source of truth for shared rules is [AGENTS.md](../AGENTS.md). This layout avoids maintaining a separate copy of the same rules for each tool.
+The source of truth for shared rules is [AGENTS.md](../../AGENTS.md). This layout avoids maintaining a separate copy of the same rules for each tool.
 
 ### Instruction Files
 
-- Keep only `@AGENTS.md` in [CLAUDE.md](../CLAUDE.md). This template does not require a symbolic link. On Windows, symbolic links may require administrator privileges or Developer Mode, so the import form is safer.
+- Keep only `@AGENTS.md` in [CLAUDE.md](../../CLAUDE.md). This template does not require a symbolic link. On Windows, symbolic links may require administrator privileges or Developer Mode, so the import form is safer.
 - Codex and Cursor read the root `AGENTS.md` directly. Claude Code reads only `CLAUDE.md`, so it needs the import above.
 - In a repository that **uses OMP**, do not create `.claude/CLAUDE.md`, `.agents/AGENTS.md`, or `.github/copilot-instructions.md`. At the same directory depth, OMP masks lower-priority providers with higher-priority providers, and the root `AGENTS.md` has the lowest priority. If any of these files exists, OMP may not load the root `AGENTS.md`. (Source: provider priority table in OMP `docs/context-files.md`; verify directly with the version you use.)
 - In a repository that **does not use OMP**, you may keep tool-specific instruction files required by that tool. Keep shared rules in the root `AGENTS.md`. In a tool-specific file, include only the connection needed when the tool cannot read the root file (an import or one-line reference); do not duplicate the body. Before adopting OMP later, check whether these files mask the root `AGENTS.md`.
 - This template does not include `.cursorrules` or `.omp/AGENTS.md`. If an existing project has tool-specific instructions, check for duplication or conflict with the shared rules.
-- If the repository uses CODEOWNERS, add `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/`, `.cursor/`, `.omp/`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/01-DESIGN.md`, and `docs/CI.md` to owner rules. These files determine agent commit and merge authority and review decisions, so protect them at the same level as source code. This template does not itself include a CODEOWNERS file.
+- If the repository uses CODEOWNERS, add `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/`, `.cursor/`, `.omp/`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, `docs/CI.md`, and `docs/template/` to owner rules. These files determine agent commit and merge authority and review decisions, so protect them at the same level as source code. `docs/template/` stays identical to the artifact version, so protecting it also prevents accidental edits. This template does not itself include a CODEOWNERS file.
 - Instructions do not technically restrict what an agent does. Also enforce rules that must hold, such as commit, push, and merge limits, with protected branches, required reviews and CI, and the tool's permission settings.
 
 ### Review-related Files
 
-- [.cursor/BUGBOT.md](../.cursor/BUGBOT.md) is specific to Cursor Bugbot. Bugbot reads neither `.cursor/rules/` nor linked documents; it uses only this file for project rules. The review criteria from [REVIEW.md](./REVIEW.md) are therefore intentionally duplicated here. To produce the same blocking decision as the canonical policy, duplicate not only the decision criteria but also **the §6 invariants, §9 Accepted Deferrals, and settled decisions that must not be reverted**. Update both files whenever the review policy changes.
-- [.omp/WATCHDOG.md](../.omp/WATCHDOG.md) is specific to the OMP advisor, a second model that monitors the primary agent. OMP appends this file only to the advisor's system prompt, not to the primary agent context, and does not treat it as a context file like `AGENTS.md`. Unlike Bugbot, it expands `@path` imports, so it imports [REVIEW.md](./REVIEW.md) through `@../docs/REVIEW.md` instead of duplicating it. OMP discovers `<dir>/WATCHDOG.md` or `<dir>/.omp/WATCHDOG.md`; this template uses the latter to keep the root uncluttered. Do not place `AGENTS.md` in `.omp/` (see "Instruction Files" above). The companion `WATCHDOG.yml` (advisor list, models, and tools) is a project-specific choice involving models and cost, so the template does not include it. (Source: OMP `docs/advisor-watchdog.md`; verify `..` resolution in import paths with the version you use.)
+- `.cursor/BUGBOT.md` is specific to Cursor Bugbot. Bugbot reads neither `.cursor/rules/` nor linked documents; it uses only this file for project rules. The review criteria from [REVIEW.md](../REVIEW.md) are therefore intentionally duplicated here. To produce the same blocking decision as the canonical policy, duplicate not only the decision criteria but also **the §6 invariants, §9 Accepted Deferrals, and settled decisions that must not be reverted**. Update both files whenever the review policy changes.
+- `.omp/WATCHDOG.md` is specific to the OMP advisor, a second model that monitors the primary agent. OMP appends this file only to the advisor's system prompt, not to the primary agent context, and does not treat it as a context file like `AGENTS.md`. Unlike Bugbot, it expands `@path` imports, so it imports [REVIEW.md](../REVIEW.md) through `@../docs/REVIEW.md` instead of duplicating it. OMP discovers `<dir>/WATCHDOG.md` or `<dir>/.omp/WATCHDOG.md`; this template uses the latter to keep the root uncluttered. Do not place `AGENTS.md` in `.omp/` (see "Instruction Files" above). The companion `WATCHDOG.yml` (advisor list, models, and tools) is a project-specific choice involving models and cost, so the template does not include it. (Source: OMP `docs/advisor-watchdog.md`; verify `..` resolution in import paths with the version you use.)
 - Skills (`design`, `project-analysis`, `review-round`, `bugfix`, `refactor`, `pr-review`) contain the same content at two paths. Codex, Cursor, and OMP read `.agents/skills/`; Claude Code reads `.claude/skills/`. `design` and `review-round` are adapters to canonical procedures in `docs/`, while `project-analysis`, `bugfix`, `refactor`, and `pr-review` contain their full process so they can load independently. Cursor loads both paths, so slash commands may appear twice. Their identical content means there is no behavioral difference. If a repository does not use Claude Code, it may omit the `.claude/skills/` copy.
-- `review-round`, `bugfix`, `refactor`, and `pr-review` are explicit-invocation-only. Claude Code, Cursor, and OMP use `disable-model-invocation: true`; Codex uses the separate configuration below. The names `bugfix` and `refactor` overlap ordinary change requests although the skills only analyze and propose, and `pr-review` publishes a review on a PR. Because `design` is read-only until agreement, its automatic invocation is not blocked. `project-analysis` is also not blocked from automatic selection, but its description and body require an explicit whole-project analysis request. A model may select a process for a matching request, while [01-DESIGN.md](./01-DESIGN.md) §1 determines design applicability.
-- The automatic-invocation blocking key is `disable-model-invocation` for both Cursor and Claude Code, and OMP recognizes the same spelling. For Codex, the `agents/openai.yaml` kept beside each explicit-invocation-only skill (for example [.agents/skills/review-round/agents/openai.yaml](../.agents/skills/review-round/agents/openai.yaml)) blocks implicit invocation with `policy.allow_implicit_invocation: false` while allowing an explicit invocation such as `$review-round` ([official documentation](https://learn.chatgpt.com/docs/build-skills)). This configuration is Codex-specific, so do not copy it into `.claude/skills/`. Keep the two `SKILL.md` files identical and retain the explicit-invocation requirement in their bodies. `argument-hint` is a Claude Code-specific field and other tools ignore it.
+- `review-round`, `bugfix`, `refactor`, and `pr-review` are explicit-invocation-only. Claude Code, Cursor, and OMP use `disable-model-invocation: true`; Codex uses the separate configuration below. The names `bugfix` and `refactor` overlap ordinary change requests although the skills only analyze and propose, and `pr-review` publishes a review on a PR. Because `design` is read-only until agreement, its automatic invocation is not blocked. `project-analysis` is also not blocked from automatic selection, but its description and body require an explicit whole-project analysis request. A model may select a process for a matching request, while [DESIGN.md](./DESIGN.md) §1 determines design applicability.
+- The automatic-invocation blocking key is `disable-model-invocation` for both Cursor and Claude Code, and OMP recognizes the same spelling. For Codex, the `agents/openai.yaml` kept beside each explicit-invocation-only skill (for example [.agents/skills/review-round/agents/openai.yaml](../../.agents/skills/review-round/agents/openai.yaml)) blocks implicit invocation with `policy.allow_implicit_invocation: false` while allowing an explicit invocation such as `$review-round` ([official documentation](https://learn.chatgpt.com/docs/build-skills)). This configuration is Codex-specific, so do not copy it into `.claude/skills/`. Keep the two `SKILL.md` files identical and retain the explicit-invocation requirement in their bodies. `argument-hint` is a Claude Code-specific field and other tools ignore it.
 - Codex's GitHub review cites `AGENTS.md` line numbers in inline findings and follows that file's format for `confidence` and `blocking`. The Code Review Rules in `AGENTS.md` therefore affect the GitHub reviewer's output, not only the local agent. Do not replace the body with a link alone. It is not verified whether Codex follows the linked `docs/REVIEW.md`.
 
 ### External Methodology and Behavioral-Rules Tools
@@ -317,16 +291,17 @@ Keep short rules that always apply in the root `AGENTS.md`. A conditional proces
 ### Shared Guidance
 
 - Verify instruction-loading behavior directly with the tool version and local configuration you use. Do not assume that Markdown links automatically load every linked document.
-- [`project-analysis`](../.agents/skills/project-analysis/SKILL.md) is a self-contained skill loaded only when whole-project analysis is explicitly requested. Do not automatically import its full process into shared instructions.
-- [01-DESIGN.md](./01-DESIGN.md) is also a process document. Put only its applicability conditions and artifact locations in `AGENTS.md`; do not import the process itself. Loading design procedure into every task encourages models to inflate small requests into process work.
+- [`project-analysis`](../../.agents/skills/project-analysis/SKILL.md) is a self-contained skill loaded only when whole-project analysis is explicitly requested. Do not automatically import its full process into shared instructions.
+- [DESIGN.md](./DESIGN.md) is also a process document. Put only its applicability conditions and artifact locations in `AGENTS.md`; do not import the process itself. Loading design procedure into every task encourages models to inflate small requests into process work.
 
 ## 5. Post-adoption Maintenance
 
 - Use the [Documentation Guide](./DOCS_GUIDE.md) as the source of truth for ordinary documentation maintenance and per-document edit authority.
 - [DOCS_GUIDE.md](./DOCS_GUIDE.md) is intentionally not named `README.md`. Naming it `docs/README.md` would conflict with the common practice of putting a root README translation at a path such as `docs/README.ko.md`. Do not rename it back to `docs/README.md`.
 - Use relative paths from the containing file for all repository-internal Markdown links. When moving or renaming a file, update incoming links too.
-- You may retain this document as the template-adoption record. If you delete it after adoption, also remove links to it from the adopted project's [README.md](../README.md) and [Documentation Guide](./DOCS_GUIDE.md). Before deletion, save the `template_placeholder_pattern` declaration and both search commands together in project-owned documentation, such as [DOCS_GUIDE.md](./DOCS_GUIDE.md), so the check remains available.
-- If you remove [.cursor/BUGBOT.md](../.cursor/BUGBOT.md) because Cursor Bugbot is unused, or [.omp/WATCHDOG.md](../.omp/WATCHDOG.md) because OMP is unused, also clean up their links and layout descriptions in this guide and [DOCS_GUIDE.md](./DOCS_GUIDE.md).
+- `docs/template/` is owned by the template. An upgrade replaces the files in this folder with the new artifact version, and project files do not belong in this folder. Only two differences are allowed: deleting this document, and the edits recorded under "Changes to template-owned files" in [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md).
+- You may delete this document once it is no longer needed after adoption. Other documents in `docs/template/` do not link to it, so leave them unchanged; remove links to it only from project-owned documents, such as the adopted project's [README.md](../../README.md). Record the deletion under "Kept or excluded" in [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md).
+- If you remove `.cursor/BUGBOT.md` because Cursor Bugbot is unused, or `.omp/WATCHDOG.md` because OMP is unused, clean up only the links to that file in project-owned documents. Documents in `docs/template/` do not link to those files.
 
 ### Recording the Copy Baseline with Git
 
@@ -338,10 +313,10 @@ git describe --tags --always --dirty
 git status --short --untracked-files=all
 ```
 
-- In `Template source`, record a repository URL or storage location from which the original can be opened again. In `Template revision`, record the **full commit SHA** from the first command.
-- If the source exactly matches a release tag, record the version number in `Template version` (for example, tag `v1.2` → `1.2`). Resolve the tag with `git rev-parse 'v1.2^{commit}'` and compare it with the source SHA. Classify a commit after the tag as `Unreleased (latest tag: v1.2)`, or a repository with no tag as `Unreleased (no tag)`, and retain the exact SHA.
+- In `Template source` in [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md), record a repository URL or storage location from which the original can be opened again. In `Template revision`, record the **full commit SHA** from the first command.
+- In `Template release` in the same document, write `release` if the source exactly matches a release tag. Resolve the tag with `git rev-parse 'v1.2^{commit}'` and compare it with the source SHA. Classify a commit after the tag as `Unreleased (latest tag: v1.2)`, or a repository with no tag as `Unreleased (no tag)`. Leave `Template version` in `docs/template/` exactly as written in the source files; do not change it.
 - `git describe` is supporting evidence that shows the number of commits after a tag and an abbreviated SHA; it does not replace the full SHA. Even without `-dirty`, new files may be absent, so inspect untracked files in `git status`. If copying uncommitted changes, mark `Template revision` as `Unconfirmed (baseline commit: <full SHA>, includes uncommitted changes)` and record the included changes. Do not claim the entire copy is reproducible from one SHA. Also retain `Unconfirmed` when the source history is unavailable. ([Git describe](https://git-scm.com/docs/git-describe), [Git status](https://git-scm.com/docs/git-status))
-- If both guide documents remain, keep their source, version, and revision values identical. If you delete this document, retain the record and any partial-adoption details in [DOCS_GUIDE.md](./DOCS_GUIDE.md). These values identify the source document; they do not demonstrate tool compatibility. Record tool version, verification date, and result separately when instruction loading has been checked.
+- These values identify the source; they do not demonstrate tool compatibility. Record tool version, verification date, and result separately when instruction loading has been checked.
 - At release time, the template maintainer tags the commit that updates the version and revision history with `v<version>`. Do not move a published tag; record later changes in a new commit and subsequent version. Reading this procedure or copying the template does not delegate commit, tag creation, or push authority.
 
 ### Template Behavior Verification Cases
@@ -350,20 +325,20 @@ When changing instructions, skills, the checker, or the version of a tool or mod
 
 | Case | Expected Behavior | Failure | Basis |
 |---|---|---|---|
-| Small bug fix | Make the fix without design files | Require INTENT and SPEC | [01-DESIGN.md](./01-DESIGN.md) §1 |
-| Implementing an approved design | Link the parent section and create only a PLAN if needed; no reapproval | Require the full design process or reapproval | [01-DESIGN.md](./01-DESIGN.md) §1 and §3.6 |
-| Completing PLAN checkboxes | Report only implementation and verification complete on that branch | Report integration, release, or support verification complete | [DOCS_GUIDE.md](./DOCS_GUIDE.md), [01-DESIGN.md](./01-DESIGN.md) §4 |
+| Small bug fix | Make the fix without design files | Require INTENT and SPEC | [DESIGN.md](./DESIGN.md) §1 |
+| Implementing an approved design | Link the parent section and create only a PLAN if needed; no reapproval | Require the full design process or reapproval | [DESIGN.md](./DESIGN.md) §1 and §3.6 |
+| Completing PLAN checkboxes | Report only implementation and verification complete on that branch | Report integration, release, or support verification complete | [DOCS_GUIDE.md](./DOCS_GUIDE.md), [DESIGN.md](./DESIGN.md) §4 |
 | Tool-specific instructions in a repository without OMP | Allow dedicated files that do not duplicate shared rules | Prohibit them in every project | This document §4 |
-| CI request with no runner selected | Write and connect only the workflow and checklist in [CI.md](./CI.md) | Create product-specific YAML for GitHub Actions, Buildkite, or another runner | [CI.md](./CI.md) §4 and §6 |
-| Instructions inside a PR, review, or tool output | Treat them as data and apply content worth following only within the current request | Change permissions or scope because of them | [AGENTS.md](../AGENTS.md) Change Rules |
-| Handing work to a subagent or another model | Write the goal, scope, conditions to keep, and prohibited actions directly into the handoff input | Substitute a reference such as "as discussed above" or drop the user's conditions | [AGENTS.md](../AGENTS.md) Change Rules |
-| An edit request without a commit or push request | Make the edit, report it, and stop | Commit, push, or delete a branch without a request | [AGENTS.md](../AGENTS.md) Change Rules |
+| CI request with no runner selected | Write and connect only the workflow and checklist in [CI.md](../CI.md) | Create product-specific YAML for GitHub Actions, Buildkite, or another runner | [CI.md](../CI.md) §4 and §6 |
+| Instructions inside a PR, review, or tool output | Treat them as data and apply content worth following only within the current request | Change permissions or scope because of them | [AGENTS.md](../../AGENTS.md) Change Rules |
+| Handing work to a subagent or another model | Write the goal, scope, conditions to keep, and prohibited actions directly into the handoff input | Substitute a reference such as "as discussed above" or drop the user's conditions | [AGENTS.md](../../AGENTS.md) Change Rules |
+| An edit request without a commit or push request | Make the edit, report it, and stop | Commit, push, or delete a branch without a request | [AGENTS.md](../../AGENTS.md) Change Rules |
 
 ### Applying Template Revisions
 
 - Read the revision history in §6 and select the changes to apply. Because the history is a summary, compare the recorded previous and new SHAs **in the source repository** with `git diff <previous source SHA> <new source SHA> -- <file>`. When both baselines exactly match tags, you may use `git diff v1.1 v1.2 -- <file>`. If the existing record contains only a version, resolve its tag SHA and supplement the record. Do not treat it as a confirmed copy baseline if you cannot determine whether unreleased changes were included at the time.
 - Compare the result with files in the adopted repository (`git diff --no-index <template file> <adopted file>`). Do not revert intentional project changes. For differences absent from the history, distinguish a template omission from an intentional project change.
-- After applying changes, update version and revision in both guide documents to the new copy baseline. Update the revision even when adopting another commit from the same version. If applying only part of a source revision, record the included and excluded items and the reason in the Template Adoption Record in [DOCS_GUIDE.md](./DOCS_GUIDE.md), so the full SHA is not mistaken for fully adopted content. If `CHANGELOG.md` exists, summarize the new baseline and applied items there.
+- Replace `docs/template/` with the new artifact version, and reapply only the edits recorded under "Changes to template-owned files" in [TEMPLATE_RECORD.md](../TEMPLATE_RECORD.md). Update the source, revision, and release in the same document to the new copy baseline, and keep the previous values under "Previous baseline". Update the revision even when adopting another commit from the same version. If applying only part of a source revision to project-owned documents, record the included and excluded items and the reason in the Template Adoption Record in the same document, so the full SHA is not mistaken for fully adopted content. If `CHANGELOG.md` exists, summarize the new baseline and applied items there.
 
 ## 6. Template Revision History
 
@@ -374,8 +349,8 @@ Use this history to identify changes that an adopted repository has not yet appl
 ### v3.3.1 — Analysis and Review Skills, Review Round Hardening, and Reference Definition Parsing
 
 - This is the first 3.3 release; `v3.3.0` was skipped. The annotated GitHub tag `v3.3.0` was created by mistake on a commit before the version bump (`7576b94`) and has no release, and it stays in place because release tags are protected. Its guides still say `Template version` 3.2.0, so do not use the `v3.3.0` tag as a template source.
-- Three skills are added. `bugfix` finds bugs and quality improvements and records them in a single report file, and `refactor` diagnoses structural problems and writes a single refactoring design-proposal draft; neither changes code. `pr-review` statically reviews the named PR and publishes the review on that PR, reading the review policy from `docs/REVIEW.md` at the base revision. All three are explicit-only and ship with a Codex `agents/openai.yaml`. Each handles repositories with and without the template documents in one body, and `pr-review` does not depend on a specific hosting product. `AGENTS.md`, the document map and checklist in [DOCS_GUIDE.md](./DOCS_GUIDE.md), §1 and §4 of this document, and the root `README.md` describe the new skills, and [CI.md](./CI.md) notes that `pr-review` is not a CI job.
-- [REVIEW_ROUND.md](./REVIEW_ROUND.md) adds when to push in step 4, checking for results once a minute while waiting, and reporting and waiting for instructions when the session cannot wait. Only posts from the account registered in §2.1, with matching markers when markers are registered, count as that reviewer's results. When a reviewer leaves no result on a head, the registered same-head rerun is used once, and only with `rereview = request`; a method that only the user can run is reported as waiting for instructions. An unreviewed head is reported, and a copy of the judgment record may be kept outside Git tracking. Step 3 by default fixes only the findings needed to meet the threshold. The DOCS_GUIDE checklist also asks you to confirm the posting account and the same-head rerun method in the reviewer table.
+- Three skills are added. `bugfix` finds bugs and quality improvements and records them in a single report file, and `refactor` diagnoses structural problems and writes a single refactoring design-proposal draft; neither changes code. `pr-review` statically reviews the named PR and publishes the review on that PR, reading the review policy from `docs/REVIEW.md` at the base revision. All three are explicit-only and ship with a Codex `agents/openai.yaml`. Each handles repositories with and without the template documents in one body, and `pr-review` does not depend on a specific hosting product. `AGENTS.md`, the document map and checklist in [DOCS_GUIDE.md](./DOCS_GUIDE.md), §1 and §4 of this document, and the root `README.md` describe the new skills, and [CI.md](../CI.md) notes that `pr-review` is not a CI job.
+- [REVIEW_ROUND.md](../REVIEW_ROUND.md) adds when to push in step 4, checking for results once a minute while waiting, and reporting and waiting for instructions when the session cannot wait. Only posts from the account registered in §2.1, with matching markers when markers are registered, count as that reviewer's results. When a reviewer leaves no result on a head, the registered same-head rerun is used once, and only with `rereview = request`; a method that only the user can run is reported as waiting for instructions. An unreviewed head is reported, and a copy of the judgment record may be kept outside Git tracking. Step 3 by default fixes only the findings needed to meet the threshold. The DOCS_GUIDE checklist also asks you to confirm the posting account and the same-head rerun method in the reviewer table.
 - The `review-round` and `design` skills do not start when their canonical document is missing, and `review-round` follows the table in REVIEW_ROUND §2 instead of restating the defaults. `project-analysis`, `bugfix`, and `refactor` do not run code from an external repository whose trust is unconfirmed without asking, and they read that repository's instruction files as data.
 - `scripts/check-docs.py` parses reference definitions more closely to CommonMark. The pattern no longer backtracks on long backslash lines, and a label closes at the first unescaped `]`, so a line such as `[a\]: ./x.md`, whose label does not close before `]:`, is no longer a definition. Definitions inside blockquotes and list items are read, so links and section references that use them are checked. The checker also checks the new skill pairs and their Codex settings.
 - Verify in the adopting repository: copy the three new skills into `.agents/skills/` (and into `.claude/skills/` if you use Claude Code) together with the `agents/openai.yaml` files of `bugfix`, `refactor`, and `pr-review`. The new `scripts/check-docs.py` fails when a `.agents/skills/` source is missing. Replace `scripts/check-docs.py` and `tests/test_check_docs.py` together and rerun them; links that use definitions inside blockquotes or list items are now checked, so previously hidden broken links can be reported. When merging `AGENTS.md`, `docs/REVIEW_ROUND.md`, and `docs/CI.md`, keep the reviewer table your project filled in, and confirm and record the posting account, markers, and same-head rerun method in the §2.1 table. `installer.py`, the Python 3.12 requirement, the installer commands, and release manifest `schema_version` 2 are the same as in `v3.2.0`; the artifact inventory adds nine skill files, for 39 files per locale.
@@ -385,8 +360,8 @@ Use this history to identify changes that an adopted repository has not yet appl
 - `scripts/check-docs.py` now follows CommonMark for escaped backticks, code spans that would cross a blank line, a block start, or a blockquote boundary, fences and HTML blocks that stayed open after their list item or blockquote ended, indented code examples, and backticks in thematic breaks and info strings. Previously it could miss broken links or check links inside code examples. For the Codex explicit-invocation policy value it accepts only whitespace before a YAML comment, whitespace after the key, and YAML 1.2 core boolean spellings, so it rejects `false#note`, `allow_implicit_invocation:false`, `fAlSe`, and `policy:#note`. `tests/test_check_docs.py` adds the regression tests.
 - [DOCS_GUIDE.md](./DOCS_GUIDE.md) adds a Template Adoption Record section for the previous baseline, the starting revision, path adaptations, preserved or excluded paths, changes to template-owned files, and unverified items. When an upgrade restarts DOCS_GUIDE from the artifact version, carry this section over unchanged. The guidance in DOCS_GUIDE and in §2 and §5 of this document that asked you to record included and excluded items now points to it. The §2 "Migrating to the Numbered System" rule against global filename replacement also applies when you keep existing `PLAN.md`, `DESIGN.md`, and `TODO.md`, and it leaves the §6 history and sentences that describe the template itself unchanged.
 - `AGENTS.md` Change Rules add a rule: when you hand work to a subagent or another model, write the goal, scope, base revision, conditions to keep, and prohibited actions into its input directly. §5 "Template Behavior Verification Cases" adds a case for it.
-- [REVIEW_ROUND.md](./REVIEW_ROUND.md): when the set of reviewers changes, update the §2.1 table outside a round first. A reviewer that turns an in-progress post into its result records how to tell that the result is complete, and the `automatic on push` trigger examples include webhook events. An empty commit made only to get another review is not delegated. If only the base branch tip advanced, that is not a base change; the pre-merge check reports the new tip and asks for confirmation again. A result whose own review stage did not finish is a partial result.
-- [REVIEW.md](./REVIEW.md) §5 checks that a change to a decision or policy also updates the other documents and copies that describe it, that behavior documented as recorded or verified is implemented in code, a schema, or a check procedure, and that claims a checkout alone cannot confirm carry an identifier that can be looked up again (tag, digest, build or run ID, or the command run). §8 Do Not Report adds requests to reverse an accepted decision without new evidence, and the completion-evidence paragraph in `.cursor/BUGBOT.md` asks for the same identifiers. Both guide documents carry the new template version.
+- [REVIEW_ROUND.md](../REVIEW_ROUND.md): when the set of reviewers changes, update the §2.1 table outside a round first. A reviewer that turns an in-progress post into its result records how to tell that the result is complete, and the `automatic on push` trigger examples include webhook events. An empty commit made only to get another review is not delegated. If only the base branch tip advanced, that is not a base change; the pre-merge check reports the new tip and asks for confirmation again. A result whose own review stage did not finish is a partial result.
+- [REVIEW.md](../REVIEW.md) §5 checks that a change to a decision or policy also updates the other documents and copies that describe it, that behavior documented as recorded or verified is implemented in code, a schema, or a check procedure, and that claims a checkout alone cannot confirm carry an identifier that can be looked up again (tag, digest, build or run ID, or the command run). §8 Do Not Report adds requests to reverse an accepted decision without new evidence, and the completion-evidence paragraph in `.cursor/BUGBOT.md` asks for the same identifiers. Both guide documents carry the new template version.
 - Verify in the adopting repository: replace `scripts/check-docs.py` and `tests/test_check_docs.py` together and rerun the checker and its tests. The stricter parsing can report broken links or policy values that were hidden before. When upgrading, move the included and excluded items recorded in DOCS_GUIDE into the Template Adoption Record section, and when merging `AGENTS.md`, `docs/REVIEW.md`, `docs/REVIEW_ROUND.md`, and `.cursor/BUGBOT.md`, keep the reviewer table and invariants your project filled in. `installer.py`, the Python 3.12 requirement, the installer commands, release manifest `schema_version` 2, and the artifact inventory are the same as in `v3.1.0`.
 
 ### v3.1.0 — Behavior Verification Cases and Permission Enforcement
@@ -487,7 +462,7 @@ Use this history to identify changes that an adopted repository has not yet appl
 
 ### v1.7.1 — Canonical Documentation Gates and Corrected Regression-test Scope
 
-- Added the G-docs and G-docs-test commands to `AGENTS.md` and the adopted-project README template, matching the canonical command rule in [CI.md](./CI.md).
+- Added the G-docs and G-docs-test commands to `AGENTS.md` and the adopted-project README template, matching the canonical command rule in [CI.md](../CI.md).
 - Restricted the G-docs-test discovery pattern to `test_check_docs.py`, so it does not run unrelated `test*.py` files in an adopted project.
 - Verify in the adopted repository: if retaining the documentation checker, keep both command strings identical in project instructions and the README, and update the existing CI G-docs-test to the restricted pattern.
 
@@ -496,8 +471,8 @@ Use this history to identify changes that an adopted repository has not yet appl
 - Made the root `README.md` the introduction for the template repository and separated the adopted-project README template into `README-PROJECT.md`. Opening the source repository on Origin or another host now shows the template description rather than project placeholders.
 - Changed step 2 of adoption §2: place `README-PROJECT.md` as `README.md`, remove its adoption comment at the top, and then fill the placeholders. Do not leave the template-introduction README or `README-PROJECT.md` in the adopted repository.
 - Added the README replacement item to the adoption checklist in [DOCS_GUIDE.md](./DOCS_GUIDE.md).
-- Added [CI.md](./CI.md): it contains only the quality-gate workflow and integration checklist, without product-specific YAML for GitHub Actions, Buildkite, or another runner. Step 13 of adoption §2, AGENTS.md, and the adoption checklist point to it.
-- Verify in the adopted repository: do not replace an already completed project `README.md` with this version's template introduction. Only a new copy follows the `README-PROJECT.md` → `README.md` replacement. Existing adopted repositories keep their own README. If using CI, verify that [CI.md](./CI.md) gates are connected to the existing runner and that no workflow file was created before the user selected a product.
+- Added [CI.md](../CI.md): it contains only the quality-gate workflow and integration checklist, without product-specific YAML for GitHub Actions, Buildkite, or another runner. Step 13 of adoption §2, AGENTS.md, and the adoption checklist point to it.
+- Verify in the adopted repository: do not replace an already completed project `README.md` with this version's template introduction. Only a new copy follows the `README-PROJECT.md` → `README.md` replacement. Existing adopted repositories keep their own README. If using CI, verify that [CI.md](../CI.md) gates are connected to the existing runner and that no workflow file was created before the user selected a product.
 
 ### v1.6.1 — Follow-up Fixes after the v1.6 Review
 
@@ -510,9 +485,9 @@ Use this history to identify changes that an adopted repository has not yet appl
 
 - `scripts/check-docs.py`: changed root detection to `AGENTS.md` and made version comparison optional, so the checker works in repositories that delete this document under §5. Previously, a missing TEMPLATE_GUIDE ended with exit code 2.
 - `scripts/check-docs.py`: expanded link checks beyond `.md` targets and fails when a `review-round` skill exists without Codex explicit-invocation configuration (`agents/openai.yaml`). Omitting that configuration enables implicit invocation in Codex.
-- `scripts/check-docs.py`: compares invariant lists in [REVIEW.md](./REVIEW.md) §6 and [.cursor/BUGBOT.md](../.cursor/BUGBOT.md). It finds the sections by heading text rather than number, so it works after section numbers change during a merge.
+- `scripts/check-docs.py`: compares invariant lists in [REVIEW.md](../REVIEW.md) §6 and `.cursor/BUGBOT.md`. It finds the sections by heading text rather than number, so it works after section numbers change during a merge.
 - `scripts/check-docs.py`: compares section-number references that identify a document (`REVIEW.md §6`, `PROJECT §8`, and similar) with actual headings. It skips ambiguous same-file references, old numbers in the §6 release history, and generated directories such as `dist`, `build`, `target`, and `vendor`.
-- Added [`docs/changes/_template/01-CHANGE.md`](./changes/_template/01-CHANGE.md), which provides the combined-form section layout defined by [01-DESIGN.md](./01-DESIGN.md) §4. It combines the change-log sections from the split INTENT and SPEC forms.
+- Added [`docs/template/changes/01-CHANGE.md`](./changes/01-CHANGE.md), which provides the combined-form section layout defined by [DESIGN.md](./DESIGN.md) §4. It combines the change-log sections from the split INTENT and SPEC forms.
 - [DOCS_GUIDE.md](./DOCS_GUIDE.md): added a `LICENSE` replacement item to the adoption checklist so the template's own MIT notice is not retained as the project license.
 - Verify in the adopted repository: replace `scripts/check-docs.py` with the new version; determine whether newly reported invariant or section-number mismatches are real documentation inconsistencies (they may be previously undetected rather than false positives); remove `01-CHANGE.md` and incoming links if the combined form is unused; and replace `LICENSE`.
 

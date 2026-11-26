@@ -45,19 +45,20 @@
       "AGENTS.md",
       "README.md",
       "docs/00-PROJECT.md",
-      "docs/01-DESIGN.md",
       "docs/02-TODO.md",
       "docs/10-EXTENSION.md",
-      "docs/CHANGELOG_GUIDE.md",
       "docs/CI.md",
-      "docs/DOCS_GUIDE.md",
       "docs/REVIEW.md",
       "docs/REVIEW_ROUND.md",
-      "docs/TEMPLATE_GUIDE.md",
-      "docs/changes/_template/01-CHANGE.md",
-      "docs/changes/_template/01-INTENT.md",
-      "docs/changes/_template/02-SPEC.md",
-      "docs/changes/_template/03-PLAN.md"
+      "docs/TEMPLATE_RECORD.md",
+      "docs/template/CHANGELOG_GUIDE.md",
+      "docs/template/DESIGN.md",
+      "docs/template/DOCS_GUIDE.md",
+      "docs/template/TEMPLATE_GUIDE.md",
+      "docs/template/changes/01-CHANGE.md",
+      "docs/template/changes/01-INTENT.md",
+      "docs/template/changes/02-SPEC.md",
+      "docs/template/changes/03-PLAN.md"
     ],
     "adoption_policy": {
       ".agents/skills/bugfix/SKILL.md": "copy",
@@ -84,19 +85,20 @@
       "LICENSE": "decide",
       "README.md": "merge",
       "docs/00-PROJECT.md": "merge",
-      "docs/01-DESIGN.md": "copy",
       "docs/02-TODO.md": "merge",
       "docs/10-EXTENSION.md": "decide",
-      "docs/CHANGELOG_GUIDE.md": "copy",
       "docs/CI.md": "merge",
-      "docs/DOCS_GUIDE.md": "copy",
       "docs/REVIEW.md": "merge",
       "docs/REVIEW_ROUND.md": "merge",
-      "docs/TEMPLATE_GUIDE.md": "copy",
-      "docs/changes/_template/01-CHANGE.md": "copy",
-      "docs/changes/_template/01-INTENT.md": "copy",
-      "docs/changes/_template/02-SPEC.md": "copy",
-      "docs/changes/_template/03-PLAN.md": "copy",
+      "docs/TEMPLATE_RECORD.md": "merge",
+      "docs/template/CHANGELOG_GUIDE.md": "copy",
+      "docs/template/DESIGN.md": "copy",
+      "docs/template/DOCS_GUIDE.md": "copy",
+      "docs/template/TEMPLATE_GUIDE.md": "copy",
+      "docs/template/changes/01-CHANGE.md": "copy",
+      "docs/template/changes/01-INTENT.md": "copy",
+      "docs/template/changes/02-SPEC.md": "copy",
+      "docs/template/changes/03-PLAN.md": "copy",
       "scripts/check-docs.py": "copy",
       "tests/test_check_docs.py": "copy"
     }
@@ -122,7 +124,7 @@
         "id": "release-history",
         "marker": "<!-- template-section:release-history -->",
         "paths": [
-          "docs/TEMPLATE_GUIDE.md"
+          "docs/template/TEMPLATE_GUIDE.md"
         ]
       }
     ],
@@ -134,7 +136,7 @@
           "AGENTS.md",
           "README.md",
           "docs/CI.md",
-          "docs/TEMPLATE_GUIDE.md"
+          "docs/template/TEMPLATE_GUIDE.md"
         ]
       },
       {
@@ -144,43 +146,43 @@
           "AGENTS.md",
           "README.md",
           "docs/CI.md",
-          "docs/DOCS_GUIDE.md",
-          "docs/TEMPLATE_GUIDE.md"
+          "docs/template/DOCS_GUIDE.md",
+          "docs/template/TEMPLATE_GUIDE.md"
         ]
       },
       {
         "id": "installer-list-locales",
         "value": "python3 installer.py list-locales --version {{VERSION}}",
         "paths": [
-          "docs/TEMPLATE_GUIDE.md"
+          "docs/template/TEMPLATE_GUIDE.md"
         ]
       },
       {
         "id": "installer-adopt",
         "value": "python3 installer.py adopt --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}",
         "paths": [
-          "docs/TEMPLATE_GUIDE.md"
+          "docs/template/TEMPLATE_GUIDE.md"
         ]
       },
       {
         "id": "installer-adopt-upgrade",
         "value": "python3 installer.py adopt --version {{VERSION}} --base-version {{OLDER_EXACT_VERSION}} --locale {{LOCALE}} --repo-root {{EXISTING_REPOSITORY}} --output {{EMPTY_OUTPUT_DIR}}",
         "paths": [
-          "docs/TEMPLATE_GUIDE.md"
+          "docs/template/TEMPLATE_GUIDE.md"
         ]
       },
       {
         "id": "installer-install",
         "value": "python3 installer.py install --version {{VERSION}} --locale {{LOCALE}} --repo-root {{EMPTY_OR_NEW_TARGET}}",
         "paths": [
-          "docs/TEMPLATE_GUIDE.md"
+          "docs/template/TEMPLATE_GUIDE.md"
         ]
       },
       {
         "id": "installer-export",
         "value": "python3 installer.py export --version {{VERSION}} --locale {{LOCALE}} --output {{EMPTY_OUTPUT_DIR}}",
         "paths": [
-          "docs/TEMPLATE_GUIDE.md"
+          "docs/template/TEMPLATE_GUIDE.md"
         ]
       }
     ],

@@ -103,7 +103,7 @@ top-level 제외가 `docs/locales/`까지 확대되지 않는 기존 회귀를 �
 source·artifact 호출을 교차해 `HISTORY_PATH`·root·제외 범위가 다음 실행에 새지
 않음을 확인합니다. CLI 옵션이나 canonical checker API를 새로 만들지 않습니다.
 
-**LF·이력:** root [TEMPLATE_GUIDE.md](../../TEMPLATE_GUIDE.md) §3·§6과 필요한 maintainer checklist에
+**LF·이력:** root [TEMPLATE_GUIDE.md](../../template/TEMPLATE_GUIDE.md) §3·§6과 필요한 maintainer checklist에
 무인자/인자 경계·LF 목적·source 준비 entry 예외를 설명합니다. source의 준비 entry는
 plain current-version heading에 미공개 후보 표시를 붙이고 공개 때 링크·완료 근거로
 갱신합니다. 빈 `Unreleased` 절을 기본으로 만들지 않습니다. 적용 프로젝트의

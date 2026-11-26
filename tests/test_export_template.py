@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import stat
 import subprocess
@@ -107,6 +108,65 @@ class ExportTemplateTests(unittest.TestCase):
                 )
                 self.assertEqual(completed.returncode, 0, completed.stderr)
 
+    def test_template_owned_docs_live_under_docs_template(self) -> None:
+        moved = (
+            "docs/template/DESIGN.md", "docs/template/DOCS_GUIDE.md",
+            "docs/template/TEMPLATE_GUIDE.md", "docs/template/CHANGELOG_GUIDE.md",
+            "docs/template/changes/01-CHANGE.md", "docs/template/changes/01-INTENT.md",
+            "docs/template/changes/02-SPEC.md", "docs/template/changes/03-PLAN.md",
+        )
+        old = (
+            "docs/01-DESIGN.md", "docs/DOCS_GUIDE.md", "docs/TEMPLATE_GUIDE.md",
+            "docs/CHANGELOG_GUIDE.md", "docs/changes/_template/01-CHANGE.md",
+        )
+        for locale in ("en", "ko"):
+            with self.subTest(locale=locale):
+                members = EXPORT_TEMPLATE.export_locale(
+                    REPOSITORY_ROOT, locale, self.temp_root / locale
+                )
+                for relative in moved + ("docs/TEMPLATE_RECORD.md",):
+                    self.assertIn(relative, members)
+                for relative in old:
+                    self.assertNotIn(relative, members)
+
+    def test_deleting_optional_files_needs_no_change_under_docs_template(self) -> None:
+        deletable = (
+            "LICENSE", "docs/10-EXTENSION.md", ".cursor/BUGBOT.md", ".omp/WATCHDOG.md",
+            "docs/template/TEMPLATE_GUIDE.md",
+        )
+        for locale in ("en", "ko"):
+            with self.subTest(locale=locale):
+                output = self.temp_root / locale
+                EXPORT_TEMPLATE.export_locale(REPOSITORY_ROOT, locale, output)
+                template = output / "docs/template"
+                before = {
+                    path.relative_to(output).as_posix(): path.read_bytes()
+                    for path in template.rglob("*") if path.is_file()
+                }
+                for relative in deletable:
+                    (output / relative).unlink()
+                # The adopter only drops links in project-owned documents.
+                deleted_names = tuple(Path(relative).name for relative in deletable)
+                for path in output.rglob("*.md"):
+                    if template in path.parents:
+                        continue
+                    text = path.read_text(encoding="utf-8")
+                    pattern = r"\[([^\]]*)\]\(([^)\s]*(?:%s)(?:#[^)\s]*)?)\)" % "|".join(
+                        re.escape(name) for name in deleted_names
+                    )
+                    path.write_text(re.sub(pattern, r"\1", text), encoding="utf-8", newline="\n")
+                completed = subprocess.run(
+                    [sys.executable, "scripts/check-docs.py"],
+                    cwd=output, capture_output=True, text=True, encoding="utf-8", check=False,
+                )
+                self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+                after = {
+                    path.relative_to(output).as_posix(): path.read_bytes()
+                    for path in template.rglob("*") if path.is_file()
+                }
+                del before["docs/template/TEMPLATE_GUIDE.md"]
+                self.assertEqual(after, before)
+
     def test_accepts_an_existing_empty_output(self) -> None:
         output = self.temp_root / "empty"
         output.mkdir()
@@ -142,9 +202,9 @@ class ExportTemplateTests(unittest.TestCase):
         shutil.copytree(
             REPOSITORY_ROOT / "template", fixture / "template", ignore=_ignore_generated
         )
-        fixture.joinpath("docs").mkdir()
+        fixture.joinpath("docs/template").mkdir(parents=True)
         shutil.copy2(
-            REPOSITORY_ROOT / "docs/TEMPLATE_GUIDE.md", fixture / "docs/TEMPLATE_GUIDE.md"
+            REPOSITORY_ROOT / "docs/template/TEMPLATE_GUIDE.md", fixture / "docs/template/TEMPLATE_GUIDE.md"
         )
         (fixture / "locales/en/README.md").unlink()
         output = self.temp_root / "failed-output"

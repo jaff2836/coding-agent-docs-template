@@ -53,7 +53,7 @@ For each item, use the document when it exists and confirm from the code when it
 | Planned work | In Progress, Next, Blocked, and Backlog in `docs/02-TODO.md`, and `docs/10-EXTENSION.md` when present | Roadmap documents, `TODO`, `FIXME`, and `HACK` comments in the code |
 
 - Do not run a command that still contains a `{{...}}` placeholder or is `N/A`; record it as "not configured".
-- Do not count Completed or Cancelled items in `docs/02-TODO.md`, `docs/changes/_template/`, or placeholder examples such as `T-001` as plans.
+- Do not count Completed or Cancelled items in `docs/02-TODO.md`, `docs/template/changes/`, or placeholder examples such as `T-001` as plans.
 - Locate document sections by heading name. When the numbering has changed, use the section with the same name.
 
 ## 4. Analysis Baseline

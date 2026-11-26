@@ -47,7 +47,7 @@ ADOPTION_ARTIFACT_DIR = "artifact"
 ADOPTION_FORMAT = "coding-agent-docs-template/adoption-plan"
 ADOPTION_FORMAT_VERSION = 1
 ADOPTION_UPGRADE_FORMAT_VERSION = 2
-ADOPTION_GUIDE = "artifact/docs/TEMPLATE_GUIDE.md §2"
+ADOPTION_GUIDE = "artifact/docs/template/TEMPLATE_GUIDE.md §2"
 UPGRADE_STATUSES = (
     "unchanged",
     "template-only",

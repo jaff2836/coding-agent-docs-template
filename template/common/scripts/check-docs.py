@@ -109,7 +109,8 @@ PROJECT_INVARIANT_EXAMPLE_PREFIXES = tuple(
     for label in ("Example", "예시")
 )
 
-HISTORY_PATH = "docs/TEMPLATE_GUIDE.md"
+TEMPLATE_DIR = "docs/template"
+HISTORY_PATH = TEMPLATE_DIR + "/TEMPLATE_GUIDE.md"
 
 SKILL_PAIRS: List[Tuple[str, str]] = [
     (
@@ -1408,26 +1409,42 @@ def numbered_headings(path: Path) -> set:
     return numbers
 
 
+def named_doc_files(errors: Optional[List[str]] = None) -> List[Path]:
+    """Return docs/*.md and docs/template/*.md, the files names may point to.
+
+    Copy templates under docs/template/changes/ are left out: `SPEC §3` means
+    the SPEC of the change being discussed, never the blank form.
+    """
+    files: List[Path] = []
+    for folder in (ROOT / "docs", ROOT / TEMPLATE_DIR):
+        for path in sorted(folder.glob("*.md")):
+            if not is_inside_root(path):
+                message = "Markdown source escapes artifact root: %s" % rel(path)
+                if errors is not None and message not in errors:
+                    errors.append(message)
+                continue
+            if path.is_file():
+                files.append(path)
+    return files
+
+
+def resolve_doc_name(candidates: List[Path]):
+    """Return one file, a tuple when ambiguous, or None when nothing matches."""
+    if not candidates:
+        return None
+    return candidates[0] if len(candidates) == 1 else tuple(candidates)
+
+
 def doc_short_names(errors: Optional[List[str]] = None) -> dict:
-    """Collect short docs/ names for references such as `PROJECT §8`.
+    """Collect short document names for references such as `PROJECT §8`.
 
     A short name shared by several files maps to the tuple of those files so a
     symbolic reference cannot silently resolve to an arbitrary one of them.
     """
     candidates: dict = {}
-    for path in sorted((ROOT / "docs").glob("*.md")):
-        if not is_inside_root(path):
-            message = "Markdown source escapes artifact root: %s" % rel(path)
-            if errors is not None and message not in errors:
-                errors.append(message)
-            continue
-        if not path.is_file():
-            continue
+    for path in named_doc_files(errors):
         candidates.setdefault(re.sub(r"^\d+-", "", path.stem), []).append(path)
-    return {
-        name: paths[0] if len(paths) == 1 else tuple(paths)
-        for name, paths in candidates.items()
-    }
+    return {name: resolve_doc_name(paths) for name, paths in candidates.items()}
 
 
 def history_cut(errors: List[str]) -> Optional[Tuple[Path, int]]:
@@ -1452,6 +1469,7 @@ def check_section_refs(errors: List[str], notes: List[str]) -> None:
     are therefore not checked.
     """
     names = doc_short_names(errors)
+    named_files = named_doc_files()
     cut_at = history_cut(errors)
     headings: dict = {}
     broken: List[str] = []
@@ -1514,8 +1532,16 @@ def check_section_refs(errors: List[str], notes: List[str]) -> None:
                     None,
                 )
                 if target is None and kind == "filename":
-                    short_name = re.sub(r"^\d+-", "", Path(local_ref).stem)
-                    target = names.get(short_name)
+                    # A numbered name such as `00-PROJECT.md` only matches a file
+                    # of that exact name, so a renamed document (`01-DESIGN.md`
+                    # became `docs/template/DESIGN.md`) is reported, not guessed.
+                    filename = Path(local_ref).name
+                    if re.match(r"^\d+-", filename):
+                        target = resolve_doc_name(
+                            [path for path in named_files if path.name == filename]
+                        )
+                    else:
+                        target = names.get(Path(local_ref).stem)
             if isinstance(target, tuple):
                 broken.append(
                     "%s: %s %s (ambiguous document name: %s; use a file name or path)"
@@ -1617,10 +1643,10 @@ def require_template_version(path: Path, label: str, errors: List[str]) -> Optio
 
 
 def check_versions(errors: List[str], notes: List[str]) -> None:
-    guide = ROOT / "docs" / "TEMPLATE_GUIDE.md"
-    docs_guide = ROOT / "docs" / "DOCS_GUIDE.md"
+    guide = ROOT / TEMPLATE_DIR / "TEMPLATE_GUIDE.md"
+    docs_guide = ROOT / TEMPLATE_DIR / "DOCS_GUIDE.md"
     v2 = require_template_version(
-        docs_guide, "docs/DOCS_GUIDE.md", errors
+        docs_guide, TEMPLATE_DIR + "/DOCS_GUIDE.md", errors
     )
 
     # TEMPLATE_GUIDE.md may be deleted after adoption. An existing invalid
@@ -1633,11 +1659,11 @@ def check_versions(errors: List[str], notes: List[str]) -> None:
         if v2:
             notes.append("Template version: %s" % v2)
         return
-    if not optional_file_present(guide, "docs/TEMPLATE_GUIDE.md", errors):
+    if not optional_file_present(guide, TEMPLATE_DIR + "/TEMPLATE_GUIDE.md", errors):
         return
 
     v1 = require_template_version(
-        guide, "docs/TEMPLATE_GUIDE.md", errors
+        guide, TEMPLATE_DIR + "/TEMPLATE_GUIDE.md", errors
     )
     if v1 and v2 and v1 != v2:
         errors.append(

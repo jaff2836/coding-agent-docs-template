@@ -1,7 +1,7 @@
 # Maintainer 문서 운영 보충 안내
 
 > 적용 프로젝트의 일반 문서 운영 정본은 locale별
-> [영문](../locales/en/docs/DOCS_GUIDE.md)·[한국어](../locales/ko/docs/DOCS_GUIDE.md)
+> [영문](../../locales/en/docs/template/DOCS_GUIDE.md)·[한국어](../../locales/ko/docs/template/DOCS_GUIDE.md)
 > 가이드입니다. 이 문서는 source 저장소 maintainer에게만 필요한 경계를
 > 기록합니다.
 
@@ -12,27 +12,34 @@
 - **Template source:** https://github.com/jaff2836/coding-agent-docs-template
 - **Template revision:** release 검증 시 exact source commit으로 확정
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-10-31
+- **Last reviewed:** 2026-11-26
 - **Review cadence:** maintainer 문서 체계 또는 source·artifact 소유권 변경 시
 
 ## 1. Maintainer 문서 지도
 
 | 문서 | 책임 |
 | ---- | ---- |
-| [00-PROJECT.md](./00-PROJECT.md) | 현재 제품 기준, 결정과 상세 설계 인덱스 |
-| [01-DESIGN.md](./01-DESIGN.md) | 구조·공개 계약 변경의 합의 절차 |
-| [02-TODO.md](./02-TODO.md) | 전역 변경·마일스톤·통합 상태 |
-| [TODO_ARCHIVE.md](./TODO_ARCHIVE.md) | TODO에서 옮긴 완료 작업의 상세 기록 보관 |
+| [00-PROJECT.md](../00-PROJECT.md) | 현재 제품 기준, 결정과 상세 설계 인덱스 |
+| [DESIGN.md](./DESIGN.md) | 구조·공개 계약 변경의 합의 절차 |
+| [02-TODO.md](../02-TODO.md) | 전역 변경·마일스톤·통합 상태 |
+| [TODO_ARCHIVE.md](../TODO_ARCHIVE.md) | TODO에서 옮긴 완료 작업의 상세 기록 보관 |
 | `docs/changes/<change-ID>/` | 변경별 Intent·Spec과 필요한 PLAN |
-| [REVIEW.md](./REVIEW.md) | PR 리뷰 판단 기준 |
-| [REVIEW_ROUND.md](./REVIEW_ROUND.md) | 명시적으로 시작한 리뷰 라운드 절차 |
-| [CI.md](./CI.md) | runner 불문의 품질 게이트와 연결 확인 |
+| [REVIEW.md](../REVIEW.md) | PR 리뷰 판단 기준 |
+| [REVIEW_ROUND.md](../REVIEW_ROUND.md) | 명시적으로 시작한 리뷰 라운드 절차 |
+| [CI.md](../CI.md) | runner 불문의 품질 게이트와 연결 확인 |
 | [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md) | source·artifact·배포 유지관리 보충 규칙 |
-| [CHANGELOG.md](../CHANGELOG.md) | 공개 완료된 영문 릴리스 이력 |
-| [CHANGELOG.ko.md](../CHANGELOG.ko.md) | 공개 완료된 한국어 릴리스 이력 |
+| [CHANGELOG.md](../../CHANGELOG.md) | 공개 완료된 영문 릴리스 이력 |
+| [CHANGELOG.ko.md](../../CHANGELOG.ko.md) | 공개 완료된 한국어 릴리스 이력 |
 
 locale source의 가이드는 artifact 정본입니다. root maintainer 가이드는 locale
 본문을 번역·복제하지 않습니다.
+
+root `docs/template/`은 이 저장소가 템플릿을 적용한 결과가 아닙니다. root
+skill 사본이 ko payload와 byte 단위로 같아야 해서(D-021) 같은 경로를 쓰며,
+[DESIGN.md](./DESIGN.md)와 `changes/`의 변경 양식은 ko payload의 사본,
+이 문서와 [TEMPLATE_GUIDE.md](./TEMPLATE_GUIDE.md)는 maintainer 보충 문서입니다
+(D-023). 그래서 root에는 `CHANGELOG_GUIDE.md`와 `docs/TEMPLATE_RECORD.md`가 없고,
+이 두 문서의 Metadata는 maintainer가 채웁니다.
 
 ## 2. 식별자와 정보의 정본
 
@@ -45,13 +52,13 @@ locale source의 가이드는 artifact 정본입니다. root maintainer 가이�
 - README는 현재 사용법, TODO·PLAN은 미래 작업을 소유합니다. 같은 체크리스트나
   릴리스 이력을 여러 문서에 복제하지 않습니다.
 - 리뷰 finding ID는 `C<PR>-<슬롯>-<nnn>` 형식이며(예: `C57-A-001`), 슬롯은
-  [REVIEW_ROUND.md](./REVIEW_ROUND.md) §2.1에 등록된 것만 씁니다. Cursor `A`와 Codex `B`는
+  [REVIEW_ROUND.md](../REVIEW_ROUND.md) §2.1에 등록된 것만 씁니다. Cursor `A`와 Codex `B`는
   2026-10-01부터 쓰다가 2026-10-29에 중단했고, 같은 날부터 pr-reviewer가 `C`였습니다.
   2026-11-25부터는 pr-reviewer를 대체하는 prview가 같은 역할로 `C`를 이어 씁니다. 중단한
   라벨은 다른 리뷰어에게 다시 주지 않고, 이미 발급한 ID도 고치지 않습니다. 등록되지 않은
   리뷰어의 finding은 `<플랫폼 게시 식별자>/<항목 번호>`로 가리킵니다(D-014). 등록된
   리뷰어라도 게시물에 슬롯 ID를 붙이지 않으면 같은 형식을 쓰고, 덮어쓰는 게시물이면
-  `<플랫폼 게시 식별자>@<head 12자리>/<항목 번호>`로 씁니다([REVIEW_ROUND.md](./REVIEW_ROUND.md) §7). pr-reviewer는
+  `<플랫폼 게시 식별자>@<head 12자리>/<항목 번호>`로 씁니다([REVIEW_ROUND.md](../REVIEW_ROUND.md) §7). pr-reviewer는
   슬롯 ID를 붙이지 않고 head마다 note를 따로 남겼으므로 `<GitLab note id>/<항목 번호>`로 씁니다.
   prview도 슬롯 ID를 붙이지 않습니다. MR !11까지는 요약 note 하나를 덮어써 요약의 지적을
   `<GitLab note id>@<head 12자리>/<항목 번호>`로 썼고, MR !12부터는 head마다 요약 note를

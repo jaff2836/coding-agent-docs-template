@@ -466,7 +466,7 @@ def _validated_upgrade_plan(
         or not isinstance(plan["format_version"], int)
         or plan["format_version"] != 2
         or plan["stability"] != "experimental"
-        or plan["guide"] != "artifact/docs/TEMPLATE_GUIDE.md §2"
+        or plan["guide"] != "artifact/docs/template/TEMPLATE_GUIDE.md §2"
     ):
         raise VerificationError("upgrade adoption plan identity is invalid")
     for key, version in (("base_release", base_version), ("release", current_version)):

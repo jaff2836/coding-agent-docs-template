@@ -1,6 +1,6 @@
 # 프로젝트 작업 목록
 
-> 프로젝트 전체의 변경·마일스톤·우선순위·의존성을 관리합니다. 제품 기준과 결정은 [00-PROJECT.md](./00-PROJECT.md), 상세 상태의 소유권은 [DOCS_GUIDE.md](./DOCS_GUIDE.md)를 따릅니다.
+> 프로젝트 전체의 변경·마일스톤·우선순위·의존성을 관리합니다. 제품 기준과 결정은 [00-PROJECT.md](./00-PROJECT.md), 상세 상태의 소유권은 [DOCS_GUIDE.md](./template/DOCS_GUIDE.md)를 따릅니다.
 >
 > 템플릿 저장소 자체의 maintainer 작업을 추적하며 locale artifact에 포함하지 않습니다. 사용자용 TODO 양식의 source는 `locales/<tag>/docs/02-TODO.md`입니다. 한국어 양식은 W-001(Origin PR #3)에서 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`의 root 양식을 옮긴 것입니다.
 
@@ -10,7 +10,7 @@
 - **Owner:** Chae Sangwon
 - **Last reviewed:** 2026-11-26 (KST)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
-- **Integration target:** GitLab `main`(MR merge, 2026-10-28 전에는 Origin `main`의 PR merge)과 공개 저장소 `jaff2836/coding-agent-docs-template`의 `main`(같은 merge commit의 non-force fast-forward, [TEMPLATE_GUIDE §5](./TEMPLATE_GUIDE.md)); v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
+- **Integration target:** GitLab `main`(MR merge, 2026-10-28 전에는 Origin `main`의 PR merge)과 공개 저장소 `jaff2836/coding-agent-docs-template`의 `main`(같은 merge commit의 non-force fast-forward, [TEMPLATE_GUIDE §5](./template/TEMPLATE_GUIDE.md)); v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
@@ -25,8 +25,8 @@
 - 각 브랜치는 자기 변경의 상세 기록을 갱신합니다. 다른 브랜치 작업을 오래된 사본만 보고 완료·미완료로 되돌리지 않습니다.
 - 공통 항목은 범위·의존성·통합 결과가 달라질 때만 수정합니다. 충돌은 최신 기준과 변경-ID를 대조해 해결하고, 영향받은 계약·검증 전제를 재확인합니다.
 - `Completed`는 필요한 검증과 지정한 대상에의 반영을 확인한 항목, 또는 작업 브랜치에서 자기 최종 head의 통합과 동시에 완료되는 항목(결합 서술)을 담습니다. 릴리스·지원 검증처럼 통합 뒤에 일어나는 완료는 그 일이 끝난 뒤에만 기록합니다. 브랜치 구현 완료·리뷰 통과·병합·릴리스·지원 검증을 구분하고 해당 작업의 완료 조건으로 판단합니다.
-- 자기 PR의 CI build·리뷰 판정·merge SHA는 PR을 원장으로 두고 이 문서에는 PR 참조만 둡니다. 상세 규칙과 사용자 요청 예외는 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 로컬 Git과 병렬 브랜치 절을 따릅니다.
-- `T-nnn`은 이 문서의 전역 작업 ID입니다. 변경-ID·PROJECT의 `D-nnn`·변경 폴더의 `R-nnn`/`W-nnn`과 범위가 다릅니다. 발급·충돌 처리는 [DOCS_GUIDE.md](./DOCS_GUIDE.md)의 식별자 범위를 따릅니다.
+- 자기 PR의 CI build·리뷰 판정·merge SHA는 PR을 원장으로 두고 이 문서에는 PR 참조만 둡니다. 상세 규칙과 사용자 요청 예외는 [DOCS_GUIDE.md](./template/DOCS_GUIDE.md)의 로컬 Git과 병렬 브랜치 절을 따릅니다.
+- `T-nnn`은 이 문서의 전역 작업 ID입니다. 변경-ID·PROJECT의 `D-nnn`·변경 폴더의 `R-nnn`/`W-nnn`과 범위가 다릅니다. 발급·충돌 처리는 [DOCS_GUIDE.md](./template/DOCS_GUIDE.md)의 식별자 범위를 따릅니다.
 - 취소한 변경은 Cancelled에 두고 변경 폴더는 유지합니다. 완료된 SPEC을 현재 제품 기준으로 읽지 않으며, 구현된 계약은 통합 후 PROJECT에 반영합니다.
 - 원격 저장소나 PR은 필수가 아닙니다. 로컬 작업은 기준 revision과 대상 브랜치 또는 검토한 작업 트리 범위로 근거를 남깁니다. 미커밋 결과를 commit SHA로 재현된다고 표현하지 않습니다.
 - 문서 갱신은 commit·push·merge 권한이 아닙니다. 리뷰 라운드 통과 후 반영은 [REVIEW_ROUND.md](./REVIEW_ROUND.md) §9를 따릅니다.
@@ -40,20 +40,20 @@
   - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.3.1로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.3.1 이력(건너뛴 `v3.3.0` tag 안내 포함)을, root `CHANGELOG` 영·한에 `unpublished candidate`·`미공개 후보`를 표시한 v3.3.1 항목(공개 시 표시를 release 링크로 교체)을 더했습니다. `v3.2.0` 대비 바뀐 artifact 파일은 locale마다 18개(새 skill 6개, 기존 skill 6개, `AGENTS.md`, `README.md`, `docs/CI.md`, `docs/DOCS_GUIDE.md`, `docs/REVIEW_ROUND.md`, `docs/TEMPLATE_GUIDE.md`)와 공통 5개(새 Codex 설정 3개, `scripts/check-docs.py`, `tests/test_check_docs.py`)입니다. 통합: MR !13(`90747da`).
   - [x] tag·draft candidate: 준비 MR !13의 GitLab merge `90747da`를 GitHub `main`에 fast-forward했습니다. 사용자가 package를 먼저 만든 뒤 annotated `v3.3.1` tag(`30c7c4e`)와 draft(asset 5개, 영·한 release notes)를 만들었고, clean exact checkout에서 `verify-release.py candidate --base-version 3.2.0`(이 checkout의 remote 이름에 맞춰 `--origin-remote gitlab --github-remote origin`)이 통과했습니다(두 `main` 동기화, 5 assets, loopback installer E2E). locale마다 artifact member는 39개이고, release manifest `schema_version` 2와 `installer.py`는 `v3.2.0`과 같습니다.
   - [x] 공개·native Windows published: 사용자가 2026-11-25(KST 18:02) draft를 immutable Latest로 공개했습니다. Windows 로컬 checkout(Python 3.14)에서 tag source의 verifier로 `published --base-version 3.2.0`이 통과해 공개 asset 5개가 candidate를 통과한 package와 같음을 확인했습니다. native Windows에서는 Buildkite `coding-agent-docs-template-windows-ci` Build #220(`main` `90747da`, Python 3.12-CI)의 published 검증 step이 `v3.3.1` 검증을 통과했습니다.
-  - [ ] Linux published: [TEMPLATE_GUIDE](./TEMPLATE_GUIDE.md) §5는 published 검증을 Linux와 native Windows에서 모두 실행하도록 정합니다. Linux에서 tag `v3.3.1` source의 verifier로 `verify-release.py published --base-version 3.2.0`을 실행합니다. verifier는 GitLab·GitHub `main`이 같고 exact source가 그 조상이어야 통과하므로, 공개 뒤 merge한 MR이 있으면 GitHub `main`을 먼저 fast-forward합니다. 통과하면 PROJECT·root `CHANGELOG`·release 검증 변경 기록에서 Linux를 실행하지 않았다는 문장을 고치고, T-076을 Completed로, 이 항목의 상세를 [완료 작업 보관](./TODO_ARCHIVE.md)으로 옮깁니다.
-  - [x] 공개 기록: root `CHANGELOG`(영·한)의 v3.3.1 제목에서 미공개 후보 표시를 release 링크로 바꾸고 공개 검증 문장을 더했으며, PROJECT의 공개 기준·상태와 release 검증 변경 기록을 고쳤습니다. prview가 head마다 요약 note를 따로 남기는 것(MR !12의 note `4318332978`·`4318404335`)을 root `docs/REVIEW_ROUND.md` §2.1과 root `docs/DOCS_GUIDE.md` §2에 반영했습니다. 통합: MR !14.
+  - [ ] Linux published: [TEMPLATE_GUIDE](./template/TEMPLATE_GUIDE.md) §5는 published 검증을 Linux와 native Windows에서 모두 실행하도록 정합니다. Linux에서 tag `v3.3.1` source의 verifier로 `verify-release.py published --base-version 3.2.0`을 실행합니다. verifier는 GitLab·GitHub `main`이 같고 exact source가 그 조상이어야 통과하므로, 공개 뒤 merge한 MR이 있으면 GitHub `main`을 먼저 fast-forward합니다. 통과하면 PROJECT·root `CHANGELOG`·release 검증 변경 기록에서 Linux를 실행하지 않았다는 문장을 고치고, T-076을 Completed로, 이 항목의 상세를 [완료 작업 보관](./TODO_ARCHIVE.md)으로 옮깁니다.
+  - [x] 공개 기록: root `CHANGELOG`(영·한)의 v3.3.1 제목에서 미공개 후보 표시를 release 링크로 바꾸고 공개 검증 문장을 더했으며, PROJECT의 공개 기준·상태와 release 검증 변경 기록을 고쳤습니다. prview가 head마다 요약 note를 따로 남기는 것(MR !12의 note `4318332978`·`4318404335`)을 root `docs/REVIEW_ROUND.md` §2.1과 root `docs/template/DOCS_GUIDE.md` §2에 반영했습니다. 통합: MR !14.
 - [ ] **T-075 템플릿 소유 문서를 `docs/template/`로 분리**
   - 변경-ID: `2026-11-25-template-owned-docs-folder`
   - 범위·우선순위: en·ko payload의 `copy` 문서 네 개와 변경 양식 네 개를 `docs/template/`로 옮기고, 그 문서에서 프로젝트가 채우는 칸을 `docs/TEMPLATE_RECORD.md`로 뺍니다. 검사기·도구·root 구조를 맞춥니다. 2026-11-25 사용자 요청입니다.
-  - 선행조건: T-076 `v3.3.1`의 준비가 MR !13으로 `main`에 통합되고 2026-11-25에 공개돼 구현을 시작할 수 있습니다(D-023). T-076에 남은 Linux published 검증은 구현 시작을 막지 않습니다. 시작 시점은 사용자와 정합니다.
+  - 선행조건: T-076 `v3.3.1`의 준비가 MR !13으로 `main`에 통합되고 2026-11-25에 공개돼 구현을 시작할 수 있습니다(D-023). T-076에 남은 Linux published 검증은 구현 시작을 막지 않습니다. 2026-11-26 사용자 요청으로 구현을 시작했습니다.
   - 관련 결정·SPEC: D-023, [INTENT](./changes/2026-11-25-template-owned-docs-folder/01-INTENT.md), [SPEC](./changes/2026-11-25-template-owned-docs-folder/02-SPEC.md)
   - 상세 실행의 정본: [PLAN](./changes/2026-11-25-template-owned-docs-folder/03-PLAN.md)
-  - 구현 상태: 설계 Accepted(2026-11-25 "추천안대로")이고 설계 문서는 MR !12로 통합됐습니다. 구현은 시작하지 않았습니다.
+  - 구현 상태: 설계 Accepted(2026-11-25 "추천안대로")이고 설계 문서는 MR !12로 통합됐습니다. 2026-11-26 branch `claude/t075-template-docs-impl`(기준 `main` `5d3d0cf`)에서 PLAN W-002~W-005를 구현·검증했고, 아직 commit하지 않았습니다.
   - 통합 완료 조건: MR 리뷰와 필수 CI, GitLab `main` 반영. 공개는 T-075 통합 뒤 등록할 `v4.0.0` release 작업에서 합니다.
 
 ## Next
 
-T-076의 Linux published 검증을 Linux 환경에서 실행하고 기록합니다. T-075 구현은 사용자와 정한 시점에 `main`에서 새 branch로 시작합니다(D-023). 새 작업은 사용자와 정한 뒤 MR 단위로 리뷰·필수 CI·통합을 거칩니다.
+T-076의 Linux published 검증을 Linux 환경에서 실행하고 기록합니다. T-075 구현은 branch에서 끝났으므로 MR 리뷰·필수 CI·통합을 거친 뒤 `v4.0.0` release 작업을 등록합니다(D-023). 새 작업은 사용자와 정한 뒤 MR 단위로 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -112,7 +112,7 @@ T-076의 Linux published 검증을 Linux 환경에서 실행하고 기록합니�
 - [x] **T-047 자기 점검 규칙 root 시범** — 평가 완료(4 PR, 사용자 결정으로 단축). 시범 PR #69~#72에서 작성자가 고친 것은 2·1·3·0건이었습니다. 2026-10-09 사용자가 다섯 번째 PR 없이 평가를 마치고 규칙을 payload에 넣기로 정해 T-053으로 반영했습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합: PR #73.
 - [x] **T-050 installer 기본값과 Python 하한** — source `scripts/installer.py`의 `--release-url` 기본값을 `DEFAULT_RELEASE_URL`(공식 release root)로 두고, 모든 OS에서 Python 3.12 미만이면 release·대상 접근 전에 멈춥니다(D-018). en·ko 적용 가이드 §2의 Python 하한·기본 URL 문장과 installer 명령, manifest `required_commands`, root `AGENTS.md` Commands에서 `--release-url`을 뺐고 PROJECT External Boundaries를 고쳤습니다. 회귀 테스트는 `tests/test_install_release.py`에 있고 red-green 결과는 PR 본문에 있습니다. 공개는 T-051(`v3.0.0`)이며 root README 명령은 공개 뒤 기록 PR에서 바꿉니다. 설계: [installer·검사 설계](./changes/2026-10-08-installer-defaults-and-maintainer-checks/01-CHANGE.md) R-001~R-003. 통합: PR #72.
 - [x] **T-052 Completed 안내문을 D-013에 맞춤** — root·en·ko `docs/02-TODO.md`의 Completed 안내문에 운영 규칙이 허용하는 결합 서술을 통합 전에 적을 수 있다는 예외를 넣었습니다. PR #69 리뷰의 무효 finding(C69-B-001)이 근거로 든 문장입니다. payload 변경은 T-051(`v3.0.0`)로 공개합니다. 통합: PR #72.
-- [x] **T-049 maintainer 정합 검사** — root `scripts/check-docs.py`의 무인자 실행이 root `REVIEW.md`·`REVIEW_ROUND.md`·`.cursor/BUGBOT.md`를 ko heading으로 찾은 프로젝트 소유 절 밖에서 ko 원본과 대조하고, root README locale 표의 tag가 manifest의 `complete` locale이며 상태가 `complete`인지 확인합니다(D-019). `check_locales.read_validated_manifest()`를 추가해 `check_locales()`와 함께 씁니다. 회귀 테스트는 `tests/test_check_docs.py`에 있고 red-green 결과는 PR 본문에 있습니다. root `TEMPLATE_GUIDE.md` §3·§5, `DOCS_GUIDE.md` 점검 목록, PROJECT 기능 표를 고쳤습니다. 통합: PR #71.
+- [x] **T-049 maintainer 정합 검사** — root `scripts/check-docs.py`의 무인자 실행이 root `REVIEW.md`·`REVIEW_ROUND.md`·`.cursor/BUGBOT.md`를 ko heading으로 찾은 프로젝트 소유 절 밖에서 ko 원본과 대조하고, root README locale 표의 tag가 manifest의 `complete` locale이며 상태가 `complete`인지 확인합니다(D-019). `check_locales.read_validated_manifest()`를 추가해 `check_locales()`와 함께 씁니다. 회귀 테스트는 `tests/test_check_docs.py`에 있고 red-green 결과는 PR 본문에 있습니다. root `docs/template/TEMPLATE_GUIDE.md` §3·§5, `DOCS_GUIDE.md` 점검 목록, PROJECT 기능 표를 고쳤습니다. 통합: PR #71.
 - [x] **T-048 root README 설치 절 정리** — 2026-10-08 사용자 요청으로 root `README.md`·`README.ko.md`를 더 형식적이고 짧게 고쳤습니다. 설치 절은 사전 요구사항, 다운로드, 선택 확인(지원 locale 표, `list-locales`, attestation), 적용(선택 A `adopt`, B `install`, C `export`) 순서이고, installer 명령의 Windows 블록은 `python`·Windows 경로 안내 한 줄로 합쳤습니다. root README는 artifact가 아니어서 release가 필요 없습니다. 통합: PR #69.
 - [x] **T-040 문서·주석 필터 root 시범** — 2026-10-08 평가: 시범 PR 5개(#64~#68)에서 채택은 대부분 문장 다듬기였고, 정확도를 높인 것은 D1 한 건과 규칙 밖의 사실·일관성 확인이었습니다. 사용자 결정으로 문체 필터를 중단하고 `docs/DOC_FILTER.md`를 지웠습니다. 대신 root `AGENTS.md` Communication에 바뀐 줄을 다시 읽어 수치·상태·위치·참조와 문체를 점검하는 규칙 한 줄을 넣었습니다. payload는 바꾸지 않고, 규칙은 root에서 T-047로 더 시범합니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 통합: PR #68.
 - [x] **T-042 Origin 원격 branch 정리** — 2026-10-08 사용자 승인으로, `main`을 뺀 Origin 원격 branch 66개(`claude/*`·`codex/*`·`cursor/*`)를 지웠습니다. 삭제 직전에 모든 head가 `origin/main`의 조상인지 다시 확인했고, 삭제 뒤 `git ls-remote origin`에는 `refs/heads/main`만 남았습니다. 열린 PR은 없었습니다. PR 없는 원격 작업이라 이 기록은 다음 PR(이 변경)에 담았습니다.

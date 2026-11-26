@@ -650,7 +650,7 @@ class VerifyReleaseTests(unittest.TestCase):
                             "source_commit": SOURCE_COMMIT,
                             "locale": "ko",
                         },
-                        "guide": "artifact/docs/TEMPLATE_GUIDE.md §2",
+                        "guide": "artifact/docs/template/TEMPLATE_GUIDE.md §2",
                         "summary": {
                             "missing": 1,
                             "identical": 0,
@@ -797,7 +797,7 @@ class VerifyReleaseTests(unittest.TestCase):
                 "source_commit": SOURCE_COMMIT,
                 "locale": "ko",
             },
-            "guide": "artifact/docs/TEMPLATE_GUIDE.md §2",
+            "guide": "artifact/docs/template/TEMPLATE_GUIDE.md §2",
             "summary": {
                 "missing": 2,
                 "identical": 0,

@@ -59,7 +59,7 @@ For each item, use the document when it exists and confirm from the code when it
 | Quality gates | `docs/CI.md` | The lint, type check, test, and build standards the project already has |
 
 - Do not run a command that still contains a `{{...}}` placeholder or is `N/A`; record it as "not configured".
-- Do not count Completed or Cancelled items in `docs/02-TODO.md`, `docs/changes/_template/`, or placeholder examples such as `T-001` and `D-001` as plans or decisions.
+- Do not count Completed or Cancelled items in `docs/02-TODO.md`, `docs/template/changes/`, or placeholder examples such as `T-001` and `D-001` as plans or decisions.
 - Locate document sections by heading name. When the numbering has changed, use the section with the same name.
 
 ## 4. Analysis Baseline
@@ -205,7 +205,7 @@ Propose, without creating files, what must be updated together before implementa
 - Existing documents and sections that need updating
 - Checklist for external contracts, data migration, and backward compatibility
 - Effect on the invariants
-- In a repository with `docs/01-DESIGN.md`: a candidate change ID (`<UTC date>-<slug>`) and form (combined `01-CHANGE.md` or separate INTENT, SPEC, and PLAN), where each chapter of this proposal moves, and drafts of the `docs/00-PROJECT.md` sections and `docs/02-TODO.md` items that need updating
+- In a repository with `docs/template/DESIGN.md`: a candidate change ID (`<UTC date>-<slug>`) and form (combined `01-CHANGE.md` or separate INTENT, SPEC, and PLAN), where each chapter of this proposal moves, and drafts of the `docs/00-PROJECT.md` sections and `docs/02-TODO.md` items that need updating
 
 ## 10. Questions That Need a Decision
 What the user must answer before work can proceed, such as whether a design is intended or whether to introduce a new dependency (add nothing after this chapter)
@@ -214,7 +214,7 @@ What the user must answer before work can proceed, such as whether a design is i
 ## 9. After Approval
 
 - This proposal is a draft. Even when the user approves it, this skill does not move on to implementation.
-- In a repository with `docs/01-DESIGN.md`, carry the approved scope into that document's procedure (the `design` skill) to create the change documents and the decision and task entries. Without that document, proceed in the way the user specifies.
+- In a repository with `docs/template/DESIGN.md`, carry the approved scope into that document's procedure (the `design` skill) to create the change documents and the decision and task entries. Without that document, proceed in the way the user specifies.
 - The proposal is an uncommitted file. State in the closing report that, to keep it as evidence of approval, the user must decide where to preserve it.
 
 ## 10. Closing Report

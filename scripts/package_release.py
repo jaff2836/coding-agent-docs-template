@@ -177,7 +177,7 @@ def _artifact_members(root: Path) -> tuple[tuple[str, bytes], ...]:
 
 
 def _verify_artifact_version(root: Path, locale: str, version: str) -> None:
-    for relative in ("docs/TEMPLATE_GUIDE.md", "docs/DOCS_GUIDE.md"):
+    for relative in ("docs/template/TEMPLATE_GUIDE.md", "docs/template/DOCS_GUIDE.md"):
         path = root / relative
         try:
             text = path.read_text(encoding="utf-8")

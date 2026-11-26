@@ -47,7 +47,7 @@
 ### 2.4 Agent용 병합 prompt
 
 - **locale별 병합 prompt 포함:** 병합 절차가 적용 가이드와 prompt 두 곳의 en·ko 정본으로 갈라지고 특정 agent 비의존 제약과 충돌해 기각했습니다.
-- **경로별 이유와 적용 가이드 참조만 제공:** 병합 절차의 정본을 artifact 안 `docs/TEMPLATE_GUIDE.md` §2에 유지해 채택했습니다.
+- **경로별 이유와 적용 가이드 참조만 제공:** 병합 절차의 정본을 artifact 안 `docs/template/TEMPLATE_GUIDE.md` §2에 유지해 채택했습니다.
 
 ### 2.5 `decide` 범위
 
@@ -136,7 +136,7 @@ output은 다음 두 항목만 가집니다. 임시 디렉터리에서 모두 �
 
 ### 3.5 문서와 기존 명령
 
-- root landing README(`README.md`, `README.ko.md`)와 en·ko `docs/TEMPLATE_GUIDE.md` §2는 기존 저장소의 `adopt` 흐름을 먼저, 새 프로젝트 `install`과 저수준 `export`를 그다음에 설명합니다.
+- root landing README(`README.md`, `README.ko.md`)와 en·ko `docs/template/TEMPLATE_GUIDE.md` §2는 기존 저장소의 `adopt` 흐름을 먼저, 새 프로젝트 `install`과 저수준 `export`를 그다음에 설명합니다.
 - `install`의 충돌 오류는 `adopt`를 안내합니다. 인자와 동작은 바꾸지 않습니다.
 - 적용 가이드는 report의 status별 처리와 `decide` 파일의 결정 기준을 설명합니다. 이것이 병합 절차의 유일한 정본입니다.
 

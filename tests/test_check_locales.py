@@ -36,10 +36,10 @@ class LocaleFixtureTests(unittest.TestCase):
             self.root / "template",
             ignore=_ignore_generated,
         )
-        self.root.joinpath("docs").mkdir()
+        self.root.joinpath("docs/template").mkdir(parents=True)
         shutil.copy2(
-            REPOSITORY_ROOT / "docs/TEMPLATE_GUIDE.md",
-            self.root / "docs/TEMPLATE_GUIDE.md",
+            REPOSITORY_ROOT / "docs/template/TEMPLATE_GUIDE.md",
+            self.root / "docs/template/TEMPLATE_GUIDE.md",
         )
 
     def tearDown(self) -> None:
@@ -85,7 +85,7 @@ class LocaleFixtureTests(unittest.TestCase):
         self.assertEqual(self.errors(), [])
 
     def search_pattern(self, tag: str) -> str:
-        text = self.path("locales/%s/docs/TEMPLATE_GUIDE.md" % tag).read_text(encoding="utf-8")
+        text = self.path("locales/%s/docs/template/DOCS_GUIDE.md" % tag).read_text(encoding="utf-8")
         declaration = next(
             line for line in text.splitlines()
             if line.startswith("template_placeholder_pattern=")
@@ -93,6 +93,94 @@ class LocaleFixtureTests(unittest.TestCase):
         literal = declaration.split("=", 1)[1]
         self.assertTrue(literal.startswith("'") and literal.endswith("'"))
         return literal[1:-1]
+
+    def test_template_guides_reject_project_fields_and_record_sections(self) -> None:
+        for tag in ("en", "ko"):
+            path = self.path("locales/%s/docs/template/DOCS_GUIDE.md" % tag)
+            original = path.read_text(encoding="utf-8")
+            record = self.path("locales/%s/docs/TEMPLATE_RECORD.md" % tag).read_text(encoding="utf-8")
+            section = next(
+                line for line in record.splitlines()
+                if line.startswith("## ") and line != "## Metadata"
+            )
+            for field in ("Owner", "Last reviewed", "Template source", "Template revision"):
+                with self.subTest(tag=tag, field=field):
+                    altered = original.replace(
+                        "- **Status:** Active\n", "- **Status:** Active\n- **%s:** x\n" % field, 1
+                    )
+                    self.assertNotEqual(altered, original)
+                    path.write_text(altered, encoding="utf-8", newline="\n")
+                    self.assert_error(
+                        "%s:docs/template/DOCS_GUIDE.md holds project field %s" % (tag, field)
+                    )
+            with self.subTest(tag=tag, section=section):
+                path.write_text(original + "\n" + section + "\n\n- x\n", encoding="utf-8", newline="\n")
+                self.assert_error("%s:docs/template/DOCS_GUIDE.md holds the docs/TEMPLATE_RECORD.md section" % tag)
+            path.write_text(original, encoding="utf-8", newline="\n")
+        # Copy templates may carry the fields that a copied change folder fills in.
+        for tag in ("en", "ko"):
+            form = self.path("locales/%s/docs/template/changes/01-CHANGE.md" % tag)
+            form.write_text(
+                form.read_text(encoding="utf-8").replace(
+                    "- **Status:** Draft\n", "- **Status:** Draft\n- **Owner:** x\n", 1
+                ),
+                encoding="utf-8", newline="\n",
+            )
+        self.assertEqual(self.errors(), [])
+
+    def test_template_folder_rejects_links_and_sections_of_deletable_files(self) -> None:
+        design = self.path("locales/ko/docs/template/DESIGN.md")
+        original = design.read_text(encoding="utf-8")
+        cases = (
+            ("[확장](../10-EXTENSION.md)", "links to deletable docs/10-EXTENSION.md"),
+            ("[Bugbot](../../.cursor/BUGBOT.md#x)", "links to deletable .cursor/BUGBOT.md"),
+            ("[라이선스](../../LICENSE)", "links to deletable LICENSE"),
+            ("[가이드](./TEMPLATE_GUIDE.md)", "links to deletable docs/template/TEMPLATE_GUIDE.md"),
+            # The artifact checker also follows these forms, so the guard must too.
+            ("[확장][ext]\n\n[ext]: ../10-EXTENSION.md", "links to deletable docs/10-EXTENSION.md"),
+            ("[ext]: <../../.omp/WATCHDOG.md>", "links to deletable .omp/WATCHDOG.md"),
+            ("[확장](<../10-EXTENSION.md>)", "links to deletable docs/10-EXTENSION.md"),
+            ("[확장](../10%2DEXTENSION.md)", "links to deletable docs/10-EXTENSION.md"),
+            ("`docs/10-EXTENSION.md` §1", "cites a section of deletable docs/10-EXTENSION.md"),
+            ("`.omp/WATCHDOG.md` §2", "cites a section of deletable .omp/WATCHDOG.md"),
+            ("TEMPLATE_GUIDE.md §4", "cites a section of deletable TEMPLATE_GUIDE.md"),
+        )
+        for snippet, expected in cases:
+            with self.subTest(snippet=snippet):
+                design.write_text(original + "\n" + snippet + "\n", encoding="utf-8", newline="\n")
+                self.assert_error("ko:docs/template/DESIGN.md " + expected)
+        design.write_text(
+            original + "\nTEMPLATE_GUIDE §4와 `docs/10-EXTENSION.md`는 이름으로만 가리킵니다.\n",
+            encoding="utf-8", newline="\n",
+        )
+        self.assertEqual(self.errors(), [])
+        design.write_text(original, encoding="utf-8", newline="\n")
+        # A guide may cite itself, and its release history keeps the paths of its time.
+        guide = self.path("locales/ko/docs/template/TEMPLATE_GUIDE.md")
+        text = guide.read_text(encoding="utf-8")
+        marker = "<!-- template-section:release-history -->\n"
+        guide.write_text(
+            text.replace("## 1. ", "TEMPLATE_GUIDE.md §5\n\n## 1. ", 1)
+            .replace(marker, marker + "\n`.omp/WATCHDOG.md` §2\n", 1),
+            encoding="utf-8", newline="\n",
+        )
+        self.assertEqual(self.errors(), [])
+
+    def test_placeholder_search_commands_must_skip_the_template_folder(self) -> None:
+        for tag in ("en", "ko"):
+            path = self.path("locales/%s/docs/template/DOCS_GUIDE.md" % tag)
+            original = path.read_text(encoding="utf-8")
+            for command, old, new in (
+                ("rg", "--glob '!docs/template/**'", "--glob '!docs/other/**'"),
+                ("grep", "| grep -v '^\\./docs/template/'", "| grep -v '^\\./docs/other/'"),
+            ):
+                with self.subTest(tag=tag, command=command):
+                    self.assertEqual(original.count(old), 1)
+                    path.write_text(original.replace(old, new, 1), encoding="utf-8", newline="\n")
+                    self.assert_error(
+                        "%s:docs/template/DOCS_GUIDE.md %s must exclude docs/template/" % (tag, command)
+                    )
+            path.write_text(original, encoding="utf-8", newline="\n")
 
     def test_placeholder_search_rejects_loss_of_independent_vocabulary(self) -> None:
         tokens = {
@@ -103,7 +191,7 @@ class LocaleFixtureTests(unittest.TestCase):
                    "예시 결정", "예시 완료", r"\*\*예시:\*\*"),
         }
         for tag, vocabulary in tokens.items():
-            path = self.path("locales/%s/docs/TEMPLATE_GUIDE.md" % tag)
+            path = self.path("locales/%s/docs/template/DOCS_GUIDE.md" % tag)
             original = path.read_text(encoding="utf-8")
             pattern = self.search_pattern(tag)
             for token in (r"\{\{", "YYYY-MM-DD", "template-example:project-invariant", *vocabulary):
@@ -113,12 +201,12 @@ class LocaleFixtureTests(unittest.TestCase):
                     self.assertIn(token, alternatives)
                     altered = "|".join(part for part in alternatives if part != token)
                     path.write_text(original.replace(pattern, altered, 1), encoding="utf-8", newline="\n")
-                    self.assert_error("%s:docs/TEMPLATE_GUIDE.md placeholder search misses sentinel" % tag)
+                    self.assert_error("%s:docs/template/DOCS_GUIDE.md placeholder search misses sentinel" % tag)
                     path.write_text(original, encoding="utf-8", newline="\n")
 
     def test_placeholder_search_requires_one_literal_declaration(self) -> None:
         for tag in ("en", "ko"):
-            path = self.path("locales/%s/docs/TEMPLATE_GUIDE.md" % tag)
+            path = self.path("locales/%s/docs/template/DOCS_GUIDE.md" % tag)
             original = path.read_text(encoding="utf-8")
             declaration = "template_placeholder_pattern='%s'" % self.search_pattern(tag)
             for replacement in ("", declaration + "\n" + declaration,
@@ -130,7 +218,7 @@ class LocaleFixtureTests(unittest.TestCase):
                     path.write_text(original, encoding="utf-8", newline="\n")
 
     def test_placeholder_search_rejects_empty_or_invalid_regex(self) -> None:
-        path = self.path("locales/en/docs/TEMPLATE_GUIDE.md")
+        path = self.path("locales/en/docs/template/DOCS_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         pattern = self.search_pattern("en")
         for replacement, expected in (("", "must not match empty text"),
@@ -142,7 +230,7 @@ class LocaleFixtureTests(unittest.TestCase):
     def test_both_search_commands_require_the_quoted_shared_regex_operand(self) -> None:
         reference = '"$template_placeholder_pattern"'
         for tag in ("en", "ko"):
-            path = self.path("locales/%s/docs/TEMPLATE_GUIDE.md" % tag)
+            path = self.path("locales/%s/docs/template/DOCS_GUIDE.md" % tag)
             original = path.read_text(encoding="utf-8")
             for command, occurrence in (("rg", 0), ("grep", 1)):
                 for replacement in ('"YYYY-MM-DD"', "$template_placeholder_pattern"):
@@ -156,7 +244,7 @@ class LocaleFixtureTests(unittest.TestCase):
                         path.write_text(original, encoding="utf-8", newline="\n")
 
     def test_search_declaration_must_precede_commands(self) -> None:
-        path = self.path("locales/en/docs/TEMPLATE_GUIDE.md")
+        path = self.path("locales/en/docs/template/DOCS_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         declaration = "template_placeholder_pattern='%s'" % self.search_pattern("en")
         altered = original.replace(declaration, "", 1).replace(
@@ -166,7 +254,7 @@ class LocaleFixtureTests(unittest.TestCase):
         self.assert_error("rg must use the quoted shared pattern")
 
     def test_search_contract_cannot_be_satisfied_by_comments_or_other_fences(self) -> None:
-        path = self.path("locales/en/docs/TEMPLATE_GUIDE.md")
+        path = self.path("locales/en/docs/template/DOCS_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         declaration = "```bash\ntemplate_placeholder_pattern='%s'\n```" % self.search_pattern("en")
         for replacement in ("<!--\n" + declaration + "\n-->",
@@ -182,18 +270,18 @@ class LocaleFixtureTests(unittest.TestCase):
             self.assert_error(command + " must use the quoted shared pattern")
 
     def test_root_search_delegation_rejects_missing_or_decoy_links(self) -> None:
-        path = self.path("docs/TEMPLATE_GUIDE.md")
+        path = self.path("docs/template/TEMPLATE_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         for label, tag in (("영문 가이드", "en"), ("한국어 가이드", "ko")):
-            link = "[%s](../locales/%s/docs/TEMPLATE_GUIDE.md)" % (label, tag)
+            link = "[%s](../../locales/%s/docs/template/DOCS_GUIDE.md)" % (label, tag)
             for replacement in ("", "<!-- " + link + " -->", "\n```md\n" + link + "\n```\n"):
                 with self.subTest(tag=tag, replacement=replacement):
                     self.assertEqual(original.count(link), 1)
                     path.write_text(original.replace(link, replacement, 1), encoding="utf-8", newline="\n")
-                    self.assert_error("search section must delegate to ../locales/%s/" % tag)
+                    self.assert_error("search section must delegate to ../../locales/%s/" % tag)
 
     def test_root_guide_cannot_own_an_independent_search_pattern(self) -> None:
-        path = self.path("docs/TEMPLATE_GUIDE.md")
+        path = self.path("docs/template/TEMPLATE_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         for snippet in (
             "```sh\nrg 'YYYY-MM-DD|Customize for the project' .\n```\n",
@@ -210,14 +298,14 @@ class LocaleFixtureTests(unittest.TestCase):
         self.assertEqual(self.errors(), [])
 
     def test_root_search_gate_does_not_skip_a_missing_or_non_file_guide(self) -> None:
-        path = self.path("docs/TEMPLATE_GUIDE.md")
+        path = self.path("docs/template/TEMPLATE_GUIDE.md")
         path.unlink()
-        self.assert_error("cannot read maintainer docs/TEMPLATE_GUIDE.md")
+        self.assert_error("cannot read maintainer docs/template/TEMPLATE_GUIDE.md")
         path.mkdir()
-        self.assert_error("cannot read maintainer docs/TEMPLATE_GUIDE.md")
+        self.assert_error("cannot read maintainer docs/template/TEMPLATE_GUIDE.md")
 
     def test_root_search_gate_rejects_git_grep_and_command_wrappers(self) -> None:
-        path = self.path("docs/TEMPLATE_GUIDE.md")
+        path = self.path("docs/template/TEMPLATE_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         for command in (
             "git grep -nE 'YYYY-MM-DD|Customize for the project' -- '*.md'",
@@ -241,7 +329,7 @@ class LocaleFixtureTests(unittest.TestCase):
         self.assert_error("not a maintainer check command: git grep -nE 'YYYY-MM-DD .")
 
     def test_root_search_gate_allows_unrelated_sections_and_search_mentions(self) -> None:
-        path = self.path("docs/TEMPLATE_GUIDE.md")
+        path = self.path("docs/template/TEMPLATE_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         mention = (
             "`rg` 또는 `grep`의 정본은 locale 가이드입니다.\n"
@@ -257,7 +345,7 @@ class LocaleFixtureTests(unittest.TestCase):
         self.assertEqual(self.errors(), [])
 
     def test_root_search_gate_rejects_search_tool_spellings(self) -> None:
-        path = self.path("docs/TEMPLATE_GUIDE.md")
+        path = self.path("docs/template/TEMPLATE_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         for tool in ("egrep", "fgrep", "/usr/bin/grep", "/usr/bin/egrep", "grep.exe",
                      "RG.EXE", '"C:\\Tools\\grep.exe"', "'/opt/search tools/rg'",
@@ -270,7 +358,7 @@ class LocaleFixtureTests(unittest.TestCase):
                     self.assert_error("maintainer guide must not define an independent placeholder search")
 
     def test_root_search_gate_rejects_shell_wrapped_searches(self) -> None:
-        path = self.path("docs/TEMPLATE_GUIDE.md")
+        path = self.path("docs/template/TEMPLATE_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         for command in (
             '''sh -c "git grep -nE 'YYYY-MM-DD|Customize for the project' -- '*.md'"''',
@@ -290,7 +378,7 @@ class LocaleFixtureTests(unittest.TestCase):
 
     def test_root_search_gate_rejects_other_search_tools_and_vocabulary(self) -> None:
         # C51-001: no search-tool list can be complete, so any spelling must be rejected.
-        path = self.path("docs/TEMPLATE_GUIDE.md")
+        path = self.path("docs/template/TEMPLATE_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         for snippet, reason in (
             ("```sh\nsed -n '/YYYY-MM-DD\\|Customize for the project/p' README.md\n```\n", "code line"),
@@ -322,19 +410,19 @@ class LocaleFixtureTests(unittest.TestCase):
 
     def test_root_search_gate_follows_the_declared_locale_patterns(self) -> None:
         # The root text check reads each locale declaration instead of a copied word list.
-        guide = self.path("locales/en/docs/TEMPLATE_GUIDE.md")
+        guide = self.path("locales/en/docs/template/DOCS_GUIDE.md")
         pattern = self.search_pattern("en")
         guide.write_text(guide.read_text(encoding="utf-8").replace(pattern, pattern + "|Fill in later", 1),
                          encoding="utf-8", newline="\n")
         self.assertEqual(self.errors(), [])
-        path = self.path("docs/TEMPLATE_GUIDE.md")
+        path = self.path("docs/template/TEMPLATE_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         path.write_text(original.replace("## 4. ", "root에서 `Fill in later`도 찾습니다.\n\n## 4. ", 1),
                         encoding="utf-8", newline="\n")
         self.assert_error("text matches a locale placeholder search pattern: root에서 `Fill in later`")
 
     def test_root_search_gate_allows_only_maintainer_checks_in_code(self) -> None:
-        path = self.path("docs/TEMPLATE_GUIDE.md")
+        path = self.path("docs/template/TEMPLATE_GUIDE.md")
         original = path.read_text(encoding="utf-8")
         allowed = (
             "`egrep`·`fgrep`·`grep.exe`·`sh -c` 이름 언급입니다.\n"
@@ -367,7 +455,7 @@ class LocaleFixtureTests(unittest.TestCase):
         for tag in ("en", "ko"):
             with self.subTest(tag=tag, engine=engine):
                 expected = common + vocabulary[tag]
-                guide = self.path("locales/%s/docs/TEMPLATE_GUIDE.md" % tag).read_text(encoding="utf-8")
+                guide = self.path("locales/%s/docs/template/DOCS_GUIDE.md" % tag).read_text(encoding="utf-8")
                 lines = guide.splitlines()
                 start = next(index for index, line in enumerate(lines) if line.startswith(engine + " "))
                 command = lines[start]
@@ -378,35 +466,52 @@ class LocaleFixtureTests(unittest.TestCase):
                 # Invoke only the chosen executable with data arguments; never evaluate shell code.
                 arguments = [self.search_pattern(tag) if value == "$template_placeholder_pattern" else value
                              for value in shlex.split(command)]
+                # A documented `| grep -v <regex>` filter is applied here as data;
+                # the shell pipeline itself is never run.
+                pipe = arguments.index("|") if "|" in arguments else len(arguments)
+                search, line_filter = arguments[:pipe], arguments[pipe + 1:]
+                if line_filter:
+                    self.assertEqual(line_filter[:2], ["grep", "-v"])
+                    rejected = re.compile(line_filter[2])
+                record_text = self.path("locales/%s/docs/TEMPLATE_RECORD.md" % tag).read_text(encoding="utf-8")
+                guide_text = self.path("locales/%s/docs/template/DOCS_GUIDE.md" % tag).read_text(encoding="utf-8")
                 matches = {
                     "README.md": expected,
                     ".cursor/BUGBOT.md": ["{{PROJECT_NAME}}"],
-                    "docs/changes/_template/01-CHANGE.md": ["{{PROJECT_NAME}}"],
+                    "docs/changes/example/01-CHANGE.md": ["{{PROJECT_NAME}}"],
                 }
                 with tempfile.TemporaryDirectory() as directory:
                     root = Path(directory)
                     for relative, content in {
-                        "README.md": filled + expected,
-                        ".cursor/BUGBOT.md": ["{{PROJECT_NAME}}"],
-                        "docs/changes/_template/01-CHANGE.md": ["{{PROJECT_NAME}}"],
-                        "docs/TEMPLATE_GUIDE.md": ["YYYY-MM-DD"],
-                        "docs/DOCS_GUIDE.md": ["YYYY-MM-DD"],
-                        ".git/IGNORED.md": ["YYYY-MM-DD"],
-                        "IGNORED.txt": ["YYYY-MM-DD"],
+                        "README.md": "\n".join(filled + expected) + "\n",
+                        ".cursor/BUGBOT.md": "{{PROJECT_NAME}}\n",
+                        "docs/changes/example/01-CHANGE.md": "{{PROJECT_NAME}}\n",
+                        "docs/TEMPLATE_RECORD.md": record_text,
+                        "docs/template/changes/01-CHANGE.md": "{{PROJECT_NAME}}\n",
+                        "docs/template/TEMPLATE_GUIDE.md": "YYYY-MM-DD\n",
+                        "docs/template/DOCS_GUIDE.md": guide_text,
+                        ".git/IGNORED.md": "YYYY-MM-DD\n",
+                        "IGNORED.txt": "YYYY-MM-DD\n",
                     }.items():
                         path = root / relative
                         path.parent.mkdir(parents=True, exist_ok=True)
-                        path.write_text("\n".join(content) + "\n", encoding="utf-8", newline="\n")
+                        path.write_text(content, encoding="utf-8", newline="\n")
                     result = subprocess.run(
-                        [program, "--color=never", *arguments[1:]], cwd=root,
+                        [program, "--color=never", *search[1:]], cwd=root,
                         capture_output=True, text=True, encoding="utf-8", timeout=5,
                     )
                 self.assertEqual(result.returncode, 0, result.stderr)
+                lines = result.stdout.splitlines()
+                if line_filter:
+                    lines = [line for line in lines if rejected.search(line) is None]
                 actual = {}
-                for line in result.stdout.splitlines():
+                for line in lines:
                     relative, _, value = line.split(":", 2)
                     relative = relative.replace("\\", "/").removeprefix("./")
                     actual.setdefault(relative, []).append(value)
+                # The project record's unfilled fields are found; template-owned
+                # files, including the declaration itself, are not.
+                self.assertTrue(actual.pop("docs/TEMPLATE_RECORD.md", None), tag)
                 self.assertEqual(actual, matches)
 
     def test_declared_patterns_match_ripgrep_sentinels_and_exclude_filled_values(self) -> None:
@@ -585,7 +690,7 @@ class LocaleFixtureTests(unittest.TestCase):
         text = path.read_text(encoding="utf-8")
         path.write_text(
             text.replace(
-                "(./docs/TEMPLATE_GUIDE.md)", "(./docs/02-TODO.md)", 1
+                "(./docs/template/TEMPLATE_GUIDE.md)", "(./docs/02-TODO.md)", 1
             ),
             encoding="utf-8",
         )
@@ -593,8 +698,8 @@ class LocaleFixtureTests(unittest.TestCase):
 
         path.write_text(
             text.replace(
-                "[Template Guide](./docs/TEMPLATE_GUIDE.md)",
-                "<!-- [Template Guide](./docs/TEMPLATE_GUIDE.md) -->",
+                "[Template Guide](./docs/template/TEMPLATE_GUIDE.md)",
+                "<!-- [Template Guide](./docs/template/TEMPLATE_GUIDE.md) -->",
                 1,
             ),
             encoding="utf-8",
@@ -603,8 +708,8 @@ class LocaleFixtureTests(unittest.TestCase):
 
         path.write_text(
             text.replace(
-                "[Template Guide](./docs/TEMPLATE_GUIDE.md)",
-                "`[Template Guide](./docs/TEMPLATE_GUIDE.md)`",
+                "[Template Guide](./docs/template/TEMPLATE_GUIDE.md)",
+                "`[Template Guide](./docs/template/TEMPLATE_GUIDE.md)`",
                 1,
             ),
             encoding="utf-8",
@@ -777,9 +882,9 @@ class LocaleFixtureTests(unittest.TestCase):
             for item in manifest["contracts"]["required_commands"]
             if item["id"] == "docs-test"
         )
-        docs_test["paths"].remove("docs/DOCS_GUIDE.md")
+        docs_test["paths"].remove("docs/template/DOCS_GUIDE.md")
         self.write_manifest(manifest)
-        self.assert_error("docs/DOCS_GUIDE.md Python command inventory differs")
+        self.assert_error("docs/template/DOCS_GUIDE.md Python command inventory differs")
 
     def test_skill_pair_byte_drift_is_rejected(self) -> None:
         path = self.path("locales/en/.claude/skills/design/SKILL.md")
@@ -967,7 +1072,7 @@ class LocaleFixtureTests(unittest.TestCase):
             text = path.read_text(encoding="utf-8")
             path.write_text(
                 text.replace("<!-- template-skill-contract:design:v1 -->\n", "<!-- template-skill-contract:design:v1 -->\n<!-- template-skill-fixture:design-minimal-artifact -->\n", 1)
-                .replace("../../../docs/01-DESIGN.md", "../../../docs/00-PROJECT.md"),
+                .replace("../../../docs/template/DESIGN.md", "../../../docs/00-PROJECT.md"),
                 encoding="utf-8",
             )
         self.assert_error("is missing canonical skill link")
@@ -993,11 +1098,11 @@ class LocaleFixtureTests(unittest.TestCase):
         self.assertTrue(CHECK_LOCALES._contains_observable_token("§1은 범위", "§1"))
         self.assertTrue(CHECK_LOCALES._contains_observable_token("See §1.", "§1"))
 
-        link = "[docs/01-DESIGN.md](../../../docs/01-DESIGN.md)"
+        link = "[docs/template/DESIGN.md](../../../docs/template/DESIGN.md)"
         decoy = (
-            "docs/01-DESIGN.md"
+            "docs/template/DESIGN.md"
             "\n\n```markdown\n"
-            "[design](../../../docs/01-DESIGN.md)\n"
+            "[design](../../../docs/template/DESIGN.md)\n"
             "```\n"
         )
         for relative in relatives:
@@ -1008,9 +1113,9 @@ class LocaleFixtureTests(unittest.TestCase):
         self.assert_error("is missing canonical skill link")
 
         blockquote_decoy = (
-            "docs/01-DESIGN.md"
+            "docs/template/DESIGN.md"
             "\n\n> ```markdown\n"
-            "> [design](../../../docs/01-DESIGN.md)\n"
+            "> [design](../../../docs/template/DESIGN.md)\n"
             "> ```\n"
         )
         for relative in relatives:
@@ -1021,10 +1126,10 @@ class LocaleFixtureTests(unittest.TestCase):
         self.assert_error("is missing canonical skill link")
 
         root_fence_decoy = (
-            "docs/01-DESIGN.md"
+            "docs/template/DESIGN.md"
             "\n\n```markdown\n"
             "> ```\n"
-            "[design](../../../docs/01-DESIGN.md)\n"
+            "[design](../../../docs/template/DESIGN.md)\n"
             "```\n"
         )
         for relative in relatives:

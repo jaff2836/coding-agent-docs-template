@@ -7,7 +7,7 @@
 - **Change ID:** 2026-09-09-multilingual-template
 - **Status:** Accepted
 - **Intent:** [01-INTENT.md](./01-INTENT.md)
-- **Parent:** `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`의 [Template Guide](../../TEMPLATE_GUIDE.md) §1·§2·§4·§5
+- **Parent:** `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`의 [Template Guide](../../template/TEMPLATE_GUIDE.md) §1·§2·§4·§5
 - **Decision:** [PROJECT §8 D-002](../../00-PROJECT.md)
 - **Approval:** Chae Sangwon, 2026-09-09 사용자 대화 — 전체 `v2.0.0` 계약과 PLAN 구현 착수 승인, skill 현지화 S2 채택. 실제 release host는 구현 중 별도 확정
 - **Execution:** [03-PLAN.md](./03-PLAN.md), 전역 [T-001](../../02-TODO.md)
@@ -168,10 +168,10 @@ fb70176의 한국어 payload
 
 ## 4. 상위 설계에 미치는 영향
 
-- [Template Guide](../../TEMPLATE_GUIDE.md) §1의 파일 구조와 §2의 직접 복사 절차를 source·artifact·installer 구조로 대체합니다.
+- [Template Guide](../../template/TEMPLATE_GUIDE.md) §1의 파일 구조와 §2의 직접 복사 절차를 source·artifact·installer 구조로 대체합니다.
 - §4의 root 진입점과 import 관계는 유지하되 source 위치와 materialize 단계를 추가합니다.
 - §5의 적용 후 관리는 template version/source revision 비교를 유지하며 자동 update를 금지하는 새 installer 계약을 연결합니다.
-- [Documentation Guide](../../DOCS_GUIDE.md)의 단일 언어 운영 원칙은 적용 artifact에 그대로 유지하고, 원본 저장소의 locale source 관리 규칙을 추가합니다.
+- [Documentation Guide](../../template/DOCS_GUIDE.md)의 단일 언어 운영 원칙은 적용 artifact에 그대로 유지하고, 원본 저장소의 locale source 관리 규칙을 추가합니다.
 - [PROJECT §8 D-002](../../00-PROJECT.md)에 승인 결정을 기록하고, root 문서를 저장소 유지관리 정본으로 전환합니다.
 
 ## 5. 위험·호환성·rollback
