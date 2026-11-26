@@ -21,7 +21,7 @@
 - `scripts/check-docs.py`가 인용문과 목록 항목 안의 참조 정의를 읽고, label을 escape되지 않은 첫 `]`에서 닫으며, 긴 backslash 줄에서 역추적하지 않습니다. 그 정의를 쓰는 링크도 검사하므로 숨어 있던 깨진 링크가 보고될 수 있습니다.
 - `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version` 2는 바뀌지 않습니다. artifact inventory는 skill 파일 9개가 늘었습니다.
 - `v3.3.0`은 건너뛰었습니다. GitHub tag `v3.3.0`은 판 번호를 올리기 전 commit에 잘못 만들어져 release가 없고, release tag는 보호되므로 그대로 둡니다. 이 tag를 템플릿 원본으로 쓰지 마세요.
-- 공개 전 candidate verifier가 draft byte를 loopback release root로 제공해 `v3.2.0` base-aware upgrade까지 installer E2E를 실행했습니다. 검증된 draft asset 5개를 그대로 immutable Latest로 공개했습니다. native Windows(Buildkite)와 Windows 로컬의 published 검증에서 latest·exact의 두 locale 경로, `v3.2.0` base-aware upgrade와 비어 있지 않은 install 대상의 거부·tree 불변을 확인했습니다. Linux published 검증은 아직 실행하지 않았습니다.
+- 공개 전 candidate verifier가 draft byte를 loopback release root로 제공해 `v3.2.0` base-aware upgrade까지 installer E2E를 실행했습니다. 검증된 draft asset 5개를 그대로 immutable Latest로 공개했습니다. native Windows(Buildkite)와 Windows 로컬의 published 검증에서 latest·exact의 두 locale 경로, `v3.2.0` base-aware upgrade와 비어 있지 않은 install 대상의 거부·tree 불변을 확인했습니다. Linux published 검증은 하지 못했습니다. Linux pipeline에 검증 step을 더했을 때는 `v4.0.0`이 Latest라 검증기가 `v3.3.1`을 거부했습니다.
 
 ## [v3.2.0](https://github.com/jaff2836/coding-agent-docs-template/releases/tag/v3.2.0) — 검사기 Markdown 판정, 리뷰 라운드 보강과 적용 기록
 
