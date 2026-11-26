@@ -136,6 +136,11 @@ class LocaleFixtureTests(unittest.TestCase):
             ("[Bugbot](../../.cursor/BUGBOT.md#x)", "links to deletable .cursor/BUGBOT.md"),
             ("[라이선스](../../LICENSE)", "links to deletable LICENSE"),
             ("[가이드](./TEMPLATE_GUIDE.md)", "links to deletable docs/template/TEMPLATE_GUIDE.md"),
+            # The artifact checker also follows these forms, so the guard must too.
+            ("[확장][ext]\n\n[ext]: ../10-EXTENSION.md", "links to deletable docs/10-EXTENSION.md"),
+            ("[ext]: <../../.omp/WATCHDOG.md>", "links to deletable .omp/WATCHDOG.md"),
+            ("[확장](<../10-EXTENSION.md>)", "links to deletable docs/10-EXTENSION.md"),
+            ("[확장](../10%2DEXTENSION.md)", "links to deletable docs/10-EXTENSION.md"),
             ("`docs/10-EXTENSION.md` §1", "cites a section of deletable docs/10-EXTENSION.md"),
             ("`.omp/WATCHDOG.md` §2", "cites a section of deletable .omp/WATCHDOG.md"),
             ("TEMPLATE_GUIDE.md §4", "cites a section of deletable TEMPLATE_GUIDE.md"),

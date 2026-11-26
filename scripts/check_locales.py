@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import functools
+import importlib.util
 import json
 import posixpath
 import re
@@ -1733,12 +1734,33 @@ def _template_record_shape(text: str) -> Tuple[Set[str], Set[str]]:
     return labels, headings - {"Metadata"}
 
 
+@functools.lru_cache(maxsize=None)
+def _artifact_doc_checker() -> Any:
+    """Load the payload check-docs.py so link parsing matches what adopters run."""
+
+    path = ROOT / "template/common/scripts/check-docs.py"
+    spec = importlib.util.spec_from_file_location("artifact_check_docs", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("cannot load %s" % path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def _check_deletable_references(label: str, relative: str, text: str, errors: List[str]) -> None:
     """Reject links and section citations that break when an adopter deletes a file."""
 
     base = PurePosixPath(relative).parent
-    for target in LINK_TARGET_RE.findall(_structural_markdown_text(text)):
-        if target.startswith("/") or URI_SCHEME_RE.match(target):
+    # Inline, angle-bracket and reference-style links, decoded the same way the
+    # artifact checker reads them after an adopter deletes the target.
+    checker = _artifact_doc_checker()
+    destinations = checker.markdown_link_destinations(
+        checker.markdown_searchable_text(text, mask_inline_code=True)
+    )
+    destinations.extend(checker.markdown_reference_destinations(text))
+    for destination in destinations:
+        target = checker.local_link_path(destination)
+        if target is None:
             continue
         resolved = posixpath.normpath((base / target).as_posix())
         if resolved in DELETABLE_PATHS and resolved != relative:
