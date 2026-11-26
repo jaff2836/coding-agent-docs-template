@@ -14,3 +14,11 @@ steps:
       python3 -m unittest discover -s tests -v
     env:
       GIT_SSH_COMMAND: "ssh -o BatchMode=yes -o ConnectTimeout=15"
+
+  # Runs only on a manually created build that names a published release.
+  # See docs/CI.md section 6 for the variables and the agent's gh token.
+  - label: ":linux: published release verification"
+    if: build.env("RELEASE_VERIFY_VERSION") != null
+    command: python3 .buildkite/verify_published_release.py
+    env:
+      GIT_SSH_COMMAND: "ssh -o BatchMode=yes -o ConnectTimeout=15"
