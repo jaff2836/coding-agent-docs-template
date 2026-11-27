@@ -8,14 +8,14 @@
 
 - **Status:** Active
 - **Owner:** Chae Sangwon
-- **Last reviewed:** 2026-11-26 (KST)
+- **Last reviewed:** 2026-11-27 (KST)
 - **Review cadence:** 작업 범위·우선순위·의존성·통합 결과 변경 시
 - **Integration target:** GitLab `main`(MR merge, 2026-10-28 전에는 Origin `main`의 PR merge)과 공개 저장소 `jaff2836/coding-agent-docs-template`의 `main`(같은 merge commit의 non-force fast-forward, [TEMPLATE_GUIDE §5](./template/TEMPLATE_GUIDE.md)); v1.7.1 payload 기준 `fb7017624ec1ac11cbc6d00df9a8e3916ace5262`
 
 ## Current Milestone
 
 - **Name:** `v4.0.0` — 템플릿 소유 문서 분리 공개 (T-075, T-077)
-- **Status:** In Progress — 2026-11-25에 합의한 T-075(D-023)가 MR !15로 통합됐고 T-077 `v4.0.0`으로 공개합니다. 앞선 `v3.3.1`(T-071~T-074 공개)은 candidate와 native Windows published 검증이 통과했지만 Linux published 검증이 남아 T-076이 끝나지 않았습니다. `v3.3.0`은 tag만 잘못 만들어져 건너뛰었습니다. 첫 번째 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중이고, 적용 저장소 업그레이드는 아직 등록하지 않았으며, T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
+- **Status:** In Progress — 2026-11-25에 합의한 T-075(D-023)가 MR !15로 통합됐고 T-077 `v4.0.0`으로 공개합니다. 앞선 `v3.3.1`(T-071~T-074 공개, T-076)은 Linux published 검증을 하지 못한 채 닫았습니다. Linux 검증 step(T-078)이 생겼을 때는 Latest가 이미 `v4.0.0`이었습니다. `v3.3.0`은 tag만 잘못 만들어져 건너뛰었습니다. 첫 번째 분석의 `SECURITY.md` 제안은 읽는 agent가 있을 때만 추가하기로 해 보류 중이고, 적용 저장소 업그레이드는 아직 등록하지 않았으며, T-043은 보류(Blocked)입니다. 다음 마일스톤은 사용자와 정합니다.
 
 ## 운영 규칙
 
@@ -33,26 +33,17 @@
 
 ## In Progress
 
-- [ ] **T-076 `v3.3.1` release (`v3.3.0` 건너뜀)**
-  - 범위: `v3.2.0` 뒤 `main`에 통합된 미공개 payload 변경 T-071·T-072(검사기의 참조 정의 처리)와 T-073·T-074(skill 세 개 추가, 리뷰 라운드·skill 보강)를 D-007 단계로 공개합니다. 2026-11-25 사용자 요청("release 준비 시작")입니다.
-  - version 판단: D-023 Q5의 `v3.3.0`(minor)을 아래 tag 사고 때문에 `v3.3.1`로 냅니다. artifact inventory에 skill 파일 9개가 늘고 검사기 판정이 엄격해졌습니다. `installer.py`, Python 3.12 하한, installer 명령, release manifest `schema_version` 2는 그대로입니다.
-  - tag 사고: 2026-11-25(KST 17:31) 준비 MR !13을 merge하기 전에 tag 단계를 실행해, annotated `v3.3.0` tag(`c03d452`)가 판 번호를 올리기 전 commit `7576b94`에 만들어져 GitHub에 push됐습니다. 이어서 돌린 `package-release.py`는 판 번호가 3.2.0이라 멈췄고, draft와 release는 만들지 않았습니다. ruleset이 tag의 갱신·삭제를 막으므로 이 tag는 그대로 두고, 사용자 결정("v3.3.1로 내기")으로 `v3.3.0`을 건너뜁니다. `7576b94`와 준비 head의 차이는 판 번호와 이력 문서뿐입니다. 같은 때 GitHub `main`은 `7576b94`로 fast-forward됐고, 이것은 정상 단계였습니다. tag 단계의 명령에는 준비 merge commit과 판 번호를 확인하는 검사를 넣습니다.
-  - [x] 준비: root·en·ko `DOCS_GUIDE`·`TEMPLATE_GUIDE`의 Template version을 3.3.1로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v3.3.1 이력(건너뛴 `v3.3.0` tag 안내 포함)을, root `CHANGELOG` 영·한에 `unpublished candidate`·`미공개 후보`를 표시한 v3.3.1 항목(공개 시 표시를 release 링크로 교체)을 더했습니다. `v3.2.0` 대비 바뀐 artifact 파일은 locale마다 18개(새 skill 6개, 기존 skill 6개, `AGENTS.md`, `README.md`, `docs/CI.md`, `docs/DOCS_GUIDE.md`, `docs/REVIEW_ROUND.md`, `docs/TEMPLATE_GUIDE.md`)와 공통 5개(새 Codex 설정 3개, `scripts/check-docs.py`, `tests/test_check_docs.py`)입니다. 통합: MR !13(`90747da`).
-  - [x] tag·draft candidate: 준비 MR !13의 GitLab merge `90747da`를 GitHub `main`에 fast-forward했습니다. 사용자가 package를 먼저 만든 뒤 annotated `v3.3.1` tag(`30c7c4e`)와 draft(asset 5개, 영·한 release notes)를 만들었고, clean exact checkout에서 `verify-release.py candidate --base-version 3.2.0`(이 checkout의 remote 이름에 맞춰 `--origin-remote gitlab --github-remote origin`)이 통과했습니다(두 `main` 동기화, 5 assets, loopback installer E2E). locale마다 artifact member는 39개이고, release manifest `schema_version` 2와 `installer.py`는 `v3.2.0`과 같습니다.
-  - [x] 공개·native Windows published: 사용자가 2026-11-25(KST 18:02) draft를 immutable Latest로 공개했습니다. Windows 로컬 checkout(Python 3.14)에서 tag source의 verifier로 `published --base-version 3.2.0`이 통과해 공개 asset 5개가 candidate를 통과한 package와 같음을 확인했습니다. native Windows에서는 Buildkite `coding-agent-docs-template-windows-ci` Build #220(`main` `90747da`, Python 3.12-CI)의 published 검증 step이 `v3.3.1` 검증을 통과했습니다.
-  - [ ] Linux published: [TEMPLATE_GUIDE](./template/TEMPLATE_GUIDE.md) §5는 published 검증을 Linux와 native Windows에서 모두 실행하도록 정합니다. Linux에서 tag `v3.3.1` source의 verifier로 `verify-release.py published --base-version 3.2.0`을 실행합니다. verifier는 GitLab·GitHub `main`이 같고 exact source가 그 조상이어야 통과하므로, 공개 뒤 merge한 MR이 있으면 GitHub `main`을 먼저 fast-forward합니다. 통과하면 PROJECT·root `CHANGELOG`·release 검증 변경 기록에서 Linux를 실행하지 않았다는 문장을 고치고, T-076을 Completed로, 이 항목의 상세를 [완료 작업 보관](./TODO_ARCHIVE.md)으로 옮깁니다.
-  - [x] 공개 기록: root `CHANGELOG`(영·한)의 v3.3.1 제목에서 미공개 후보 표시를 release 링크로 바꾸고 공개 검증 문장을 더했으며, PROJECT의 공개 기준·상태와 release 검증 변경 기록을 고쳤습니다. prview가 head마다 요약 note를 따로 남기는 것(MR !12의 note `4318332978`·`4318404335`)을 root `docs/REVIEW_ROUND.md` §2.1과 root `docs/template/DOCS_GUIDE.md` §2에 반영했습니다. 통합: MR !14.
 - [ ] **T-077 `v4.0.0` release**
   - 범위: T-075(D-023, MR !15)의 템플릿 소유 문서 분리를 D-007 단계로 공개합니다. 2026-11-26 사용자 요청("release 준비 시작")입니다.
   - version 판단: D-023 Q5에 따라 `v4.0.0`(major)입니다. artifact 경로와 adoption plan의 `guide` 값이 바뀌고 적용 저장소의 링크가 깨질 수 있습니다. Python 3.12 하한, installer 명령, release manifest `schema_version` 2는 그대로이고, `installer.py`는 `guide` 값만 바뀝니다.
   - [x] 준비: root·en·ko `docs/template/`의 `DOCS_GUIDE`·`TEMPLATE_GUIDE` Template version을 4.0.0으로 올렸습니다. en·ko `TEMPLATE_GUIDE` §6에 v4.0.0 이력(옛 경로→새 경로 표와 업그레이드 절차, T-075 PLAN §5)을, root `CHANGELOG` 영·한에 `unpublished candidate`·`미공개 후보`를 표시한 v4.0.0 항목(공개 시 표시를 release 링크로 교체)을 더했습니다. MR !15 리뷰 인계 `4329053365/2`(P3, 같은 지적 `4329614784/1`)에 따라 root `docs/template/TEMPLATE_GUIDE.md` §5의 적용 기준 기록 위치를 `docs/TEMPLATE_RECORD.md`로 고쳤습니다. `v3.3.1` 대비 artifact는 locale마다 39개에서 40개가 됐습니다. 이동 8개, 새 파일 `docs/TEMPLATE_RECORD.md`, 내용이 바뀐 파일 16개(skill 8개, `.omp/WATCHDOG.md`, `AGENTS.md`, `README.md`, `docs/02-TODO.md`, `docs/CI.md`, `docs/REVIEW_ROUND.md`, 공통 `scripts/check-docs.py`·`tests/test_check_docs.py`)입니다. 통합: 이 변경의 MR.
   - [ ] tag·draft candidate: 준비가 통합된 exact source에 사용자가 annotated `v4.0.0` tag와 GitHub draft를 만들고, agent가 `verify-release.py candidate --base-version 3.3.1`을 실행합니다. tag 명령은 GitHub `main`이 준비 MR의 merge commit인지와 두 guide의 판 번호를 확인하고, package를 먼저 만든 뒤에 실행합니다(T-076의 tag 사고). verifier는 GitLab·GitHub `main`이 같고 exact source가 그 조상이어야 통과합니다.
-  - [ ] 공개·published: 사용자가 draft를 immutable release로 공개하고, agent가 Linux에서 `verify-release.py published --base-version 3.3.1`을 실행하고 Windows는 Buildkite `coding-agent-docs-template-windows-ci` 수동 build로 검증합니다.
+  - [ ] 공개·published: 사용자가 draft를 immutable release로 공개하고, Buildkite `coding-agent-docs-template-linux-ci`·`coding-agent-docs-template-windows-ci`의 수동 build로 `published --base-version 3.3.1`을 검증합니다. agent는 로컬 checkout에서도 같은 검증을 돌립니다.
   - [ ] 기록: 공개 뒤 기록 MR에서 검증 결과를 남기고, root `CHANGELOG` v4.0.0 제목의 미공개 후보 표시를 release 링크로 바꾸며, PROJECT의 "`v4.0.0`으로 공개합니다" 표시를 고칩니다. root `README.md`·`README.ko.md`의 `artifact/docs/TEMPLATE_GUIDE.md` 안내도 새 경로로 바꿉니다(T-075 PLAN §5).
 
 ## Next
 
-T-077 `v4.0.0` release를 준비 MR 통합 뒤 검증·공개합니다. T-076의 Linux published 검증은 Linux 환경에서 실행하고 기록합니다. 새 작업은 사용자와 정한 뒤 MR 단위로 리뷰·필수 CI·통합을 거칩니다.
+T-077 `v4.0.0`의 published 검증 결과를 공개 기록 MR로 남깁니다. 새 작업은 사용자와 정한 뒤 MR 단위로 리뷰·필수 CI·통합을 거칩니다.
 
 ## Blocked
 
@@ -85,6 +76,8 @@ T-077 `v4.0.0` release를 준비 MR 통합 뒤 검증·공개합니다. T-076의
 
 상세 기록은 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다. 새 완료 항목은 한 줄로 적고 상세 근거는 PR과 변경 문서에 둡니다.
 
+- [x] **T-078 Linux Buildkite의 published 검증 step** — 2026-11-27 사용자 요청("Linux step 추가 후 검증해 줘")입니다. `.buildkite/linux.yml`에 Windows와 같은 선택형 step을 더해, `RELEASE_VERIFY_VERSION`을 준 수동 build에서만 `python3 .buildkite/verify_published_release.py`를 실행합니다. Linux agent에는 `gh`와 읽기 전용 `GH_TOKEN`을 사용자가 준비했습니다(CI.md §6). `tests/test_buildkite_release_verification.py`는 두 pipeline이 이 step을 같은 조건으로 두는지 확인합니다. 실환경 실행 결과는 MR에 있고, 검증기가 대상 판이 Latest일 때만 통과한다는 조건을 CI.md §6과 root TEMPLATE_GUIDE §5에 적었습니다. root 도구·문서만 바뀌어 release가 필요 없습니다. 통합: 이 변경의 MR.
+- [x] **T-076 `v3.3.1` release (`v3.3.0` 건너뜀)** — 준비는 MR !13으로 통합됐고, 2026-11-25(KST) 사용자가 exact source `90747da`를 immutable Latest로 공개했습니다. candidate(`--base-version 3.2.0`)와 Windows 로컬·Buildkite Windows Build #220의 published 검증이 통과했고, 공개 기록은 MR !14입니다. Linux published 검증은 하지 못했습니다. T-078로 Linux pipeline에 검증 step을 더한 2026-11-27에는 `v4.0.0`이 이미 Latest라, 검증기가 "published release is not the current GitHub latest release"로 거부했습니다. 2026-11-27 사용자 결정으로 불가로 기록하고 닫았습니다. 판 번호를 올리기 전 commit에 만들어진 `v3.3.0` tag는 보호 규칙에 따라 그대로 두었습니다. 상세는 [완료 작업 보관](./TODO_ARCHIVE.md)에 있습니다.
 - [x] **T-075 템플릿 소유 문서를 `docs/template/`로 분리** — D-023, 변경-ID `2026-11-25-template-owned-docs-folder`, [PLAN](./changes/2026-11-25-template-owned-docs-folder/03-PLAN.md). en·ko payload의 `copy` 문서 네 개와 변경 양식 네 개를 `docs/template/`로 옮기고, 프로젝트가 채우던 칸은 `docs/TEMPLATE_RECORD.md`로 뺐습니다. 검사기·도구는 새 경로를 읽고, locale 검사는 템플릿 소유 문서의 프로젝트 칸과 지울 수 있는 파일의 링크·절 참조를 거부합니다. root는 같은 구조이고, 이력 문서는 검사기가 따라가는 경로만 바꿨습니다. red-green과 업그레이드 E2E 결과는 PLAN §3에 있습니다. 리뷰 인계 `4329053365/2`(P3)는 T-077 준비에서 반영했습니다. 공개는 T-077입니다. 통합: MR !15.
 - [x] **T-074 리뷰 라운드 절차와 기존 skill 보강** — D-022, [리뷰 라운드·skill 보강](./changes/2026-11-25-review-round-and-skill-hardening/01-CHANGE.md). en·ko payload와 root의 REVIEW_ROUND에 push 시점, 리뷰 대기(1분 간격 확인), 등록 계정·표식 대조, 같은 head 재실행(`rereview = request`에서만), 리뷰되지 않은 head의 보고, 판정 기록 사본을 더했습니다. `review-round`·`design` 어댑터는 정본 문서가 없으면 멈추고, `project-analysis`·`bugfix`·`refactor`는 신뢰를 확인하지 못한 외부 저장소의 코드를 확인 없이 실행하지 않습니다. root 리뷰어 표는 prview(슬롯 `C`)로 다시 등록했습니다. prview의 head별 요약 게시는 T-076 기록에서 리뷰어 표에 반영했고, 실패 표시는 아직 게시물로 확인하지 못했습니다. 공개는 T-076입니다. 통합: MR !11.
 - [x] **T-073 `bugfix`·`refactor`·`pr-review` skill 추가** — D-021, [분석·리뷰 skill 변경](./changes/2026-11-25-bugfix-refactor-pr-review-skills/01-CHANGE.md). en·ko payload와 root에 명시 호출 전용 self-contained skill 세 개를 더하고, manifest의 skill 계약, locale 검사의 fixture, artifact 검사의 skill 쌍·Codex 설정 쌍, 무인자 source 검사의 root↔ko 대조와 안내 문서를 맞췄습니다. 회귀 테스트와 red-green 결과는 MR 본문에 있습니다. 공개는 T-076입니다. 통합: MR !11.

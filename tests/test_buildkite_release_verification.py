@@ -70,6 +70,18 @@ class PrepareRefsTest(unittest.TestCase):
         self.assertNotIn(secret, str(raised.exception))
 
 
+class PipelineTest(unittest.TestCase):
+    def test_both_pipelines_run_the_published_step_only_when_asked(self) -> None:
+        # The release gate needs both platforms (TEMPLATE_GUIDE §5).
+        for name in ("pipeline.yml", "linux.yml"):
+            with self.subTest(pipeline=name):
+                text = (ROOT / ".buildkite" / name).read_text(encoding="utf-8")
+                steps = text.split("\n  - label:")[1:]
+                published = [step for step in steps if "verify_published_release.py" in step]
+                self.assertEqual(len(published), 1, name)
+                self.assertIn('if: build.env("RELEASE_VERIFY_VERSION") != null', published[0])
+
+
 class MainTest(unittest.TestCase):
     def test_invalid_input_stops_before_any_command(self) -> None:
         with mock.patch.object(helper.subprocess, "run") as run:
